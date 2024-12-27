@@ -1,0 +1,47 @@
+/* Basketball and Net Animations */
+.basketball-container {
+  position: relative;
+  width: 100%;
+  height: 200px;
+}
+
+.basketball {
+  width: 60px;
+  height: 60px;
+  background: #ff8036;
+  border-radius: 50%;
+  position: relative;
+  animation: orbit 4s infinite linear;
+  box-shadow: inset -5px -5px 15px rgba(0,0,0,0.3);
+  border: 2px solid #e67032;
+}
+
+.basketball .lines {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+
+.basketball .lines::before,
+.basketball .lines::after {
+  content: '';
+  position: absolute;
+  background: #e67032;
+  width: 100%;
+  height: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.basketball .lines::after {
+  transform: translateY(-50%) rotate(90deg);
+}
+
+@keyframes orbit {
+  from {
+    transform: rotate(0deg) translateX(120px) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translateX(120px) rotate(-360deg);
+  }
+}
