@@ -1,4 +1,4 @@
-import { Menu, LogOut } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   DropdownMenu,
@@ -18,7 +18,12 @@ interface MobileMenuProps {
   onLogout: () => void;
 }
 
-export function MobileMenu({ menuItems, isAuthenticated, onLogout }: MobileMenuProps) {
+export function MobileMenu({ menuItems, isAuthenticated }: MobileMenuProps) {
+  // If not authenticated, don't render the mobile menu
+  if (!isAuthenticated) {
+    return null;
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -36,15 +41,6 @@ export function MobileMenu({ menuItems, isAuthenticated, onLogout }: MobileMenuP
             </Link>
           </DropdownMenuItem>
         ))}
-        {isAuthenticated && (
-          <DropdownMenuItem 
-            className="text-red-500 focus:text-red-500"
-            onClick={onLogout}
-          >
-            <LogOut className="h-4 w-4 mr-2" />
-            Logout
-          </DropdownMenuItem>
-        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
