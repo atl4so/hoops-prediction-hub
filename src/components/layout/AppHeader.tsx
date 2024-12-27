@@ -42,31 +42,30 @@ export function AppHeader() {
 
   const menuItems = getNavigationItems(isAuthenticated);
 
-  // If not authenticated, don't show header at all
-  if (!isAuthenticated) {
-    return null;
-  }
-
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 max-w-screen-2xl items-center justify-between">
         <div className="flex items-center gap-4">
-          <MobileMenu 
-            menuItems={menuItems}
-            isAuthenticated={isAuthenticated}
-            onLogout={handleLogout}
-          />
+          {isAuthenticated && (
+            <MobileMenu 
+              menuItems={menuItems}
+              isAuthenticated={isAuthenticated}
+              onLogout={handleLogout}
+            />
+          )}
           
           <Link to="/" className="flex items-center space-x-2">
             <span className="font-bold">euroleague.bet</span>
           </Link>
 
-          <DesktopNav 
-            menuItems={menuItems}
-            currentPath={location.pathname}
-            isAuthenticated={isAuthenticated}
-            onLogout={handleLogout}
-          />
+          {isAuthenticated && (
+            <DesktopNav 
+              menuItems={menuItems}
+              currentPath={location.pathname}
+              isAuthenticated={isAuthenticated}
+              onLogout={handleLogout}
+            />
+          )}
         </div>
 
         <div className="flex items-center gap-2">

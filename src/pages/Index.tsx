@@ -30,15 +30,14 @@ const Index = () => {
     <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-8 animate-fade-in relative overflow-hidden">
       <div className="text-center space-y-6 max-w-3xl mx-auto px-4 z-10">
         <h1 className="inline-block text-4xl md:text-6xl font-bold tracking-tight leading-relaxed mb-4">
-          <div className="py-2">
+          <div className="py-4">
             {titleText.split('').map((char, index) => (
               <span
                 key={index}
                 className={`
                   inline-block
-                  ${isAnimationComplete ? 'animate-title-gradient' : ''}
+                  ${isAnimationComplete ? 'bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent' : ''}
                   animate-[scale-in_0.3s_ease-out]
-                  ${char === '.' ? 'mx-1' : ''}
                 `}
                 style={{
                   animationDelay: `${index * 0.1}s`,
