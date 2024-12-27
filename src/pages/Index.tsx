@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { Basketball } from "lucide-react";
+import { Trophy } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ const Index = () => {
     <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-8 animate-fade-in">
       <div className="text-center space-y-6 max-w-3xl mx-auto">
         <div className="flex items-center justify-center mb-8">
-          <Basketball className="h-16 w-16 text-primary animate-bounce" />
+          <Trophy className="h-16 w-16 text-primary animate-bounce" />
         </div>
         <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/50 bg-clip-text text-transparent">
           Basketball Predictions
@@ -52,33 +52,6 @@ const Index = () => {
           </div>
         )}
       </div>
-      
-      {!isAuthenticated && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 w-full max-w-5xl mx-auto">
-          {[
-            {
-              title: "Make Predictions",
-              description: "Predict game outcomes and player performances",
-            },
-            {
-              title: "Earn Points",
-              description: "Get points for accurate predictions and climb the ranks",
-            },
-            {
-              title: "Compete",
-              description: "Challenge others and become the top predictor",
-            },
-          ].map((feature) => (
-            <div
-              key={feature.title}
-              className="p-6 rounded-xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/20 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5"
-            >
-              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-              <p className="text-muted-foreground">{feature.description}</p>
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 };
