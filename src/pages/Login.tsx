@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { normalizeEmail } from "@/utils/validation";
 
 const Login = () => {
@@ -47,11 +47,13 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-[80vh]">
+    <div className="flex flex-col min-h-[80vh] items-center justify-center px-4">
       <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Welcome Back</CardTitle>
-          <CardDescription>Sign in to your account to continue</CardDescription>
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl text-center">Welcome Back</CardTitle>
+          <CardDescription className="text-center">
+            Sign in to your account to continue
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -80,14 +82,23 @@ const Login = () => {
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Signing in..." : "Sign in"}
             </Button>
-            <div className="text-center text-sm text-muted-foreground">
-              Don't have an account?{" "}
-              <Button variant="link" className="p-0" onClick={() => navigate("/register")}>
-                Register here
-              </Button>
-            </div>
           </form>
         </CardContent>
+        <CardFooter className="flex flex-col space-y-4">
+          <div className="text-sm text-center text-muted-foreground">
+            Don't have an account?{" "}
+            <Button variant="link" className="p-0" onClick={() => navigate("/register")}>
+              Register here
+            </Button>
+          </div>
+          <Button 
+            variant="outline" 
+            className="w-full"
+            onClick={() => navigate("/")}
+          >
+            Back to Home
+          </Button>
+        </CardFooter>
       </Card>
     </div>
   );

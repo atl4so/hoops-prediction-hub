@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { validateEmail, normalizeEmail } from "@/utils/validation";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,7 +34,6 @@ export function RegisterForm() {
 
     setIsLoading(true);
     try {
-      // Sign up and sign in the user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: normalizeEmail(formData.email),
         password: formData.password,
@@ -48,7 +47,6 @@ export function RegisterForm() {
       if (authError) throw authError;
 
       if (authData.user) {
-        // Create the user profile
         const { error: profileError } = await supabase
           .from('profiles')
           .insert({
@@ -59,7 +57,6 @@ export function RegisterForm() {
 
         if (profileError) throw profileError;
 
-        // Sign in the user
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email: normalizeEmail(formData.email),
           password: formData.password,
@@ -86,49 +83,69 @@ export function RegisterForm() {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle>Create an account</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
+    <div className="flex flex-col min-h-[80vh] items-center justify-center px-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl text-center">Create an account</CardTitle>
+          <CardDescription className="text-center">
+            Enter your details to get started
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Input
+                type="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={(e) => handleEmailChange(e.target.value)}
+                className={emailError ? "border-red-500" : ""}
+                disabled={isLoading}
+              />
+              {emailError && (
+                <p className="text-sm text-red-500">{emailError}</p>
+              )}
+            </div>
             <Input
-              type="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={(e) => handleEmailChange(e.target.value)}
-              className={emailError ? "border-red-500" : ""}
+              type="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
               disabled={isLoading}
+              minLength={6}
             />
-            {emailError && (
-              <p className="text-sm text-red-500">{emailError}</p>
-            )}
+            <Input
+              placeholder="Display Name"
+              value={formData.displayName}
+              onChange={(e) => setFormData(prev => ({ ...prev, displayName: e.target.value }))}
+              disabled={isLoading}
+              minLength={4}
+            />
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={!!emailError || isLoading}
+            >
+              {isLoading ? "Registering..." : "Register"}
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter className="flex flex-col space-y-4">
+          <div className="text-sm text-center text-muted-foreground">
+            Already have an account?{" "}
+            <Button variant="link" className="p-0" onClick={() => navigate("/login")}>
+              Sign in here
+            </Button>
           </div>
-          <Input
-            type="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-            disabled={isLoading}
-            minLength={6}
-          />
-          <Input
-            placeholder="Display Name"
-            value={formData.displayName}
-            onChange={(e) => setFormData(prev => ({ ...prev, displayName: e.target.value }))}
-            disabled={isLoading}
-            minLength={4}
-          />
           <Button 
-            type="submit" 
-            className="w-full" 
-            disabled={!!emailError || isLoading}
+            variant="outline" 
+            className="w-full"
+            onClick={() => navigate("/")}
           >
-            {isLoading ? "Registering..." : "Register"}
+            Back to Home
           </Button>
-        </form>
-      </CardContent>
-    </Card>
+        </CardFooter>
+      </Card>
+    </div>
   );
 }
