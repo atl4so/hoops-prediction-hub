@@ -29,7 +29,7 @@
 }
 
 .animate-title-gradient {
-  background: linear-gradient(to right, #ff8036, #ff4545);
+  background: linear-gradient(to right, #ffffff, #e2e2e2);
   background-size: 200% auto;
   color: transparent;
   background-clip: text;
