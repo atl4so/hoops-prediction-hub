@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Trophy } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
@@ -59,8 +58,7 @@ export function AppHeader() {
           />
           
           <Link to="/" className="flex items-center space-x-2">
-            <Trophy className="h-6 w-6" />
-            <span className="font-bold hidden md:inline-block">euroleague.bet</span>
+            <span className="font-bold">euroleague.bet</span>
           </Link>
 
           <DesktopNav 

@@ -30,7 +30,7 @@ const Index = () => {
             </div>
           </div>
           
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight animate-title-gradient">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-[#ff8036] to-[#ff4545] bg-clip-text text-transparent animate-gradient">
             euroleague.bet
           </h1>
         </div>
