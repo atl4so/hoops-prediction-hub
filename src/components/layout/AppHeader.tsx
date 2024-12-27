@@ -4,24 +4,16 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function AppHeader() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const location = useLocation();
@@ -50,7 +42,6 @@ export function AppHeader() {
         description: "You have been successfully signed out.",
       });
       navigate("/");
-      setIsOpen(false);
     }
   };
 
@@ -64,8 +55,6 @@ export function AppHeader() {
 
   const publicMenuItems = [
     { title: "Home", icon: Home, path: "/" },
-    { title: "Login", icon: User, path: "/login" },
-    { title: "Register", icon: Users, path: "/register" },
   ];
 
   const menuItems = isAuthenticated ? authenticatedMenuItems : publicMenuItems;
