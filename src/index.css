@@ -73,3 +73,30 @@
 .text-balance {
   text-wrap: balance;
 }
+
+/* Basketball Animation */
+@keyframes basketball-bounce {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(100px) rotate(180deg);
+  }
+}
+
+@keyframes hoop-sway {
+  0%, 100% {
+    transform: rotate(-15deg);
+  }
+  50% {
+    transform: rotate(-5deg);
+  }
+}
+
+.animate-basketball-bounce {
+  animation: basketball-bounce 2s infinite ease-in-out;
+}
+
+.animate-hoop-sway {
+  animation: hoop-sway 3s infinite ease-in-out;
+}
