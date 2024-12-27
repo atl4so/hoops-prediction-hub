@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trophy } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -38,22 +36,6 @@ const Index = () => {
           </div>
         )}
       </section>
-
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="hover-scale">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-yellow-500" />
-              Leaderboard
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              View the top predictors and compete for the highest score.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 };
