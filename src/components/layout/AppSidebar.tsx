@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Home, Trophy, Users, User, BarChart2, LogOut, Menu } from "lucide-react";
+import { Home, Trophy, Users, User, BarChart2, LogOut } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -9,11 +9,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
 
 interface AppSidebarProps {
   visible: boolean;
