@@ -9,14 +9,17 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  visible: boolean;
+}
+
+export function AppSidebar({ visible }: AppSidebarProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -64,6 +67,8 @@ export function AppSidebar() {
   ];
 
   const menuItems = isAuthenticated ? authenticatedMenuItems : publicMenuItems;
+
+  if (!visible) return null;
 
   return (
     <Sidebar className="border-r border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
