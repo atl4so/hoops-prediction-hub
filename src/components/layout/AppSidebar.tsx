@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Home, Trophy, Users, User, BarChart2, LogOut } from "lucide-react";
+import { Home, Trophy, Users, User, BarChart2, LogOut, Menu } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -11,14 +11,16 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
 
 export function AppSidebar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const location = useLocation();
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
@@ -64,7 +66,11 @@ export function AppSidebar() {
   const menuItems = isAuthenticated ? authenticatedMenuItems : publicMenuItems;
 
   return (
-    <Sidebar>
+    <Sidebar className="border-r border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex h-[52px] items-center justify-between px-4 py-2">
+        <h2 className="text-lg font-semibold">Hoops Hub</h2>
+        <SidebarTrigger />
+      </div>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
@@ -72,7 +78,11 @@ export function AppSidebar() {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname === item.path}
+                    className="hover:bg-accent/50"
+                  >
                     <Link to={item.path} className="flex items-center gap-2">
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
@@ -82,7 +92,10 @@ export function AppSidebar() {
               ))}
               {isAuthenticated && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton onClick={handleLogout} className="flex items-center gap-2 w-full">
+                  <SidebarMenuButton
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 w-full text-red-500 hover:bg-red-500/10"
+                  >
                     <LogOut className="h-4 w-4" />
                     <span>Logout</span>
                   </SidebarMenuButton>
@@ -92,7 +105,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarTrigger className="absolute right-4 top-4" />
     </Sidebar>
   );
 }

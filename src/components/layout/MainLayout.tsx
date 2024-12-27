@@ -1,5 +1,3 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -12,10 +10,10 @@ export function MainLayout({ children }: MainLayoutProps) {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <SidebarProvider>
-        <div className="min-h-screen flex w-full">
+        <div className="min-h-screen flex w-full bg-gradient-to-br from-background to-background/95">
           <AppSidebar />
           <main className="flex-1 overflow-hidden">
-            <div className="container mx-auto p-4 h-full">
+            <div className="container mx-auto p-6 h-full">
               {children}
             </div>
           </main>
