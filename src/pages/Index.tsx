@@ -1,8 +1,25 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trophy } from "lucide-react";
-import { RegisterForm } from "@/components/auth/RegisterForm";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN') {
+        navigate('/dashboard');
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [navigate]);
+
   return (
     <div className="space-y-8 animate-fade-in">
       <section className="text-center space-y-4">
@@ -11,9 +28,15 @@ const Index = () => {
           Welcome to the ultimate basketball prediction platform. Compete with others,
           make predictions, and climb the leaderboard!
         </p>
+        <div className="flex gap-4 justify-center">
+          <Button onClick={() => navigate("/login")} variant="default" size="lg">
+            Login
+          </Button>
+          <Button onClick={() => navigate("/register")} variant="outline" size="lg">
+            Register
+          </Button>
+        </div>
       </section>
-
-      <RegisterForm />
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="hover-scale">
