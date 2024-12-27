@@ -69,8 +69,6 @@ export function AppSidebar({ visible, onVisibilityChange }: AppSidebarProps) {
 
   const menuItems = isAuthenticated ? authenticatedMenuItems : publicMenuItems;
 
-  if (!visible) return null;
-
   return (
     <Sidebar className="border-r border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-[52px] items-center justify-between px-4 py-2">

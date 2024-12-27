@@ -16,7 +16,9 @@ export function MainLayout({ children }: MainLayoutProps) {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <SidebarProvider defaultOpen={sidebarVisible}>
         <div className="min-h-screen flex w-full bg-gradient-to-br from-background to-background/95">
-          <AppSidebar visible={sidebarVisible} onVisibilityChange={setSidebarVisible} />
+          {sidebarVisible && (
+            <AppSidebar visible={sidebarVisible} onVisibilityChange={setSidebarVisible} />
+          )}
           <main className="flex-1 overflow-hidden relative">
             {!sidebarVisible && (
               <Button
