@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trophy } from "lucide-react";
+import { RegisterForm } from "@/components/auth/RegisterForm";
 
 const Index = () => {
   return (
@@ -11,6 +12,8 @@ const Index = () => {
           make predictions, and climb the leaderboard!
         </p>
       </section>
+
+      <RegisterForm />
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="hover-scale">
@@ -26,8 +29,6 @@ const Index = () => {
             </p>
           </CardContent>
         </Card>
-
-        {/* Add more cards for other features */}
       </div>
     </div>
   );
