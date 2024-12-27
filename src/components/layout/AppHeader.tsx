@@ -12,6 +12,12 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function AppHeader() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -66,58 +72,74 @@ export function AppHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 max-w-screen-2xl items-center">
-        <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="mr-2">
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">Toggle menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-            <SheetHeader>
-              <SheetTitle>Hoops Hub</SheetTitle>
-            </SheetHeader>
-            <nav className="flex flex-col gap-2 mt-4">
+      <div className="container flex h-14 max-w-screen-2xl items-center justify-between">
+        <div className="flex items-center gap-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-[200px]">
               {menuItems.map((item) => (
-                <Button
-                  key={item.title}
-                  variant={location.pathname === item.path ? "secondary" : "ghost"}
-                  className="justify-start gap-2"
-                  asChild
-                >
-                  <Link to={item.path} onClick={() => setIsOpen(false)}>
+                <DropdownMenuItem key={item.title} asChild>
+                  <Link 
+                    to={item.path}
+                    className="flex items-center gap-2"
+                  >
                     <item.icon className="h-4 w-4" />
                     {item.title}
                   </Link>
-                </Button>
+                </DropdownMenuItem>
               ))}
               {isAuthenticated && (
-                <Button
-                  variant="ghost"
-                  className="justify-start gap-2 text-red-500 hover:bg-red-500/10 hover:text-red-500"
+                <DropdownMenuItem 
+                  className="text-red-500 focus:text-red-500"
                   onClick={handleLogout}
                 >
-                  <LogOut className="h-4 w-4" />
+                  <LogOut className="h-4 w-4 mr-2" />
                   Logout
-                </Button>
+                </DropdownMenuItem>
               )}
-            </nav>
-          </SheetContent>
-        </Sheet>
-        
-        <Link to="/" className="mr-4 flex items-center space-x-2">
-          <Trophy className="h-6 w-6" />
-          <span className="font-bold">Hoops Hub</span>
-        </Link>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          <Link to="/" className="flex items-center space-x-2">
+            <Trophy className="h-6 w-6" />
+            <span className="font-bold hidden md:inline-block">euroleague.bet</span>
+          </Link>
 
-        <div className="flex flex-1 items-center justify-between space-x-2">
-          <nav className="flex items-center space-x-2">
-            {/* Add any additional header items here */}
+          <nav className="hidden md:flex items-center space-x-4">
+            {menuItems.map((item) => (
+              <Button
+                key={item.title}
+                variant={location.pathname === item.path ? "secondary" : "ghost"}
+                size="sm"
+                asChild
+              >
+                <Link to={item.path} className="flex items-center gap-2">
+                  <item.icon className="h-4 w-4" />
+                  {item.title}
+                </Link>
+              </Button>
+            ))}
+            {isAuthenticated && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                className="text-red-500 hover:text-red-500 hover:bg-red-500/10"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            )}
           </nav>
-          <div className="flex items-center justify-end space-x-2">
-            <ThemeToggle />
-          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
         </div>
       </div>
     </header>
