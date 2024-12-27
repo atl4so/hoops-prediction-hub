@@ -24,8 +24,8 @@ const Index = () => {
         <div className="flex items-center justify-center mb-8">
           <Trophy className="h-16 w-16 text-primary animate-bounce" />
         </div>
-        <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/50 bg-clip-text text-transparent">
-          Basketball Predictions
+        <h1 className="text-6xl font-bold tracking-tight animate-pulse bg-gradient-to-r from-orange-500 via-red-500 to-orange-500 bg-[length:200%_auto] animate-gradient bg-clip-text text-transparent transition-all duration-500">
+          euroleague.bet
         </h1>
         <p className="text-xl text-muted-foreground max-w-[600px] mx-auto text-balance leading-relaxed">
           Welcome to the ultimate basketball prediction platform. Join our community,
