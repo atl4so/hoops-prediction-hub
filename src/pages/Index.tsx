@@ -52,12 +52,6 @@ const Index = () => {
           </div>
         </h1>
         
-        <p className="text-lg md:text-xl text-muted-foreground max-w-[600px] mx-auto 
-          text-balance leading-relaxed opacity-0 animate-[fade-in_0.5s_ease-out_2s_forwards]">
-          Welcome to the ultimate basketball prediction platform. Join our community,
-          make predictions, and compete with others to become the top predictor!
-        </p>
-        
         {!isAuthenticated && (
           <div className="flex gap-4 justify-center mt-8 opacity-0 animate-[fade-in_0.5s_ease-out_2.5s_forwards]">
             <Button
