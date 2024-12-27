@@ -4,8 +4,8 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -17,9 +17,10 @@ import { useToast } from "@/components/ui/use-toast";
 
 interface AppSidebarProps {
   visible: boolean;
+  onVisibilityChange: (visible: boolean) => void;
 }
 
-export function AppSidebar({ visible }: AppSidebarProps) {
+export function AppSidebar({ visible, onVisibilityChange }: AppSidebarProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -74,7 +75,7 @@ export function AppSidebar({ visible }: AppSidebarProps) {
     <Sidebar className="border-r border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-[52px] items-center justify-between px-4 py-2">
         <h2 className="text-lg font-semibold">Hoops Hub</h2>
-        <SidebarTrigger />
+        <SidebarTrigger onClick={() => onVisibilityChange(false)} />
       </div>
       <SidebarContent>
         <SidebarGroup>
