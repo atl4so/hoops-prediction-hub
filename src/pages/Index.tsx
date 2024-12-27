@@ -37,8 +37,8 @@ const Index = () => {
               className={`
                 inline-block
                 ${isAnimationComplete ? 'animate-title-gradient' : ''}
-                animate-[scale-in_0.3s_ease-out_${index * 0.1}s]
-                opacity-0 [animation-fill-mode:forwards]
+                animate-[scale-in_0.3s_ease-out]
+                opacity-100
                 ${char === '.' ? 'mx-1' : ''}
               `}
               style={{
