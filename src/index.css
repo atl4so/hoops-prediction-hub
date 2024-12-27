@@ -74,8 +74,88 @@
   text-wrap: balance;
 }
 
-/* Basketball Animation */
-@keyframes basketball-bounce {
+/* Basketball and Net Animations */
+.basketball-container {
+  position: relative;
+  width: 100%;
+  height: 200px;
+}
+
+.basketball {
+  width: 60px;
+  height: 60px;
+  background: #ff8036;
+  border-radius: 50%;
+  position: relative;
+  animation: bounce 2s infinite cubic-bezier(0.45, 0.05, 0.55, 0.95);
+  box-shadow: inset -5px -5px 15px rgba(0,0,0,0.3);
+  border: 2px solid #e67032;
+}
+
+.basketball .lines {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+
+.basketball .lines::before,
+.basketball .lines::after {
+  content: '';
+  position: absolute;
+  background: #e67032;
+  width: 100%;
+  height: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.basketball .lines::after {
+  transform: translateY(-50%) rotate(90deg);
+}
+
+.shadow {
+  width: 50px;
+  height: 15px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 50%;
+  position: absolute;
+  bottom: -80px;
+  left: 5px;
+  animation: shadow 2s infinite cubic-bezier(0.45, 0.05, 0.55, 0.95);
+}
+
+.basketball-net {
+  position: relative;
+  transform-origin: top center;
+  animation: netSway 3s ease-in-out infinite;
+}
+
+.hoop {
+  width: 80px;
+  height: 80px;
+  border: 8px solid #ff4545;
+  border-radius: 50%;
+  border-bottom-color: transparent;
+  transform: rotate(-45deg);
+}
+
+.net {
+  width: 70px;
+  height: 80px;
+  position: absolute;
+  top: 40px;
+  left: 5px;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 5px,
+    rgba(255, 255, 255, 0.2) 5px,
+    rgba(255, 255, 255, 0.2) 10px
+  );
+  clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
+}
+
+@keyframes bounce {
   0%, 100% {
     transform: translateY(0) rotate(0deg);
   }
@@ -84,19 +164,40 @@
   }
 }
 
-@keyframes hoop-sway {
+@keyframes shadow {
   0%, 100% {
-    transform: rotate(-15deg);
+    transform: scale(1);
+    opacity: 0.4;
   }
   50% {
-    transform: rotate(-5deg);
+    transform: scale(0.5);
+    opacity: 0.2;
   }
 }
 
-.animate-basketball-bounce {
-  animation: basketball-bounce 2s infinite ease-in-out;
+@keyframes netSway {
+  0%, 100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
 }
 
-.animate-hoop-sway {
-  animation: hoop-sway 3s infinite ease-in-out;
+/* Smooth title gradient animation */
+@keyframes titleGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-title-gradient {
+  background-size: 200% auto;
+  animation: titleGradient 8s ease infinite;
 }

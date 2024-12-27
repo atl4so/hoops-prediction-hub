@@ -24,39 +24,38 @@ const Index = () => {
     <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-8 animate-fade-in relative overflow-hidden">
       {/* Basketball Animation Container */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="basketball absolute w-16 h-16 md:w-24 md:h-24 rounded-full bg-orange-500 
-          animate-basketball-bounce border-4 border-orange-600 
-          shadow-lg transform -translate-x-1/2"
+        {/* Animated Basketball */}
+        <div 
+          className="absolute w-16 h-16 md:w-24 md:h-24"
           style={{
-            left: '70%',
-            top: isMobile ? '15%' : '20%'
+            left: isMobile ? '60%' : '70%',
+            top: '10%'
           }}
         >
-          {/* Basketball lines */}
-          <div className="absolute inset-0 flex justify-center items-center">
-            <div className="w-full h-2 bg-orange-700 rotate-45"></div>
-            <div className="w-full h-2 bg-orange-700 -rotate-45"></div>
+          <div className="basketball-container animate-basketball">
+            <div className="basketball">
+              <div className="lines"></div>
+            </div>
+            <div className="shadow"></div>
           </div>
         </div>
         
-        {/* Hoop Animation */}
-        <div className="absolute right-4 md:right-8 top-1/3 transform -translate-y-1/2">
-          <div className="w-20 md:w-32 h-16 md:h-24 border-t-8 border-red-500 
-            rounded-tr-full rounded-tl-full rotate-[-15deg] animate-hoop-sway">
-            <div className="w-2 h-12 md:h-16 bg-red-500 absolute left-0"></div>
-            <div className="w-2 h-12 md:h-16 bg-red-500 absolute right-0"></div>
+        {/* Basketball Net */}
+        <div className="absolute right-8 md:right-16 top-[30%]">
+          <div className="basketball-net">
+            <div className="hoop"></div>
+            <div className="net"></div>
           </div>
         </div>
       </div>
 
       <div className="text-center space-y-6 max-w-3xl mx-auto px-4 z-10">
         <div className="flex items-center justify-center mb-8">
-          <Trophy className="h-12 w-12 md:h-16 md:w-16 text-primary animate-bounce" />
+          <Trophy className="h-12 w-12 md:h-16 md:w-16 text-primary" />
         </div>
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tight animate-pulse 
-          bg-gradient-to-r from-orange-500 via-red-500 to-orange-500 
-          bg-[length:200%_auto] animate-gradient bg-clip-text text-transparent 
-          transition-all duration-500">
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tight 
+          bg-gradient-to-r from-orange-400 via-red-500 to-orange-400 
+          bg-clip-text text-transparent animate-title-gradient">
           euroleague.bet
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-[600px] mx-auto 
