@@ -22,18 +22,9 @@ const Index = () => {
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-8 animate-fade-in relative overflow-hidden">
       <div className="text-center space-y-6 max-w-3xl mx-auto px-4 z-10">
-        <div className="relative inline-block">
-          {/* Animated Basketball */}
-          <div className="absolute -top-16 left-1/2 -translate-x-1/2">
-            <div className="basketball">
-              <div className="lines"></div>
-            </div>
-          </div>
-          
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-[#ff8036] to-[#ff4545] bg-clip-text text-transparent animate-gradient">
-            euroleague.bet
-          </h1>
-        </div>
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tight bg-gradient-to-br from-[#ff8036] via-[#ff6b3d] to-[#ff4545] bg-clip-text text-transparent animate-gradient">
+          euroleague.bet
+        </h1>
         
         <p className="text-lg md:text-xl text-muted-foreground max-w-[600px] mx-auto 
           text-balance leading-relaxed">
