@@ -1,11 +1,33 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Trophy } from "lucide-react";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="space-y-8 animate-fade-in">
+      <section className="text-center space-y-4">
+        <h1 className="text-4xl font-bold tracking-tight">Basketball Predictions</h1>
+        <p className="text-muted-foreground max-w-[600px] mx-auto text-balance">
+          Welcome to the ultimate basketball prediction platform. Compete with others,
+          make predictions, and climb the leaderboard!
+        </p>
+      </section>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card className="hover-scale">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl flex items-center gap-2">
+              <Trophy className="h-5 w-5 text-yellow-500" />
+              Leaderboard
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              View the top predictors and compete for the highest score.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Add more cards for other features */}
       </div>
     </div>
   );
