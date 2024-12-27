@@ -34,10 +34,15 @@ export function RegisterForm() {
 
     setIsLoading(true);
     try {
-      // Sign up the user
+      // Sign up and sign in the user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: normalizeEmail(formData.email),
         password: formData.password,
+        options: {
+          data: {
+            display_name: formData.displayName,
+          }
+        }
       });
 
       if (authError) throw authError;
@@ -54,9 +59,17 @@ export function RegisterForm() {
 
         if (profileError) throw profileError;
 
+        // Sign in the user
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: normalizeEmail(formData.email),
+          password: formData.password,
+        });
+
+        if (signInError) throw signInError;
+
         toast({
           title: "Registration successful!",
-          description: "Please check your email to verify your account.",
+          description: "You have been automatically signed in.",
         });
         navigate("/");
       }
