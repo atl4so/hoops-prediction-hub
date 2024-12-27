@@ -3,40 +3,40 @@ import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { validateUsername, normalizeUsername } from "@/utils/validation";
+import { validateEmail, normalizeEmail } from "@/utils/validation";
 import { useToast } from "@/components/ui/use-toast";
 
 export function RegisterForm() {
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
     displayName: "",
   });
   const [isChecking, setIsChecking] = useState(false);
-  const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleUsernameChange = async (username: string) => {
-    setFormData(prev => ({ ...prev, username }));
-    const validationError = validateUsername(username);
+  const handleEmailChange = async (email: string) => {
+    setFormData(prev => ({ ...prev, email }));
+    const validationError = validateEmail(email);
     if (validationError) {
-      setUsernameError(validationError);
+      setEmailError(validationError);
       return;
     }
 
     setIsChecking(true);
-    // TODO: Add API call to check username availability
+    // TODO: Add API call to check email availability
     // For now, simulating API call
     setTimeout(() => {
       setIsChecking(false);
-      setUsernameError(null);
+      setEmailError(null);
     }, 500);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (usernameError) return;
+    if (emailError) return;
 
     try {
       // TODO: Add actual registration API call
@@ -63,13 +63,14 @@ export function RegisterForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Input
-              placeholder="Username"
-              value={formData.username}
-              onChange={(e) => handleUsernameChange(e.target.value)}
-              className={usernameError ? "border-red-500" : ""}
+              type="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={(e) => handleEmailChange(e.target.value)}
+              className={emailError ? "border-red-500" : ""}
             />
-            {usernameError && (
-              <p className="text-sm text-red-500">{usernameError}</p>
+            {emailError && (
+              <p className="text-sm text-red-500">{emailError}</p>
             )}
             {isChecking && (
               <p className="text-sm text-muted-foreground">Checking availability...</p>
@@ -86,7 +87,7 @@ export function RegisterForm() {
             value={formData.displayName}
             onChange={(e) => setFormData(prev => ({ ...prev, displayName: e.target.value }))}
           />
-          <Button type="submit" className="w-full" disabled={!!usernameError || isChecking}>
+          <Button type="submit" className="w-full" disabled={!!emailError || isChecking}>
             Register
           </Button>
         </form>

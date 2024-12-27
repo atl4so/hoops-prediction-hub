@@ -1,15 +1,16 @@
-export const validateUsername = (username: string): string | null => {
-  if (username.length < 4) {
-    return "Username must be at least 4 characters long";
+export const validateEmail = (email: string): string | null => {
+  if (!email) {
+    return "Email is required";
   }
   
-  if (!/^[a-zA-Z0-9]+$/.test(username)) {
-    return "Username can only contain letters and numbers";
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return "Please enter a valid email address";
   }
   
   return null;
 };
 
-export const normalizeUsername = (username: string): string => {
-  return username.toLowerCase();
+export const normalizeEmail = (email: string): string => {
+  return email.toLowerCase().trim();
 };
