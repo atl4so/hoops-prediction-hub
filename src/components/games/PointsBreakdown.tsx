@@ -11,10 +11,10 @@ interface PointsBreakdownProps {
     away_score: number;
   };
   points: number;
+  isOwnPrediction?: boolean;
 }
 
-export function PointsBreakdown({ prediction, result, points }: PointsBreakdownProps) {
-  // Calculate point differences for explanation
+export function PointsBreakdown({ prediction, result, points, isOwnPrediction = false }: PointsBreakdownProps) {
   const predDiff = Math.abs(prediction.prediction_home_score - prediction.prediction_away_score);
   const actualDiff = Math.abs(result.home_score - result.away_score);
   const diffGap = Math.abs(predDiff - actualDiff);
@@ -73,7 +73,9 @@ export function PointsBreakdown({ prediction, result, points }: PointsBreakdownP
   return (
     <div className="space-y-2">
       <div className="space-y-2">
-        <p className="font-medium">Your Prediction: {prediction.prediction_home_score} - {prediction.prediction_away_score}</p>
+        <p className="font-medium">
+          {isOwnPrediction ? "Your Prediction" : "User's Prediction"}: {prediction.prediction_home_score} - {prediction.prediction_away_score}
+        </p>
         <p className="font-medium">Final Result: {result.home_score} - {result.away_score}</p>
       </div>
 

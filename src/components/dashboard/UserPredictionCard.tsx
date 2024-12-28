@@ -82,6 +82,7 @@ export function UserPredictionCard({
             away_score: gameResult.away_score
           }}
           points={prediction.points_earned}
+          isOwnPrediction={isOwnPrediction}
         />
       )}
     </>

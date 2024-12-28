@@ -21,6 +21,7 @@ interface PointsBreakdownDialogProps {
     away_score: number;
   };
   points: number;
+  isOwnPrediction?: boolean;
 }
 
 export function PointsBreakdownDialog({
@@ -28,7 +29,8 @@ export function PointsBreakdownDialog({
   onOpenChange,
   prediction,
   result,
-  points
+  points,
+  isOwnPrediction = false
 }: PointsBreakdownDialogProps) {
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
@@ -40,6 +42,7 @@ export function PointsBreakdownDialog({
               prediction={prediction}
               result={result}
               points={points}
+              isOwnPrediction={isOwnPrediction}
             />
           </AlertDialogDescription>
         </AlertDialogHeader>
