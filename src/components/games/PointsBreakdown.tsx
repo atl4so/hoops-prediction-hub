@@ -100,7 +100,7 @@ export function PointsBreakdown({ prediction, result }: PointsBreakdownProps) {
         <div className="pt-2 border-t">
           <p className="text-lg font-semibold text-primary flex items-center gap-2">
             <Award className="w-5 h-5" />
-            Total: {prediction.points_earned} points
+            Total: {prediction.points_earned || 0}
           </p>
         </div>
       </div>
