@@ -33,12 +33,12 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
   const [showPredictionDialog, setShowPredictionDialog] = useState(false);
 
   return (
-    <Card className="w-full">
-      <CardContent className="pt-6 px-6">
-        <div className="space-y-4">
+    <Card className="w-full h-full flex flex-col">
+      <CardContent className="pt-6 px-6 flex-1 flex flex-col">
+        <div className="flex flex-col h-full">
           <GameDateTime date={game.game_date} />
           
-          <div className="grid grid-cols-3 gap-4 items-center">
+          <div className="grid grid-cols-3 gap-4 items-center flex-1">
             <TeamDisplay
               align="right"
               team={game.home_team}
@@ -50,7 +50,7 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
             />
           </div>
 
-          <div className="mt-4">
+          <div className="mt-6">
             <PredictionButton
               isAuthenticated={isAuthenticated}
               gameDate={game.game_date}
