@@ -1,5 +1,4 @@
 import { GameDateTime } from "@/components/games/GameDateTime";
-import { PredictionDisplay } from "@/components/games/PredictionDisplay";
 
 interface GameInfoProps {
   game: {
@@ -31,7 +30,7 @@ export function GameInfo({ game, prediction }: GameInfoProps) {
   return (
     <div className="space-y-4 w-full">
       <GameDateTime date={game.game_date} />
-      <div className="grid grid-cols-3 items-center gap-4 w-full">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 items-center flex-1">
         <div className="flex flex-col items-center">
           <img
             src={game.home_team.logo_url}
@@ -47,11 +46,6 @@ export function GameInfo({ game, prediction }: GameInfoProps) {
               {gameResult.is_final && (
                 <span className="text-xs text-muted-foreground mt-1">Final</span>
               )}
-              {prediction && prediction.points_earned !== undefined && (
-                <span className="text-sm text-primary mt-1">
-                  Points: {prediction.points_earned}
-                </span>
-              )}
             </div>
           ) : prediction ? (
             <div className="flex flex-col items-center">
@@ -59,6 +53,11 @@ export function GameInfo({ game, prediction }: GameInfoProps) {
               <span className="text-lg">
                 {prediction.prediction_home_score} - {prediction.prediction_away_score}
               </span>
+              {prediction.points_earned !== undefined && (
+                <span className="text-sm text-primary mt-1">
+                  Points: {prediction.points_earned}
+                </span>
+              )}
             </div>
           ) : (
             <span>vs</span>
