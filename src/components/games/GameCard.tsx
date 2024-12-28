@@ -16,9 +16,14 @@ interface GameCardProps {
   };
   isAuthenticated: boolean;
   userId?: string;
+  prediction?: {
+    prediction_home_score: number;
+    prediction_away_score: number;
+    points_earned?: number;
+  };
 }
 
-export function GameCard({ game, isAuthenticated, userId }: GameCardProps) {
+export function GameCard({ game, isAuthenticated, userId, prediction }: GameCardProps) {
   const [isPredictionOpen, setIsPredictionOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -99,15 +104,30 @@ export function GameCard({ game, isAuthenticated, userId }: GameCardProps) {
             {format(new Date(game.game_date), "p")}
           </div>
 
+          {/* Prediction Display */}
+          {prediction && (
+            <div className="text-sm text-center space-y-1">
+              <p className="font-medium">Your Prediction</p>
+              <p>
+                {prediction.prediction_home_score} - {prediction.prediction_away_score}
+              </p>
+              {prediction.points_earned !== undefined && (
+                <p className="text-primary">Points: {prediction.points_earned}</p>
+              )}
+            </div>
+          )}
+
           {/* Prediction Button */}
-          <Button 
-            onClick={handlePrediction}
-            className="w-full bg-primary/90 hover:bg-primary shadow-sm transition-all duration-300 font-medium tracking-wide"
-            disabled={!isPredictionAllowed()}
-            variant={isPredictionAllowed() ? "default" : "secondary"}
-          >
-            {isPredictionAllowed() ? "Make Prediction" : "Predictions Closed"}
-          </Button>
+          {!prediction && (
+            <Button 
+              onClick={handlePrediction}
+              className="w-full bg-primary/90 hover:bg-primary shadow-sm transition-all duration-300 font-medium tracking-wide"
+              disabled={!isPredictionAllowed()}
+              variant={isPredictionAllowed() ? "default" : "secondary"}
+            >
+              {isPredictionAllowed() ? "Make Prediction" : "Predictions Closed"}
+            </Button>
+          )}
         </CardContent>
       </Card>
 
