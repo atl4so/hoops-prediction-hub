@@ -3,9 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { PredictionDialog } from "@/components/predictions/PredictionDialog";
 import { TeamDisplay } from "./TeamDisplay";
 import { GameDateTime } from "./GameDateTime";
-import { PredictionDisplay } from "./PredictionDisplay";
-import { PredictionButton } from "./PredictionButton";
-import { PointsBreakdown } from "./PointsBreakdown";
+import { PointsBreakdownDialog } from "./PointsBreakdownDialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -28,6 +26,7 @@ interface GameCardProps {
 
 export function GameCard({ game, isAuthenticated, userId, prediction }: GameCardProps) {
   const [isPredictionOpen, setIsPredictionOpen] = useState(false);
+  const [isBreakdownOpen, setIsBreakdownOpen] = useState(false);
 
   // Fetch game result
   const { data: gameResult } = useQuery({
@@ -80,42 +79,56 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
           )}
 
           {prediction && (
-            <div className="space-y-4">
-              <PredictionDisplay
-                homeScore={prediction.prediction_home_score}
-                awayScore={prediction.prediction_away_score}
-                pointsEarned={prediction.points_earned}
-              />
-              
-              {isGameFinished && prediction.points_earned !== undefined && (
-                <PointsBreakdown 
-                  prediction={prediction}
-                  result={{
-                    home_score: gameResult.home_score,
-                    away_score: gameResult.away_score,
-                  }}
-                />
+            <div className="space-y-2 text-center">
+              <div className="text-sm text-muted-foreground">
+                Your Prediction: {prediction.prediction_home_score} - {prediction.prediction_away_score}
+              </div>
+              {prediction.points_earned !== undefined && (
+                <button
+                  onClick={() => setIsBreakdownOpen(true)}
+                  className="text-sm text-primary hover:underline font-medium"
+                >
+                  Points: {prediction.points_earned} (See breakdown)
+                </button>
               )}
             </div>
           )}
 
           {!prediction && (
-            <PredictionButton
-              isAuthenticated={isAuthenticated}
-              gameDate={game.game_date}
-              onPrediction={() => setIsPredictionOpen(true)}
-            />
+            <div className="flex justify-center">
+              <button
+                onClick={() => setIsPredictionOpen(true)}
+                disabled={!isAuthenticated}
+                className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50"
+              >
+                Make Prediction
+              </button>
+            </div>
           )}
         </CardContent>
       </Card>
 
       {isAuthenticated && userId && (
-        <PredictionDialog
-          game={game}
-          isOpen={isPredictionOpen}
-          onClose={() => setIsPredictionOpen(false)}
-          userId={userId}
-        />
+        <>
+          <PredictionDialog
+            game={game}
+            isOpen={isPredictionOpen}
+            onClose={() => setIsPredictionOpen(false)}
+            userId={userId}
+          />
+          
+          {prediction && gameResult && (
+            <PointsBreakdownDialog
+              isOpen={isBreakdownOpen}
+              onClose={() => setIsBreakdownOpen(false)}
+              prediction={prediction}
+              result={{
+                home_score: gameResult.home_score,
+                away_score: gameResult.away_score,
+              }}
+            />
+          )}
+        </>
       )}
     </>
   );
