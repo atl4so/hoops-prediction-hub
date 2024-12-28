@@ -77,11 +77,12 @@ src/
 │   │   └── GameResultsList.tsx
 │   ├── dashboard/
 │   │   ├── StatsOverview.tsx
-│   │   ├── FollowedUsersList.tsx
-│   │   ├── FollowedUsersPredictions.tsx
+│   │   ├── DashboardHeader.tsx
+│   │   ├── StatCard.tsx
 │   │   ├── CollapsibleRoundSection.tsx
-│   │   ├── UserPredictionsDialog.tsx
-│   │   └── UserPredictionCard.tsx
+│   │   ├── UserProfile.tsx
+│   │   ├── useCurrentRoundRank.tsx
+│   │   └── useUserPredictions.tsx
 │   ├── games/
 │   │   ├── GameCard.tsx
 │   │   ├── PredictionButton.tsx
