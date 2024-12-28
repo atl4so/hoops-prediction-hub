@@ -85,6 +85,7 @@ export function AllTimeLeaderboard({ searchQuery }: AllTimeLeaderboardProps) {
               player={player}
               rank={player.rank}
               onFollowChange={refetch}
+              isRoundLeaderboard={false}
             />
           ))}
         </TableBody>

@@ -19,9 +19,10 @@ interface LeaderboardRowProps {
   };
   rank: number;
   onFollowChange: () => void;
+  isRoundLeaderboard?: boolean;
 }
 
-export function LeaderboardRow({ player, rank, onFollowChange }: LeaderboardRowProps) {
+export function LeaderboardRow({ player, rank, onFollowChange, isRoundLeaderboard = false }: LeaderboardRowProps) {
   const [showDetails, setShowDetails] = useState(false);
   const userId = player.id || player.user_id;
   const { isFollowing, currentUser, isLoading } = useFollowStatus(userId);
@@ -71,7 +72,7 @@ export function LeaderboardRow({ player, rank, onFollowChange }: LeaderboardRowP
           </div>
         </TableCell>
         <TableCell className="text-right">{player.total_points}</TableCell>
-        {!isMobile && (
+        {!isMobile && !isRoundLeaderboard && (
           <>
             {player.points_per_game !== undefined && (
               <TableCell className="text-right">
@@ -100,7 +101,15 @@ export function LeaderboardRow({ player, rank, onFollowChange }: LeaderboardRowP
             <DialogTitle>{player.display_name}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-1 gap-4">
+            <div className={cn("grid gap-4", !isRoundLeaderboard ? "grid-cols-2" : "grid-cols-1")}>
+              {!isRoundLeaderboard && player.points_per_game !== undefined && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Points Per Game</p>
+                  <p className="text-lg font-medium">
+                    {player.points_per_game?.toFixed(1)}
+                  </p>
+                </div>
+              )}
               <div>
                 <p className="text-sm text-muted-foreground">Total Predictions</p>
                 <p className="text-lg font-medium">

@@ -106,12 +106,6 @@ export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
                 <TableHead className="w-12">Rank</TableHead>
                 <TableHead>Player</TableHead>
                 <TableHead className="text-right">Points</TableHead>
-                {!isMobile && (
-                  <>
-                    <TableHead className="text-right">PPG</TableHead>
-                    <TableHead className="text-right">Predictions</TableHead>
-                  </>
-                )}
                 <TableHead className="w-28"></TableHead>
               </TableRow>
             </TableHeader>
@@ -122,6 +116,7 @@ export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
                   player={player}
                   rank={player.rank}
                   onFollowChange={refetch}
+                  isRoundLeaderboard={true}
                 />
               ))}
             </TableBody>
