@@ -47,7 +47,18 @@ export function useUserPredictions(userId: string | null) {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      
+      return data.map(prediction => ({
+        ...prediction,
+        game: {
+          ...prediction.game,
+          game_results: Array.isArray(prediction.game.game_results) 
+            ? prediction.game.game_results 
+            : prediction.game.game_results 
+              ? [prediction.game.game_results]
+              : []
+        }
+      }));
     },
     enabled: !!userId && !!session
   });

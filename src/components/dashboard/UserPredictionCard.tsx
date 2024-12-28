@@ -19,6 +19,7 @@ interface UserPredictionCardProps {
     game_results?: Array<{
       home_score: number;
       away_score: number;
+      is_final?: boolean;
     }>;
   };
   prediction: {
