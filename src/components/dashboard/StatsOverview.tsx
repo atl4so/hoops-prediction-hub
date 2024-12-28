@@ -55,15 +55,22 @@ export function StatsOverview({
     },
   });
 
-  const { data: roundPoints } = useQuery({
+  const { data: roundPoints, isLoading: isLoadingRoundPoints } = useQuery({
     queryKey: ["roundPoints", selectedRound, userId],
     queryFn: async () => {
       if (!selectedRound) return null;
-      const { data, error } = await supabase
-        .rpc("get_round_rankings", { round_id: selectedRound })
-        .single();
-      if (error) return null;
-      return data?.total_points || 0;
+      
+      const { data: rankings, error } = await supabase
+        .rpc('get_round_rankings', { round_id: selectedRound });
+        
+      if (error) {
+        console.error('Error fetching round rankings:', error);
+        return null;
+      }
+
+      // Find the user's points in the rankings
+      const userRanking = rankings?.find(r => r.user_id === userId);
+      return userRanking?.total_points || 0;
     },
     enabled: !!selectedRound && !!userId,
   });
@@ -171,7 +178,13 @@ export function StatsOverview({
           </Select>
           {selectedRound && (
             <div className="text-lg animate-fade-in">
-              Points: <span className="font-semibold">{roundPoints || 0}</span>
+              {isLoadingRoundPoints ? (
+                <span className="text-muted-foreground">Loading...</span>
+              ) : (
+                <>
+                  Points: <span className="font-semibold">{roundPoints}</span>
+                </>
+              )}
             </div>
           )}
         </div>
