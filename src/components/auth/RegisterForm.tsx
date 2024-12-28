@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { validateEmail, normalizeEmail } from "@/utils/validation";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ export function RegisterForm() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
+  const [displayNameError, setDisplayNameError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -28,9 +30,48 @@ export function RegisterForm() {
     setEmailError(null);
   };
 
+  const checkDisplayNameAvailability = async (displayName: string) => {
+    if (!displayName) {
+      setDisplayNameError("Display name is required");
+      return false;
+    }
+    if (displayName.length < 3) {
+      setDisplayNameError("Display name must be at least 3 characters long");
+      return false;
+    }
+    
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('display_name', displayName)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error checking display name:', error);
+      return false;
+    }
+
+    if (data) {
+      setDisplayNameError("This display name is already taken");
+      return false;
+    }
+
+    setDisplayNameError(null);
+    return true;
+  };
+
+  const handleDisplayNameChange = async (displayName: string) => {
+    setFormData(prev => ({ ...prev, displayName }));
+    await checkDisplayNameAvailability(displayName);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (emailError || isLoading) return;
+    if (emailError || displayNameError || isLoading) return;
+
+    // Validate display name before proceeding
+    const isDisplayNameValid = await checkDisplayNameAvailability(formData.displayName);
+    if (!isDisplayNameValid) return;
 
     setIsLoading(true);
     try {
@@ -95,12 +136,26 @@ export function RegisterForm() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Input
+                placeholder="Display Name"
+                value={formData.displayName}
+                onChange={(e) => handleDisplayNameChange(e.target.value)}
+                disabled={isLoading}
+                className={displayNameError ? "border-red-500" : ""}
+                required
+              />
+              {displayNameError && (
+                <p className="text-sm text-red-500">{displayNameError}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Input
                 type="email"
                 placeholder="Email"
                 value={formData.email}
                 onChange={(e) => handleEmailChange(e.target.value)}
                 className={emailError ? "border-red-500" : ""}
                 disabled={isLoading}
+                required
               />
               {emailError && (
                 <p className="text-sm text-red-500">{emailError}</p>
@@ -113,18 +168,12 @@ export function RegisterForm() {
               onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
               disabled={isLoading}
               minLength={6}
-            />
-            <Input
-              placeholder="Display Name"
-              value={formData.displayName}
-              onChange={(e) => setFormData(prev => ({ ...prev, displayName: e.target.value }))}
-              disabled={isLoading}
-              minLength={4}
+              required
             />
             <Button 
               type="submit" 
               className="w-full" 
-              disabled={!!emailError || isLoading}
+              disabled={!!emailError || !!displayNameError || isLoading}
             >
               {isLoading ? "Registering..." : "Register"}
             </Button>

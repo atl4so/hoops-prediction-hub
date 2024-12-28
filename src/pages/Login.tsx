@@ -6,8 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { normalizeEmail } from "@/utils/validation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { normalizeEmail } from "@/utils/validation";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ const Login = () => {
 
       if (error) {
         if (error.message === "Invalid login credentials") {
-          setError("Invalid email or password. Please try again.");
+          setError("Invalid email or password. Please check your credentials and try again.");
         } else {
           setError(error.message);
         }
