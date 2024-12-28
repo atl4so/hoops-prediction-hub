@@ -53,14 +53,20 @@ export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
 
       if (error) throw error;
       
+      // Add rank to each player before filtering
+      const rankedData = data.map((player, index) => ({
+        ...player,
+        rank: index + 1
+      }));
+      
       // Filter results based on search query if provided
       if (searchQuery) {
-        return data.filter(player => 
+        return rankedData.filter(player => 
           player.display_name.toLowerCase().includes(searchQuery.toLowerCase())
         );
       }
       
-      return data;
+      return rankedData;
     },
     enabled: !!selectedRound && selectedRound !== "all",
   });
@@ -114,11 +120,11 @@ export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {rankings?.map((player, index) => (
+                {rankings?.map((player) => (
                   <LeaderboardRow
                     key={player.user_id}
                     player={player}
-                    rank={index + 1}
+                    rank={player.rank}
                     getRankIcon={getRankIcon}
                     onFollowChange={refetch}
                   />

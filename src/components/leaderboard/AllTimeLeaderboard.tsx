@@ -18,7 +18,7 @@ interface AllTimeLeaderboardProps {
 }
 
 export function AllTimeLeaderboard({ searchQuery }: AllTimeLeaderboardProps) {
-  const { data: rankings, isLoading, refetch } = useQuery({
+  const { data: allRankings, isLoading, refetch } = useQuery({
     queryKey: ["leaderboard", "all-time", searchQuery],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -30,12 +30,25 @@ export function AllTimeLeaderboard({ searchQuery }: AllTimeLeaderboardProps) {
           points_per_game,
           total_predictions
         `)
-        .ilike('display_name', `%${searchQuery}%`)
         .order("total_points", { ascending: false })
         .limit(100);
 
       if (error) throw error;
-      return data;
+      
+      // Add rank to each player before filtering
+      const rankedData = data.map((player, index) => ({
+        ...player,
+        rank: index + 1
+      }));
+
+      // Filter after ranking if there's a search query
+      if (searchQuery) {
+        return rankedData.filter(player => 
+          player.display_name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
+      return rankedData;
     },
   });
 
@@ -76,11 +89,11 @@ export function AllTimeLeaderboard({ searchQuery }: AllTimeLeaderboardProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rankings?.map((player, index) => (
+          {allRankings?.map((player) => (
             <LeaderboardRow
               key={player.id}
               player={player}
-              rank={index + 1}
+              rank={player.rank}
               getRankIcon={getRankIcon}
               onFollowChange={refetch}
             />
