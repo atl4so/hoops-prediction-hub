@@ -8,11 +8,14 @@ import { CollapsibleRoundSection } from "@/components/dashboard/CollapsibleRound
 import { useUserProfile } from "@/components/dashboard/UserProfile";
 import { useCurrentRoundRank } from "@/components/dashboard/useCurrentRoundRank";
 import { useUserPredictions } from "@/components/dashboard/useUserPredictions";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Dashboard() {
   const session = useSession();
   const navigate = useNavigate();
   const [userId, setUserId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!session) {
@@ -21,6 +24,45 @@ export default function Dashboard() {
     }
     setUserId(session.user.id);
   }, [session, navigate]);
+
+  // Subscribe to real-time updates
+  useEffect(() => {
+    if (!userId) return;
+
+    const channel = supabase
+      .channel('dashboard-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'game_results'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['userProfile', userId] });
+          queryClient.invalidateQueries({ queryKey: ['userPredictions', userId] });
+          queryClient.invalidateQueries({ queryKey: ['currentRoundRank', userId] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'predictions'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['userProfile', userId] });
+          queryClient.invalidateQueries({ queryKey: ['userPredictions', userId] });
+          queryClient.invalidateQueries({ queryKey: ['currentRoundRank', userId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId, queryClient]);
 
   const { data: userProfileData, isError: profileError } = useUserProfile(userId);
   const { data: currentRoundRank } = useCurrentRoundRank(userId);
