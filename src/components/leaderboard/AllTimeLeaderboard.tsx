@@ -10,9 +10,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { FollowButton } from "@/components/users/FollowButton";
+import { useFollowStatus } from "@/hooks/useFollowStatus";
 
 export function AllTimeLeaderboard() {
-  const { data: rankings, isLoading } = useQuery({
+  const { data: rankings, isLoading, refetch } = useQuery({
     queryKey: ["leaderboard", "all-time"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -59,29 +61,56 @@ export function AllTimeLeaderboard() {
             <TableHead className="text-right">Points</TableHead>
             <TableHead className="text-right">PPG</TableHead>
             <TableHead className="text-right">Predictions</TableHead>
+            <TableHead className="w-28"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {rankings?.map((player, index) => (
-            <TableRow key={player.id}>
-              <TableCell className="font-medium">
-                <div className="flex items-center gap-2">
-                  {getRankIcon(index + 1)}
-                  {index + 1}
-                </div>
-              </TableCell>
-              <TableCell>{player.display_name}</TableCell>
-              <TableCell className="text-right">{player.total_points}</TableCell>
-              <TableCell className="text-right">
-                {player.points_per_game?.toFixed(1)}
-              </TableCell>
-              <TableCell className="text-right">
-                {player.total_predictions}
-              </TableCell>
-            </TableRow>
+            <LeaderboardRow
+              key={player.id}
+              player={player}
+              rank={index + 1}
+              getRankIcon={getRankIcon}
+              onFollowChange={refetch}
+            />
           ))}
         </TableBody>
       </Table>
     </div>
+  );
+}
+
+function LeaderboardRow({ player, rank, getRankIcon, onFollowChange }) {
+  const { isFollowing, currentUser } = useFollowStatus(player.id);
+
+  // Don't show follow button for the current user
+  const showFollowButton = currentUser && currentUser.id !== player.id;
+
+  return (
+    <TableRow>
+      <TableCell className="font-medium">
+        <div className="flex items-center gap-2">
+          {getRankIcon(rank)}
+          {rank}
+        </div>
+      </TableCell>
+      <TableCell>{player.display_name}</TableCell>
+      <TableCell className="text-right">{player.total_points}</TableCell>
+      <TableCell className="text-right">
+        {player.points_per_game?.toFixed(1)}
+      </TableCell>
+      <TableCell className="text-right">
+        {player.total_predictions}
+      </TableCell>
+      <TableCell className="text-right">
+        {showFollowButton && (
+          <FollowButton
+            userId={player.id}
+            isFollowing={isFollowing}
+            onFollowChange={onFollowChange}
+          />
+        )}
+      </TableCell>
+    </TableRow>
   );
 }
