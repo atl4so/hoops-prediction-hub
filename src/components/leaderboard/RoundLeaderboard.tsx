@@ -19,6 +19,13 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 
+type RoundRanking = {
+  user_id: string;
+  display_name: string;
+  total_points: number;
+  predictions_count: number;
+};
+
 export function RoundLeaderboard() {
   const [selectedRound, setSelectedRound] = useState<string>("");
 
@@ -40,12 +47,13 @@ export function RoundLeaderboard() {
     queryFn: async () => {
       if (!selectedRound) return null;
 
-      const { data, error } = await supabase.rpc('get_round_rankings', {
-        round_id: selectedRound
-      });
+      const { data, error } = await supabase
+        .rpc('get_round_rankings', {
+          round_id: selectedRound
+        });
 
       if (error) throw error;
-      return data;
+      return data as RoundRanking[];
     },
     enabled: !!selectedRound,
   });

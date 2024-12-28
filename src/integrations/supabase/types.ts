@@ -325,6 +325,17 @@ export type Database = {
         }
         Returns: number
       }
+      get_round_rankings: {
+        Args: {
+          round_id: string
+        }
+        Returns: {
+          user_id: string
+          display_name: string
+          total_points: number
+          predictions_count: number
+        }[]
+      }
       recalculate_all_prediction_points: {
         Args: Record<PropertyKey, never>
         Returns: undefined
