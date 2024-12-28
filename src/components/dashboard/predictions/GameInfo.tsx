@@ -20,6 +20,14 @@ interface GameInfoProps {
 }
 
 export function GameInfo({ game }: GameInfoProps) {
+  if (!game || !game.home_team || !game.away_team) {
+    return (
+      <div className="p-4 text-center text-muted-foreground">
+        Game information unavailable
+      </div>
+    );
+  }
+
   const gameResult = game.game_results?.[0];
 
   return (
