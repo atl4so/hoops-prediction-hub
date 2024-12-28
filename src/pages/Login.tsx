@@ -25,17 +25,20 @@ const Login = () => {
     setError(null);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: normalizeEmail(formData.email),
         password: formData.password,
       });
 
-      if (error) {
-        if (error.message.includes("Invalid login credentials") || error.message.includes("Email not confirmed")) {
-          setError("Invalid email or password. Please check your credentials and try again.");
-        } else {
-          setError(error.message);
+      if (signInError) {
+        // Parse the error message from the response body if available
+        let errorMessage = "Invalid email or password. Please check your credentials and try again.";
+        
+        if (signInError.message.includes("Email not confirmed")) {
+          errorMessage = "Please confirm your email address before logging in.";
         }
+        
+        setError(errorMessage);
         return;
       }
 
@@ -47,6 +50,7 @@ const Login = () => {
         navigate("/dashboard");
       }
     } catch (error: any) {
+      console.error("Login error:", error);
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
