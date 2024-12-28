@@ -13,6 +13,7 @@ export function useFollowStatus(targetUserId: string) {
     },
   });
 
+  // Check initial follow status
   useEffect(() => {
     const checkFollowStatus = async () => {
       if (!currentUser) return;
@@ -24,25 +25,30 @@ export function useFollowStatus(targetUserId: string) {
         .eq("following_id", targetUserId)
         .maybeSingle();
 
-      if (error && error.code !== "PGRST116") {
+      if (error) {
         console.error("Error checking follow status:", error);
+        return;
       }
 
       setIsFollowing(!!data);
     };
 
     checkFollowStatus();
+  }, [currentUser, targetUserId]);
 
-    // Subscribe to real-time changes for this specific follow relationship
+  // Subscribe to real-time changes
+  useEffect(() => {
+    if (!currentUser) return;
+
     const channel = supabase
-      .channel(`follow-status-${currentUser?.id}-${targetUserId}`)
+      .channel(`follow-status-${currentUser.id}-${targetUserId}`)
       .on(
         "postgres_changes",
         {
           event: "*",
           schema: "public",
           table: "user_follows",
-          filter: `follower_id=eq.${currentUser?.id}&following_id=eq.${targetUserId}`,
+          filter: `follower_id=eq.${currentUser.id}&following_id=eq.${targetUserId}`,
         },
         (payload) => {
           if (payload.eventType === "INSERT") {

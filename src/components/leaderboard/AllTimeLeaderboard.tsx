@@ -20,7 +20,14 @@ export function AllTimeLeaderboard() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("*")
+        .select(`
+          id,
+          display_name,
+          total_points,
+          points_per_game,
+          total_predictions,
+          user_follows!user_follows_following_id_fkey(follower_id)
+        `)
         .order("total_points", { ascending: false })
         .limit(100);
 
