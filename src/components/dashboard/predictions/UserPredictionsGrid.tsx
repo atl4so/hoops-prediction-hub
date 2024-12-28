@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserPredictionCard } from "../UserPredictionCard";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface UserPredictionsGridProps {
   predictions: any[] | undefined;
@@ -15,7 +16,7 @@ export function UserPredictionsGrid({
   if (isLoading) {
     return (
       <div className="grid gap-4 sm:grid-cols-2">
-        {[1, 2].map((i) => (
+        {[1, 2, 3, 4].map((i) => (
           <Skeleton key={i} className="h-[200px]" />
         ))}
       </div>
@@ -24,9 +25,13 @@ export function UserPredictionsGrid({
 
   if (!predictions || predictions.length === 0) {
     return (
-      <p className="text-muted-foreground col-span-2 text-center py-8">
-        No predictions found for the selected round.
-      </p>
+      <Card>
+        <CardContent className="py-8">
+          <p className="text-muted-foreground text-center">
+            No predictions found for the selected round.
+          </p>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -34,7 +39,7 @@ export function UserPredictionsGrid({
     <div className="grid gap-6 sm:grid-cols-2">
       {predictions.map((prediction) => (
         <UserPredictionCard
-          key={prediction.game.id}
+          key={prediction.id}
           game={prediction.game}
           prediction={{
             prediction_home_score: prediction.prediction_home_score,
