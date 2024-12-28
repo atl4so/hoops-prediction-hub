@@ -17,9 +17,14 @@ interface GameInfoProps {
       is_final?: boolean;
     }>;
   };
+  prediction?: {
+    prediction_home_score: number;
+    prediction_away_score: number;
+    points_earned?: number;
+  };
 }
 
-export function GameInfo({ game }: GameInfoProps) {
+export function GameInfo({ game, prediction }: GameInfoProps) {
   if (!game || !game.home_team || !game.away_team) {
     return (
       <div className="p-4 text-center text-muted-foreground">
@@ -41,6 +46,11 @@ export function GameInfo({ game }: GameInfoProps) {
             className="w-16 h-16 object-contain"
           />
           <p className="text-sm mt-2 text-center">{game.home_team.name}</p>
+          {prediction && (
+            <p className="text-sm font-medium text-primary mt-1">
+              {prediction.prediction_home_score}
+            </p>
+          )}
         </div>
         <div className="text-xl font-semibold text-center">
           {gameResult ? (
@@ -51,7 +61,16 @@ export function GameInfo({ game }: GameInfoProps) {
               )}
             </div>
           ) : (
-            <span>vs</span>
+            prediction ? (
+              <div className="flex flex-col items-center">
+                <span className="text-base text-primary">Prediction</span>
+                <span className="text-lg">
+                  {prediction.prediction_home_score} - {prediction.prediction_away_score}
+                </span>
+              </div>
+            ) : (
+              <span>vs</span>
+            )
           )}
         </div>
         <div className="flex flex-col items-center">
@@ -61,6 +80,11 @@ export function GameInfo({ game }: GameInfoProps) {
             className="w-16 h-16 object-contain"
           />
           <p className="text-sm mt-2 text-center">{game.away_team.name}</p>
+          {prediction && (
+            <p className="text-sm font-medium text-primary mt-1">
+              {prediction.prediction_away_score}
+            </p>
+          )}
         </div>
       </div>
     </div>
