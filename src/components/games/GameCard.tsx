@@ -38,9 +38,12 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
         .from('game_results')
         .select('*')
         .eq('game_id', game.id)
-        .single();
+        .maybeSingle();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching game result:', error);
+        throw error;
+      }
       return data;
     },
   });
