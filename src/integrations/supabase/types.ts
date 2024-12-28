@@ -9,6 +9,44 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      game_results: {
+        Row: {
+          away_score: number
+          created_at: string
+          game_id: string | null
+          home_score: number
+          id: string
+          is_final: boolean
+          updated_at: string
+        }
+        Insert: {
+          away_score: number
+          created_at?: string
+          game_id?: string | null
+          home_score: number
+          id?: string
+          is_final?: boolean
+          updated_at?: string
+        }
+        Update: {
+          away_score?: number
+          created_at?: string
+          game_id?: string | null
+          home_score?: number
+          id?: string
+          is_final?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_results_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: true
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       games: {
         Row: {
           away_team_id: string
@@ -61,29 +99,95 @@ export type Database = {
           },
         ]
       }
+      predictions: {
+        Row: {
+          created_at: string
+          game_id: string | null
+          id: string
+          points_earned: number | null
+          prediction_away_score: number
+          prediction_home_score: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          game_id?: string | null
+          id?: string
+          points_earned?: number | null
+          prediction_away_score: number
+          prediction_home_score: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          game_id?: string | null
+          id?: string
+          points_earned?: number | null
+          prediction_away_score?: number
+          prediction_home_score?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "predictions_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
           display_name: string
           email: string
+          highest_game_points: number | null
+          highest_round_points: number | null
           id: string
+          lowest_game_points: number | null
+          lowest_round_points: number | null
+          points_per_game: number | null
           total_points: number | null
+          total_predictions: number | null
           updated_at: string
         }
         Insert: {
           created_at?: string
           display_name: string
           email: string
+          highest_game_points?: number | null
+          highest_round_points?: number | null
           id: string
+          lowest_game_points?: number | null
+          lowest_round_points?: number | null
+          points_per_game?: number | null
           total_points?: number | null
+          total_predictions?: number | null
           updated_at?: string
         }
         Update: {
           created_at?: string
           display_name?: string
           email?: string
+          highest_game_points?: number | null
+          highest_round_points?: number | null
           id?: string
+          lowest_game_points?: number | null
+          lowest_round_points?: number | null
+          points_per_game?: number | null
           total_points?: number | null
+          total_predictions?: number | null
           updated_at?: string
         }
         Relationships: []
@@ -138,6 +242,74 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      user_follows: {
+        Row: {
+          created_at: string
+          follower_id: string | null
+          following_id: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id?: string | null
+          following_id?: string | null
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string | null
+          following_id?: string | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_follows_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_follows_following_id_fkey"
+            columns: ["following_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_permissions: {
+        Row: {
+          can_view_future_predictions: boolean
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          can_view_future_predictions?: boolean
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          can_view_future_predictions?: boolean
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_permissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
