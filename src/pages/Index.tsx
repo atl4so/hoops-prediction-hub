@@ -36,7 +36,7 @@ const Index = () => {
                 key={index}
                 className={`
                   inline-block
-                  ${isAnimationComplete ? 'bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent' : ''}
+                  text-primary
                   animate-[scale-in_0.3s_ease-out]
                   font-display
                   tracking-tight
