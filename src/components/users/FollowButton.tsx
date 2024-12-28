@@ -10,8 +10,9 @@ interface FollowButtonProps {
   onFollowChange?: () => void;
 }
 
-export function FollowButton({ userId, isFollowing, onFollowChange }: FollowButtonProps) {
+export function FollowButton({ userId, isFollowing: initialIsFollowing, onFollowChange }: FollowButtonProps) {
   const [loading, setLoading] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
   const { toast } = useToast();
 
   const handleFollow = async () => {
@@ -40,6 +41,7 @@ export function FollowButton({ userId, isFollowing, onFollowChange }: FollowButt
 
         if (error) throw error;
 
+        setIsFollowing(false);
         toast({
           title: "Unfollowed",
           description: "You are no longer following this user",
@@ -53,6 +55,7 @@ export function FollowButton({ userId, isFollowing, onFollowChange }: FollowButt
 
         if (error) throw error;
 
+        setIsFollowing(true);
         toast({
           title: "Following",
           description: "You are now following this user",

@@ -35,7 +35,7 @@ export function useFollowStatus(targetUserId: string) {
 
     // Subscribe to real-time changes for this specific follow relationship
     const channel = supabase
-      .channel(`follow-status-${targetUserId}`)
+      .channel(`follow-status-${currentUser?.id}-${targetUserId}`)
       .on(
         "postgres_changes",
         {
