@@ -6,6 +6,8 @@ import { GameDateTime } from "./GameDateTime";
 import { PointsBreakdownDialog } from "./PointsBreakdownDialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { PredictionButton } from "./PredictionButton";
+import { PredictionDisplay } from "./PredictionDisplay";
 
 interface GameCardProps {
   game: {
@@ -80,36 +82,29 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
 
           {prediction && (
             <div className="space-y-2 text-center">
-              <div className="text-sm text-muted-foreground">
-                Your Prediction: {prediction.prediction_home_score} - {prediction.prediction_away_score}
-              </div>
+              <PredictionDisplay 
+                homeScore={prediction.prediction_home_score}
+                awayScore={prediction.prediction_away_score}
+                pointsEarned={prediction.points_earned}
+              />
               {prediction.points_earned !== undefined && (
-                <div className="text-sm">
-                  Points: {prediction.points_earned}{" "}
-                  <button
-                    onClick={() => setIsBreakdownOpen(true)}
-                    className="text-[#8B5CF6] hover:text-[#7C3AED] font-medium hover:underline"
-                  >
-                    (See breakdown)
-                  </button>
-                </div>
+                <button
+                  onClick={() => setIsBreakdownOpen(true)}
+                  className="text-[#8B5CF6] hover:text-[#7C3AED] font-medium hover:underline"
+                >
+                  See breakdown
+                </button>
               )}
             </div>
           )}
 
           {!prediction && (
             <div className="flex justify-center">
-              <button
-                onClick={() => setIsPredictionOpen(true)}
-                disabled={!isAuthenticated}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                  prediction 
-                    ? "bg-secondary text-secondary-foreground cursor-not-allowed"
-                    : "bg-primary text-primary-foreground hover:bg-primary/90"
-                } disabled:opacity-50`}
-              >
-                {prediction ? "Prediction Made" : "Make Prediction"}
-              </button>
+              <PredictionButton
+                isAuthenticated={isAuthenticated}
+                gameDate={game.game_date}
+                onPrediction={() => setIsPredictionOpen(true)}
+              />
             </div>
           )}
         </CardContent>
