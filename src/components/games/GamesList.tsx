@@ -74,7 +74,16 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
       }
       
       console.log("Raw games data:", data);
-      return data;
+      
+      // Transform the data to ensure game_results is always an array
+      return data.map(game => ({
+        ...game,
+        game_results: Array.isArray(game.game_results) 
+          ? game.game_results 
+          : game.game_results 
+            ? [game.game_results] 
+            : []
+      }));
     },
   });
 
@@ -105,6 +114,14 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     // AND current time is before prediction deadline
     const hasNoFinalResult = !game.game_results?.length || !game.game_results[0]?.is_final;
     const isBeforeDeadline = now < predictionDeadline;
+    
+    console.log(`Game ${game.id}:`, {
+      hasNoFinalResult,
+      isBeforeDeadline,
+      gameResults: game.game_results,
+      predictionDeadline: predictionDeadline.toISOString(),
+      now: now.toISOString()
+    });
     
     return hasNoFinalResult && isBeforeDeadline;
   }) || [];
@@ -156,7 +173,10 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
             id: game.id,
             game: {
               ...game,
-              game_results: game.game_results || []
+              game_results: game.game_results.map(result => ({
+                home_score: result.home_score,
+                away_score: result.away_score
+              }))
             },
             prediction: null
           }))}

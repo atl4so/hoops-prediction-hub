@@ -12,7 +12,7 @@ import { RegisterForm } from "./components/auth/RegisterForm";
 import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import Leaderboard from "./pages/Leaderboard";
-import Predictions from "./pages/Predictions";
+import Predict from "./pages/Predict";
 import Following from "./pages/Following";
 import Rules from "./pages/Rules";
 import Terms from "./pages/Terms";
@@ -91,7 +91,7 @@ const App = () => {
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
-                  <Route path="/predictions" element={<Predictions />} />
+                  <Route path="/predict" element={<Predict />} />
                   <Route path="/following" element={<Following />} />
                   <Route path="/rules" element={<Rules />} />
                   <Route path="/terms" element={<Terms />} />
