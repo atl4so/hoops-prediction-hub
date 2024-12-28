@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, subHours } from "date-fns";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +22,13 @@ export function GameCard({ game, isAuthenticated, userId }: GameCardProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const isPredictionAllowed = () => {
+    const gameDate = new Date(game.game_date);
+    const now = new Date();
+    const oneHourBefore = subHours(gameDate, 1);
+    return now < oneHourBefore;
+  };
+
   const handlePrediction = () => {
     if (!isAuthenticated) {
       toast({
@@ -32,6 +39,16 @@ export function GameCard({ game, isAuthenticated, userId }: GameCardProps) {
       navigate("/login");
       return;
     }
+
+    if (!isPredictionAllowed()) {
+      toast({
+        title: "Predictions closed",
+        description: "Predictions are closed 1 hour before the game starts",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsPredictionOpen(true);
   };
 
@@ -53,8 +70,9 @@ export function GameCard({ game, isAuthenticated, userId }: GameCardProps) {
           <Button 
             onClick={handlePrediction}
             className="w-full"
+            disabled={!isPredictionAllowed()}
           >
-            Make Prediction
+            {isPredictionAllowed() ? "Make Prediction" : "Predictions Closed"}
           </Button>
         </CardFooter>
       </Card>
