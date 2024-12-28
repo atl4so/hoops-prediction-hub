@@ -10,6 +10,7 @@ export function usePredictions(followedIds: string[]) {
       const { data, error } = await supabase
         .from("predictions")
         .select(`
+          id,
           prediction_home_score,
           prediction_away_score,
           points_earned,
@@ -50,7 +51,9 @@ export function usePredictions(followedIds: string[]) {
           ...prediction.game,
           game_results: Array.isArray(prediction.game.game_results) 
             ? prediction.game.game_results 
-            : [prediction.game.game_results].filter(Boolean)
+            : prediction.game.game_results 
+              ? [prediction.game.game_results]
+              : []
         }
       }));
     },

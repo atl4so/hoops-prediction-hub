@@ -21,7 +21,7 @@ export function RoundSelector({ selectedRound, onRoundChange }: RoundSelectorPro
       const { data, error } = await supabase
         .from("rounds")
         .select("*")
-        .order("start_date", { ascending: false });
+        .order("name", { ascending: false });
 
       if (error) throw error;
       return data;

@@ -53,12 +53,24 @@ export function FollowedUsersPredictions() {
     );
   }
 
+  if (!followedIds.length) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <p className="text-center text-muted-foreground">
+            Follow other users to see their predictions here.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   if (!predictions?.length) {
     return (
       <Card>
         <CardContent className="pt-6">
           <p className="text-center text-muted-foreground">
-            No predictions to show. Follow other users to see their predictions here.
+            No predictions from followed users yet.
           </p>
         </CardContent>
       </Card>
