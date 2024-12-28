@@ -21,10 +21,12 @@ export function usePredictions(followedIds: string[]) {
             id,
             game_date,
             home_team:teams!games_home_team_id_fkey (
-              name
+              name,
+              logo_url
             ),
             away_team:teams!games_away_team_id_fkey (
-              name
+              name,
+              logo_url
             ),
             game_results (
               home_score,
