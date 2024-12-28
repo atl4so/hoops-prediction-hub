@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { subHours, isAfter, isBefore } from "date-fns";
+import { subHours, isBefore } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
@@ -16,9 +16,22 @@ interface PredictionButtonProps {
     prediction_away_score: number;
     points_earned?: number;
   };
+  gameResult?: {
+    home_score: number;
+    away_score: number;
+    is_final: boolean;
+  };
 }
 
-export function PredictionButton({ isAuthenticated, gameDate, onPrediction, gameId, userId, prediction }: PredictionButtonProps) {
+export function PredictionButton({ 
+  isAuthenticated, 
+  gameDate, 
+  onPrediction, 
+  gameId, 
+  userId,
+  prediction,
+  gameResult
+}: PredictionButtonProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -45,6 +58,11 @@ export function PredictionButton({ isAuthenticated, gameDate, onPrediction, game
   });
 
   const isPredictionAllowed = () => {
+    // If game has a final result, don't allow predictions
+    if (gameResult?.is_final) {
+      return false;
+    }
+
     // If user already has a prediction, don't allow another one
     if (existingPrediction) {
       return false;
@@ -92,6 +110,15 @@ export function PredictionButton({ isAuthenticated, gameDate, onPrediction, game
       return;
     }
 
+    if (gameResult?.is_final) {
+      toast({
+        title: "Game completed",
+        description: "This game has ended and predictions are closed",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!isPredictionAllowed()) {
       toast({
         title: "Predictions closed",
@@ -104,6 +131,16 @@ export function PredictionButton({ isAuthenticated, gameDate, onPrediction, game
     onPrediction();
   };
 
+  const getButtonText = () => {
+    if (existingPrediction) {
+      return "Prediction Submitted";
+    }
+    if (gameResult?.is_final) {
+      return "Game Completed";
+    }
+    return isPredictionAllowed() ? "Make Prediction" : "Predictions Closed";
+  };
+
   return (
     <Button 
       onClick={handleClick}
@@ -112,14 +149,10 @@ export function PredictionButton({ isAuthenticated, gameDate, onPrediction, game
           ? "bg-primary/90 hover:bg-primary" 
           : "bg-[#8B5CF6] text-white hover:bg-[#7C3AED]"
       }`}
-      disabled={!isPredictionAllowed() || !!existingPrediction}
+      disabled={!isPredictionAllowed() || !!existingPrediction || gameResult?.is_final}
       variant={isPredictionAllowed() && !existingPrediction ? "default" : "secondary"}
     >
-      {existingPrediction 
-        ? "Prediction Submitted" 
-        : isPredictionAllowed() 
-          ? "Make Prediction" 
-          : "Predictions Closed"}
+      {getButtonText()}
     </Button>
   );
 }

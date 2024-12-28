@@ -53,7 +53,7 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
               align="right"
               team={game.home_team}
             />
-            <div className="text-center text-xl font-bold">
+            <div className="text-center text-lg font-bold">
               {gameResult ? (
                 `${gameResult.home_score} - ${gameResult.away_score}`
               ) : (
@@ -87,6 +87,7 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
               gameId={game.id}
               userId={userId}
               prediction={prediction}
+              gameResult={gameResult}
             />
           </div>
         </div>
