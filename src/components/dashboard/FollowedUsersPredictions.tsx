@@ -5,12 +5,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { PredictionCard } from "./predictions/PredictionCard";
 import { usePredictions } from "./predictions/usePredictions";
 import { useFollowedUsers } from "./predictions/useFollowedUsers";
+import { toast } from "sonner";
 
 export function FollowedUsersPredictions() {
-  const { data: followedIds = [] } = useFollowedUsers();
-  const { data: predictions, isLoading, refetch } = usePredictions(followedIds);
+  const { data: followedIds = [], isError: followError } = useFollowedUsers();
+  const { data: predictions, isLoading, isError, refetch } = usePredictions(followedIds);
 
-  // Subscribe to real-time updates
   useEffect(() => {
     const channel = supabase
       .channel('dashboard-updates')
@@ -19,20 +19,10 @@ export function FollowedUsersPredictions() {
         {
           event: '*',
           schema: 'public',
-          table: 'user_follows'
-        },
-        () => {
-          refetch();
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
           table: 'predictions'
         },
         () => {
+          console.log('Predictions changed, refetching...');
           refetch();
         }
       )
@@ -42,6 +32,11 @@ export function FollowedUsersPredictions() {
       supabase.removeChannel(channel);
     };
   }, [refetch]);
+
+  if (isError || followError) {
+    toast.error("Failed to load predictions");
+    return null;
+  }
 
   if (isLoading) {
     return (

@@ -33,7 +33,7 @@ interface PredictionCardProps {
 
 export function PredictionCard({ prediction }: PredictionCardProps) {
   return (
-    <Card key={`${prediction.user.id}-${prediction.game.id}`}>
+    <Card>
       <CardContent className="pt-6">
         <div className="space-y-4">
           <div className="flex items-center justify-between">

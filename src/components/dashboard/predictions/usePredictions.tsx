@@ -45,17 +45,20 @@ export function usePredictions(followedIds: string[]) {
         throw error;
       }
 
-      return data.map(prediction => ({
-        ...prediction,
-        game: {
-          ...prediction.game,
-          game_results: Array.isArray(prediction.game.game_results) 
-            ? prediction.game.game_results 
-            : prediction.game.game_results 
-              ? [prediction.game.game_results]
-              : []
-        }
-      }));
+      // Filter out predictions for games without results
+      return data
+        .filter(prediction => prediction.game.game_results?.length > 0)
+        .map(prediction => ({
+          ...prediction,
+          game: {
+            ...prediction.game,
+            game_results: Array.isArray(prediction.game.game_results) 
+              ? prediction.game.game_results 
+              : prediction.game.game_results 
+                ? [prediction.game.game_results]
+                : []
+          }
+        }));
     },
     enabled: followedIds.length > 0
   });
