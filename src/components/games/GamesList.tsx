@@ -63,7 +63,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
       {Object.entries(gamesByRound).map(([roundId, { name, games }]) => (
         <section key={roundId} className="space-y-6">
           <h2 className="text-2xl font-display font-semibold tracking-tight">
-            {name}
+            Round {name}
           </h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {games.map((game) => (
