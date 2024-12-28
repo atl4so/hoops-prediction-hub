@@ -24,22 +24,65 @@ const Dashboard = () => {
     setUserId(session.user.id);
   }, [session, navigate]);
 
-  const { data: userProfile, isError: profileError } = useQuery({
+  // Query for user profile and all-time rank
+  const { data: userProfileData, isError: profileError } = useQuery({
     queryKey: ['userProfile', userId],
     queryFn: async () => {
       if (!userId) return null;
       
-      const { data, error } = await supabase
+      // Get user profile and calculate all-time rank
+      const { data: rankings } = await supabase
+        .from('profiles')
+        .select('id, total_points')
+        .order('total_points', { ascending: false });
+
+      const { data: profile } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
 
-      if (error) {
-        toast.error("Failed to load profile");
-        throw error;
-      }
-      return data;
+      if (!profile || !rankings) return null;
+
+      // Calculate all-time rank
+      const allTimeRank = rankings.findIndex(r => r.id === userId) + 1;
+
+      return {
+        ...profile,
+        allTimeRank
+      };
+    },
+    enabled: !!userId && !!session
+  });
+
+  // Query for current round rank
+  const { data: currentRoundRank } = useQuery({
+    queryKey: ['currentRoundRank', userId],
+    queryFn: async () => {
+      if (!userId) return null;
+
+      // Get the current round
+      const { data: currentRound } = await supabase
+        .from('rounds')
+        .select('id')
+        .gte('end_date', new Date().toISOString())
+        .order('start_date', { ascending: true })
+        .limit(1)
+        .single();
+
+      if (!currentRound) return null;
+
+      // Get rankings for the current round
+      const { data: roundRankings } = await supabase
+        .rpc('get_round_rankings', {
+          round_id: currentRound.id
+        });
+
+      if (!roundRankings) return null;
+
+      // Find user's rank in the current round
+      const rank = roundRankings.findIndex(r => r.user_id === userId) + 1;
+      return rank || null;
     },
     enabled: !!userId && !!session
   });
@@ -149,10 +192,12 @@ const Dashboard = () => {
         totalPoints={totalPoints}
         pointsPerGame={pointsPerGame}
         totalPredictions={totalPredictions}
-        highestGamePoints={userProfile?.highest_game_points}
-        lowestGamePoints={userProfile?.lowest_game_points}
-        highestRoundPoints={userProfile?.highest_round_points}
-        lowestRoundPoints={userProfile?.lowest_round_points}
+        highestGamePoints={userProfileData?.highest_game_points}
+        lowestGamePoints={userProfileData?.lowest_game_points}
+        highestRoundPoints={userProfileData?.highest_round_points}
+        lowestRoundPoints={userProfileData?.lowest_round_points}
+        allTimeRank={userProfileData?.allTimeRank}
+        currentRoundRank={currentRoundRank}
       />
 
       <FollowingSection />
