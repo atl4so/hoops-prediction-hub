@@ -25,14 +25,6 @@ interface GameInfoProps {
 }
 
 export function GameInfo({ game, prediction }: GameInfoProps) {
-  if (!game || !game.home_team || !game.away_team) {
-    return (
-      <div className="p-4 text-center text-muted-foreground">
-        Game information unavailable
-      </div>
-    );
-  }
-
   const gameResult = game.game_results?.[0];
 
   return (
@@ -48,7 +40,7 @@ export function GameInfo({ game, prediction }: GameInfoProps) {
           <p className="text-sm mt-2 text-center">{game.home_team.name}</p>
           {prediction && (
             <p className="text-sm font-medium text-primary mt-1">
-              {prediction.prediction_home_score}
+              Predicted: {prediction.prediction_home_score}
             </p>
           )}
         </div>
@@ -59,6 +51,11 @@ export function GameInfo({ game, prediction }: GameInfoProps) {
               {gameResult.is_final && (
                 <span className="text-xs text-muted-foreground mt-1">Final</span>
               )}
+              {prediction && prediction.points_earned !== undefined && (
+                <span className="text-sm text-primary mt-1">
+                  Points: {prediction.points_earned}
+                </span>
+              )}
             </div>
           ) : prediction ? (
             <div className="flex flex-col items-center">
@@ -66,11 +63,6 @@ export function GameInfo({ game, prediction }: GameInfoProps) {
               <span className="text-lg">
                 {prediction.prediction_home_score} - {prediction.prediction_away_score}
               </span>
-              {prediction.points_earned !== undefined && (
-                <span className="text-sm text-primary mt-1">
-                  Points: {prediction.points_earned}
-                </span>
-              )}
             </div>
           ) : (
             <span>vs</span>
@@ -85,7 +77,7 @@ export function GameInfo({ game, prediction }: GameInfoProps) {
           <p className="text-sm mt-2 text-center">{game.away_team.name}</p>
           {prediction && (
             <p className="text-sm font-medium text-primary mt-1">
-              {prediction.prediction_away_score}
+              Predicted: {prediction.prediction_away_score}
             </p>
           )}
         </div>
