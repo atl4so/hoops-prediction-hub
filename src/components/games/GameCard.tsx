@@ -24,7 +24,7 @@ interface GameCardProps {
     game_results?: Array<{
       home_score: number;
       away_score: number;
-      is_final: boolean;  // Changed from optional to required
+      is_final: boolean;
     }>;
   };
   isAuthenticated: boolean;
@@ -106,12 +106,16 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
       {prediction?.points_earned !== undefined && gameResult && (
         <PointsBreakdownDialog
           isOpen={showPointsBreakdown}
-          onClose={() => setShowPointsBreakdown(false)}
-          prediction={prediction}
+          onOpenChange={setShowPointsBreakdown}
+          prediction={{
+            prediction_home_score: prediction.prediction_home_score,
+            prediction_away_score: prediction.prediction_away_score
+          }}
           result={{
             home_score: gameResult.home_score,
             away_score: gameResult.away_score
           }}
+          points={prediction.points_earned}
         />
       )}
     </Card>
