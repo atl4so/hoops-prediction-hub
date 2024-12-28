@@ -37,55 +37,58 @@ export function StatsOverview({
         icon={Trophy}
         label="Total Points"
         value={totalPoints || 0}
+        description="Your cumulative points from all predictions"
         highlight={true}
       />
       <StatCard
         icon={Crown}
         label="All-Time Rank"
         value={formatRank(allTimeRank)}
-        description="Your position in the all-time leaderboard"
+        description="Your overall ranking among all players since the beginning"
         highlight={true}
       />
       <StatCard
         icon={Medal}
         label="Current Round Rank"
         value={formatRank(currentRoundRank)}
-        description="Your position in the current round"
+        description="Your current position in this round's leaderboard"
         highlight={true}
       />
       <StatCard
         icon={Target}
         label="Points per Game"
         value={(pointsPerGame || 0).toFixed(1)}
+        description="Average points earned per prediction"
       />
       <StatCard
         icon={TrendingUp}
         label="Total Predictions"
         value={totalPredictions || 0}
+        description="Number of predictions you've made so far"
       />
       <StatCard
         icon={ArrowUp}
         label="Highest Game Points"
         value={highestGamePoints || 0}
-        description="Best single game prediction"
+        description="Your best performance in a single game prediction"
       />
       <StatCard
         icon={ArrowDown}
         label="Lowest Game Points"
         value={lowestGamePoints || 0}
-        description="Worst single game prediction"
+        description="Your lowest score in a single game prediction"
       />
       <StatCard
         icon={ArrowUp}
         label="Highest Round Points"
         value={highestRoundPoints || 0}
-        description="Best round performance"
+        description="Your best total points achieved in a single round"
       />
       <StatCard
         icon={ArrowDown}
         label="Lowest Round Points"
         value={lowestRoundPoints || 0}
-        description="Worst round performance"
+        description="Your lowest total points in a completed round"
       />
     </div>
   );

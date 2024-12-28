@@ -23,22 +23,20 @@ export function StatCard({
       highlight && "border-primary/50 bg-primary/5"
     )}>
       <CardContent className="p-4 sm:p-6">
-        <div className="flex flex-col space-y-3">
-          <div className="flex items-center space-x-3">
-            <div className={cn(
-              "rounded-lg p-2",
-              highlight ? "bg-primary text-primary-foreground" : "bg-muted"
-            )}>
-              <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
-            </div>
-            <div className="space-y-0.5">
-              <p className="text-sm font-medium text-muted-foreground">{label}</p>
-              <p className="text-xl sm:text-2xl font-bold tracking-tight">{value}</p>
-            </div>
+        <div className="flex flex-col items-center text-center space-y-4">
+          <div className={cn(
+            "rounded-lg p-3",
+            highlight ? "bg-primary text-primary-foreground" : "bg-muted"
+          )}>
+            <Icon className="h-6 w-6 sm:h-7 sm:w-7" />
           </div>
-          {description && (
-            <p className="text-xs text-muted-foreground">{description}</p>
-          )}
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-muted-foreground">{label}</p>
+            <p className="text-2xl sm:text-3xl font-bold tracking-tight">{value}</p>
+            {description && (
+              <p className="text-xs sm:text-sm text-muted-foreground max-w-[200px] mx-auto">{description}</p>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>
