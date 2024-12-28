@@ -46,7 +46,6 @@ export function UserPredictionsGrid({
             prediction_away_score: prediction.prediction_away_score,
             points_earned: prediction.points_earned
           }}
-          gameResult={prediction.game.game_results?.[0]}
           isOwnPrediction={isOwnPredictions}
         />
       ))}
