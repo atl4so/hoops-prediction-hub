@@ -10,8 +10,6 @@ import { useCurrentRoundRank } from "@/components/dashboard/useCurrentRoundRank"
 import { useUserPredictions } from "@/components/dashboard/useUserPredictions";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
 import {
   Accordion,
   AccordionContent,
@@ -162,7 +160,6 @@ export default function Dashboard() {
                     roundId={roundData.roundId}
                     roundName={roundData.roundName}
                     predictions={roundData.predictions}
-                    userId={userId}
                   />
                 </AccordionContent>
               </AccordionItem>
