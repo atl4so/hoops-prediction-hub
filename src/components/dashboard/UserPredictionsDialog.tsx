@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
@@ -31,6 +31,32 @@ export function UserPredictionsDialog({
   userName,
 }: UserPredictionsDialogProps) {
   const [selectedRound, setSelectedRound] = useState<string>("all");
+  const queryClient = useQueryClient();
+
+  // Subscribe to real-time updates
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const channel = supabase
+      .channel('game-results-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'game_results'
+        },
+        () => {
+          console.log('Game results changed, invalidating queries...');
+          queryClient.invalidateQueries({ queryKey: ['user-predictions', userId, selectedRound] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [isOpen, userId, selectedRound, queryClient]);
 
   const { data: rounds, isLoading: isLoadingRounds } = useQuery({
     queryKey: ["rounds"],
@@ -72,7 +98,7 @@ export function UserPredictionsDialog({
               id,
               name
             ),
-            game_results!game_results_game_id_fkey (
+            game_results (
               home_score,
               away_score,
               is_final
@@ -94,9 +120,7 @@ export function UserPredictionsDialog({
         ...prediction,
         game: {
           ...prediction.game,
-          game_results: Array.isArray(prediction.game.game_results) 
-            ? prediction.game.game_results 
-            : [prediction.game.game_results].filter(Boolean)
+          game_results: prediction.game.game_results || []
         }
       }));
     },
@@ -149,6 +173,7 @@ export function UserPredictionsDialog({
                     prediction_away_score: prediction.prediction_away_score,
                     points_earned: prediction.points_earned
                   }}
+                  gameResult={prediction.game.game_results?.[0]}
                 />
               ))}
               {predictions?.length === 0 && (
