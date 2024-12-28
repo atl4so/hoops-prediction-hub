@@ -3,14 +3,21 @@ import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { UserPlus, UserMinus, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface FollowButtonProps {
   userId: string;
   isFollowing: boolean;
   onFollowChange?: () => void;
+  className?: string;
 }
 
-export function FollowButton({ userId, isFollowing: initialIsFollowing, onFollowChange }: FollowButtonProps) {
+export function FollowButton({ 
+  userId, 
+  isFollowing: initialIsFollowing, 
+  onFollowChange,
+  className 
+}: FollowButtonProps) {
   const [loading, setLoading] = useState(false);
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
   const { toast } = useToast();
@@ -104,6 +111,7 @@ export function FollowButton({ userId, isFollowing: initialIsFollowing, onFollow
       size="sm"
       onClick={handleFollow}
       disabled={loading}
+      className={cn(className)}
     >
       {loading ? (
         <Loader2 className="h-4 w-4 animate-spin" />
