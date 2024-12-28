@@ -46,7 +46,11 @@ export function PredictionButton({ isAuthenticated, gameDate, onPrediction }: Pr
   return (
     <Button 
       onClick={handleClick}
-      className="w-full bg-primary/90 hover:bg-primary shadow-sm transition-all duration-300 font-medium tracking-wide"
+      className={`w-full shadow-sm transition-all duration-300 font-medium tracking-wide ${
+        isPredictionAllowed() 
+          ? "bg-primary/90 hover:bg-primary" 
+          : "bg-[#8B5CF6] text-white hover:bg-[#7C3AED]"
+      }`}
       disabled={!isPredictionAllowed()}
       variant={isPredictionAllowed() ? "default" : "secondary"}
     >
