@@ -41,7 +41,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     },
   });
 
-  // Subscribe to real-time updates
+  // Subscribe to real-time updates for both game_results and predictions
   useEffect(() => {
     const channel = supabase
       .channel('games-updates')
@@ -53,11 +53,18 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
           table: 'game_results'
         },
         () => {
-          // Invalidate and refetch queries when game results change
           queryClient.invalidateQueries({ queryKey: ['games'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'predictions'
+        },
+        () => {
           queryClient.invalidateQueries({ queryKey: ['predictions'] });
-          queryClient.invalidateQueries({ queryKey: ['user-stats'] });
-          queryClient.invalidateQueries({ queryKey: ['profiles'] });
         }
       )
       .subscribe();

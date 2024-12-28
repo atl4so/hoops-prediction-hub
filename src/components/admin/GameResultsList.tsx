@@ -49,11 +49,7 @@ export function GameResultsList() {
           table: 'game_results'
         },
         () => {
-          // Invalidate and refetch queries when game results change
           queryClient.invalidateQueries({ queryKey: ['game-results'] });
-          queryClient.invalidateQueries({ queryKey: ['predictions'] });
-          queryClient.invalidateQueries({ queryKey: ['user-stats'] });
-          queryClient.invalidateQueries({ queryKey: ['profiles'] });
         }
       )
       .subscribe();
