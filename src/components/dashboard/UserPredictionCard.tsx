@@ -45,7 +45,7 @@ export function UserPredictionCard({
 
   return (
     <>
-      <Card>
+      <Card className="hover:shadow-md transition-all duration-300">
         <CardContent className="pt-6">
           <div className="flex flex-col items-center">
             <GameInfo game={game} />

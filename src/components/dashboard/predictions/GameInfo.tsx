@@ -22,7 +22,7 @@ export function GameInfo({ game }: GameInfoProps) {
   const gameResult = game.game_results?.[0];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full">
       <GameDateTime date={game.game_date} />
       <div className="grid grid-cols-3 items-center gap-4 w-full">
         <div className="flex flex-col items-center">
