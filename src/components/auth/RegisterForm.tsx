@@ -1,94 +1,102 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { normalizeEmail } from "@/utils/validation";
-import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { normalizeEmail } from "@/utils/validation";
 import { useRegistrationValidation } from "@/hooks/useRegistrationValidation";
 
 export function RegisterForm() {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     displayName: "",
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const {
-    emailError,
-    displayNameError,
-    validateDisplayName,
-    validateRegistrationEmail,
-  } = useRegistrationValidation();
 
-  const handleEmailChange = async (email: string) => {
-    setFormData(prev => ({ ...prev, email }));
-    await validateRegistrationEmail(email);
-  };
-
-  const handleDisplayNameChange = async (displayName: string) => {
-    setFormData(prev => ({ ...prev, displayName }));
-    await validateDisplayName(displayName);
-  };
+  const { validateEmail, validateDisplayName } = useRegistrationValidation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (emailError || displayNameError || isLoading) return;
-
-    // Validate display name and email before proceeding
-    const isDisplayNameValid = await validateDisplayName(formData.displayName);
-    const isEmailValid = await validateRegistrationEmail(formData.email);
-    
-    if (!isDisplayNameValid || !isEmailValid) return;
-
     setIsLoading(true);
+    setError(null);
+
     try {
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      // First, try to sign out any existing session to handle the edge case
+      // where a user was deleted but still has an active session
+      try {
+        await supabase.auth.signOut();
+      } catch (signOutError) {
+        console.log("Sign out error (expected if no session):", signOutError);
+        // Ignore sign out errors as they're expected in this case
+      }
+
+      // Validate email and display name
+      const emailError = await validateEmail(formData.email);
+      if (emailError) {
+        setError(emailError);
+        setIsLoading(false);
+        return;
+      }
+
+      const displayNameError = await validateDisplayName(formData.displayName);
+      if (displayNameError) {
+        setError(displayNameError);
+        setIsLoading(false);
+        return;
+      }
+
+      // Proceed with registration
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: normalizeEmail(formData.email),
         password: formData.password,
         options: {
           data: {
             display_name: formData.displayName,
-          }
-        }
+          },
+        },
       });
 
-      if (authError) throw authError;
+      if (signUpError) {
+        console.error("Registration error:", signUpError);
+        setError(signUpError.message);
+        return;
+      }
 
-      if (authData.user) {
+      if (signUpData?.user) {
+        // Create profile
         const { error: profileError } = await supabase
-          .from('profiles')
+          .from("profiles")
           .insert({
-            id: authData.user.id,
+            id: signUpData.user.id,
             email: normalizeEmail(formData.email),
             display_name: formData.displayName,
           });
 
-        if (profileError) throw profileError;
-
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: normalizeEmail(formData.email),
-          password: formData.password,
-        });
-
-        if (signInError) throw signInError;
+        if (profileError) {
+          console.error("Profile creation error:", profileError);
+          // If profile creation fails, delete the auth user
+          await supabase.auth.admin.deleteUser(signUpData.user.id);
+          setError("Failed to create user profile. Please try again.");
+          return;
+        }
 
         toast({
           title: "Registration successful!",
-          description: "You have been automatically signed in.",
+          description: "Please check your email to confirm your account.",
         });
-        navigate("/dashboard");
+        navigate("/");
       }
     } catch (error: any) {
-      console.error('Registration error:', error);
-      toast({
-        title: "Registration failed",
-        description: error.message || "Please try again later",
-        variant: "destructive",
-      });
+      console.error("Unexpected error:", error);
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -98,55 +106,62 @@ export function RegisterForm() {
     <div className="flex flex-col min-h-[80vh] items-center justify-center px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">Create an account</CardTitle>
+          <CardTitle className="text-2xl text-center">Create an Account</CardTitle>
           <CardDescription className="text-center">
-            Enter your details to get started
+            Enter your details to register
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
               <Input
-                placeholder="Display Name"
-                value={formData.displayName}
-                onChange={(e) => handleDisplayNameChange(e.target.value)}
-                disabled={isLoading}
-                className={displayNameError ? "border-red-500" : ""}
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={formData.email}
+                onChange={(e) => {
+                  setError(null);
+                  setFormData({ ...formData, email: e.target.value });
+                }}
                 required
               />
-              {displayNameError && (
-                <p className="text-sm text-red-500">{displayNameError}</p>
-              )}
             </div>
             <div className="space-y-2">
+              <Label htmlFor="displayName">Display Name</Label>
               <Input
-                type="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={(e) => handleEmailChange(e.target.value)}
-                className={emailError ? "border-red-500" : ""}
-                disabled={isLoading}
+                id="displayName"
+                type="text"
+                placeholder="Choose a display name"
+                value={formData.displayName}
+                onChange={(e) => {
+                  setError(null);
+                  setFormData({ ...formData, displayName: e.target.value });
+                }}
                 required
               />
-              {emailError && (
-                <p className="text-sm text-red-500">{emailError}</p>
-              )}
             </div>
-            <Input
-              type="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-              disabled={isLoading}
-              minLength={6}
-              required
-            />
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={!!emailError || !!displayNameError || isLoading}
-            >
-              {isLoading ? "Registering..." : "Register"}
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Create a password"
+                value={formData.password}
+                onChange={(e) => {
+                  setError(null);
+                  setFormData({ ...formData, password: e.target.value });
+                }}
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Creating account..." : "Register"}
             </Button>
           </form>
         </CardContent>
