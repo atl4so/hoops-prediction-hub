@@ -30,19 +30,36 @@ const Dashboard = () => {
       const { data, error } = await supabase
         .from('predictions')
         .select(`
-          *,
+          id,
+          prediction_home_score,
+          prediction_away_score,
+          points_earned,
           game:games (
             id,
             game_date,
-            home_team:teams!games_home_team_id_fkey (id, name, logo_url),
-            away_team:teams!games_away_team_id_fkey (id, name, logo_url),
-            round:rounds(id, name)
+            home_team:teams!games_home_team_id_fkey (
+              id,
+              name,
+              logo_url
+            ),
+            away_team:teams!games_away_team_id_fkey (
+              id,
+              name,
+              logo_url
+            ),
+            round:rounds (
+              id,
+              name
+            )
           )
         `)
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching predictions:', error);
+        throw error;
+      }
       return data;
     },
     enabled: !!userId
@@ -99,7 +116,11 @@ const Dashboard = () => {
                   game={prediction.game}
                   isAuthenticated={true}
                   userId={userId}
-                  prediction={prediction}
+                  prediction={{
+                    prediction_home_score: prediction.prediction_home_score,
+                    prediction_away_score: prediction.prediction_away_score,
+                    points_earned: prediction.points_earned
+                  }}
                 />
               ))}
             </div>
