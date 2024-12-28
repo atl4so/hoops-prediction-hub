@@ -8,37 +8,14 @@ import { GameManager } from "@/components/admin/GameManager";
 import { TeamsList } from "@/components/admin/TeamsList";
 import { GameResults } from "@/components/admin/GameResults";
 import { useToast } from "@/components/ui/use-toast";
-import { useQuery } from "@tanstack/react-query";
-import { Users, CheckSquare } from "lucide-react";
+import { AdminHeader } from "@/components/admin/AdminHeader";
+import { AdminStats } from "@/components/admin/stats/AdminStats";
 
 const Admin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Query for total users count
-  const { data: totalUsers } = useQuery({
-    queryKey: ['totalUsers'],
-    queryFn: async () => {
-      const { count } = await supabase
-        .from('profiles')
-        .select('*', { count: 'exact', head: true });
-      return count || 0;
-    },
-  });
-
-  // Query for total finished predictions
-  const { data: totalPredictions } = useQuery({
-    queryKey: ['totalPredictions'],
-    queryFn: async () => {
-      const { count } = await supabase
-        .from('predictions')
-        .select('*', { count: 'exact', head: true })
-        .not('points_earned', 'is', null);
-      return count || 0;
-    },
-  });
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -84,42 +61,8 @@ const Admin = () => {
 
   return (
     <div className="space-y-8">
-      <section className="text-center space-y-4">
-        <h1 className="text-4xl font-bold tracking-tight">Admin Dashboard</h1>
-        <p className="text-muted-foreground">
-          Manage rounds, games, results, and teams
-        </p>
-      </section>
-
-      <div className="grid gap-4 md:grid-cols-2 mb-8">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">Total Users</p>
-                <p className="text-2xl font-bold">{totalUsers || '...'}</p>
-              </div>
-              <div className="p-3 bg-primary/10 rounded-full">
-                <Users className="h-5 w-5 text-primary" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">Finished Predictions</p>
-                <p className="text-2xl font-bold">{totalPredictions || '...'}</p>
-              </div>
-              <div className="p-3 bg-primary/10 rounded-full">
-                <CheckSquare className="h-5 w-5 text-primary" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <AdminHeader />
+      <AdminStats />
 
       <Tabs defaultValue="rounds" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
