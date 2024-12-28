@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { validateEmail } from "@/utils/validation";
-import { checkEmailExists } from "@/utils/authChecks";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useRegistrationValidation = () => {
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -44,11 +44,21 @@ export const useRegistrationValidation = () => {
     }
 
     try {
-      const emailExists = await checkEmailExists(email);
-      if (emailExists) {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', email.toLowerCase())
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error checking email:', error);
+        return "Error checking email availability";
+      }
+
+      if (data) {
         return "This email is already registered";
       }
-      
+
       return null;
     } catch (error) {
       console.error('Error checking email:', error);

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,27 @@ const Login = () => {
     password: "",
   });
 
+  // Check for and clear invalid session on component mount
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          // Clear any existing session if no valid user
+          await supabase.auth.signOut();
+        }
+      } catch (error) {
+        // If we get a 403, clear the session
+        if (error.status === 403) {
+          await supabase.auth.signOut();
+        }
+        console.error("Session check error:", error);
+      }
+    };
+    
+    checkSession();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -31,7 +52,6 @@ const Login = () => {
       });
 
       if (signInError) {
-        // Parse the error message from the response body if available
         let errorMessage = "Invalid email or password. Please check your credentials and try again.";
         
         if (signInError.message.includes("Email not confirmed")) {
