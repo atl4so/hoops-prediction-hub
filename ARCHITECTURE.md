@@ -52,33 +52,51 @@ Automatically tracked metrics:
 - Highest/lowest points per round
 - Highest/lowest points per game
 - Total predictions made
+- All-time rank
+- Current round rank
 
 ## Component Structure
 
 ### Pages
 - `/` - Home page with upcoming games
 - `/admin` - Admin dashboard (restricted)
-- `/dashboard` - User dashboard
+- `/dashboard` - User dashboard with statistics and predictions
 - `/login` - Authentication
 - `/register` - User registration
+- `/leaderboard` - Global and round-specific rankings
 
 ### Core Components
 ```
 src/
 ├── components/
 │   ├── admin/
-│   │   ├── TeamsList.tsx - Teams management
-│   │   ├── RoundManager.tsx - Rounds management
-│   │   ├── GameManager.tsx - Games scheduling
-│   │   ├── GameResults.tsx - Results management
-│   │   └── GameResultsList.tsx - Results display
+│   │   ├── TeamsList.tsx
+│   │   ├── RoundManager.tsx
+│   │   ├── GameManager.tsx
+│   │   ├── GameResults.tsx
+│   │   └── GameResultsList.tsx
+│   ├── dashboard/
+│   │   ├── StatsOverview.tsx
+│   │   ├── FollowedUsersList.tsx
+│   │   ├── FollowedUsersPredictions.tsx
+│   │   ├── CollapsibleRoundSection.tsx
+│   │   ├── UserPredictionsDialog.tsx
+│   │   └── UserPredictionCard.tsx
 │   ├── games/
-│   │   ├── GameCard.tsx - Game display
-│   │   ├── PredictionButton.tsx - Prediction controls
-│   │   └── GamesList.tsx - Games listing
+│   │   ├── GameCard.tsx
+│   │   ├── PredictionButton.tsx
+│   │   └── GamesList.tsx
 │   └── layout/
-│       ├── AppHeader.tsx - Navigation
-│       └── MainLayout.tsx - Page structure
+│       ├── AppHeader.tsx
+│       └── MainLayout.tsx
+```
+
+### Custom Hooks
+```
+src/hooks/
+├── useUserProfile.tsx - Manages user profile data and statistics
+├── useCurrentRoundRank.tsx - Calculates user's rank in current round
+└── useUserPredictions.tsx - Handles user's prediction data
 ```
 
 ## Data Flow
@@ -98,6 +116,7 @@ src/
    - Make predictions (with time restrictions)
    - Track points and rankings
    - Follow other users
+   - View followed users' predictions
 
 ## Database Schema
 See CHANGELOG.md for detailed table structures
@@ -106,6 +125,7 @@ See CHANGELOG.md for detailed table structures
 1. Authentication
    - Supabase Auth for user management
    - Protected routes using React Router
+   - Session management with Supabase client
 
 2. Authorization
    - Row Level Security (RLS) policies
@@ -119,6 +139,9 @@ See CHANGELOG.md for detailed table structures
 4. Maintain type safety with TypeScript
 5. Use Tailwind CSS for styling
 6. Leverage shadcn/ui components
+7. Keep components small and focused
+8. Use custom hooks for data fetching
+9. Implement proper error handling
 
 ## Testing Strategy (Planned)
 1. Component testing
