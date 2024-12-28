@@ -31,18 +31,33 @@ interface Prediction {
 }
 
 export function FollowedUsersPredictions() {
-  const { data: predictions, isLoading, refetch } = useQuery({
-    queryKey: ["followed-users-predictions"],
+  // First, check if the current user has permission to view future predictions
+  const { data: userPermission } = useQuery({
+    queryKey: ["user-future-predictions-permission"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
+      if (!user) return null;
 
-      // First get user permissions
-      const { data: permissions } = await supabase
+      const { data, error } = await supabase
         .from("user_permissions")
         .select("can_view_future_predictions")
         .eq("user_id", user.id)
         .maybeSingle();
+
+      if (error) {
+        console.error("Error fetching user permissions:", error);
+        return null;
+      }
+
+      return data;
+    },
+  });
+
+  const { data: predictions, isLoading, refetch } = useQuery({
+    queryKey: ["followed-users-predictions", userPermission?.can_view_future_predictions],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
 
       // Get followed users
       const { data: follows } = await supabase
@@ -53,10 +68,10 @@ export function FollowedUsersPredictions() {
       if (!follows?.length) return [];
 
       const followedIds = follows.map(f => f.following_id);
-
-      // Get predictions based on permissions
       const now = new Date().toISOString();
-      const { data, error } = await supabase
+
+      // Build the query based on permissions
+      let query = supabase
         .from("predictions")
         .select(`
           prediction_home_score,
@@ -83,16 +98,19 @@ export function FollowedUsersPredictions() {
           )
         `)
         .in("user_id", followedIds)
-        .order("created_at", { ascending: false })
-        // Only show predictions for finished games unless user has permission
-        .or(
-          permissions?.can_view_future_predictions 
-            ? `game_date.gt.${now},game_results.is_final.eq.true` 
-            : 'game_results.is_final.eq.true'
-        )
-        .limit(50);
+        .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      // If user doesn't have permission, only show predictions for finished games
+      if (!userPermission?.can_view_future_predictions) {
+        query = query.not("points_earned", "is", null);
+      }
+
+      const { data, error } = await query.limit(50);
+
+      if (error) {
+        console.error("Error fetching predictions:", error);
+        throw error;
+      }
 
       return data.map(prediction => ({
         ...prediction,
@@ -127,6 +145,17 @@ export function FollowedUsersPredictions() {
           event: '*',
           schema: 'public',
           table: 'predictions'
+        },
+        () => {
+          refetch();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_permissions'
         },
         () => {
           refetch();
