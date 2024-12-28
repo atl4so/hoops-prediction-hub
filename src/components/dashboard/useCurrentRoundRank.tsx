@@ -33,11 +33,11 @@ export function useCurrentRoundRank(userId: string | null) {
         return null;
       }
 
-      if (!roundRankings) return null;
+      if (!roundRankings || roundRankings.length === 0) return null;
 
       // Find user's rank in the current round
-      const rank = roundRankings.findIndex(r => r.user_id === userId) + 1;
-      return rank || null;
+      const userRankIndex = roundRankings.findIndex(r => r.user_id === userId);
+      return userRankIndex !== -1 ? userRankIndex + 1 : null;
     },
     enabled: !!userId && !!session
   });
