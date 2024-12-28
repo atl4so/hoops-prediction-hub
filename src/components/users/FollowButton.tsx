@@ -32,34 +32,54 @@ export function FollowButton({ userId, isFollowing: initialIsFollowing, onFollow
       }
 
       if (isFollowing) {
-        // Unfollow
-        const { error } = await supabase
+        // Check if follow relationship exists before deleting
+        const { data: existingFollow } = await supabase
           .from("user_follows")
-          .delete()
+          .select()
           .eq("follower_id", user.id)
-          .eq("following_id", userId);
+          .eq("following_id", userId)
+          .maybeSingle();
 
-        if (error) throw error;
+        if (existingFollow) {
+          // Unfollow
+          const { error } = await supabase
+            .from("user_follows")
+            .delete()
+            .eq("follower_id", user.id)
+            .eq("following_id", userId);
 
-        setIsFollowing(false);
-        toast({
-          title: "Unfollowed",
-          description: "You are no longer following this user",
-        });
+          if (error) throw error;
+
+          setIsFollowing(false);
+          toast({
+            title: "Unfollowed",
+            description: "You are no longer following this user",
+          });
+        }
       } else {
-        // Follow
-        const { error } = await supabase.from("user_follows").insert({
-          follower_id: user.id,
-          following_id: userId,
-        });
+        // Check if follow relationship already exists
+        const { data: existingFollow } = await supabase
+          .from("user_follows")
+          .select()
+          .eq("follower_id", user.id)
+          .eq("following_id", userId)
+          .maybeSingle();
 
-        if (error) throw error;
+        if (!existingFollow) {
+          // Follow
+          const { error } = await supabase.from("user_follows").insert({
+            follower_id: user.id,
+            following_id: userId,
+          });
 
-        setIsFollowing(true);
-        toast({
-          title: "Following",
-          description: "You are now following this user",
-        });
+          if (error) throw error;
+
+          setIsFollowing(true);
+          toast({
+            title: "Following",
+            description: "You are now following this user",
+          });
+        }
       }
 
       // Callback is now optional and only called if provided
