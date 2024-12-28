@@ -68,7 +68,7 @@ export function RegisterForm() {
           title: "Registration successful!",
           description: "You have been automatically signed in.",
         });
-        navigate("/");
+        navigate("/dashboard");
       }
     } catch (error: any) {
       console.error('Registration error:', error);

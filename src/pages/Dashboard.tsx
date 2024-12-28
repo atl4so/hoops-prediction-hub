@@ -3,7 +3,6 @@ import { useSession } from "@supabase/auth-helpers-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { StatsOverview } from "@/components/dashboard/StatsOverview";
-import { FollowingSection } from "@/components/dashboard/FollowingSection";
 import { CollapsibleRoundSection } from "@/components/dashboard/CollapsibleRoundSection";
 import { useUserProfile } from "@/components/dashboard/UserProfile";
 import { useCurrentRoundRank } from "@/components/dashboard/useCurrentRoundRank";
@@ -134,8 +133,6 @@ export default function Dashboard() {
         currentRoundRank={currentRoundRank}
         userId={userId}
       />
-
-      <FollowingSection />
 
       <div className="rounded-lg border">
         <Accordion type="single" collapsible className="w-full">
