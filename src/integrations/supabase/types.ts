@@ -325,6 +325,10 @@ export type Database = {
         }
         Returns: number
       }
+      calculate_user_round_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       get_round_rankings: {
         Args: {
           round_id: string
