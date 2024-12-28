@@ -38,7 +38,7 @@ export function UserPredictionCard({
   const gameResult = game.game_results?.[0];
 
   const handlePointsClick = () => {
-    if (gameResult && prediction.points_earned !== undefined) {
+    if (gameResult && prediction?.points_earned !== undefined) {
       setShowPointsBreakdown(true);
     }
   };

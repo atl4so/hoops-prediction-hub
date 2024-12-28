@@ -28,10 +28,6 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
                 name,
                 logo_url
               ),
-              round:rounds (
-                id,
-                name
-              ),
               game_results (
                 home_score,
                 away_score,
@@ -39,8 +35,7 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
               )
             )
           `)
-          .eq("user_id", userId)
-          .order('created_at', { ascending: false });
+          .eq("user_id", userId);
 
         if (selectedRound !== "all") {
           query = query.eq("game.round_id", selectedRound);
@@ -54,19 +49,17 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
           throw error;
         }
 
-        if (!data?.length) {
-          return [];
-        }
-
-        return data
-          .filter(prediction => prediction.game)
-          .map(prediction => ({
-            ...prediction,
-            game: {
-              ...prediction.game,
-              game_results: prediction.game.game_results || []
-            }
-          }));
+        return data?.map(prediction => ({
+          game: {
+            ...prediction.game,
+            game_results: prediction.game.game_results || []
+          },
+          prediction: {
+            prediction_home_score: prediction.prediction_home_score,
+            prediction_away_score: prediction.prediction_away_score,
+            points_earned: prediction.points_earned
+          }
+        })) || [];
       } catch (error) {
         console.error("Error in useUserRoundPredictions:", error);
         toast.error("Failed to load predictions");
@@ -74,7 +67,7 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
       }
     },
     enabled: isOpen,
-    staleTime: 1000 * 60, // Cache for 1 minute
+    staleTime: 1000 * 60,
     retry: 2,
   });
 }
