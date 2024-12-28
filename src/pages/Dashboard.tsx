@@ -4,17 +4,20 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { StatsOverview } from "@/components/dashboard/StatsOverview";
 import { CollapsibleRoundSection } from "@/components/dashboard/CollapsibleRoundSection";
-import { useUserProfile } from "@/components/dashboard/UserProfile";
+import { UserProfile } from "@/components/dashboard/UserProfile";
 import { useCurrentRoundRank } from "@/components/dashboard/useCurrentRoundRank";
 import { useUserPredictions } from "@/components/dashboard/useUserPredictions";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { GamesList } from "@/components/games/GamesList";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Separator } from "@/components/ui/separator";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 
 export default function Dashboard() {
   const session = useSession();
@@ -48,6 +51,7 @@ export default function Dashboard() {
           queryClient.invalidateQueries({ queryKey: ['userProfile', userId] });
           queryClient.invalidateQueries({ queryKey: ['userPredictions', userId] });
           queryClient.invalidateQueries({ queryKey: ['currentRoundRank', userId] });
+          queryClient.invalidateQueries({ queryKey: ['games'] });
         }
       )
       .subscribe();
@@ -121,6 +125,8 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
+      <DashboardHeader />
+      
       <StatsOverview
         totalPoints={totalPoints}
         pointsPerGame={pointsPerGame}
@@ -134,28 +140,38 @@ export default function Dashboard() {
         userId={userId}
       />
 
-      <div className="rounded-lg border">
-        <Accordion type="single" collapsible className="w-full">
-          {predictionsByRound && Object.values(predictionsByRound)
-            .sort((a: any, b: any) => parseInt(b.roundName) - parseInt(a.roundName))
-            .map((roundData: any) => (
-              <AccordionItem key={roundData.roundId} value={roundData.roundId}>
-                <AccordionTrigger className="px-4 hover:no-underline hover:bg-accent/50">
-                  <span className="text-sm font-medium">
-                    Round {roundData.roundName}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="pt-4 px-4">
-                  <CollapsibleRoundSection
-                    roundId={roundData.roundId}
-                    roundName={roundData.roundName}
-                    predictions={roundData.predictions}
-                    userName={userProfileData?.display_name || "User"}
-                  />
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-        </Accordion>
+      <div className="space-y-6">
+        <h2 className="text-2xl font-semibold tracking-tight">Upcoming Games</h2>
+        <GamesList isAuthenticated={!!session} userId={userId || undefined} />
+      </div>
+
+      <Separator className="my-8" />
+
+      <div className="space-y-6">
+        <h2 className="text-2xl font-semibold tracking-tight">Your Predictions</h2>
+        <div className="rounded-lg border">
+          <Accordion type="single" collapsible className="w-full">
+            {predictionsByRound && Object.values(predictionsByRound)
+              .sort((a: any, b: any) => parseInt(b.roundName) - parseInt(a.roundName))
+              .map((roundData: any) => (
+                <AccordionItem key={roundData.roundId} value={roundData.roundId}>
+                  <AccordionTrigger className="px-4 hover:no-underline hover:bg-accent/50">
+                    <span className="text-sm font-medium">
+                      Round {roundData.roundName}
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="pt-4 px-4">
+                    <CollapsibleRoundSection
+                      roundId={roundData.roundId}
+                      roundName={roundData.roundName}
+                      predictions={roundData.predictions}
+                      userName={userProfileData?.display_name || "User"}
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+          </Accordion>
+        </div>
       </div>
     </div>
   );
