@@ -14,7 +14,8 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Clock } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 export function GameManager() {
   const { toast } = useToast();
@@ -23,6 +24,7 @@ export function GameManager() {
   const [homeTeam, setHomeTeam] = useState<string>("");
   const [awayTeam, setAwayTeam] = useState<string>("");
   const [gameDate, setGameDate] = useState<Date>();
+  const [gameTime, setGameTime] = useState<string>("20:00");
 
   const { data: rounds } = useQuery({
     queryKey: ['rounds'],
@@ -74,6 +76,12 @@ export function GameManager() {
         throw new Error("Please fill in all fields");
       }
 
+      // Combine date and time
+      const [hours, minutes] = gameTime.split(':');
+      const combinedDateTime = new Date(gameDate);
+      combinedDateTime.setHours(parseInt(hours, 10));
+      combinedDateTime.setMinutes(parseInt(minutes, 10));
+
       const { error } = await supabase
         .from('games')
         .insert([
@@ -81,7 +89,7 @@ export function GameManager() {
             round_id: selectedRound,
             home_team_id: homeTeam,
             away_team_id: awayTeam,
-            game_date: gameDate.toISOString(),
+            game_date: combinedDateTime.toISOString(),
           },
         ]);
 
@@ -94,6 +102,7 @@ export function GameManager() {
       setHomeTeam("");
       setAwayTeam("");
       setGameDate(undefined);
+      setGameTime("20:00");
     },
     onError: (error) => {
       toast({
@@ -149,27 +158,39 @@ export function GameManager() {
             </SelectContent>
           </Select>
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "justify-start text-left font-normal",
-                  !gameDate && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {gameDate ? format(gameDate, "PPP") : "Game Date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={gameDate}
-                onSelect={setGameDate}
+          <div className="grid grid-cols-2 gap-4">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "justify-start text-left font-normal",
+                    !gameDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {gameDate ? format(gameDate, "PPP") : "Game Date"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={gameDate}
+                  onSelect={setGameDate}
+                />
+              </PopoverContent>
+            </Popover>
+
+            <div className="flex items-center space-x-2">
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <Input
+                type="time"
+                value={gameTime}
+                onChange={(e) => setGameTime(e.target.value)}
+                className="w-full"
               />
-            </PopoverContent>
-          </Popover>
+            </div>
+          </div>
         </div>
         <Button onClick={() => createGame.mutate()}>Create Game</Button>
       </div>
@@ -188,7 +209,7 @@ export function GameManager() {
                   {game.home_team.name} vs {game.away_team.name}
                 </h4>
                 <p className="text-sm text-muted-foreground">
-                  {format(new Date(game.game_date), "PPP")}
+                  {format(new Date(game.game_date), "PPP p")}
                 </p>
               </div>
             </div>
