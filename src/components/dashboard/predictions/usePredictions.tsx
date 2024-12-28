@@ -45,9 +45,12 @@ export function usePredictions(followedIds: string[]) {
         throw error;
       }
 
-      // Filter out predictions for games without results
+      // Filter out predictions for games without results and ensure proper typing
       return data
-        .filter(prediction => prediction.game.game_results?.length > 0)
+        .filter(prediction => {
+          const results = prediction.game.game_results;
+          return Array.isArray(results) ? results.length > 0 : results !== null;
+        })
         .map(prediction => ({
           ...prediction,
           game: {
