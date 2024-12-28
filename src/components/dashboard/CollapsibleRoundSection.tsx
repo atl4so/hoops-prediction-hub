@@ -54,7 +54,10 @@ export function CollapsibleRoundSection({
         {visiblePredictions.map((prediction) => (
           <GameCard
             key={prediction.game.id}
-            game={prediction.game}
+            game={{
+              ...prediction.game,
+              game_results: prediction.game.game_results || []
+            }}
             isAuthenticated={true}
             userId={userId}
             prediction={{
