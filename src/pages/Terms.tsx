@@ -27,7 +27,17 @@ export default function Terms() {
     
     setIsDeleting(true);
     try {
-      // First delete all user data using the database function
+      // First, delete the auth user using the Edge Function
+      const { error: deleteAuthError } = await supabase.functions.invoke('delete-user', {
+        body: { user_id: session.user.id }
+      });
+
+      if (deleteAuthError) {
+        console.error('Error deleting auth user:', deleteAuthError);
+        throw deleteAuthError;
+      }
+
+      // Then delete all user data using the database function
       const { error: dbError } = await supabase.rpc('delete_user', {
         user_id: session.user.id
       });
@@ -35,16 +45,6 @@ export default function Terms() {
       if (dbError) {
         console.error('Error deleting user data:', dbError);
         throw dbError;
-      }
-
-      // Then delete the auth user using the Edge Function
-      const { error: deleteError } = await supabase.functions.invoke('delete-user', {
-        body: { user_id: session.user.id }
-      });
-
-      if (deleteError) {
-        console.error('Error deleting auth user:', deleteError);
-        throw deleteError;
       }
 
       // Sign out the user immediately after successful deletion
