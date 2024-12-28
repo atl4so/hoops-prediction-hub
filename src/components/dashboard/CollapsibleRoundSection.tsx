@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { GameCard } from "@/components/games/GameCard";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { RoundHeader } from "./predictions/RoundHeader";
 
 interface CollapsibleRoundSectionProps {
   roundId: string;
@@ -96,27 +96,12 @@ export function CollapsibleRoundSection({
 
   return (
     <section className="space-y-6 rounded-xl bg-background/50 p-4 sm:p-6 border border-border/50 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-border/80">
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h2 className="text-xl sm:text-2xl font-display font-semibold tracking-tight">
-            Round {roundName}
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            {predictions.length} {predictions.length === 1 ? 'game' : 'games'} in this round
-          </p>
-        </div>
-        {hasMoreGames && isExpanded && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsExpanded(false)}
-            className="hidden sm:flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors group"
-          >
-            Show Less 
-            <ChevronUp className="h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
-          </Button>
-        )}
-      </div>
+      <RoundHeader
+        roundName={roundName}
+        gamesCount={predictions.length}
+        isExpanded={isExpanded}
+        onCollapse={() => setIsExpanded(false)}
+      />
       
       {isRefreshing && (
         <div className="text-center text-sm text-muted-foreground animate-pulse">
