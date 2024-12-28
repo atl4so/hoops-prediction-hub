@@ -6,14 +6,16 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Eye } from "lucide-react";
 
 export function UserPermissions() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchEmail, setSearchEmail] = useState("");
 
-  const { data: users } = useQuery({
-    queryKey: ['users-permissions'],
+  const { data: users, isLoading } = useQuery({
+    queryKey: ['users-permissions', searchEmail],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
@@ -32,7 +34,6 @@ export function UserPermissions() {
 
   const updatePermission = useMutation({
     mutationFn: async ({ userId, canViewFuturePredictions }: { userId: string, canViewFuturePredictions: boolean }) => {
-      // Use upsert instead of insert to handle existing permissions
       const { error } = await supabase
         .from('user_permissions')
         .upsert(
@@ -72,13 +73,27 @@ export function UserPermissions() {
       </div>
 
       <div className="space-y-4">
+        {isLoading && searchEmail.length > 2 && (
+          <div className="text-center py-4 text-muted-foreground">
+            Loading users...
+          </div>
+        )}
+
         {users?.map((user) => (
           <div
             key={user.id}
-            className="flex items-center justify-between p-4 border rounded-lg"
+            className="flex items-center justify-between p-4 border rounded-lg bg-card"
           >
             <div className="space-y-1">
-              <p className="font-medium">{user.email}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-medium">{user.email}</p>
+                {user.permissions?.[0]?.can_view_future_predictions && (
+                  <Badge variant="secondary" className="flex items-center gap-1">
+                    <Eye className="h-3 w-3" />
+                    Future Predictions
+                  </Badge>
+                )}
+              </div>
               <p className="text-sm text-muted-foreground">
                 Total Points: {user.total_points || 0}
               </p>
@@ -100,6 +115,18 @@ export function UserPermissions() {
             </div>
           </div>
         ))}
+
+        {searchEmail.length > 2 && users?.length === 0 && (
+          <div className="text-center py-4 text-muted-foreground">
+            No users found matching "{searchEmail}"
+          </div>
+        )}
+
+        {searchEmail.length <= 2 && (
+          <div className="text-center py-4 text-muted-foreground">
+            Type at least 3 characters to search users
+          </div>
+        )}
       </div>
     </div>
   );
