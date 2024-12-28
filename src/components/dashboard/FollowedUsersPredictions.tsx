@@ -5,25 +5,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { PredictionCard } from "./predictions/PredictionCard";
 import { usePredictions } from "./predictions/usePredictions";
 import { useFollowedUsers } from "./predictions/useFollowedUsers";
-import { useUserPermissions } from "./predictions/useUserPermissions";
 
 export function FollowedUsersPredictions() {
-  const { data: userPermission } = useUserPermissions();
   const { data: followedIds = [] } = useFollowedUsers();
-  
-  const { 
-    data: predictions, 
-    isLoading, 
-    refetch 
-  } = usePredictions(
-    followedIds,
-    !!userPermission?.can_view_future_predictions
-  );
+  const { data: predictions, isLoading, refetch } = usePredictions(followedIds);
 
   // Subscribe to real-time updates
   useEffect(() => {
-    console.log('Setting up real-time subscriptions');
-    
     const channel = supabase
       .channel('dashboard-updates')
       .on(
@@ -34,7 +22,6 @@ export function FollowedUsersPredictions() {
           table: 'user_follows'
         },
         () => {
-          console.log('User follows updated');
           refetch();
         }
       )
@@ -46,26 +33,12 @@ export function FollowedUsersPredictions() {
           table: 'predictions'
         },
         () => {
-          console.log('Predictions updated');
-          refetch();
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'user_permissions'
-        },
-        () => {
-          console.log('User permissions updated');
           refetch();
         }
       )
       .subscribe();
 
     return () => {
-      console.log('Cleaning up subscriptions');
       supabase.removeChannel(channel);
     };
   }, [refetch]);

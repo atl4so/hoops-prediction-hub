@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RoundManager } from "@/components/admin/RoundManager";
 import { GameManager } from "@/components/admin/GameManager";
 import { TeamsList } from "@/components/admin/TeamsList";
-import { UserPermissions } from "@/components/admin/UserPermissions";
 import { GameResults } from "@/components/admin/GameResults";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -45,17 +44,16 @@ const Admin = () => {
       <section className="text-center space-y-4">
         <h1 className="text-4xl font-bold tracking-tight">Admin Dashboard</h1>
         <p className="text-muted-foreground">
-          Manage rounds, games, results, and user permissions
+          Manage rounds, games, results, and teams
         </p>
       </section>
 
       <Tabs defaultValue="rounds" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="rounds">Rounds</TabsTrigger>
           <TabsTrigger value="games">Games</TabsTrigger>
           <TabsTrigger value="results">Results</TabsTrigger>
           <TabsTrigger value="teams">Teams</TabsTrigger>
-          <TabsTrigger value="permissions">Permissions</TabsTrigger>
         </TabsList>
         <TabsContent value="rounds">
           <Card>
@@ -94,16 +92,6 @@ const Admin = () => {
             </CardHeader>
             <CardContent>
               <TeamsList />
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="permissions">
-          <Card>
-            <CardHeader>
-              <CardTitle>User Permissions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <UserPermissions />
             </CardContent>
           </Card>
         </TabsContent>
