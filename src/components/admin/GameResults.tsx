@@ -20,9 +20,27 @@ export function GameResults() {
   const [homeScore, setHomeScore] = useState<string>("");
   const [awayScore, setAwayScore] = useState<string>("");
 
-  const { data: games } = useQuery({
-    queryKey: ['games-without-results'],
+  // First, fetch all game results to get their game_ids
+  const { data: gameResults } = useQuery({
+    queryKey: ['game-results-ids'],
     queryFn: async () => {
+      const { data, error } = await supabase
+        .from('game_results')
+        .select('game_id');
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Then fetch games that don't have results
+  const { data: games } = useQuery({
+    queryKey: ['games-without-results', gameResults],
+    queryFn: async () => {
+      if (!gameResults) return [];
+      
+      const gameIdsWithResults = gameResults.map(r => r.game_id);
+      
       const { data, error } = await supabase
         .from('games')
         .select(`
@@ -31,12 +49,13 @@ export function GameResults() {
           home_team:teams!games_home_team_id_fkey(name),
           away_team:teams!games_away_team_id_fkey(name)
         `)
-        .not('id', 'in', `(select game_id from game_results)`)
+        .not('id', 'in', gameIdsWithResults)
         .order('game_date', { ascending: true });
       
       if (error) throw error;
       return data;
     },
+    enabled: !!gameResults,
   });
 
   const { data: existingResults } = useQuery({
@@ -81,6 +100,7 @@ export function GameResults() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['game-results'] });
       queryClient.invalidateQueries({ queryKey: ['games-without-results'] });
+      queryClient.invalidateQueries({ queryKey: ['game-results-ids'] });
       toast({ title: "Success", description: "Game result saved successfully" });
       setSelectedGame("");
       setHomeScore("");
