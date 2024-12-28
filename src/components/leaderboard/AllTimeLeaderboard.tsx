@@ -87,10 +87,10 @@ export function AllTimeLeaderboard() {
 }
 
 function LeaderboardRow({ player, rank, getRankIcon, onFollowChange }) {
-  const { isFollowing, currentUser } = useFollowStatus(player.id);
+  const { isFollowing, currentUser, isLoading } = useFollowStatus(player.id);
 
-  // Don't show follow button for the current user or if already following
-  const showFollowButton = currentUser && currentUser.id !== player.id && !isFollowing;
+  // Don't show follow button for the current user, if already following, or while loading
+  const showFollowButton = !isLoading && currentUser && currentUser.id !== player.id && !isFollowing;
 
   return (
     <TableRow>

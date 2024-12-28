@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export function useFollowStatus(targetUserId: string) {
   const [isFollowing, setIsFollowing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { data: currentUser } = useQuery({
     queryKey: ["currentUser"],
@@ -16,21 +17,29 @@ export function useFollowStatus(targetUserId: string) {
   // Check initial follow status
   useEffect(() => {
     const checkFollowStatus = async () => {
-      if (!currentUser) return;
-
-      const { data, error } = await supabase
-        .from("user_follows")
-        .select()
-        .eq("follower_id", currentUser.id)
-        .eq("following_id", targetUserId)
-        .maybeSingle();
-
-      if (error && error.code !== 'PGRST116') {
-        console.error("Error checking follow status:", error);
+      if (!currentUser) {
+        setIsLoading(false);
         return;
       }
 
-      setIsFollowing(!!data);
+      try {
+        const { data, error } = await supabase
+          .from("user_follows")
+          .select()
+          .eq("follower_id", currentUser.id)
+          .eq("following_id", targetUserId)
+          .maybeSingle();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error("Error checking follow status:", error);
+        }
+
+        setIsFollowing(!!data);
+      } catch (error) {
+        console.error("Error in checkFollowStatus:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     checkFollowStatus();
@@ -72,5 +81,5 @@ export function useFollowStatus(targetUserId: string) {
     };
   }, [currentUser, targetUserId]);
 
-  return { isFollowing, currentUser };
+  return { isFollowing, currentUser, isLoading };
 }
