@@ -24,9 +24,10 @@ interface RoundLeaderboardProps {
 }
 
 export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
-  const [selectedRound, setSelectedRound] = useState<string>("all");
+  const [selectedRound, setSelectedRound] = useState<string>("");
 
-  const { data: rounds } = useQuery({
+  // Fetch rounds with the latest one first
+  const { data: rounds, isLoading: isLoadingRounds } = useQuery({
     queryKey: ["rounds"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -39,10 +40,17 @@ export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
     },
   });
 
-  const { data: rankings, isLoading, refetch } = useQuery({
+  // Set the latest round as default when rounds are loaded
+  useState(() => {
+    if (rounds && rounds.length > 0 && !selectedRound) {
+      setSelectedRound(rounds[0].id);
+    }
+  });
+
+  const { data: rankings, isLoading: isLoadingRankings, refetch } = useQuery({
     queryKey: ["leaderboard", "round", selectedRound, searchQuery],
     queryFn: async () => {
-      if (!selectedRound || selectedRound === "all") return null;
+      if (!selectedRound) return null;
 
       const { data, error } = await supabase
         .rpc('get_round_rankings', {
@@ -66,8 +74,10 @@ export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
       
       return rankedData;
     },
-    enabled: !!selectedRound && selectedRound !== "all",
+    enabled: !!selectedRound,
   });
+
+  const isLoading = isLoadingRounds || isLoadingRankings;
 
   return (
     <div className="space-y-6">
@@ -76,7 +86,6 @@ export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
           <SelectValue placeholder="Select a round" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Rounds</SelectItem>
           {rounds?.map((round) => (
             <SelectItem key={round.id} value={round.id}>
               Round {round.name}
@@ -85,39 +94,37 @@ export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
         </SelectContent>
       </Select>
 
-      {selectedRound && selectedRound !== "all" && (
-        <div className="rounded-md border">
-          {isLoading ? (
-            <div className="space-y-4 p-4">
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12">Rank</TableHead>
-                  <TableHead>Player</TableHead>
-                  <TableHead className="text-right">Points</TableHead>
-                  <TableHead className="text-right">Predictions</TableHead>
-                  <TableHead className="w-28"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rankings?.map((player) => (
-                  <LeaderboardRow
-                    key={player.user_id}
-                    player={player}
-                    rank={player.rank}
-                    onFollowChange={refetch}
-                  />
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </div>
-      )}
+      <div className="rounded-md border">
+        {isLoading ? (
+          <div className="space-y-4 p-4">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-12">Rank</TableHead>
+                <TableHead>Player</TableHead>
+                <TableHead className="text-right">Points</TableHead>
+                <TableHead className="text-right">Predictions</TableHead>
+                <TableHead className="w-28"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rankings?.map((player) => (
+                <LeaderboardRow
+                  key={player.user_id}
+                  player={player}
+                  rank={player.rank}
+                  onFollowChange={refetch}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </div>
     </div>
   );
 }
