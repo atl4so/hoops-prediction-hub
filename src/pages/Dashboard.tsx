@@ -150,6 +150,7 @@ export default function Dashboard() {
                     roundId={roundData.roundId}
                     roundName={roundData.roundName}
                     predictions={roundData.predictions}
+                    userName={userProfileData?.display_name || "User"}
                   />
                 </AccordionContent>
               </AccordionItem>

@@ -1,4 +1,5 @@
 import { UserPredictionCard } from "./UserPredictionCard";
+import { DownloadPredictionsButton } from "./DownloadPredictionsButton";
 
 interface CollapsibleRoundSectionProps {
   roundId: string;
@@ -28,10 +29,13 @@ interface CollapsibleRoundSectionProps {
     } | null;
   }>;
   defaultExpanded?: boolean;
+  userName: string;
 }
 
 export function CollapsibleRoundSection({
   predictions,
+  roundName,
+  userName,
 }: CollapsibleRoundSectionProps) {
   if (!predictions?.length) {
     return null;
@@ -39,6 +43,16 @@ export function CollapsibleRoundSection({
 
   return (
     <div className="space-y-4">
+      <div className="flex justify-end mb-4">
+        <DownloadPredictionsButton
+          userName={userName}
+          roundName={roundName}
+          predictions={predictions.filter(p => p.prediction !== null).map(p => ({
+            game: p.game,
+            prediction: p.prediction!
+          }))}
+        />
+      </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {predictions.map((prediction) => (
           <UserPredictionCard
