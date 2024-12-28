@@ -21,27 +21,32 @@ const Login = () => {
 
   // Clear invalid session on component mount
   useEffect(() => {
-    const clearInvalidSession = async () => {
+    const clearSession = async () => {
       try {
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (userError?.status === 403 || (userError && userError.message?.includes('User from sub claim in JWT does not exist'))) {
-          console.log('Clearing invalid session');
-          // Clear all storage
-          localStorage.clear();
-          sessionStorage.clear();
-          // Force clear the Supabase session
-          await supabase.auth.signOut({ scope: 'global' });
-        }
-      } catch (error) {
-        console.error('Session check error:', error);
-        // If there's any error, clear everything to be safe
+        // First clear any existing session data
         localStorage.clear();
         sessionStorage.clear();
-        await supabase.auth.signOut({ scope: 'global' });
+        
+        // Force clear the Supabase session
+        try {
+          await supabase.auth.signOut({ scope: 'global' });
+        } catch (signOutError) {
+          console.log("Sign out error (expected if no session):", signOutError);
+        }
+
+        // Get current session state
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        // If somehow we still have a session, try one more time to clear it
+        if (session) {
+          await supabase.auth.signOut();
+        }
+      } catch (error) {
+        console.error('Session cleanup error:', error);
       }
     };
 
-    clearInvalidSession();
+    clearSession();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,13 +55,6 @@ const Login = () => {
     setError(null);
 
     try {
-      // First, ensure any existing session is cleared
-      try {
-        await supabase.auth.signOut({ scope: 'global' });
-      } catch (signOutError) {
-        console.log("Sign out error (expected if no session):", signOutError);
-      }
-
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: normalizeEmail(formData.email),
         password: formData.password,
