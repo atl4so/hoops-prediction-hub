@@ -17,6 +17,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!session) {
+      toast.error("Please sign in to access the dashboard");
       navigate('/login');
       return;
     }
@@ -100,6 +101,7 @@ const Dashboard = () => {
     enabled: !!userId
   });
 
+  // Don't render anything if there's no session
   if (!session) {
     return null;
   }
