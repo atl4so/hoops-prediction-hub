@@ -92,7 +92,7 @@ export function PointsBreakdownDialog({
           <AlertDialogTitle>Points Breakdown</AlertDialogTitle>
           <AlertDialogDescription className="space-y-4">
             <div className="space-y-2">
-              <p className="font-medium">Your Prediction: {prediction.prediction_home_score} - {prediction.prediction_away_score}</p>
+              <p className="font-medium">Prediction: {prediction.prediction_home_score} - {prediction.prediction_away_score}</p>
               <p className="font-medium">Final Result: {result.home_score} - {result.away_score}</p>
             </div>
 
