@@ -4,6 +4,7 @@ import { GameDateTime } from "./GameDateTime";
 import { PredictionButton } from "./PredictionButton";
 import { PredictionDialog } from "../predictions/PredictionDialog";
 import { PredictionDisplay } from "./PredictionDisplay";
+import { PointsBreakdownDialog } from "./PointsBreakdownDialog";
 import { useState } from "react";
 
 interface GameCardProps {
@@ -32,6 +33,7 @@ interface GameCardProps {
 
 export function GameCard({ game, isAuthenticated, userId, prediction }: GameCardProps) {
   const [showPredictionDialog, setShowPredictionDialog] = useState(false);
+  const [showPointsBreakdown, setShowPointsBreakdown] = useState(false);
 
   return (
     <Card className="w-full h-full flex flex-col">
@@ -52,7 +54,7 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
           </div>
 
           {prediction && (
-            <div className="mt-4 mb-2">
+            <div className="mt-4 mb-2 cursor-pointer" onClick={() => setShowPointsBreakdown(true)}>
               <PredictionDisplay
                 homeScore={prediction.prediction_home_score}
                 awayScore={prediction.prediction_away_score}
@@ -83,6 +85,18 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
         homeTeam={game.home_team}
         awayTeam={game.away_team}
       />
+
+      {prediction?.points_earned !== undefined && (
+        <PointsBreakdownDialog
+          isOpen={showPointsBreakdown}
+          onClose={() => setShowPointsBreakdown(false)}
+          prediction={prediction}
+          result={{
+            home_score: 0, // We need to get this from game_results
+            away_score: 0  // We need to get this from game_results
+          }}
+        />
+      )}
     </Card>
   );
 }

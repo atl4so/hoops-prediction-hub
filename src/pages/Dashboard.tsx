@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GameCard } from "@/components/games/GameCard";
+import { Card, CardContent } from "@/components/ui/card";
+import { Trophy, Target, TrendingUp } from "lucide-react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -21,6 +23,23 @@ const Dashboard = () => {
     
     checkAuth();
   }, [navigate]);
+
+  const { data: userProfile } = useQuery({
+    queryKey: ['userProfile', userId],
+    queryFn: async () => {
+      if (!userId) return null;
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!userId
+  });
 
   const { data: predictions, isLoading } = useQuery({
     queryKey: ['predictions', userId],
@@ -50,6 +69,10 @@ const Dashboard = () => {
             round:rounds (
               id,
               name
+            ),
+            game_results (
+              home_score,
+              away_score
             )
           )
         `)
@@ -102,6 +125,46 @@ const Dashboard = () => {
           Track your predictions and their outcomes
         </p>
       </section>
+
+      <div className="grid gap-6 md:grid-cols-3 mb-8">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-4">
+              <Trophy className="w-8 h-8 text-primary" />
+              <div>
+                <p className="text-sm text-muted-foreground">Total Points</p>
+                <p className="text-2xl font-bold">{userProfile?.total_points || 0}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-4">
+              <Target className="w-8 h-8 text-primary" />
+              <div>
+                <p className="text-sm text-muted-foreground">Points per Game</p>
+                <p className="text-2xl font-bold">
+                  {userProfile?.points_per_game?.toFixed(1) || '0.0'}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-4">
+              <TrendingUp className="w-8 h-8 text-primary" />
+              <div>
+                <p className="text-sm text-muted-foreground">Total Predictions</p>
+                <p className="text-2xl font-bold">{userProfile?.total_predictions || 0}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       <div className="space-y-12">
         {Object.entries(predictionsByRound).map(([roundId, { name, predictions }]) => (
