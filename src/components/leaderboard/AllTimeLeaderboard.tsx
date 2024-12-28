@@ -25,8 +25,7 @@ export function AllTimeLeaderboard() {
           display_name,
           total_points,
           points_per_game,
-          total_predictions,
-          user_follows!user_follows_following_id_fkey(follower_id)
+          total_predictions
         `)
         .order("total_points", { ascending: false })
         .limit(100);

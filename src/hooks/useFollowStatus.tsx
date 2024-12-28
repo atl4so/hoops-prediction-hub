@@ -20,7 +20,7 @@ export function useFollowStatus(targetUserId: string) {
 
       const { data, error } = await supabase
         .from("user_follows")
-        .select("id")
+        .select()
         .eq("follower_id", currentUser.id)
         .eq("following_id", targetUserId)
         .maybeSingle();
@@ -41,13 +41,13 @@ export function useFollowStatus(targetUserId: string) {
     if (!currentUser) return;
 
     const channel = supabase
-      .channel(`follow-status-${currentUser.id}-${targetUserId}`)
+      .channel('follow-status')
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "*",
-          schema: "public",
-          table: "user_follows",
+          event: '*',
+          schema: 'public',
+          table: 'user_follows',
           filter: `follower_id=eq.${currentUser.id}&following_id=eq.${targetUserId}`,
         },
         (payload) => {
