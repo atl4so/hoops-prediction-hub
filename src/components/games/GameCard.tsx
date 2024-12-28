@@ -1,7 +1,7 @@
 import { format, subHours } from "date-fns";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { PredictionDialog } from "@/components/predictions/PredictionDialog";
@@ -55,67 +55,60 @@ export function GameCard({ game, isAuthenticated, userId }: GameCardProps) {
 
   return (
     <>
-      <Card className="w-full bg-card/50 backdrop-blur-sm border-primary/5 hover:border-primary/10 transition-all duration-300">
-        <CardHeader className="p-4">
-          <div className="flex flex-col space-y-4">
-            {/* Round Name */}
-            <div className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
-              {game.round?.name}
-            </div>
-            
-            {/* Teams */}
-            <div className="flex items-center justify-between gap-2 relative">
-              {/* Home Team */}
-              <div className="flex items-center gap-3 flex-1">
-                <div className="relative w-12 h-12 rounded-full bg-background/80 p-2 shadow-sm">
-                  <img 
-                    src={game.home_team.logo_url} 
-                    alt={`${game.home_team.name} logo`}
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <span className="font-display text-sm sm:text-base font-semibold tracking-tight">
-                  {game.home_team.name}
-                </span>
+      <Card className="overflow-hidden bg-card/50 backdrop-blur-sm border-primary/5 hover:border-primary/10 transition-all duration-300">
+        <CardContent className="p-4 space-y-4">
+          {/* Teams Section */}
+          <div className="flex items-center justify-between gap-2">
+            {/* Home Team */}
+            <div className="flex flex-col items-center gap-2 flex-1">
+              <div className="relative w-16 h-16 rounded-full bg-background/80 p-2 shadow-sm">
+                <img 
+                  src={game.home_team.logo_url} 
+                  alt={`${game.home_team.name} logo`}
+                  className="w-full h-full object-contain"
+                />
               </div>
-
-              {/* VS Badge */}
-              <div className="px-3 py-1 rounded-full text-xs font-medium bg-primary/5 text-primary/80">
-                VS
-              </div>
-
-              {/* Away Team */}
-              <div className="flex items-center gap-3 flex-1 justify-end">
-                <span className="font-display text-sm sm:text-base font-semibold tracking-tight">
-                  {game.away_team.name}
-                </span>
-                <div className="relative w-12 h-12 rounded-full bg-background/80 p-2 shadow-sm">
-                  <img 
-                    src={game.away_team.logo_url} 
-                    alt={`${game.away_team.name} logo`}
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-              </div>
+              <span className="font-display text-sm font-semibold text-center leading-tight">
+                {game.home_team.name}
+              </span>
             </div>
 
-            {/* Date and Time */}
-            <div className="text-sm text-muted-foreground text-center">
-              {format(new Date(game.game_date), "PPP")} at{" "}
-              {format(new Date(game.game_date), "p")}
+            {/* VS Badge */}
+            <div className="px-3 py-1 rounded-full text-xs font-medium bg-primary/5 text-primary/80">
+              VS
             </div>
 
-            {/* Prediction Button */}
-            <Button 
-              onClick={handlePrediction}
-              className="w-full bg-primary/90 hover:bg-primary shadow-sm transition-all duration-300 font-medium tracking-wide"
-              disabled={!isPredictionAllowed()}
-              variant={isPredictionAllowed() ? "default" : "secondary"}
-            >
-              {isPredictionAllowed() ? "Make Prediction" : "Predictions Closed"}
-            </Button>
+            {/* Away Team */}
+            <div className="flex flex-col items-center gap-2 flex-1">
+              <div className="relative w-16 h-16 rounded-full bg-background/80 p-2 shadow-sm">
+                <img 
+                  src={game.away_team.logo_url} 
+                  alt={`${game.away_team.name} logo`}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <span className="font-display text-sm font-semibold text-center leading-tight">
+                {game.away_team.name}
+              </span>
+            </div>
           </div>
-        </CardHeader>
+
+          {/* Date and Time */}
+          <div className="text-sm text-muted-foreground text-center">
+            {format(new Date(game.game_date), "PPP")} at{" "}
+            {format(new Date(game.game_date), "p")}
+          </div>
+
+          {/* Prediction Button */}
+          <Button 
+            onClick={handlePrediction}
+            className="w-full bg-primary/90 hover:bg-primary shadow-sm transition-all duration-300 font-medium tracking-wide"
+            disabled={!isPredictionAllowed()}
+            variant={isPredictionAllowed() ? "default" : "secondary"}
+          >
+            {isPredictionAllowed() ? "Make Prediction" : "Predictions Closed"}
+          </Button>
+        </CardContent>
       </Card>
 
       {isAuthenticated && userId && (
