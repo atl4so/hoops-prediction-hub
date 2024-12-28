@@ -26,7 +26,7 @@ export function UserPredictionsDialog({
   userName,
   isOwnPredictions = false,
 }: UserPredictionsDialogProps) {
-  const [selectedRound, setSelectedRound] = useState<string>("all");
+  const [selectedRound, setSelectedRound] = useState<string>("");
   const queryClient = useQueryClient();
 
   useEffect(() => {

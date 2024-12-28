@@ -56,7 +56,9 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
             ...prediction.game,
             game_results: Array.isArray(prediction.game.game_results) 
               ? prediction.game.game_results 
-              : [prediction.game.game_results].filter(Boolean)
+              : prediction.game.game_results 
+                ? [prediction.game.game_results]
+                : []
           },
           prediction: {
             prediction_home_score: prediction.prediction_home_score,
