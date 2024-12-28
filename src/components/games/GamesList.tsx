@@ -61,7 +61,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
           home_team:teams!games_home_team_id_fkey(id, name, logo_url),
           away_team:teams!games_away_team_id_fkey(id, name, logo_url),
           round:rounds(id, name),
-          game_results (
+          game_results!game_results_game_id_fkey(
             home_score,
             away_score,
             is_final
@@ -74,8 +74,11 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
         throw error;
       }
       
-      console.log("Fetched games:", data);
-      return data;
+      // Transform the data to ensure game_results is always an array
+      return data.map(game => ({
+        ...game,
+        game_results: game.game_results ? (Array.isArray(game.game_results) ? game.game_results : [game.game_results]) : []
+      }));
     },
   });
 
@@ -96,17 +99,16 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     );
   }
 
-  // Filter games to only show upcoming games where predictions are still allowed
+  // Filter games to show only those that are available for predictions
   const now = new Date();
   const availableGames = games?.filter(game => {
     const gameDate = new Date(game.game_date);
     const predictionDeadline = subHours(gameDate, 1);
     
     // Show games that:
-    // 1. Don't have results yet OR have results but they're not final
+    // 1. Either have no results OR have results but they're not final
     // 2. AND current time is before prediction deadline
-    const hasNoFinalResult = !game.game_results?.length || 
-                           (game.game_results.length > 0 && !game.game_results[0]?.is_final);
+    const hasNoFinalResult = game.game_results.length === 0 || !game.game_results[0]?.is_final;
     const isBeforeDeadline = now < predictionDeadline;
     
     console.log(`Game ${game.id}:`, {
@@ -165,7 +167,10 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
           roundName={round.name}
           predictions={round.games.map(game => ({
             id: game.id,
-            game,
+            game: {
+              ...game,
+              game_results: game.game_results
+            },
             prediction: null
           }))}
           userName={session?.user?.email || "User"}
