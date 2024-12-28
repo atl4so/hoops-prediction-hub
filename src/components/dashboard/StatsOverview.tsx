@@ -4,6 +4,15 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface StatsOverviewProps {
   totalPoints: number;
@@ -15,6 +24,7 @@ interface StatsOverviewProps {
   lowestRoundPoints?: number | null;
   allTimeRank?: number | null;
   currentRoundRank?: number | null;
+  userId: string;
 }
 
 export function StatsOverview({ 
@@ -26,10 +36,37 @@ export function StatsOverview({
   highestRoundPoints,
   lowestRoundPoints,
   allTimeRank,
-  currentRoundRank
+  currentRoundRank,
+  userId
 }: StatsOverviewProps) {
   const [showAllCards, setShowAllCards] = useState(false);
+  const [selectedRound, setSelectedRound] = useState<string>("");
   const isMobile = useIsMobile();
+
+  const { data: rounds } = useQuery({
+    queryKey: ["rounds"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("rounds")
+        .select("*")
+        .order("start_date", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: roundPoints } = useQuery({
+    queryKey: ["roundPoints", selectedRound, userId],
+    queryFn: async () => {
+      if (!selectedRound) return null;
+      const { data, error } = await supabase
+        .rpc("get_round_rankings", { round_id: selectedRound })
+        .single();
+      if (error) return null;
+      return data?.total_points || 0;
+    },
+    enabled: !!selectedRound && !!userId,
+  });
 
   const formatRank = (rank: number | null | undefined) => {
     if (!rank) return "-";
@@ -55,9 +92,9 @@ export function StatsOverview({
     },
     {
       icon: Medal,
-      label: "Current Round Rank",
+      label: "Latest Round Rank",
       value: formatRank(currentRoundRank),
-      description: "Your current position in this round's leaderboard",
+      description: "Your current position in latest round's leaderboard",
       highlight: true,
     },
     {
@@ -115,6 +152,29 @@ export function StatsOverview({
             highlight={stat.highlight}
           />
         ))}
+      </div>
+      
+      <div className="mt-6">
+        <h3 className="text-lg font-semibold mb-2">Round Points</h3>
+        <div className="flex gap-4 items-center">
+          <Select value={selectedRound} onValueChange={setSelectedRound}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Select a round" />
+            </SelectTrigger>
+            <SelectContent>
+              {rounds?.map((round) => (
+                <SelectItem key={round.id} value={round.id}>
+                  Round {round.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {selectedRound && (
+            <div className="text-lg">
+              Points: <span className="font-semibold">{roundPoints || 0}</span>
+            </div>
+          )}
+        </div>
       </div>
       
       {isMobile && (

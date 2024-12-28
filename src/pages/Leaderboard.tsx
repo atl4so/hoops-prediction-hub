@@ -1,6 +1,10 @@
 import { LeaderboardTabs } from "@/components/leaderboard/LeaderboardTabs";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 export default function Leaderboard() {
+  const [searchQuery, setSearchQuery] = useState("");
+
   return (
     <div className="space-y-8">
       <section className="text-center space-y-4">
@@ -10,7 +14,17 @@ export default function Leaderboard() {
         </p>
       </section>
 
-      <LeaderboardTabs />
+      <div className="max-w-sm mx-auto mb-8">
+        <Input
+          type="search"
+          placeholder="Search users by name..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full"
+        />
+      </div>
+
+      <LeaderboardTabs searchQuery={searchQuery} />
     </div>
   );
 }

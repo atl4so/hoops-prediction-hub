@@ -133,6 +133,7 @@ export default function Dashboard() {
         lowestRoundPoints={userProfileData?.lowest_round_points}
         allTimeRank={userProfileData?.allTimeRank}
         currentRoundRank={currentRoundRank}
+        userId={userId}
       />
 
       <FollowingSection />
