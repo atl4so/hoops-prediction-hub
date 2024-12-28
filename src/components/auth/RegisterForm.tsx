@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { validateEmail, normalizeEmail } from "@/utils/validation";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -40,24 +39,30 @@ export function RegisterForm() {
       return false;
     }
     
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('display_name', displayName)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('display_name', displayName)
+        .maybeSingle();
 
-    if (error && error.code !== 'PGRST116') {
+      if (error) {
+        console.error('Error checking display name:', error);
+        return false;
+      }
+
+      if (data) {
+        setDisplayNameError("This display name is already taken");
+        return false;
+      }
+
+      setDisplayNameError(null);
+      return true;
+    } catch (error) {
       console.error('Error checking display name:', error);
+      setDisplayNameError("Error checking display name availability");
       return false;
     }
-
-    if (data) {
-      setDisplayNameError("This display name is already taken");
-      return false;
-    }
-
-    setDisplayNameError(null);
-    return true;
   };
 
   const handleDisplayNameChange = async (displayName: string) => {
