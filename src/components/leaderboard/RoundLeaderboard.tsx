@@ -21,14 +21,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FollowButton } from "@/components/users/FollowButton";
 import { useFollowStatus } from "@/hooks/useFollowStatus";
 
-type RoundRanking = {
-  user_id: string;
-  display_name: string;
-  total_points: number;
-  predictions_count: number;
-};
+interface RoundLeaderboardProps {
+  searchQuery: string;
+}
 
-export function RoundLeaderboard() {
+export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
   const [selectedRound, setSelectedRound] = useState<string>("all");
 
   const { data: rounds } = useQuery({
@@ -45,7 +42,7 @@ export function RoundLeaderboard() {
   });
 
   const { data: rankings, isLoading, refetch } = useQuery({
-    queryKey: ["leaderboard", "round", selectedRound],
+    queryKey: ["leaderboard", "round", selectedRound, searchQuery],
     queryFn: async () => {
       if (!selectedRound || selectedRound === "all") return null;
 
@@ -55,7 +52,15 @@ export function RoundLeaderboard() {
         });
 
       if (error) throw error;
-      return data as RoundRanking[];
+      
+      // Filter results based on search query if provided
+      if (searchQuery) {
+        return data.filter(player => 
+          player.display_name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+      
+      return data;
     },
     enabled: !!selectedRound && selectedRound !== "all",
   });

@@ -13,9 +13,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FollowButton } from "@/components/users/FollowButton";
 import { useFollowStatus } from "@/hooks/useFollowStatus";
 
-export function AllTimeLeaderboard() {
+interface AllTimeLeaderboardProps {
+  searchQuery: string;
+}
+
+export function AllTimeLeaderboard({ searchQuery }: AllTimeLeaderboardProps) {
   const { data: rankings, isLoading, refetch } = useQuery({
-    queryKey: ["leaderboard", "all-time"],
+    queryKey: ["leaderboard", "all-time", searchQuery],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
@@ -26,6 +30,7 @@ export function AllTimeLeaderboard() {
           points_per_game,
           total_predictions
         `)
+        .ilike('display_name', `%${searchQuery}%`)
         .order("total_points", { ascending: false })
         .limit(100);
 
