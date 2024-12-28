@@ -27,62 +27,24 @@ export default function Terms() {
     
     setIsDeleting(true);
     try {
-      // Delete user predictions
-      const { error: predictionsError } = await supabase
-        .from('predictions')
-        .delete()
-        .eq('user_id', session.user.id);
+      // First delete all user data using the database function
+      const { error: dbError } = await supabase.rpc('delete_user', {
+        user_id: session.user.id
+      });
 
-      if (predictionsError) {
-        console.error('Error deleting predictions:', predictionsError);
-        throw predictionsError;
+      if (dbError) {
+        console.error('Error deleting user data:', dbError);
+        throw dbError;
       }
 
-      // Delete user follows
-      const { error: followsError } = await supabase
-        .from('user_follows')
-        .delete()
-        .or(`follower_id.eq.${session.user.id},following_id.eq.${session.user.id}`);
-
-      if (followsError) {
-        console.error('Error deleting follows:', followsError);
-        throw followsError;
-      }
-
-      // Delete user permissions
-      const { error: permissionsError } = await supabase
-        .from('user_permissions')
-        .delete()
-        .eq('user_id', session.user.id);
-
-      if (permissionsError) {
-        console.error('Error deleting permissions:', permissionsError);
-        throw permissionsError;
-      }
-
-      // Delete user profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('id', session.user.id);
-
-      if (profileError) {
-        console.error('Error deleting profile:', profileError);
-        throw profileError;
-      }
-
-      // Delete the auth user
-      const { error: deleteError } = await supabase.auth.admin.deleteUser(
-        session.user.id
-      );
+      // Then delete the auth user using the Edge Function
+      const { error: deleteError } = await supabase.functions.invoke('delete-user', {
+        body: { user_id: session.user.id }
+      });
 
       if (deleteError) {
-        // If we can't delete the user, at least sign them out
-        const { error: signOutError } = await supabase.auth.signOut();
-        if (signOutError) {
-          console.error('Error signing out:', signOutError);
-          throw signOutError;
-        }
+        console.error('Error deleting auth user:', deleteError);
+        throw deleteError;
       }
 
       toast.success("Your account has been deleted successfully");

@@ -329,6 +329,12 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      delete_user: {
+        Args: {
+          user_id: string
+        }
+        Returns: undefined
+      }
       get_round_rankings: {
         Args: {
           round_id: string
