@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { GameCard } from "@/components/games/GameCard";
+import { AdminGameCard } from "./AdminGameCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Trash, Pencil } from "lucide-react";
+import { Trash } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { format } from "date-fns";
@@ -204,28 +204,13 @@ export function GamesList() {
             </h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {games.map((game) => (
-                <div key={game.id} className="relative">
-                  <div className="absolute top-2 right-2 z-10 flex gap-2">
-                    <Button
-                      variant="secondary"
-                      size="icon"
-                      onClick={() => handleEdit(game)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant={selectedGames.includes(game.id) ? "default" : "secondary"}
-                      size="icon"
-                      onClick={() => toggleGameSelection(game.id)}
-                    >
-                      <Trash className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <GameCard 
-                    game={game} 
-                    isAuthenticated={true}
-                  />
-                </div>
+                <AdminGameCard
+                  key={game.id}
+                  game={game}
+                  onEdit={handleEdit}
+                  onDelete={toggleGameSelection}
+                  isSelected={selectedGames.includes(game.id)}
+                />
               ))}
             </div>
           </section>

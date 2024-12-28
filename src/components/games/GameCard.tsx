@@ -1,11 +1,9 @@
-import { format } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { TeamDisplay } from "./TeamDisplay";
 import { GameDateTime } from "./GameDateTime";
 import { PredictionButton } from "./PredictionButton";
 import { PredictionDialog } from "../predictions/PredictionDialog";
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
 
 interface GameCardProps {
   game: {
@@ -33,8 +31,6 @@ interface GameCardProps {
 
 export function GameCard({ game, isAuthenticated, userId, prediction }: GameCardProps) {
   const [showPredictionDialog, setShowPredictionDialog] = useState(false);
-  const location = useLocation();
-  const isAdminPage = location.pathname === '/admin';
 
   return (
     <Card className="w-full">
@@ -54,31 +50,28 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
             />
           </div>
 
-          {!isAdminPage && (
-            <div className="mt-4">
-              <PredictionButton
-                isAuthenticated={isAuthenticated}
-                gameDate={game.game_date}
-                onPrediction={() => setShowPredictionDialog(true)}
-                gameId={game.id}
-                userId={userId}
-              />
-            </div>
-          )}
+          <div className="mt-4">
+            <PredictionButton
+              isAuthenticated={isAuthenticated}
+              gameDate={game.game_date}
+              onPrediction={() => setShowPredictionDialog(true)}
+              gameId={game.id}
+              userId={userId}
+              prediction={prediction}
+            />
+          </div>
         </div>
       </CardContent>
 
-      {!isAdminPage && (
-        <PredictionDialog
-          isOpen={showPredictionDialog}
-          onClose={() => setShowPredictionDialog(false)}
-          gameId={game.id}
-          userId={userId}
-          gameDate={game.game_date}
-          homeTeam={game.home_team}
-          awayTeam={game.away_team}
-        />
-      )}
+      <PredictionDialog
+        isOpen={showPredictionDialog}
+        onOpenChange={setShowPredictionDialog}
+        gameId={game.id}
+        userId={userId}
+        gameDate={game.game_date}
+        homeTeam={game.home_team}
+        awayTeam={game.away_team}
+      />
     </Card>
   );
 }
