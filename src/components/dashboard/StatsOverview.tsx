@@ -3,6 +3,7 @@ import { StatCard } from "./StatCard";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface StatsOverviewProps {
   totalPoints: number;
@@ -28,6 +29,7 @@ export function StatsOverview({
   currentRoundRank
 }: StatsOverviewProps) {
   const [showAllCards, setShowAllCards] = useState(false);
+  const isMobile = useIsMobile();
 
   const formatRank = (rank: number | null | undefined) => {
     if (!rank) return "-";
@@ -96,11 +98,13 @@ export function StatsOverview({
     }
   ];
 
-  const visibleStats = showAllCards ? allStats : allStats.slice(0, 2);
+  const visibleStats = isMobile 
+    ? (showAllCards ? allStats : allStats.slice(0, 2))
+    : allStats;
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-3 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-4">
+      <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 sm:gap-4">
         {visibleStats.map((stat, index) => (
           <StatCard
             key={stat.label}
@@ -113,19 +117,20 @@ export function StatsOverview({
         ))}
       </div>
       
-      <div className={cn(
-        "flex justify-center transition-opacity duration-200",
-        "sm:hidden", // Only show on mobile
-        showAllCards ? "mt-4" : "mt-2"
-      )}>
-        <Button 
-          variant="outline" 
-          onClick={() => setShowAllCards(!showAllCards)}
-          className="w-full max-w-xs"
-        >
-          {showAllCards ? "Show Less" : "Show More Stats"}
-        </Button>
-      </div>
+      {isMobile && (
+        <div className={cn(
+          "flex justify-center transition-opacity duration-200",
+          showAllCards ? "mt-4" : "mt-2"
+        )}>
+          <Button 
+            variant="outline" 
+            onClick={() => setShowAllCards(!showAllCards)}
+            className="w-full max-w-xs"
+          >
+            {showAllCards ? "Show Less" : "Show More Stats"}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

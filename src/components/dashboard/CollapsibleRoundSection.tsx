@@ -21,12 +21,13 @@ export function CollapsibleRoundSection({
   const [isExpanded, setIsExpanded] = useState(false);
   const isMobile = useIsMobile();
   
-  const visiblePredictions = isMobile && !isExpanded 
-    ? predictions.slice(0, 2) 
-    : predictions;
+  const defaultVisibleCount = isMobile ? 2 : 3;
+  const visiblePredictions = isExpanded 
+    ? predictions 
+    : predictions.slice(0, defaultVisibleCount);
 
-  const hasMoreGames = isMobile && predictions.length > 2;
-  const remainingGamesCount = predictions.length - 2;
+  const hasMoreGames = predictions.length > defaultVisibleCount;
+  const remainingGamesCount = predictions.length - defaultVisibleCount;
 
   return (
     <section className="space-y-6">
@@ -34,22 +35,14 @@ export function CollapsibleRoundSection({
         <h2 className="text-2xl font-display font-semibold tracking-tight">
           Round {roundName}
         </h2>
-        {hasMoreGames && (
+        {hasMoreGames && isExpanded && (
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setIsExpanded(!isExpanded)}
+            onClick={() => setIsExpanded(false)}
             className="flex items-center gap-1 text-muted-foreground hover:text-primary"
           >
-            {isExpanded ? (
-              <>
-                Show Less <ChevronUp className="h-4 w-4" />
-              </>
-            ) : (
-              <>
-                Show More <ChevronDown className="h-4 w-4" />
-              </>
-            )}
+            Show Less <ChevronUp className="h-4 w-4" />
           </Button>
         )}
       </div>
