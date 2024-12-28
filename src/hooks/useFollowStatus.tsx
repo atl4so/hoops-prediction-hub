@@ -23,9 +23,9 @@ export function useFollowStatus(targetUserId: string) {
         .select()
         .eq("follower_id", currentUser.id)
         .eq("following_id", targetUserId)
-        .maybeSingle();
+        .single();
 
-      if (error) {
+      if (error && error.code !== 'PGRST116') {
         console.error("Error checking follow status:", error);
         return;
       }
@@ -41,7 +41,7 @@ export function useFollowStatus(targetUserId: string) {
     if (!currentUser) return;
 
     const channel = supabase
-      .channel('follow-status')
+      .channel(`follow-status-${targetUserId}`)
       .on(
         'postgres_changes',
         {
