@@ -28,8 +28,11 @@ export function GameResultsList() {
         `)
         .order('created_at', { ascending: false });
       
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error('Error fetching game results:', error);
+        throw error;
+      }
+      return data || [];
     },
   });
 
@@ -44,15 +47,16 @@ export function GameResultsList() {
         .update({
           home_score: parseInt(homeScore),
           away_score: parseInt(awayScore),
-          // Force trigger update by touching updated_at
           updated_at: new Date().toISOString(),
         })
         .eq('id', editingResult.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating game result:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
-      // Invalidate all affected queries
       queryClient.invalidateQueries({ queryKey: ['game-results'] });
       queryClient.invalidateQueries({ queryKey: ['predictions'] });
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
@@ -68,6 +72,7 @@ export function GameResultsList() {
       setAwayScore("");
     },
     onError: (error) => {
+      console.error('Mutation error:', error);
       toast({
         title: "Error",
         description: error.message,
@@ -93,6 +98,11 @@ export function GameResultsList() {
             onEdit={handleEdit}
           />
         ))}
+        {(!existingResults || existingResults.length === 0) && (
+          <p className="text-muted-foreground text-center py-4">
+            No game results found
+          </p>
+        )}
       </div>
 
       <EditGameResultDialog
