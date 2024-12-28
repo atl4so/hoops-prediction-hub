@@ -11,6 +11,7 @@ import { RegisterForm } from "./components/auth/RegisterForm";
 import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import Leaderboard from "./pages/Leaderboard";
+import Predictions from "./pages/Predictions";
 import { supabase } from "./integrations/supabase/client";
 
 const queryClient = new QueryClient({
@@ -38,6 +39,7 @@ const App = () => {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route path="/predictions" element={<Predictions />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </MainLayout>

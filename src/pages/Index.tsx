@@ -3,18 +3,24 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { GamesList } from "@/components/games/GamesList";
 import { useQuery } from "@tanstack/react-query";
 import { Trophy, Users, CheckSquare } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useSession } from "@supabase/auth-helpers-react";
 
 const Index = () => {
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userId, setUserId] = useState<string | undefined>();
+  const session = useSession();
   const [isAnimationComplete, setIsAnimationComplete] = useState(false);
   const isMobile = useIsMobile();
   const titleText = "euroleague.bet";
+
+  // Redirect authenticated users to predictions page
+  useEffect(() => {
+    if (session) {
+      navigate('/predictions');
+    }
+  }, [session, navigate]);
 
   // Fetch statistics
   const { data: stats } = useQuery({
@@ -28,22 +34,6 @@ const Index = () => {
       return { usersCount, predictionsCount };
     },
   });
-
-  useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsAuthenticated(!!session);
-      setUserId(session?.user?.id);
-    });
-
-    const timer = setTimeout(() => {
-      setIsAnimationComplete(true);
-    }, 2000);
-
-    return () => {
-      authListener.subscription.unsubscribe();
-      clearTimeout(timer);
-    };
-  }, []);
 
   return (
     <div className="min-h-[80vh] flex flex-col items-center space-y-8 animate-fade-in relative overflow-hidden">
@@ -70,7 +60,7 @@ const Index = () => {
           Join the ultimate Euroleague basketball prediction community. Test your knowledge, compete with friends, and climb the leaderboard!
         </p>
         
-        {!isAuthenticated && (
+        {!session && (
           <div className="flex gap-4 justify-center mt-8 opacity-0 animate-[fade-in_0.5s_ease-out_2.5s_forwards]">
             <Button
               onClick={() => navigate("/login")}
@@ -110,11 +100,6 @@ const Index = () => {
             <p className="text-sm text-muted-foreground">Max Points Per Game</p>
           </Card>
         </div>
-      </div>
-
-      <div className="w-full max-w-7xl px-4 mt-8">
-        <h2 className="text-2xl font-bold mb-6">Upcoming Games</h2>
-        <GamesList isAuthenticated={isAuthenticated} userId={userId} />
       </div>
 
       <div className="w-full max-w-3xl px-4 py-12 text-center">
