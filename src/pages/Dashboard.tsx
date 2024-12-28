@@ -7,25 +7,23 @@ import { StatsOverview } from "@/components/dashboard/StatsOverview";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { FollowingSection } from "@/components/dashboard/FollowingSection";
 import { CollapsibleRoundSection } from "@/components/dashboard/CollapsibleRoundSection";
+import { useSession } from "@supabase/auth-helpers-react";
+import { toast } from "sonner";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const session = useSession();
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate('/login');
-      } else {
-        setUserId(session.user.id);
-      }
-    };
-    
-    checkAuth();
-  }, [navigate]);
+    if (!session) {
+      navigate('/login');
+      return;
+    }
+    setUserId(session.user.id);
+  }, [session, navigate]);
 
-  const { data: userProfile } = useQuery({
+  const { data: userProfile, isError: profileError } = useQuery({
     queryKey: ['userProfile', userId],
     queryFn: async () => {
       if (!userId) return null;
@@ -36,51 +34,11 @@ const Dashboard = () => {
         .eq('id', userId)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        toast.error("Failed to load profile");
+        throw error;
+      }
       return data;
-    },
-    enabled: !!userId
-  });
-
-  // Fetch all-time rank
-  const { data: allTimeRank } = useQuery({
-    queryKey: ['allTimeRank', userId],
-    queryFn: async () => {
-      if (!userId) return null;
-      
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id')
-        .gt('total_points', userProfile?.total_points || 0);
-
-      if (error) throw error;
-      return data.length + 1;
-    },
-    enabled: !!userId && !!userProfile
-  });
-
-  // Fetch current round rank
-  const { data: currentRoundRank } = useQuery({
-    queryKey: ['currentRoundRank', userId],
-    queryFn: async () => {
-      if (!userId) return null;
-      
-      const { data: rounds, error: roundError } = await supabase
-        .from('rounds')
-        .select('id')
-        .order('start_date', { ascending: false })
-        .limit(1);
-
-      if (roundError) throw roundError;
-      if (!rounds?.length) return null;
-
-      const { data, error } = await supabase
-        .rpc('get_round_rankings', { round_id: rounds[0].id });
-
-      if (error) throw error;
-
-      const userRank = data.findIndex(user => user.user_id === userId) + 1;
-      return userRank || null;
     },
     enabled: !!userId
   });
@@ -124,7 +82,10 @@ const Dashboard = () => {
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        toast.error("Failed to load predictions");
+        throw error;
+      }
 
       return data.map(prediction => ({
         ...prediction,
@@ -138,6 +99,10 @@ const Dashboard = () => {
     },
     enabled: !!userId
   });
+
+  if (!session) {
+    return null;
+  }
 
   if (isLoading) {
     return (
@@ -186,8 +151,6 @@ const Dashboard = () => {
         lowestGamePoints={userProfile?.lowest_game_points}
         highestRoundPoints={userProfile?.highest_round_points}
         lowestRoundPoints={userProfile?.lowest_round_points}
-        allTimeRank={allTimeRank}
-        currentRoundRank={currentRoundRank}
       />
 
       <FollowingSection />
