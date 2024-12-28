@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
@@ -14,23 +13,40 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface PredictionDialogProps {
-  game: {
-    id: string;
-    home_team: { name: string };
-    away_team: { name: string };
-    game_date: string;
-  };
   isOpen: boolean;
   onClose: () => void;
-  userId: string;
+  gameId: string;
+  userId?: string;
+  gameDate: string;
+  homeTeam: {
+    id: string;
+    name: string;
+    logo_url: string;
+  };
+  awayTeam: {
+    id: string;
+    name: string;
+    logo_url: string;
+  };
 }
 
-export function PredictionDialog({ game, isOpen, onClose, userId }: PredictionDialogProps) {
+export function PredictionDialog({ 
+  isOpen, 
+  onClose, 
+  gameId, 
+  userId, 
+  gameDate,
+  homeTeam,
+  awayTeam 
+}: PredictionDialogProps) {
   const [homeScore, setHomeScore] = useState("");
   const [awayScore, setAwayScore] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
+
+  if (!homeTeam || !awayTeam) {
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +79,7 @@ export function PredictionDialog({ game, isOpen, onClose, userId }: PredictionDi
       .from("predictions")
       .select("id")
       .eq("user_id", userId)
-      .eq("game_id", game.id)
+      .eq("game_id", gameId)
       .maybeSingle();
 
     if (existingPrediction) {
@@ -82,7 +98,7 @@ export function PredictionDialog({ game, isOpen, onClose, userId }: PredictionDi
       .from("predictions")
       .insert({
         user_id: userId,
-        game_id: game.id,
+        game_id: gameId,
         prediction_home_score: homeScoreNum,
         prediction_away_score: awayScoreNum,
       });
@@ -111,13 +127,13 @@ export function PredictionDialog({ game, isOpen, onClose, userId }: PredictionDi
         <DialogHeader>
           <DialogTitle>Make Prediction</DialogTitle>
           <DialogDescription>
-            {game.home_team.name} vs {game.away_team.name}
+            {homeTeam.name} vs {awayTeam.name}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6 py-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="homeScore">{game.home_team.name}</Label>
+              <Label htmlFor="homeScore">{homeTeam.name}</Label>
               <Input
                 id="homeScore"
                 type="number"
@@ -128,7 +144,7 @@ export function PredictionDialog({ game, isOpen, onClose, userId }: PredictionDi
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="awayScore">{game.away_team.name}</Label>
+              <Label htmlFor="awayScore">{awayTeam.name}</Label>
               <Input
                 id="awayScore"
                 type="number"

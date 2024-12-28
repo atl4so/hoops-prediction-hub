@@ -63,15 +63,17 @@ export function GameCard({ game, isAuthenticated, userId }: GameCardProps) {
         </div>
       </CardContent>
 
-      <PredictionDialog
-        open={showPredictionDialog}
-        onOpenChange={setShowPredictionDialog}
-        gameId={game.id}
-        userId={userId}
-        gameDate={game.game_date}
-        homeTeam={game.home_team}
-        awayTeam={game.away_team}
-      />
+      {!isAdminPage && (
+        <PredictionDialog
+          isOpen={showPredictionDialog}
+          onClose={() => setShowPredictionDialog(false)}
+          gameId={game.id}
+          userId={userId}
+          gameDate={game.game_date}
+          homeTeam={game.home_team}
+          awayTeam={game.away_team}
+        />
+      )}
     </Card>
   );
 }

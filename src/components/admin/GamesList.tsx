@@ -30,8 +30,8 @@ export function GamesList() {
         .select(`
           id,
           game_date,
-          home_team:teams!games_home_team_id_fkey(name, logo_url),
-          away_team:teams!games_away_team_id_fkey(name, logo_url),
+          home_team:teams!games_home_team_id_fkey(id, name, logo_url),
+          away_team:teams!games_away_team_id_fkey(id, name, logo_url),
           round:rounds(id, name)
         `)
         .order('game_date', { ascending: true });
