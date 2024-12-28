@@ -39,17 +39,18 @@ export function RegisterForm() {
         console.log("Sign out error (expected if no session):", signOutError);
       }
 
-      // Validate email and display name
-      const emailError = await validateRegistrationEmail(formData.email);
-      if (emailError) {
-        setError(emailError);
+      // Validate display name first since it's mandatory
+      const displayNameError = await validateDisplayName(formData.displayName);
+      if (displayNameError) {
+        setError(displayNameError);
         setIsLoading(false);
         return;
       }
 
-      const displayNameError = await validateDisplayName(formData.displayName);
-      if (displayNameError) {
-        setError(displayNameError);
+      // Then validate email
+      const emailError = await validateRegistrationEmail(formData.email);
+      if (emailError) {
+        setError(emailError);
         setIsLoading(false);
         return;
       }
@@ -60,7 +61,7 @@ export function RegisterForm() {
         password: formData.password,
         options: {
           data: {
-            display_name: formData.displayName,
+            display_name: formData.displayName.trim(),
           },
         },
       });
@@ -78,7 +79,7 @@ export function RegisterForm() {
           .insert({
             id: signUpData.user.id,
             email: normalizeEmail(formData.email),
-            display_name: formData.displayName,
+            display_name: formData.displayName.trim(),
           });
 
         if (profileError) {
@@ -120,20 +121,6 @@ export function RegisterForm() {
           )}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={(e) => {
-                  setError(null);
-                  setFormData({ ...formData, email: e.target.value });
-                }}
-                required
-              />
-            </div>
-            <div className="space-y-2">
               <Label htmlFor="displayName">Display Name</Label>
               <Input
                 id="displayName"
@@ -143,6 +130,20 @@ export function RegisterForm() {
                 onChange={(e) => {
                   setError(null);
                   setFormData({ ...formData, displayName: e.target.value });
+                }}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={formData.email}
+                onChange={(e) => {
+                  setError(null);
+                  setFormData({ ...formData, email: e.target.value });
                 }}
                 required
               />

@@ -1,16 +1,15 @@
-import { useState } from "react";
 import { validateEmail } from "@/utils/validation";
 import { supabase } from "@/integrations/supabase/client";
 
 export const useRegistrationValidation = () => {
-  const [emailError, setEmailError] = useState<string | null>(null);
-  const [displayNameError, setDisplayNameError] = useState<string | null>(null);
-
   const validateDisplayName = async (displayName: string): Promise<string | null> => {
-    if (!displayName) {
+    // Check if display name is empty or only whitespace
+    if (!displayName || displayName.trim() === '') {
       return "Display name is required";
     }
-    if (displayName.length < 3) {
+
+    // Check minimum length after trimming
+    if (displayName.trim().length < 3) {
       return "Display name must be at least 3 characters long";
     }
     
@@ -18,7 +17,7 @@ export const useRegistrationValidation = () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('id')
-        .eq('display_name', displayName)
+        .ilike('display_name', displayName.trim())
         .maybeSingle();
 
       if (error) {
@@ -67,11 +66,7 @@ export const useRegistrationValidation = () => {
   };
 
   return {
-    emailError,
-    displayNameError,
     validateDisplayName,
     validateRegistrationEmail,
-    setEmailError,
-    setDisplayNameError,
   };
 };
