@@ -38,8 +38,10 @@ export function CollapsibleRoundSection({
   const hasMoreGames = predictions.length > defaultVisibleCount;
   const remainingGamesCount = predictions.length - defaultVisibleCount;
 
-  // Handle pull to refresh
+  // Handle pull to refresh (mobile only)
   useEffect(() => {
+    if (!isMobile) return;
+
     const handleTouchStart = (e: TouchEvent) => {
       const scrollTop = document.documentElement.scrollTop;
       if (scrollTop <= 0) {
@@ -71,7 +73,7 @@ export function CollapsibleRoundSection({
       document.removeEventListener('touchstart', handleTouchStart);
       document.removeEventListener('touchmove', handleTouchMove);
     };
-  }, [refreshStartY, isRefreshing, onRefresh]);
+  }, [refreshStartY, isRefreshing, onRefresh, isMobile]);
 
   // Subscribe to real-time updates
   useEffect(() => {
@@ -137,7 +139,7 @@ export function CollapsibleRoundSection({
         ))}
       </div>
       
-      {hasMoreGames && !isExpanded && (
+      {hasMoreGames && !isExpanded && !isMobile && (
         <button
           onClick={() => setIsExpanded(true)}
           className="w-full py-3 mt-2 rounded-lg border border-border/50 bg-accent/50 text-sm text-center text-muted-foreground hover:text-primary hover:bg-accent transition-colors group flex items-center justify-center gap-2"
