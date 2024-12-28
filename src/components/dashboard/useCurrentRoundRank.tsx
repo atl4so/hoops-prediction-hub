@@ -23,10 +23,15 @@ export function useCurrentRoundRank(userId: string | null) {
       if (!currentRound) return null;
 
       // Get rankings for the current round
-      const { data: roundRankings } = await supabase
+      const { data: roundRankings, error } = await supabase
         .rpc('get_round_rankings', {
           round_id: currentRound.id
         });
+
+      if (error) {
+        console.error('Error fetching round rankings:', error);
+        return null;
+      }
 
       if (!roundRankings) return null;
 
