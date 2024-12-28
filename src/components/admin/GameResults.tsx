@@ -37,10 +37,6 @@ export function GameResults() {
   const { data: games } = useQuery({
     queryKey: ['games-without-results', gameResults],
     queryFn: async () => {
-      if (!gameResults) return [];
-      
-      const gameIdsWithResults = gameResults.map(r => r.game_id);
-      
       const { data, error } = await supabase
         .from('games')
         .select(`
@@ -49,13 +45,15 @@ export function GameResults() {
           home_team:teams!games_home_team_id_fkey(name),
           away_team:teams!games_away_team_id_fkey(name)
         `)
-        .not('id', 'in', gameIdsWithResults)
         .order('game_date', { ascending: true });
       
       if (error) throw error;
-      return data;
+
+      // Filter out games that already have results
+      const gameIdsWithResults = new Set(gameResults?.map(r => r.game_id) || []);
+      return data.filter(game => !gameIdsWithResults.has(game.id));
     },
-    enabled: !!gameResults,
+    enabled: true, // Always enabled, we'll filter in memory
   });
 
   const { data: existingResults } = useQuery({
