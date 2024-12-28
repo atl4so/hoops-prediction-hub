@@ -60,7 +60,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
           home_team:teams!games_home_team_id_fkey(id, name, logo_url),
           away_team:teams!games_away_team_id_fkey(id, name, logo_url),
           round:rounds(id, name),
-          game_results!game_results_game_id_fkey(
+          game_results(
             home_score,
             away_score,
             is_final
@@ -74,15 +74,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
       }
       
       console.log("Raw games data:", data);
-      
-      // Transform the data to ensure game_results is always an array
-      const transformedData = data.map(game => ({
-        ...game,
-        game_results: game.game_results ? (Array.isArray(game.game_results) ? game.game_results : [game.game_results]) : []
-      }));
-      
-      console.log("Transformed games data:", transformedData);
-      return transformedData;
+      return data;
     },
   });
 
@@ -109,26 +101,17 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     const gameDate = new Date(game.game_date);
     const predictionDeadline = subHours(gameDate, 1);
     
-    // Show games that:
-    // 1. Either have no results OR have results but they're not final
-    // 2. AND current time is before prediction deadline
-    const hasNoFinalResult = game.game_results.length === 0 || !game.game_results[0]?.is_final;
+    // Show games that have no results or non-final results
+    // AND current time is before prediction deadline
+    const hasNoFinalResult = !game.game_results?.length || !game.game_results[0]?.is_final;
     const isBeforeDeadline = now < predictionDeadline;
-    
-    console.log(`Game ${game.id}:`, {
-      hasNoFinalResult,
-      isBeforeDeadline,
-      gameResults: game.game_results,
-      predictionDeadline: predictionDeadline.toISOString(),
-      now: now.toISOString()
-    });
     
     return hasNoFinalResult && isBeforeDeadline;
   }) || [];
 
   console.log("Available games:", availableGames);
 
-  if (availableGames.length === 0) {
+  if (!availableGames?.length) {
     return (
       <div className="text-center py-12">
         <p className="text-lg text-muted-foreground">
@@ -173,7 +156,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
             id: game.id,
             game: {
               ...game,
-              game_results: game.game_results
+              game_results: game.game_results || []
             },
             prediction: null
           }))}
