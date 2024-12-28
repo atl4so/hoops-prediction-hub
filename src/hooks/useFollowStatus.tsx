@@ -40,8 +40,11 @@ export function useFollowStatus(targetUserId: string) {
   useEffect(() => {
     if (!currentUser) return;
 
+    const channelName = `follow-status-${currentUser.id}-${targetUserId}`;
+    console.log('Subscribing to channel:', channelName);
+
     const channel = supabase
-      .channel(`follow-status-${targetUserId}`)
+      .channel(channelName)
       .on(
         'postgres_changes',
         {
@@ -51,6 +54,7 @@ export function useFollowStatus(targetUserId: string) {
           filter: `follower_id=eq.${currentUser.id}&following_id=eq.${targetUserId}`,
         },
         (payload) => {
+          console.log('Received payload:', payload);
           if (payload.eventType === "INSERT") {
             setIsFollowing(true);
           } else if (payload.eventType === "DELETE") {
@@ -58,9 +62,12 @@ export function useFollowStatus(targetUserId: string) {
           }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Channel status:', status);
+      });
 
     return () => {
+      console.log('Cleaning up channel:', channelName);
       supabase.removeChannel(channel);
     };
   }, [currentUser, targetUserId]);

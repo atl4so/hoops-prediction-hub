@@ -12,7 +12,6 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { FollowButton } from "@/components/users/FollowButton";
 import { useFollowStatus } from "@/hooks/useFollowStatus";
-import { useEffect } from "react";
 
 export function AllTimeLeaderboard() {
   const { data: rankings, isLoading, refetch } = useQuery({
@@ -35,38 +34,6 @@ export function AllTimeLeaderboard() {
     },
   });
 
-  // Subscribe to real-time updates for follows
-  useEffect(() => {
-    const channel = supabase
-      .channel('leaderboard-follows')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'user_follows'
-        },
-        () => {
-          refetch();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [refetch]);
-
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
-      </div>
-    );
-  }
-
   const getRankIcon = (rank: number) => {
     switch (rank) {
       case 1:
@@ -79,6 +46,16 @@ export function AllTimeLeaderboard() {
         return <Award className="h-5 w-5 text-primary/20" />;
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-12 w-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-md border">
