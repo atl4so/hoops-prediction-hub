@@ -3,6 +3,7 @@ import { TeamDisplay } from "./TeamDisplay";
 import { GameDateTime } from "./GameDateTime";
 import { PredictionButton } from "./PredictionButton";
 import { PredictionDialog } from "../predictions/PredictionDialog";
+import { PredictionDisplay } from "./PredictionDisplay";
 import { useState } from "react";
 
 interface GameCardProps {
@@ -49,6 +50,16 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
               team={game.away_team}
             />
           </div>
+
+          {prediction && (
+            <div className="mt-4 mb-2">
+              <PredictionDisplay
+                homeScore={prediction.prediction_home_score}
+                awayScore={prediction.prediction_away_score}
+                pointsEarned={prediction.points_earned}
+              />
+            </div>
+          )}
 
           <div className="mt-6">
             <PredictionButton
