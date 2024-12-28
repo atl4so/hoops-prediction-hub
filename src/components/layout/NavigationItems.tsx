@@ -1,13 +1,9 @@
-import { Home, Trophy, Users, User, BarChart2, Settings } from "lucide-react";
+import { Home, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const getNavigationItems = async (isAuthenticated: boolean) => {
   const authenticatedItems = [
     { title: "Dashboard", icon: Home, path: "/dashboard" },
-    { title: "Leaderboard", icon: Trophy, path: "/leaderboard" },
-    { title: "Following", icon: Users, path: "/following" },
-    { title: "Profile", icon: User, path: "/profile" },
-    { title: "Statistics", icon: BarChart2, path: "/statistics" },
   ];
 
   const adminItems = [
