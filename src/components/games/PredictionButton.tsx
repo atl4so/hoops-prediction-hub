@@ -17,6 +17,13 @@ export function PredictionButton({ isAuthenticated, gameDate, onPrediction }: Pr
     const gameDateObj = new Date(gameDate);
     const now = new Date();
     const oneHourBefore = subHours(gameDateObj, 1);
+    
+    // For debugging
+    console.log('Game date:', gameDateObj);
+    console.log('Current time:', now);
+    console.log('One hour before:', oneHourBefore);
+    console.log('Is prediction allowed:', now < oneHourBefore);
+    
     return now < oneHourBefore;
   };
 
