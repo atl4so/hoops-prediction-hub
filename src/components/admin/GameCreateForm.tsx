@@ -64,7 +64,14 @@ export function GameCreateForm() {
       combinedDateTime.setHours(parseInt(hours, 10));
       combinedDateTime.setMinutes(parseInt(minutes, 10));
 
-      const { error } = await supabase
+      console.log('Creating game with data:', {
+        round_id: selectedRound,
+        home_team_id: homeTeam,
+        away_team_id: awayTeam,
+        game_date: combinedDateTime.toISOString(),
+      });
+
+      const { data, error } = await supabase
         .from('games')
         .insert([
           {
@@ -73,9 +80,16 @@ export function GameCreateForm() {
             away_team_id: awayTeam,
             game_date: combinedDateTime.toISOString(),
           },
-        ]);
+        ])
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error creating game:', error);
+        throw error;
+      }
+
+      console.log('Game created successfully:', data);
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['games'] });
@@ -87,6 +101,7 @@ export function GameCreateForm() {
       setGameTime("20:00");
     },
     onError: (error) => {
+      console.error('Error in createGame mutation:', error);
       toast({
         title: "Error",
         description: error.message,

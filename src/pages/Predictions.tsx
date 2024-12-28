@@ -36,7 +36,12 @@ export default function Predictions() {
     checkSession();
   }, [session, navigate, supabase.auth]);
 
-  if (!session) return null;
+  console.log('Predictions page - Session:', session);
+
+  if (!session) {
+    console.log('No session, returning null');
+    return null;
+  }
 
   return (
     <div className="space-y-8">

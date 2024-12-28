@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { GameCard } from "./GameCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -74,11 +73,16 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
         throw error;
       }
       
+      console.log("Raw games data:", data);
+      
       // Transform the data to ensure game_results is always an array
-      return data.map(game => ({
+      const transformedData = data.map(game => ({
         ...game,
         game_results: game.game_results ? (Array.isArray(game.game_results) ? game.game_results : [game.game_results]) : []
       }));
+      
+      console.log("Transformed games data:", transformedData);
+      return transformedData;
     },
   });
 
@@ -124,6 +128,19 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
 
   console.log("Available games:", availableGames);
 
+  if (availableGames.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-lg text-muted-foreground">
+          No games available for predictions at the moment.
+        </p>
+        <p className="text-sm text-muted-foreground mt-2">
+          Check back later for upcoming games.
+        </p>
+      </div>
+    );
+  }
+
   // Group available games by round
   const gamesByRound = availableGames.reduce((acc, game) => {
     const roundId = game.round.id;
@@ -144,19 +161,6 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
       ...data
     }))
     .sort((a, b) => parseInt(b.name) - parseInt(a.name));
-
-  if (sortedRounds.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-lg text-muted-foreground">
-          No games available for predictions at the moment.
-        </p>
-        <p className="text-sm text-muted-foreground mt-2">
-          Check back later for upcoming games.
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-12">
