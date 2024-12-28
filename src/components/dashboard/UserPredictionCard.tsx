@@ -3,6 +3,7 @@ import { TeamDisplay } from "../games/TeamDisplay";
 import { GameDateTime } from "../games/GameDateTime";
 import { PointsBreakdownDialog } from "../games/PointsBreakdownDialog";
 import { useState } from "react";
+import { PredictionDisplay } from "../games/PredictionDisplay";
 
 interface UserPredictionCardProps {
   game: {
@@ -59,21 +60,13 @@ export function UserPredictionCard({ game, prediction }: UserPredictionCardProps
             />
           </div>
 
-          <div className="mt-4 mb-2 cursor-pointer" onClick={() => gameResult && setShowPointsBreakdown(true)}>
-            <div className="text-sm text-center space-y-1">
-              <p className="font-medium">Prediction</p>
-              <p>
-                {prediction.prediction_home_score} - {prediction.prediction_away_score}
-              </p>
-              {prediction.points_earned !== undefined && (
-                <div className="space-y-1">
-                  <p className="text-primary">Points: {prediction.points_earned}</p>
-                  <p className="text-xs text-muted-foreground hover:text-primary cursor-pointer underline">
-                    Click to see points breakdown
-                  </p>
-                </div>
-              )}
-            </div>
+          <div className="mt-4 mb-2">
+            <PredictionDisplay
+              homeScore={prediction.prediction_home_score}
+              awayScore={prediction.prediction_away_score}
+              pointsEarned={prediction.points_earned}
+              onClick={() => gameResult && setShowPointsBreakdown(true)}
+            />
           </div>
         </div>
       </CardContent>
