@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,11 +7,13 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { normalizeEmail } from "@/utils/validation";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -20,6 +22,7 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -27,7 +30,14 @@ const Login = () => {
         password: formData.password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message === "Invalid login credentials") {
+          setError("Invalid email or password. Please try again.");
+        } else {
+          setError(error.message);
+        }
+        return;
+      }
 
       toast({
         title: "Welcome back!",
@@ -36,11 +46,7 @@ const Login = () => {
       
       navigate("/dashboard");
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -56,6 +62,11 @@ const Login = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -64,7 +75,10 @@ const Login = () => {
                 type="email"
                 placeholder="Enter your email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) => {
+                  setError(null);
+                  setFormData({ ...formData, email: e.target.value });
+                }}
                 required
               />
             </div>
@@ -75,7 +89,10 @@ const Login = () => {
                 type="password"
                 placeholder="Enter your password"
                 value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                onChange={(e) => {
+                  setError(null);
+                  setFormData({ ...formData, password: e.target.value });
+                }}
                 required
               />
             </div>
