@@ -42,6 +42,12 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
 
   const gameResult = game.game_results?.[0];
 
+  const handlePointsClick = () => {
+    if (gameResult && prediction?.points_earned !== undefined) {
+      setShowPointsBreakdown(true);
+    }
+  };
+
   return (
     <Card className="w-full h-full flex flex-col">
       <CardContent className="pt-6 px-6 flex-1 flex flex-col">
@@ -67,14 +73,13 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
           </div>
 
           {prediction && (
-            <div 
-              className="mt-4 mb-2 cursor-pointer" 
-              onClick={() => gameResult && setShowPointsBreakdown(true)}
-            >
+            <div className="mt-4 mb-2">
               <PredictionDisplay
                 homeScore={prediction.prediction_home_score}
                 awayScore={prediction.prediction_away_score}
                 pointsEarned={prediction.points_earned}
+                onClick={handlePointsClick}
+                showBreakdownHint={!!gameResult && prediction.points_earned !== undefined}
               />
             </div>
           )}
