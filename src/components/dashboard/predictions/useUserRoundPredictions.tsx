@@ -49,15 +49,16 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
           throw error;
         }
 
+        // Map the data to ensure proper structure even if game_results is null
         return data?.map(prediction => ({
           id: prediction.id,
           game: {
             ...prediction.game,
-            game_results: Array.isArray(prediction.game.game_results) 
-              ? prediction.game.game_results 
-              : prediction.game.game_results 
-                ? [prediction.game.game_results]
-                : []
+            game_results: prediction.game?.game_results 
+              ? Array.isArray(prediction.game.game_results)
+                ? prediction.game.game_results
+                : [prediction.game.game_results]
+              : []
           },
           prediction: {
             prediction_home_score: prediction.prediction_home_score,
@@ -71,7 +72,7 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
         throw error;
       }
     },
-    enabled: isOpen && !!selectedRound,
+    enabled: isOpen && !!selectedRound && !!userId,
     staleTime: 1000 * 60,
     retry: 2,
   });
