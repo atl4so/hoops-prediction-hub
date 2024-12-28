@@ -30,37 +30,46 @@ const queryClient = new QueryClient({
 // Session handler component to manage invalid sessions
 const SessionHandler = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
-    const handleAuthError = async (error: any) => {
-      if (error?.status === 403 && error?.message?.includes('User from sub claim in JWT does not exist')) {
-        // Clear local storage and session storage
+    const handleInvalidSession = async () => {
+      try {
+        // Clear all storage
         localStorage.clear();
         sessionStorage.clear();
-        // Force clear the Supabase session
-        await supabase.auth.signOut({ scope: 'local' });
+        // Clear the Supabase session
+        await supabase.auth.signOut();
+        // Clear query cache
+        queryClient.clear();
         // Reload the page to reset all states
-        window.location.reload();
+        window.location.href = '/login';
+      } catch (error) {
+        console.error('Error handling invalid session:', error);
       }
     };
 
     // Subscribe to auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT') {
+      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
         queryClient.clear();
       }
     });
 
-    // Add error handler to Supabase client
+    // Add response interceptor
     const originalFetch = window.fetch;
     window.fetch = async (...args) => {
       try {
         const response = await originalFetch(...args);
-        if (!response.ok && response.status === 403) {
+        if (response.status === 403) {
           const errorData = await response.clone().json();
-          await handleAuthError(errorData);
+          if (
+            errorData.message?.includes('Session from session_id claim in JWT does not exist') ||
+            errorData.code === 'session_not_found'
+          ) {
+            await handleInvalidSession();
+          }
         }
         return response;
       } catch (error) {
-        await handleAuthError(error);
+        console.error('Fetch error:', error);
         throw error;
       }
     };
