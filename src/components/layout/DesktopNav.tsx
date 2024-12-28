@@ -2,12 +2,14 @@ import { LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
+interface NavigationItem {
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  path: string;
+}
+
 interface DesktopNavProps {
-  menuItems: Array<{
-    title: string;
-    icon: React.ComponentType<{ className?: string }>;
-    path: string;
-  }>;
+  menuItems: NavigationItem[];
   currentPath: string;
   isAuthenticated: boolean;
   onLogout: () => void;

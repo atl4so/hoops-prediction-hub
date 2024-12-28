@@ -8,18 +8,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
+interface NavigationItem {
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  path: string;
+}
+
 interface MobileMenuProps {
-  menuItems: Array<{
-    title: string;
-    icon: React.ComponentType<{ className?: string }>;
-    path: string;
-  }>;
+  menuItems: NavigationItem[];
   isAuthenticated: boolean;
   onLogout: () => void;
 }
 
-export function MobileMenu({ menuItems, isAuthenticated }: MobileMenuProps) {
-  // If not authenticated, don't render the mobile menu
+export function MobileMenu({ menuItems, isAuthenticated, onLogout }: MobileMenuProps) {
   if (!isAuthenticated) {
     return null;
   }
@@ -41,6 +42,9 @@ export function MobileMenu({ menuItems, isAuthenticated }: MobileMenuProps) {
             </Link>
           </DropdownMenuItem>
         ))}
+        <DropdownMenuItem onClick={onLogout} className="text-red-500">
+          Logout
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -9,9 +9,19 @@ import { getNavigationItems } from "./NavigationItems";
 
 export function AppHeader() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [menuItems, setMenuItems] = useState([]);
   const navigate = useNavigate();
   const { toast } = useToast();
   const location = useLocation();
+
+  useEffect(() => {
+    const loadNavItems = async () => {
+      const items = await getNavigationItems(isAuthenticated);
+      setMenuItems(items);
+    };
+
+    loadNavItems();
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
@@ -39,8 +49,6 @@ export function AppHeader() {
       navigate("/");
     }
   };
-
-  const menuItems = getNavigationItems(isAuthenticated);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

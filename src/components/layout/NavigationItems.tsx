@@ -1,6 +1,7 @@
 import { Home, Trophy, Users, User, BarChart2, Settings } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
-export const getNavigationItems = (isAuthenticated: boolean) => {
+export const getNavigationItems = async (isAuthenticated: boolean) => {
   const authenticatedItems = [
     { title: "Dashboard", icon: Home, path: "/dashboard" },
     { title: "Leaderboard", icon: Trophy, path: "/leaderboard" },
@@ -18,9 +19,10 @@ export const getNavigationItems = (isAuthenticated: boolean) => {
     { title: "Home", icon: Home, path: "/" },
   ];
 
-  const isAdmin = supabase.auth.getUser().then(({ data }) => {
-    return data.user?.email === 'likasvy@gmail.com';
-  });
+  if (!isAuthenticated) return publicItems;
 
-  return isAuthenticated ? (isAdmin ? adminItems : authenticatedItems) : publicItems;
+  const { data: { user } } = await supabase.auth.getUser();
+  const isAdmin = user?.email === 'likasvy@gmail.com';
+
+  return isAdmin ? adminItems : authenticatedItems;
 };
