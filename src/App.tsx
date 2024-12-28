@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import { RegisterForm } from "./components/auth/RegisterForm";
 import Dashboard from "./pages/Dashboard";
+import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<RegisterForm />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </MainLayout>

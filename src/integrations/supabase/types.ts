@@ -9,6 +9,58 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      games: {
+        Row: {
+          away_team_id: string
+          created_at: string
+          game_date: string
+          home_team_id: string
+          id: string
+          round_id: string
+          updated_at: string
+        }
+        Insert: {
+          away_team_id: string
+          created_at?: string
+          game_date: string
+          home_team_id: string
+          id?: string
+          round_id: string
+          updated_at?: string
+        }
+        Update: {
+          away_team_id?: string
+          created_at?: string
+          game_date?: string
+          home_team_id?: string
+          id?: string
+          round_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "games_away_team_id_fkey"
+            columns: ["away_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "games_home_team_id_fkey"
+            columns: ["home_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "games_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "rounds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -32,6 +84,57 @@ export type Database = {
           email?: string
           id?: string
           total_points?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      rounds: {
+        Row: {
+          created_at: string
+          end_date: string
+          id: string
+          name: string
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          id?: string
+          name: string
+          start_date: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          id?: string
+          name?: string
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      teams: {
+        Row: {
+          created_at: string
+          id: string
+          logo_url: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logo_url: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logo_url?: string
+          name?: string
           updated_at?: string
         }
         Relationships: []
