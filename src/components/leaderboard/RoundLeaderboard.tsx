@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LeaderboardRow } from "./LeaderboardRow";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface RoundLeaderboardProps {
   searchQuery: string;
@@ -25,8 +26,8 @@ interface RoundLeaderboardProps {
 
 export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
   const [selectedRound, setSelectedRound] = useState<string>("");
+  const isMobile = useIsMobile();
 
-  // Fetch rounds with the latest one first
   const { data: rounds, isLoading: isLoadingRounds } = useQuery({
     queryKey: ["rounds"],
     queryFn: async () => {
@@ -40,7 +41,6 @@ export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
     },
   });
 
-  // Set the latest round as default when rounds are loaded
   useState(() => {
     if (rounds && rounds.length > 0 && !selectedRound) {
       setSelectedRound(rounds[0].id);
@@ -59,13 +59,11 @@ export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
 
       if (error) throw error;
       
-      // Add rank to each player before filtering
       const rankedData = data.map((player, index) => ({
         ...player,
         rank: index + 1
       }));
       
-      // Filter results based on search query if provided
       if (searchQuery) {
         return rankedData.filter(player => 
           player.display_name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -108,7 +106,12 @@ export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
                 <TableHead className="w-12">Rank</TableHead>
                 <TableHead>Player</TableHead>
                 <TableHead className="text-right">Points</TableHead>
-                <TableHead className="text-right">Predictions</TableHead>
+                {!isMobile && (
+                  <>
+                    <TableHead className="text-right">PPG</TableHead>
+                    <TableHead className="text-right">Predictions</TableHead>
+                  </>
+                )}
                 <TableHead className="w-28"></TableHead>
               </TableRow>
             </TableHeader>
