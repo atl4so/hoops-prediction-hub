@@ -17,23 +17,6 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
   const session = useSession();
   const queryClient = useQueryClient();
 
-  // Add a query to get the user's display name
-  const { data: userProfile } = useQuery({
-    queryKey: ["userProfile", userId],
-    queryFn: async () => {
-      if (!userId) return null;
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("display_name")
-        .eq("id", userId)
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!userId,
-  });
-
   useEffect(() => {
     const channel = supabase
       .channel('games-updates')
@@ -69,6 +52,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
   const { data: games, isLoading } = useQuery({
     queryKey: ["games"],
     queryFn: async () => {
+      console.log("Fetching games...");
       const { data, error } = await supabase
         .from("games")
         .select(`
@@ -77,7 +61,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
           home_team:teams!games_home_team_id_fkey(id, name, logo_url),
           away_team:teams!games_away_team_id_fkey(id, name, logo_url),
           round:rounds(id, name),
-          game_results!game_results_game_id_fkey(
+          game_results (
             home_score,
             away_score,
             is_final
@@ -85,12 +69,13 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
         `)
         .order("game_date", { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching games:", error);
+        throw error;
+      }
       
-      return data.map(game => ({
-        ...game,
-        game_results: Array.isArray(game.game_results) ? game.game_results : [game.game_results].filter(Boolean)
-      }));
+      console.log("Fetched games:", data);
+      return data;
     },
   });
 
@@ -118,10 +103,24 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     const predictionDeadline = subHours(gameDate, 1);
     
     // Show games that:
-    // 1. Either have no results OR have results but they're not final
+    // 1. Don't have results yet OR have results but they're not final
     // 2. AND current time is before prediction deadline
-    return (!game.game_results?.length || !game.game_results[0]?.is_final) && now < predictionDeadline;
+    const hasNoFinalResult = !game.game_results?.length || 
+                           (game.game_results.length > 0 && !game.game_results[0]?.is_final);
+    const isBeforeDeadline = now < predictionDeadline;
+    
+    console.log(`Game ${game.id}:`, {
+      hasNoFinalResult,
+      isBeforeDeadline,
+      gameResults: game.game_results,
+      predictionDeadline: predictionDeadline.toISOString(),
+      now: now.toISOString()
+    });
+    
+    return hasNoFinalResult && isBeforeDeadline;
   }) || [];
+
+  console.log("Available games:", availableGames);
 
   // Group available games by round
   const gamesByRound = availableGames.reduce((acc, game) => {
@@ -169,7 +168,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
             game,
             prediction: null
           }))}
-          userName={userProfile?.display_name || "User"}
+          userName={session?.user?.email || "User"}
         />
       ))}
     </div>
