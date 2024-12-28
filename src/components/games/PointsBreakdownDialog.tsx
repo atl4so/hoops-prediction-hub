@@ -11,23 +11,24 @@ import { Award, Target, Home, Plane } from "lucide-react";
 
 interface PointsBreakdownDialogProps {
   isOpen: boolean;
-  onClose: () => void;
+  onOpenChange: (open: boolean) => void;
   prediction: {
     prediction_home_score: number;
     prediction_away_score: number;
-    points_earned?: number;
   };
   result: {
     home_score: number;
     away_score: number;
   };
+  points: number;
 }
 
 export function PointsBreakdownDialog({
   isOpen,
-  onClose,
+  onOpenChange,
   prediction,
   result,
+  points
 }: PointsBreakdownDialogProps) {
   // Calculate point differences for explanation
   const predDiff = Math.abs(prediction.prediction_home_score - prediction.prediction_away_score);
@@ -86,7 +87,7 @@ export function PointsBreakdownDialog({
   }
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={onClose}>
+    <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
       <AlertDialogContent className="max-w-md">
         <AlertDialogHeader>
           <AlertDialogTitle>Points Breakdown</AlertDialogTitle>
@@ -120,7 +121,7 @@ export function PointsBreakdownDialog({
               <div className="pt-2 border-t">
                 <p className="text-lg font-semibold text-primary flex items-center gap-2">
                   <Award className="w-5 h-5" />
-                  Total: {prediction.points_earned} points
+                  Total: {points} points
                 </p>
               </div>
             </div>

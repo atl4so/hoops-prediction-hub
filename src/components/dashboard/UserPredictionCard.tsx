@@ -77,7 +77,7 @@ export function UserPredictionCard({ game, prediction, gameResult }: UserPredict
 
       {gameResult && (
         <PointsBreakdownDialog
-          open={showPointsBreakdown}
+          isOpen={showPointsBreakdown}
           onOpenChange={setShowPointsBreakdown}
           prediction={{
             prediction_home_score: prediction.prediction_home_score,
