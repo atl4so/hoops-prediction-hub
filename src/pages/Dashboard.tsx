@@ -4,8 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GameCard } from "@/components/games/GameCard";
-import { Card, CardContent } from "@/components/ui/card";
-import { Trophy, Target, TrendingUp } from "lucide-react";
+import { StatsOverview } from "@/components/dashboard/StatsOverview";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -119,52 +119,13 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-8">
-      <section className="text-center space-y-4">
-        <h1 className="text-4xl font-bold tracking-tight">Your Predictions</h1>
-        <p className="text-muted-foreground">
-          Track your predictions and their outcomes
-        </p>
-      </section>
-
-      <div className="grid gap-6 md:grid-cols-3 mb-8">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <Trophy className="w-8 h-8 text-primary" />
-              <div>
-                <p className="text-sm text-muted-foreground">Total Points</p>
-                <p className="text-2xl font-bold">{userProfile?.total_points || 0}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <Target className="w-8 h-8 text-primary" />
-              <div>
-                <p className="text-sm text-muted-foreground">Points per Game</p>
-                <p className="text-2xl font-bold">
-                  {userProfile?.points_per_game?.toFixed(1) || '0.0'}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <TrendingUp className="w-8 h-8 text-primary" />
-              <div>
-                <p className="text-sm text-muted-foreground">Total Predictions</p>
-                <p className="text-2xl font-bold">{userProfile?.total_predictions || 0}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <DashboardHeader />
+      
+      <StatsOverview
+        totalPoints={userProfile?.total_points || 0}
+        pointsPerGame={userProfile?.points_per_game || 0}
+        totalPredictions={userProfile?.total_predictions || 0}
+      />
 
       <div className="space-y-12">
         {Object.entries(predictionsByRound).map(([roundId, { name, predictions }]) => (

@@ -4,7 +4,16 @@ import { GameDateTime } from "./GameDateTime";
 import { PredictionButton } from "./PredictionButton";
 import { PredictionDialog } from "../predictions/PredictionDialog";
 import { PredictionDisplay } from "./PredictionDisplay";
-import { PointsBreakdownDialog } from "./PointsBreakdownDialog";
+import { PointsBreakdown } from "./PointsBreakdown";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 import { useState } from "react";
 
 interface GameCardProps {
@@ -21,6 +30,10 @@ interface GameCardProps {
       name: string;
       logo_url: string;
     };
+    game_results?: {
+      home_score: number;
+      away_score: number;
+    }[];
   };
   isAuthenticated: boolean;
   userId?: string;
@@ -34,6 +47,8 @@ interface GameCardProps {
 export function GameCard({ game, isAuthenticated, userId, prediction }: GameCardProps) {
   const [showPredictionDialog, setShowPredictionDialog] = useState(false);
   const [showPointsBreakdown, setShowPointsBreakdown] = useState(false);
+
+  const gameResult = game.game_results?.[0];
 
   return (
     <Card className="w-full h-full flex flex-col">
@@ -54,7 +69,10 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
           </div>
 
           {prediction && (
-            <div className="mt-4 mb-2 cursor-pointer" onClick={() => setShowPointsBreakdown(true)}>
+            <div 
+              className="mt-4 mb-2 cursor-pointer" 
+              onClick={() => gameResult && setShowPointsBreakdown(true)}
+            >
               <PredictionDisplay
                 homeScore={prediction.prediction_home_score}
                 awayScore={prediction.prediction_away_score}
@@ -86,16 +104,26 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
         awayTeam={game.away_team}
       />
 
-      {prediction?.points_earned !== undefined && (
-        <PointsBreakdownDialog
-          isOpen={showPointsBreakdown}
-          onClose={() => setShowPointsBreakdown(false)}
-          prediction={prediction}
-          result={{
-            home_score: 0, // We need to get this from game_results
-            away_score: 0  // We need to get this from game_results
-          }}
-        />
+      {prediction?.points_earned !== undefined && gameResult && (
+        <AlertDialog open={showPointsBreakdown} onOpenChange={setShowPointsBreakdown}>
+          <AlertDialogContent className="max-w-md">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Points Breakdown</AlertDialogTitle>
+              <AlertDialogDescription>
+                <PointsBreakdown
+                  prediction={prediction}
+                  result={{
+                    home_score: gameResult.home_score,
+                    away_score: gameResult.away_score
+                  }}
+                />
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Close</AlertDialogCancel>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       )}
     </Card>
   );

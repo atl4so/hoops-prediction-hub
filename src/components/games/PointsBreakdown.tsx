@@ -1,3 +1,5 @@
+import { Award, Target, Home, Plane } from "lucide-react";
+
 interface PointsBreakdownProps {
   prediction: {
     prediction_home_score: number;
@@ -68,16 +70,39 @@ export function PointsBreakdown({ prediction, result }: PointsBreakdownProps) {
   }
 
   return (
-    <div className="space-y-2 text-sm">
-      <div className="font-medium">Points Breakdown:</div>
-      <div className="space-y-1 text-muted-foreground">
-        <p>Winner prediction: {winnerPoints} points</p>
-        <p>Point difference: {diffPoints} points</p>
-        <p>Home team score: {homeScorePoints} points</p>
-        <p>Away team score: {awayScorePoints} points</p>
-        <p className="text-primary font-medium pt-1">
-          Total: {prediction.points_earned} points
-        </p>
+    <div className="space-y-2">
+      <div className="space-y-2">
+        <p className="font-medium">Your Prediction: {prediction.prediction_home_score} - {prediction.prediction_away_score}</p>
+        <p className="font-medium">Final Result: {result.home_score} - {result.away_score}</p>
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center gap-2 text-sm">
+          <Award className="w-4 h-4 text-primary" />
+          <span>Winner prediction: {winnerPoints} points</span>
+        </div>
+        
+        <div className="flex items-center gap-2 text-sm">
+          <Target className="w-4 h-4 text-primary" />
+          <span>Point difference: {diffPoints} points</span>
+        </div>
+        
+        <div className="flex items-center gap-2 text-sm">
+          <Home className="w-4 h-4 text-primary" />
+          <span>Home team score: {homeScorePoints} points</span>
+        </div>
+        
+        <div className="flex items-center gap-2 text-sm">
+          <Plane className="w-4 h-4 text-primary" />
+          <span>Away team score: {awayScorePoints} points</span>
+        </div>
+
+        <div className="pt-2 border-t">
+          <p className="text-lg font-semibold text-primary flex items-center gap-2">
+            <Award className="w-5 h-5" />
+            Total: {prediction.points_earned} points
+          </p>
+        </div>
       </div>
     </div>
   );
