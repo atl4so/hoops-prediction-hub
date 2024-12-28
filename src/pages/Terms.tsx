@@ -16,6 +16,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 
+const SUPABASE_URL = "https://nuswsfxmaqyzfmpmbuky.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51c3dzZnhtYXF5emZtcG1idWt5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUzNDAzMTIsImV4cCI6MjA1MDkxNjMxMn0.wNcFq7gZwSUQS6tV0v4njsqVvydWe9qsamLDSKnWEIY";
+
 export default function Terms() {
   const [isDeleting, setIsDeleting] = useState(false);
   const session = useSession();
@@ -64,11 +67,11 @@ export default function Terms() {
       if (deleteError) throw deleteError;
 
       // After signing out, make a final request to delete the auth user
-      const response = await fetch(`${supabase.supabaseUrl}/auth/v1/user`, {
+      const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
-          'apikey': supabase.supabaseKey
+          'apikey': SUPABASE_ANON_KEY
         }
       });
 
