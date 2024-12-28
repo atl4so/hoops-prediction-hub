@@ -104,15 +104,23 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     return acc;
   }, {} as Record<string, { name: string; games: typeof games }>) || {};
 
+  // Convert to array and sort by round name in descending order
+  const sortedRounds = Object.entries(gamesByRound)
+    .map(([roundId, data]) => ({
+      id: roundId,
+      ...data
+    }))
+    .sort((a, b) => parseInt(b.name) - parseInt(a.name));
+
   return (
     <div className="space-y-12">
-      {Object.entries(gamesByRound).map(([roundId, { name, games }]) => (
-        <section key={roundId} className="space-y-6">
+      {sortedRounds.map((round) => (
+        <section key={round.id} className="space-y-6">
           <h2 className="text-2xl font-display font-semibold tracking-tight">
-            Round {name}
+            Round {round.name}
           </h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {games.map((game) => (
+            {round.games.map((game) => (
               <GameCard 
                 key={game.id} 
                 game={game} 
