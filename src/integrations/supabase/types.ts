@@ -316,7 +316,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_prediction_points: {
+        Args: {
+          pred_home: number
+          pred_away: number
+          actual_home: number
+          actual_away: number
+        }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never

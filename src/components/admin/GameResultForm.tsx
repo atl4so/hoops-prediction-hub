@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import {
   Select,
   SelectContent,
@@ -53,7 +53,7 @@ export function GameResultForm() {
       const gameIdsWithResults = new Set(gameResults?.map(r => r.game_id) || []);
       return data.filter(game => !gameIdsWithResults.has(game.id));
     },
-    enabled: true, // Always enabled, we'll filter in memory
+    enabled: true,
   });
 
   const createResult = useMutation({
@@ -78,7 +78,15 @@ export function GameResultForm() {
       queryClient.invalidateQueries({ queryKey: ['game-results'] });
       queryClient.invalidateQueries({ queryKey: ['games-without-results'] });
       queryClient.invalidateQueries({ queryKey: ['game-results-ids'] });
-      toast({ title: "Success", description: "Game result saved successfully" });
+      // Also invalidate predictions and profiles as they will be updated by the trigger
+      queryClient.invalidateQueries({ queryKey: ['predictions'] });
+      queryClient.invalidateQueries({ queryKey: ['profiles'] });
+      
+      toast({ 
+        title: "Success", 
+        description: "Game result saved and points calculated successfully",
+      });
+      
       setSelectedGame("");
       setHomeScore("");
       setAwayScore("");
@@ -122,7 +130,12 @@ export function GameResultForm() {
         />
       </div>
 
-      <Button onClick={() => createResult.mutate()}>Save Result</Button>
+      <Button 
+        onClick={() => createResult.mutate()}
+        disabled={createResult.isPending}
+      >
+        {createResult.isPending ? "Saving..." : "Save Result"}
+      </Button>
     </div>
   );
 }
