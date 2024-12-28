@@ -30,8 +30,52 @@ export default function Terms() {
     
     setIsDeleting(true);
     try {
-      // First make the request to delete the auth user while we still have a valid session
-      const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      // Delete user predictions
+      const { error: predictionsError } = await supabase
+        .from('predictions')
+        .delete()
+        .eq('user_id', session.user.id);
+
+      if (predictionsError) {
+        console.error('Error deleting predictions:', predictionsError);
+        throw predictionsError;
+      }
+
+      // Delete user follows
+      const { error: followsError } = await supabase
+        .from('user_follows')
+        .delete()
+        .or(`follower_id.eq.${session.user.id},following_id.eq.${session.user.id}`);
+
+      if (followsError) {
+        console.error('Error deleting follows:', followsError);
+        throw followsError;
+      }
+
+      // Delete user permissions
+      const { error: permissionsError } = await supabase
+        .from('user_permissions')
+        .delete()
+        .eq('user_id', session.user.id);
+
+      if (permissionsError) {
+        console.error('Error deleting permissions:', permissionsError);
+        throw permissionsError;
+      }
+
+      // Delete user profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', session.user.id);
+
+      if (profileError) {
+        console.error('Error deleting profile:', profileError);
+        throw profileError;
+      }
+
+      // Delete the auth user
+      const response = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${session.user.id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
@@ -42,38 +86,6 @@ export default function Terms() {
       if (!response.ok) {
         throw new Error('Failed to delete auth user');
       }
-
-      // Delete user predictions
-      const { error: predictionsError } = await supabase
-        .from('predictions')
-        .delete()
-        .eq('user_id', session.user.id);
-
-      if (predictionsError) throw predictionsError;
-
-      // Delete user follows
-      const { error: followsError } = await supabase
-        .from('user_follows')
-        .delete()
-        .or(`follower_id.eq.${session.user.id},following_id.eq.${session.user.id}`);
-
-      if (followsError) throw followsError;
-
-      // Delete user permissions
-      const { error: permissionsError } = await supabase
-        .from('user_permissions')
-        .delete()
-        .eq('user_id', session.user.id);
-
-      if (permissionsError) throw permissionsError;
-
-      // Delete user profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('id', session.user.id);
-
-      if (profileError) throw profileError;
 
       // Finally, sign out the user
       await supabase.auth.signOut();
