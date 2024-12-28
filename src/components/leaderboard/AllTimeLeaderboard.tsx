@@ -12,6 +12,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { FollowButton } from "@/components/users/FollowButton";
 import { useFollowStatus } from "@/hooks/useFollowStatus";
+import { useEffect } from "react";
 
 export function AllTimeLeaderboard() {
   const { data: rankings, isLoading, refetch } = useQuery({
@@ -27,6 +28,28 @@ export function AllTimeLeaderboard() {
       return data;
     },
   });
+
+  // Subscribe to real-time updates for follows
+  useEffect(() => {
+    const channel = supabase
+      .channel('leaderboard-follows')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_follows'
+        },
+        () => {
+          refetch();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [refetch]);
 
   if (isLoading) {
     return (
