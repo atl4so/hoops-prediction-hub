@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { GameCard } from "@/components/games/GameCard";
 import { StatsOverview } from "@/components/dashboard/StatsOverview";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { FollowingSection } from "@/components/dashboard/FollowingSection";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -143,6 +144,8 @@ const Dashboard = () => {
         pointsPerGame={pointsPerGame}
         totalPredictions={totalPredictions}
       />
+
+      <FollowingSection />
 
       <div className="space-y-12">
         {Object.entries(predictionsByRound).map(([roundId, { name, predictions }]) => (
