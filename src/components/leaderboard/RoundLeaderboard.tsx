@@ -29,7 +29,7 @@ type RoundRanking = {
 };
 
 export function RoundLeaderboard() {
-  const [selectedRound, setSelectedRound] = useState<string>("");
+  const [selectedRound, setSelectedRound] = useState<string>("all");
 
   const { data: rounds } = useQuery({
     queryKey: ["rounds"],
@@ -47,7 +47,7 @@ export function RoundLeaderboard() {
   const { data: rankings, isLoading, refetch } = useQuery({
     queryKey: ["leaderboard", "round", selectedRound],
     queryFn: async () => {
-      if (!selectedRound) return null;
+      if (!selectedRound || selectedRound === "all") return null;
 
       const { data, error } = await supabase
         .rpc('get_round_rankings', {
@@ -57,7 +57,7 @@ export function RoundLeaderboard() {
       if (error) throw error;
       return data as RoundRanking[];
     },
-    enabled: !!selectedRound,
+    enabled: !!selectedRound && selectedRound !== "all",
   });
 
   const getRankIcon = (rank: number) => {
@@ -80,6 +80,7 @@ export function RoundLeaderboard() {
           <SelectValue placeholder="Select a round" />
         </SelectTrigger>
         <SelectContent>
+          <SelectItem value="all">All Rounds</SelectItem>
           {rounds?.map((round) => (
             <SelectItem key={round.id} value={round.id}>
               Round {round.name}
@@ -88,7 +89,7 @@ export function RoundLeaderboard() {
         </SelectContent>
       </Select>
 
-      {selectedRound && (
+      {selectedRound && selectedRound !== "all" && (
         <div className="rounded-md border">
           {isLoading ? (
             <div className="space-y-4 p-4">
@@ -127,10 +128,10 @@ export function RoundLeaderboard() {
 }
 
 function LeaderboardRow({ player, rank, getRankIcon, onFollowChange }) {
-  const { isFollowing, currentUser } = useFollowStatus(player.user_id);
+  const { isFollowing, currentUser, isLoading } = useFollowStatus(player.user_id);
 
-  // Don't show follow button for the current user
-  const showFollowButton = currentUser && currentUser.id !== player.user_id;
+  // Don't show follow button for the current user, if already following, or while loading
+  const showFollowButton = !isLoading && currentUser && currentUser.id !== player.user_id && !isFollowing;
 
   return (
     <TableRow>
