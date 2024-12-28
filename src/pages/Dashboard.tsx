@@ -41,7 +41,7 @@ const Dashboard = () => {
       }
       return data;
     },
-    enabled: !!userId
+    enabled: !!userId && !!session
   });
 
   const { data: predictions, isLoading } = useQuery({
@@ -98,7 +98,7 @@ const Dashboard = () => {
         }
       }));
     },
-    enabled: !!userId
+    enabled: !!userId && !!session
   });
 
   // Don't render anything if there's no session

@@ -13,11 +13,18 @@ import Admin from "./pages/Admin";
 import Leaderboard from "./pages/Leaderboard";
 import { supabase } from "./integrations/supabase/client";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => {
   return (
-    <SessionContextProvider supabaseClient={supabase}>
+    <SessionContextProvider supabaseClient={supabase} initialSession={null}>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
