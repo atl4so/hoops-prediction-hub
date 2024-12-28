@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect } from "react";
+import { useEffect } from 'react';
 import { useQueryClient } from "@tanstack/react-query";
 import { CollapsibleRoundSection } from "../dashboard/CollapsibleRoundSection";
 import { subHours } from "date-fns";
@@ -85,7 +85,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
             : []
       }));
     },
-    enabled: isAuthenticated,
+    enabled: true, // Always fetch games regardless of authentication status
   });
 
   if (isLoading) {
