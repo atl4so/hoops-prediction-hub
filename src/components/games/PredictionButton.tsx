@@ -2,18 +2,49 @@ import { Button } from "@/components/ui/button";
 import { subHours, isAfter, isBefore } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PredictionButtonProps {
   isAuthenticated: boolean;
   gameDate: string;
   onPrediction: () => void;
+  gameId: string;
+  userId?: string;
 }
 
-export function PredictionButton({ isAuthenticated, gameDate, onPrediction }: PredictionButtonProps) {
+export function PredictionButton({ isAuthenticated, gameDate, onPrediction, gameId, userId }: PredictionButtonProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  // Query to check if user already has a prediction for this game
+  const { data: existingPrediction } = useQuery({
+    queryKey: ['prediction', gameId, userId],
+    queryFn: async () => {
+      if (!userId) return null;
+      
+      const { data, error } = await supabase
+        .from('predictions')
+        .select('*')
+        .eq('game_id', gameId)
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error checking existing prediction:', error);
+        throw error;
+      }
+      return data;
+    },
+    enabled: !!userId && !!gameId,
+  });
+
   const isPredictionAllowed = () => {
+    // If user already has a prediction, don't allow another one
+    if (existingPrediction) {
+      return false;
+    }
+
     const gameDateObj = new Date(gameDate);
     const now = new Date();
     const oneHourBefore = subHours(gameDateObj, 1);
@@ -47,6 +78,15 @@ export function PredictionButton({ isAuthenticated, gameDate, onPrediction }: Pr
       return;
     }
 
+    if (existingPrediction) {
+      toast({
+        title: "Prediction exists",
+        description: "You have already made a prediction for this game",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!isPredictionAllowed()) {
       toast({
         title: "Predictions closed",
@@ -63,14 +103,18 @@ export function PredictionButton({ isAuthenticated, gameDate, onPrediction }: Pr
     <Button 
       onClick={handleClick}
       className={`w-full shadow-sm transition-all duration-300 font-medium tracking-wide ${
-        isPredictionAllowed() 
+        isPredictionAllowed() && !existingPrediction
           ? "bg-primary/90 hover:bg-primary" 
           : "bg-[#8B5CF6] text-white hover:bg-[#7C3AED]"
       }`}
-      disabled={!isPredictionAllowed()}
-      variant={isPredictionAllowed() ? "default" : "secondary"}
+      disabled={!isPredictionAllowed() || !!existingPrediction}
+      variant={isPredictionAllowed() && !existingPrediction ? "default" : "secondary"}
     >
-      {isPredictionAllowed() ? "Make Prediction" : "Predictions Closed"}
+      {existingPrediction 
+        ? "Prediction Submitted" 
+        : isPredictionAllowed() 
+          ? "Make Prediction" 
+          : "Predictions Closed"}
     </Button>
   );
 }

@@ -107,6 +107,8 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
                 isAuthenticated={isAuthenticated}
                 gameDate={game.game_date}
                 onPrediction={() => setIsPredictionOpen(true)}
+                gameId={game.id}
+                userId={userId}
               />
             </div>
           )}
