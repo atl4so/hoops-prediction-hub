@@ -161,6 +161,21 @@ export function StatsOverview({
         ))}
       </div>
       
+      {isMobile && (
+        <div className={cn(
+          "flex justify-center transition-all duration-300",
+          showAllCards ? "mt-6" : "mt-4"
+        )}>
+          <Button 
+            variant="outline" 
+            onClick={() => setShowAllCards(!showAllCards)}
+            className="w-full max-w-xs"
+          >
+            {showAllCards ? "Show Less" : "Show More Stats"}
+          </Button>
+        </div>
+      )}
+      
       <div className="mt-8 p-6 bg-accent/5 rounded-lg border animate-fade-in">
         <h3 className="text-lg font-semibold mb-4">Round Performance</h3>
         <div className="flex gap-4 items-center flex-wrap">
@@ -189,21 +204,6 @@ export function StatsOverview({
           )}
         </div>
       </div>
-      
-      {isMobile && (
-        <div className={cn(
-          "flex justify-center transition-all duration-300",
-          showAllCards ? "mt-6" : "mt-4"
-        )}>
-          <Button 
-            variant="outline" 
-            onClick={() => setShowAllCards(!showAllCards)}
-            className="w-full max-w-xs"
-          >
-            {showAllCards ? "Show Less" : "Show More Stats"}
-          </Button>
-        </div>
-      )}
     </div>
   );
 }
