@@ -325,6 +325,10 @@ export type Database = {
         }
         Returns: number
       }
+      recalculate_all_prediction_points: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

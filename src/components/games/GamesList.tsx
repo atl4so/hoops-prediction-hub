@@ -19,7 +19,8 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
           game_date,
           home_team:teams!games_home_team_id_fkey(name, logo_url),
           away_team:teams!games_away_team_id_fkey(name, logo_url),
-          round:rounds(id, name)
+          round:rounds(id, name),
+          game_results(*)
         `)
         .order("game_date", { ascending: true });
 

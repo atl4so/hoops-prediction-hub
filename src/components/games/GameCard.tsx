@@ -5,6 +5,9 @@ import { TeamDisplay } from "./TeamDisplay";
 import { GameDateTime } from "./GameDateTime";
 import { PredictionDisplay } from "./PredictionDisplay";
 import { PredictionButton } from "./PredictionButton";
+import { PointsBreakdown } from "./PointsBreakdown";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface GameCardProps {
   game: {
@@ -25,6 +28,23 @@ interface GameCardProps {
 
 export function GameCard({ game, isAuthenticated, userId, prediction }: GameCardProps) {
   const [isPredictionOpen, setIsPredictionOpen] = useState(false);
+
+  // Fetch game result
+  const { data: gameResult } = useQuery({
+    queryKey: ['game-result', game.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('game_results')
+        .select('*')
+        .eq('game_id', game.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const isGameFinished = !!gameResult?.is_final;
 
   return (
     <>
@@ -50,12 +70,33 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
 
           <GameDateTime date={game.game_date} />
 
+          {isGameFinished && (
+            <div className="text-center space-y-1">
+              <div className="text-sm font-medium">Final Result</div>
+              <div className="text-lg font-semibold">
+                {gameResult.home_score} - {gameResult.away_score}
+              </div>
+            </div>
+          )}
+
           {prediction && (
-            <PredictionDisplay
-              homeScore={prediction.prediction_home_score}
-              awayScore={prediction.prediction_away_score}
-              pointsEarned={prediction.points_earned}
-            />
+            <div className="space-y-4">
+              <PredictionDisplay
+                homeScore={prediction.prediction_home_score}
+                awayScore={prediction.prediction_away_score}
+                pointsEarned={prediction.points_earned}
+              />
+              
+              {isGameFinished && prediction.points_earned !== undefined && (
+                <PointsBreakdown 
+                  prediction={prediction}
+                  result={{
+                    home_score: gameResult.home_score,
+                    away_score: gameResult.away_score,
+                  }}
+                />
+              )}
+            </div>
           )}
 
           {!prediction && (
