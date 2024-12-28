@@ -32,12 +32,19 @@ export function UserPermissions() {
 
   const updatePermission = useMutation({
     mutationFn: async ({ userId, canViewFuturePredictions }: { userId: string, canViewFuturePredictions: boolean }) => {
+      // Use upsert instead of insert to handle existing permissions
       const { error } = await supabase
         .from('user_permissions')
-        .upsert({
-          user_id: userId,
-          can_view_future_predictions: canViewFuturePredictions,
-        });
+        .upsert(
+          {
+            user_id: userId,
+            can_view_future_predictions: canViewFuturePredictions,
+          },
+          {
+            onConflict: 'user_id',
+            ignoreDuplicates: false
+          }
+        );
 
       if (error) throw error;
     },
