@@ -47,11 +47,20 @@ export default function Terms() {
         throw deleteError;
       }
 
+      // Sign out the user immediately after successful deletion
+      await supabase.auth.signOut();
+      
       toast.success("Your account has been deleted successfully");
       navigate("/");
     } catch (error) {
       console.error('Error deleting account:', error);
       toast.error("Failed to delete account. Please try again.");
+      
+      // If deletion partially succeeded, sign out anyway
+      if (error.message?.includes('auth user')) {
+        await supabase.auth.signOut();
+        navigate("/");
+      }
     } finally {
       setIsDeleting(false);
     }
