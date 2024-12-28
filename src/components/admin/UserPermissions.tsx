@@ -53,22 +53,30 @@ export function UserPermissions() {
 
   const updatePermission = useMutation({
     mutationFn: async ({ userId, canViewFuturePredictions }: { userId: string, canViewFuturePredictions: boolean }) => {
-      const { error } = await supabase
-        .from('user_permissions')
-        .upsert(
-          {
-            user_id: userId,
-            can_view_future_predictions: canViewFuturePredictions,
-          },
-          {
-            onConflict: 'user_id',
-            ignoreDuplicates: false
-          }
-        );
-
-      if (error) throw error;
+      if (canViewFuturePredictions) {
+        const { error } = await supabase
+          .from('user_permissions')
+          .upsert(
+            {
+              user_id: userId,
+              can_view_future_predictions: true,
+            },
+            {
+              onConflict: 'user_id'
+            }
+          );
+        if (error) throw error;
+      } else {
+        // If turning off permissions, delete the record
+        const { error } = await supabase
+          .from('user_permissions')
+          .delete()
+          .eq('user_id', userId);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
+      // Invalidate both queries to refresh the lists
       queryClient.invalidateQueries({ queryKey: ['users-permissions'] });
       queryClient.invalidateQueries({ queryKey: ['users-with-permissions'] });
       toast({ title: "Success", description: "Permission updated successfully" });
@@ -124,6 +132,9 @@ export function UserPermissions() {
                         Future Predictions
                       </Badge>
                     </div>
+                    <p className="text-sm text-muted-foreground">
+                      Total Points: {user.total_points || 0}
+                    </p>
                   </div>
                 </div>
               ))
