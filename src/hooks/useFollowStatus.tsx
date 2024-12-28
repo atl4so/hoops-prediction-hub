@@ -22,7 +22,7 @@ export function useFollowStatus(targetUserId: string) {
         .select("id")
         .eq("follower_id", currentUser.id)
         .eq("following_id", targetUserId)
-        .maybeSingle(); // Using maybeSingle instead of single
+        .maybeSingle();
 
       if (error && error.code !== "PGRST116") {
         console.error("Error checking follow status:", error);
@@ -33,9 +33,9 @@ export function useFollowStatus(targetUserId: string) {
 
     checkFollowStatus();
 
-    // Subscribe to real-time changes
+    // Subscribe to real-time changes for this specific follow relationship
     const channel = supabase
-      .channel("follow-changes")
+      .channel(`follow-status-${targetUserId}`)
       .on(
         "postgres_changes",
         {
@@ -45,7 +45,11 @@ export function useFollowStatus(targetUserId: string) {
           filter: `follower_id=eq.${currentUser?.id}&following_id=eq.${targetUserId}`,
         },
         (payload) => {
-          setIsFollowing(payload.eventType === "INSERT");
+          if (payload.eventType === "INSERT") {
+            setIsFollowing(true);
+          } else if (payload.eventType === "DELETE") {
+            setIsFollowing(false);
+          }
         }
       )
       .subscribe();

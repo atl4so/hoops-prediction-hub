@@ -59,6 +59,7 @@ export function FollowButton({ userId, isFollowing, onFollowChange }: FollowButt
         });
       }
 
+      // Callback is now optional and only called if provided
       if (onFollowChange) {
         onFollowChange();
       }
