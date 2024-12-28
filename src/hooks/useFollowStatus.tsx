@@ -22,7 +22,7 @@ export function useFollowStatus(targetUserId: string) {
         .select("id")
         .eq("follower_id", currentUser.id)
         .eq("following_id", targetUserId)
-        .single();
+        .maybeSingle(); // Using maybeSingle instead of single
 
       if (error && error.code !== "PGRST116") {
         console.error("Error checking follow status:", error);

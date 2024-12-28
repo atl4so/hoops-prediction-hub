@@ -18,6 +18,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { FollowButton } from "@/components/users/FollowButton";
+import { useFollowStatus } from "@/hooks/useFollowStatus";
 
 type RoundRanking = {
   user_id: string;
