@@ -112,7 +112,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     
     // Show games that have no results or non-final results
     // AND current time is before prediction deadline
-    const hasNoFinalResult = !game.game_results?.length || !game.game_results[0]?.is_final;
+    const hasNoFinalResult = !game.game_results?.some(result => result.is_final);
     const isBeforeDeadline = now < predictionDeadline;
     
     console.log(`Game ${game.id}:`, {
@@ -173,10 +173,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
             id: game.id,
             game: {
               ...game,
-              game_results: game.game_results.map(result => ({
-                home_score: result.home_score,
-                away_score: result.away_score
-              }))
+              game_results: game.game_results || []
             },
             prediction: null
           }))}
