@@ -85,7 +85,7 @@ const App = () => {
             <SessionHandler>
               <MainLayout>
                 <Routes>
-                  <Route path="/" element={<Index />} />
+                  <Route path="/" element={<Navigate to="/predict" replace />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<RegisterForm />} />
                   <Route path="/dashboard" element={<Dashboard />} />
@@ -95,7 +95,7 @@ const App = () => {
                   <Route path="/following" element={<Following />} />
                   <Route path="/rules" element={<Rules />} />
                   <Route path="/terms" element={<Terms />} />
-                  <Route path="*" element={<Navigate to="/" replace />} />
+                  <Route path="*" element={<Navigate to="/predict" replace />} />
                 </Routes>
               </MainLayout>
             </SessionHandler>

@@ -11,7 +11,7 @@ const Index = () => {
   // Redirect authenticated users to predictions page
   useEffect(() => {
     if (session) {
-      navigate('/predictions');
+      navigate('/predict');
     }
   }, [session, navigate]);
 
