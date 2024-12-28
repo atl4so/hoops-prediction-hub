@@ -54,40 +54,55 @@ export function GameCard({ game, isAuthenticated, userId }: GameCardProps) {
 
   return (
     <>
-      <Card className="w-full">
+      <Card className="w-full group hover:shadow-lg transition-all duration-300 relative overflow-hidden bg-gradient-to-br from-background to-background/95 border-primary/10">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold space-y-4">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <img 
-                  src={game.home_team.logo_url} 
-                  alt={`${game.home_team.name} logo`}
-                  className="w-8 h-8 object-contain"
-                />
-                <span>{game.home_team.name}</span>
+          <CardTitle className="text-lg font-semibold">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 relative">
+              {/* Home Team */}
+              <div className="flex items-center gap-3 group-hover:scale-105 transition-transform duration-300">
+                <div className="relative w-12 h-12 rounded-full bg-background/50 p-2 shadow-sm">
+                  <img 
+                    src={game.home_team.logo_url} 
+                    alt={`${game.home_team.name} logo`}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <span className="font-display tracking-tight">{game.home_team.name}</span>
               </div>
-              <span className="text-muted-foreground">vs</span>
-              <div className="flex items-center gap-2">
-                <span>{game.away_team.name}</span>
-                <img 
-                  src={game.away_team.logo_url} 
-                  alt={`${game.away_team.name} logo`}
-                  className="w-8 h-8 object-contain"
-                />
+
+              {/* VS Badge */}
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden sm:block">
+                <span className="px-4 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary">
+                  VS
+                </span>
+              </div>
+
+              {/* Away Team */}
+              <div className="flex items-center gap-3 group-hover:scale-105 transition-transform duration-300">
+                <span className="font-display tracking-tight">{game.away_team.name}</span>
+                <div className="relative w-12 h-12 rounded-full bg-background/50 p-2 shadow-sm">
+                  <img 
+                    src={game.away_team.logo_url} 
+                    alt={`${game.away_team.name} logo`}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
               </div>
             </div>
           </CardTitle>
         </CardHeader>
+
         <CardContent>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground text-center">
             {format(new Date(game.game_date), "PPP")} at{" "}
             {format(new Date(game.game_date), "p")}
           </p>
         </CardContent>
-        <CardFooter>
+
+        <CardFooter className="pb-6">
           <Button 
             onClick={handlePrediction}
-            className="w-full"
+            className="w-full bg-primary/90 hover:bg-primary shadow-sm transition-all duration-300 font-medium tracking-wide"
             disabled={!isPredictionAllowed()}
           >
             {isPredictionAllowed() ? "Make Prediction" : "Predictions Closed"}
