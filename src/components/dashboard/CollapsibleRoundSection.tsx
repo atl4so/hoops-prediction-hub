@@ -28,7 +28,6 @@ interface CollapsibleRoundSectionProps {
       points_earned?: number;
     } | null;
   }>;
-  defaultExpanded?: boolean;
   userName: string;
 }
 

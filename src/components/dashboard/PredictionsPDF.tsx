@@ -83,12 +83,10 @@ export const PredictionsPDF = ({ userName, roundName, predictions }: Predictions
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Watermark */}
         <View style={styles.watermark}>
           <Text style={styles.watermarkText}>euroleague.bet</Text>
         </View>
 
-        {/* Content */}
         <View style={styles.header}>
           <Text style={styles.title}>Predictions Report</Text>
           <Text style={styles.subtitle}>User: {userName}</Text>
