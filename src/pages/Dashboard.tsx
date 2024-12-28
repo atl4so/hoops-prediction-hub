@@ -143,6 +143,10 @@ const Dashboard = () => {
         totalPoints={totalPoints}
         pointsPerGame={pointsPerGame}
         totalPredictions={totalPredictions}
+        highestGamePoints={userProfile?.highest_game_points}
+        lowestGamePoints={userProfile?.lowest_game_points}
+        highestRoundPoints={userProfile?.highest_round_points}
+        lowestRoundPoints={userProfile?.lowest_round_points}
       />
 
       <FollowingSection />
