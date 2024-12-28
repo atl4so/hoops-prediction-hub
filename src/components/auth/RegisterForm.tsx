@@ -21,7 +21,10 @@ export function RegisterForm() {
     displayName: "",
   });
 
-  const { validateEmail, validateDisplayName } = useRegistrationValidation();
+  const { 
+    validateRegistrationEmail, 
+    validateDisplayName 
+  } = useRegistrationValidation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,17 +32,15 @@ export function RegisterForm() {
     setError(null);
 
     try {
-      // First, try to sign out any existing session to handle the edge case
-      // where a user was deleted but still has an active session
+      // First, try to sign out any existing session
       try {
         await supabase.auth.signOut();
       } catch (signOutError) {
         console.log("Sign out error (expected if no session):", signOutError);
-        // Ignore sign out errors as they're expected in this case
       }
 
       // Validate email and display name
-      const emailError = await validateEmail(formData.email);
+      const emailError = await validateRegistrationEmail(formData.email);
       if (emailError) {
         setError(emailError);
         setIsLoading(false);

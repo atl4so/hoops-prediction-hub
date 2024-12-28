@@ -1,20 +1,17 @@
 import { useState } from "react";
 import { validateEmail } from "@/utils/validation";
-import { supabase } from "@/integrations/supabase/client";
 import { checkEmailExists } from "@/utils/authChecks";
 
 export const useRegistrationValidation = () => {
   const [emailError, setEmailError] = useState<string | null>(null);
   const [displayNameError, setDisplayNameError] = useState<string | null>(null);
 
-  const validateDisplayName = async (displayName: string): Promise<boolean> => {
+  const validateDisplayName = async (displayName: string): Promise<string | null> => {
     if (!displayName) {
-      setDisplayNameError("Display name is required");
-      return false;
+      return "Display name is required";
     }
     if (displayName.length < 3) {
-      setDisplayNameError("Display name must be at least 3 characters long");
-      return false;
+      return "Display name must be at least 3 characters long";
     }
     
     try {
@@ -26,43 +23,36 @@ export const useRegistrationValidation = () => {
 
       if (error) {
         console.error('Error checking display name:', error);
-        return false;
+        return "Error checking display name availability";
       }
 
       if (data) {
-        setDisplayNameError("This display name is already taken");
-        return false;
+        return "This display name is already taken";
       }
 
-      setDisplayNameError(null);
-      return true;
+      return null;
     } catch (error) {
       console.error('Error checking display name:', error);
-      setDisplayNameError("Error checking display name availability");
-      return false;
+      return "Error checking display name availability";
     }
   };
 
-  const validateRegistrationEmail = async (email: string): Promise<boolean> => {
+  const validateRegistrationEmail = async (email: string): Promise<string | null> => {
     const validationError = validateEmail(email);
     if (validationError) {
-      setEmailError(validationError);
-      return false;
+      return validationError;
     }
 
     try {
       const emailExists = await checkEmailExists(email);
       if (emailExists) {
-        setEmailError("This email is already registered");
-        return false;
+        return "This email is already registered";
       }
       
-      setEmailError(null);
-      return true;
+      return null;
     } catch (error) {
       console.error('Error checking email:', error);
-      setEmailError("Error checking email availability");
-      return false;
+      return "Error checking email availability";
     }
   };
 
