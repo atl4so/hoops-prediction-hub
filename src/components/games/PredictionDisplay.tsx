@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 interface PredictionDisplayProps {
   homeScore: number;
   awayScore: number;
