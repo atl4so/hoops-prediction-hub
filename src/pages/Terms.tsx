@@ -47,9 +47,6 @@ export default function Terms() {
         throw dbError;
       }
 
-      // Sign out the user immediately after successful deletion
-      await supabase.auth.signOut();
-      
       toast.success("Your account has been deleted successfully");
       navigate("/");
     } catch (error) {

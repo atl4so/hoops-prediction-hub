@@ -19,19 +19,27 @@ Deno.serve(async (req) => {
       throw new Error('User ID is required')
     }
 
-    // Initialize Supabase client with service role key
+    // Initialize Supabase client with service role key for admin access
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
     )
 
-    console.log('Deleting user:', user_id)
+    console.log('Deleting auth user:', user_id)
 
-    // Delete the user from auth.users
-    const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(user_id)
+    // Delete the user from auth.users using admin API
+    const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(
+      user_id
+    )
 
     if (deleteError) {
-      console.error('Error deleting user:', deleteError)
+      console.error('Error deleting auth user:', deleteError)
       throw deleteError
     }
 
