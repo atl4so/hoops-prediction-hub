@@ -48,33 +48,25 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
           throw error;
         }
 
-        // Safely transform and filter the data
-        return data?.map(prediction => {
-          // Ensure game exists and has the required properties
-          if (!prediction.game) {
-            return null;
-          }
-
-          // Transform game_results to always be an array
-          const gameResults = prediction.game.game_results
-            ? Array.isArray(prediction.game.game_results)
-              ? prediction.game.game_results
-              : [prediction.game.game_results]
-            : [];
-
-          return {
+        // Filter out predictions without games and transform the data
+        return data
+          ?.filter(prediction => prediction.game && prediction.game.game_results)
+          .map(prediction => ({
             id: prediction.id,
             game: {
               ...prediction.game,
-              game_results: gameResults
+              game_results: Array.isArray(prediction.game.game_results)
+                ? prediction.game.game_results
+                : prediction.game.game_results
+                  ? [prediction.game.game_results]
+                  : []
             },
             prediction: {
               prediction_home_score: prediction.prediction_home_score,
               prediction_away_score: prediction.prediction_away_score,
               points_earned: prediction.points_earned
             }
-          };
-        }).filter(Boolean) || []; // Remove any null values and handle undefined data
+          })) || [];
       } catch (error) {
         console.error("Error in useUserRoundPredictions:", error);
         toast.error("Failed to load predictions");

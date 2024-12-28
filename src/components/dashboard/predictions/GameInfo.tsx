@@ -1,4 +1,5 @@
 import { GameDateTime } from "@/components/games/GameDateTime";
+import { PredictionDisplay } from "@/components/games/PredictionDisplay";
 
 interface GameInfoProps {
   game: {

@@ -3,7 +3,31 @@ import { UserPredictionCard } from "../UserPredictionCard";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface UserPredictionsGridProps {
-  predictions: any[] | undefined;
+  predictions: Array<{
+    id: string;
+    game: {
+      id: string;
+      game_date: string;
+      home_team: {
+        name: string;
+        logo_url: string;
+      };
+      away_team: {
+        name: string;
+        logo_url: string;
+      };
+      game_results: Array<{
+        home_score: number;
+        away_score: number;
+        is_final: boolean;
+      }>;
+    };
+    prediction: {
+      prediction_home_score: number;
+      prediction_away_score: number;
+      points_earned?: number;
+    };
+  }> | undefined;
   isLoading: boolean;
   isOwnPredictions?: boolean;
 }
@@ -41,11 +65,7 @@ export function UserPredictionsGrid({
         <UserPredictionCard
           key={prediction.id}
           game={prediction.game}
-          prediction={{
-            prediction_home_score: prediction.prediction_home_score,
-            prediction_away_score: prediction.prediction_away_score,
-            points_earned: prediction.points_earned
-          }}
+          prediction={prediction.prediction}
           isOwnPrediction={isOwnPredictions}
         />
       ))}
