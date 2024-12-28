@@ -115,27 +115,20 @@ const Dashboard = () => {
     );
   }
 
-  // Group predictions by round
-  const predictionsByRound = predictions?.reduce((acc, prediction) => {
-    const roundId = prediction.game.round.id;
-    if (!acc[roundId]) {
-      acc[roundId] = {
-        name: prediction.game.round.name,
-        predictions: []
-      };
-    }
-    acc[roundId].predictions.push(prediction);
-    return acc;
-  }, {} as Record<string, { name: string; predictions: typeof predictions }>) || {};
+  // Filter predictions to only count those with points (finished games)
+  const finishedPredictions = predictions?.filter(pred => pred.points_earned !== null) || [];
+  const totalPredictions = finishedPredictions.length;
+  const totalPoints = finishedPredictions.reduce((sum, pred) => sum + (pred.points_earned || 0), 0);
+  const pointsPerGame = totalPredictions > 0 ? totalPoints / totalPredictions : 0;
 
   return (
     <div className="space-y-8">
       <DashboardHeader />
       
       <StatsOverview
-        totalPoints={userProfile?.total_points || 0}
-        pointsPerGame={userProfile?.points_per_game || 0}
-        totalPredictions={userProfile?.total_predictions || 0}
+        totalPoints={totalPoints}
+        pointsPerGame={pointsPerGame}
+        totalPredictions={totalPredictions}
       />
 
       <div className="space-y-12">

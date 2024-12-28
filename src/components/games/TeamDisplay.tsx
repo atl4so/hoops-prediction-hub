@@ -24,7 +24,7 @@ export function TeamDisplay({ team, align, className }: TeamDisplayProps) {
           className="w-full h-full object-contain"
         />
       </div>
-      <span className="font-display text-sm font-semibold text-center leading-tight">
+      <span className="font-display text-sm font-semibold text-center leading-tight w-full">
         {team.name}
       </span>
     </div>
