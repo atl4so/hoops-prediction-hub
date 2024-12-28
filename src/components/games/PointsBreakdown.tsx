@@ -10,9 +10,10 @@ interface PointsBreakdownProps {
     home_score: number;
     away_score: number;
   };
+  points: number;
 }
 
-export function PointsBreakdown({ prediction, result }: PointsBreakdownProps) {
+export function PointsBreakdown({ prediction, result, points }: PointsBreakdownProps) {
   // Calculate point differences for explanation
   const predDiff = Math.abs(prediction.prediction_home_score - prediction.prediction_away_score);
   const actualDiff = Math.abs(result.home_score - result.away_score);
@@ -100,7 +101,7 @@ export function PointsBreakdown({ prediction, result }: PointsBreakdownProps) {
         <div className="pt-2 border-t">
           <p className="text-lg font-semibold text-primary flex items-center gap-2">
             <Award className="w-5 h-5" />
-            Total: {prediction.points_earned || 0}
+            Total: {points}
           </p>
         </div>
       </div>
