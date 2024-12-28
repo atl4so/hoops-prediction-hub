@@ -116,12 +116,11 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
   const availableGames = games?.filter(game => {
     const gameDate = new Date(game.game_date);
     const predictionDeadline = subHours(gameDate, 1);
-    const hasNoResult = !game.game_results?.length || !game.game_results[0]?.is_final;
     
-    // Allow predictions if:
-    // 1. Game has no final result AND
-    // 2. Current time is before prediction deadline (1 hour before game)
-    return hasNoResult && now < predictionDeadline;
+    // Show games that:
+    // 1. Either have no results OR have results but they're not final
+    // 2. AND current time is before prediction deadline
+    return (!game.game_results?.length || !game.game_results[0]?.is_final) && now < predictionDeadline;
   }) || [];
 
   // Group available games by round
