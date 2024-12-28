@@ -30,10 +30,11 @@ interface GameCardProps {
       name: string;
       logo_url: string;
     };
-    game_results?: {
+    game_results?: Array<{
       home_score: number;
       away_score: number;
-    }[];
+      is_final?: boolean;
+    }>;
   };
   isAuthenticated: boolean;
   userId?: string;
