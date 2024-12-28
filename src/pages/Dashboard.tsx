@@ -121,6 +121,19 @@ const Dashboard = () => {
   const totalPoints = finishedPredictions.reduce((sum, pred) => sum + (pred.points_earned || 0), 0);
   const pointsPerGame = totalPredictions > 0 ? totalPoints / totalPredictions : 0;
 
+  // Group predictions by round
+  const predictionsByRound = predictions?.reduce((acc, prediction) => {
+    const roundId = prediction.game.round.id;
+    if (!acc[roundId]) {
+      acc[roundId] = {
+        name: prediction.game.round.name,
+        predictions: []
+      };
+    }
+    acc[roundId].predictions.push(prediction);
+    return acc;
+  }, {} as Record<string, { name: string; predictions: typeof predictions }>) || {};
+
   return (
     <div className="space-y-8">
       <DashboardHeader />
