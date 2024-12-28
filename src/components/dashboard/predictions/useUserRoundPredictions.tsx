@@ -7,7 +7,11 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
     queryKey: ["user-predictions", userId, selectedRound],
     queryFn: async () => {
       try {
-        let query = supabase
+        if (!selectedRound) {
+          return [];
+        }
+
+        const { data, error } = await supabase
           .from("predictions")
           .select(`
             id,
@@ -36,13 +40,8 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
             )
           `)
           .eq("user_id", userId)
+          .eq("game.round_id", selectedRound)
           .order('created_at', { ascending: false });
-
-        if (selectedRound !== "all") {
-          query = query.eq("game.round_id", selectedRound);
-        }
-
-        const { data, error } = await query;
 
         if (error) {
           console.error("Error fetching predictions:", error);
@@ -72,7 +71,7 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
         throw error;
       }
     },
-    enabled: isOpen,
+    enabled: isOpen && !!selectedRound, // Only run query when dialog is open AND a round is selected
     staleTime: 1000 * 60,
     retry: 2,
   });
