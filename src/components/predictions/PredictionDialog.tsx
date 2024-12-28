@@ -58,6 +58,26 @@ export function PredictionDialog({ game, isOpen, onClose, userId }: PredictionDi
 
     setIsSubmitting(true);
 
+    // First, check if a prediction already exists
+    const { data: existingPrediction } = await supabase
+      .from("predictions")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("game_id", game.id)
+      .maybeSingle();
+
+    if (existingPrediction) {
+      setIsSubmitting(false);
+      toast({
+        title: "Error",
+        description: "You have already made a prediction for this game",
+        variant: "destructive",
+      });
+      onClose();
+      return;
+    }
+
+    // If no existing prediction, create a new one
     const { error } = await supabase
       .from("predictions")
       .insert({
@@ -70,19 +90,11 @@ export function PredictionDialog({ game, isOpen, onClose, userId }: PredictionDi
     setIsSubmitting(false);
 
     if (error) {
-      if (error.code === "23505") {
-        toast({
-          title: "Error",
-          description: "You have already made a prediction for this game",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to submit prediction. Please try again.",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Error",
+        description: "Failed to submit prediction. Please try again.",
+        variant: "destructive",
+      });
       return;
     }
 
