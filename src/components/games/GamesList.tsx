@@ -77,7 +77,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
           home_team:teams!games_home_team_id_fkey(id, name, logo_url),
           away_team:teams!games_away_team_id_fkey(id, name, logo_url),
           round:rounds(id, name),
-          game_results!game_results_game_id_fkey(
+          game_results(
             home_score,
             away_score,
             is_final
