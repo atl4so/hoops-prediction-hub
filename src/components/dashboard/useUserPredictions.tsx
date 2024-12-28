@@ -14,13 +14,33 @@ export function useUserPredictions(userId: string | null) {
       const { data, error } = await supabase
         .from('predictions')
         .select(`
-          *,
+          id,
+          prediction_home_score,
+          prediction_away_score,
+          points_earned,
           game:games (
-            *,
-            home_team:teams!games_home_team_id_fkey (*),
-            away_team:teams!games_away_team_id_fkey (*),
-            round:rounds (*),
-            game_results (*)
+            id,
+            game_date,
+            round_id,
+            round:rounds (
+              id,
+              name
+            ),
+            home_team:teams!games_home_team_id_fkey (
+              id,
+              name,
+              logo_url
+            ),
+            away_team:teams!games_away_team_id_fkey (
+              id,
+              name,
+              logo_url
+            ),
+            game_results (
+              home_score,
+              away_score,
+              is_final
+            )
           )
         `)
         .eq('user_id', userId)

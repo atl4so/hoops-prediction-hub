@@ -35,7 +35,6 @@ export default function Dashboard() {
   useEffect(() => {
     if (!userId) return;
 
-    // Subscribe to game results changes
     const gameResultsChannel = supabase
       .channel('game-results-changes')
       .on(
@@ -54,7 +53,6 @@ export default function Dashboard() {
       )
       .subscribe();
 
-    // Subscribe to predictions changes
     const predictionsChannel = supabase
       .channel('predictions-changes')
       .on(
@@ -73,28 +71,9 @@ export default function Dashboard() {
       )
       .subscribe();
 
-    // Subscribe to profile changes
-    const profileChannel = supabase
-      .channel('profile-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'profiles',
-          filter: `id=eq.${userId}`
-        },
-        () => {
-          console.log('Profile changed, invalidating queries...');
-          queryClient.invalidateQueries({ queryKey: ['userProfile', userId] });
-        }
-      )
-      .subscribe();
-
     return () => {
       supabase.removeChannel(gameResultsChannel);
       supabase.removeChannel(predictionsChannel);
-      supabase.removeChannel(profileChannel);
     };
   }, [userId, queryClient]);
 
@@ -118,7 +97,21 @@ export default function Dashboard() {
         predictions: []
       };
     }
-    acc[roundId].predictions.push(prediction);
+    acc[roundId].predictions.push({
+      id: prediction.id,
+      game: {
+        id: prediction.game.id,
+        game_date: prediction.game.game_date,
+        home_team: prediction.game.home_team,
+        away_team: prediction.game.away_team,
+        game_results: prediction.game.game_results
+      },
+      prediction: {
+        prediction_home_score: prediction.prediction_home_score,
+        prediction_away_score: prediction.prediction_away_score,
+        points_earned: prediction.points_earned
+      }
+    });
     return acc;
   }, {});
 
