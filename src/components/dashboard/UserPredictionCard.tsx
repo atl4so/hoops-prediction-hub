@@ -80,8 +80,8 @@ export function UserPredictionCard({ game, prediction, gameResult }: UserPredict
           open={showPointsBreakdown}
           onOpenChange={setShowPointsBreakdown}
           prediction={{
-            home_score: prediction.prediction_home_score,
-            away_score: prediction.prediction_away_score
+            prediction_home_score: prediction.prediction_home_score,
+            prediction_away_score: prediction.prediction_away_score
           }}
           result={{
             home_score: gameResult.home_score,
