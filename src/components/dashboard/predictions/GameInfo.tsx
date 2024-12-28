@@ -14,6 +14,7 @@ interface GameInfoProps {
     game_results?: Array<{
       home_score: number;
       away_score: number;
+      is_final?: boolean;
     }>;
   };
 }
@@ -35,7 +36,12 @@ export function GameInfo({ game }: GameInfoProps) {
         </div>
         <div className="text-xl font-semibold text-center">
           {gameResult ? (
-            <span>{gameResult.home_score} - {gameResult.away_score}</span>
+            <div className="flex flex-col items-center">
+              <span>{gameResult.home_score} - {gameResult.away_score}</span>
+              {gameResult.is_final && (
+                <span className="text-xs text-muted-foreground mt-1">Final</span>
+              )}
+            </div>
           ) : (
             <span>vs</span>
           )}
