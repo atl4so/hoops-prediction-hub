@@ -3,17 +3,22 @@ interface PredictionDisplayProps {
   awayScore: number;
   pointsEarned?: number;
   onClick?: () => void;
+  showBreakdownHint?: boolean;
 }
 
 export function PredictionDisplay({ 
   homeScore, 
   awayScore, 
   pointsEarned,
-  onClick 
+  onClick,
+  showBreakdownHint = false
 }: PredictionDisplayProps) {
   return (
     <div 
-      className="text-sm text-center space-y-1"
+      className={cn(
+        "text-sm text-center space-y-1",
+        showBreakdownHint && "cursor-pointer hover:opacity-80 transition-opacity"
+      )}
       onClick={onClick}
     >
       <p className="font-medium">Your Prediction</p>
@@ -23,8 +28,8 @@ export function PredictionDisplay({
       {pointsEarned !== undefined && (
         <div className="space-y-1">
           <p className="text-primary">Points: {pointsEarned}</p>
-          {onClick && (
-            <p className="text-xs text-muted-foreground hover:text-primary underline cursor-pointer">
+          {showBreakdownHint && (
+            <p className="text-xs text-muted-foreground hover:text-primary underline">
               Click to see points breakdown
             </p>
           )}

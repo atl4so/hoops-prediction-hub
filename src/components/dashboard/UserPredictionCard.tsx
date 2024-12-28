@@ -31,6 +31,12 @@ interface UserPredictionCardProps {
 export function UserPredictionCard({ game, prediction, gameResult }: UserPredictionCardProps) {
   const [showPointsBreakdown, setShowPointsBreakdown] = useState(false);
 
+  const handlePointsClick = () => {
+    if (gameResult && prediction.points_earned !== undefined) {
+      setShowPointsBreakdown(true);
+    }
+  };
+
   return (
     <>
       <Card>
@@ -68,14 +74,15 @@ export function UserPredictionCard({ game, prediction, gameResult }: UserPredict
                 homeScore={prediction.prediction_home_score}
                 awayScore={prediction.prediction_away_score}
                 pointsEarned={prediction.points_earned}
-                onClick={() => gameResult && setShowPointsBreakdown(true)}
+                onClick={handlePointsClick}
+                showBreakdownHint={!!gameResult && prediction.points_earned !== undefined}
               />
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {gameResult && (
+      {gameResult && prediction.points_earned !== undefined && (
         <PointsBreakdownDialog
           isOpen={showPointsBreakdown}
           onOpenChange={setShowPointsBreakdown}
@@ -87,7 +94,7 @@ export function UserPredictionCard({ game, prediction, gameResult }: UserPredict
             home_score: gameResult.home_score,
             away_score: gameResult.away_score
           }}
-          points={prediction.points_earned || 0}
+          points={prediction.points_earned}
         />
       )}
     </>
