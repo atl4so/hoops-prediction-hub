@@ -8,6 +8,8 @@ export function useUserPermissions() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
+      console.log('Fetching permissions for user:', user.id);
+
       const { data, error } = await supabase
         .from("user_permissions")
         .select("can_view_future_predictions")
@@ -19,6 +21,7 @@ export function useUserPermissions() {
         return null;
       }
 
+      console.log('User permissions:', data);
       return data;
     }
   });

@@ -22,6 +22,8 @@ export function FollowedUsersPredictions() {
 
   // Subscribe to real-time updates
   useEffect(() => {
+    console.log('Setting up real-time subscriptions');
+    
     const channel = supabase
       .channel('dashboard-updates')
       .on(
@@ -32,6 +34,7 @@ export function FollowedUsersPredictions() {
           table: 'user_follows'
         },
         () => {
+          console.log('User follows updated');
           refetch();
         }
       )
@@ -43,6 +46,7 @@ export function FollowedUsersPredictions() {
           table: 'predictions'
         },
         () => {
+          console.log('Predictions updated');
           refetch();
         }
       )
@@ -54,12 +58,14 @@ export function FollowedUsersPredictions() {
           table: 'user_permissions'
         },
         () => {
+          console.log('User permissions updated');
           refetch();
         }
       )
       .subscribe();
 
     return () => {
+      console.log('Cleaning up subscriptions');
       supabase.removeChannel(channel);
     };
   }, [refetch]);

@@ -1,11 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useUserPermissions } from "./useUserPermissions";
 
 export function usePredictions(followedIds: string[], showFuturePredictions: boolean) {
+  const { data: userPermission } = useUserPermissions();
+  
   return useQuery({
-    queryKey: ["followed-users-predictions", followedIds, showFuturePredictions],
+    queryKey: ["followed-users-predictions", followedIds, showFuturePredictions, userPermission?.can_view_future_predictions],
     queryFn: async () => {
       if (!followedIds.length) return [];
+
+      console.log('Fetching predictions with permission:', userPermission?.can_view_future_predictions);
 
       let query = supabase
         .from("predictions")
@@ -36,10 +41,11 @@ export function usePredictions(followedIds: string[], showFuturePredictions: boo
         .in("user_id", followedIds)
         .order("created_at", { ascending: false });
 
-      // If user doesn't have permission for future predictions,
-      // only show predictions for finished games (where points have been earned)
-      if (!showFuturePredictions) {
-        query = query.not("points_earned", "is", null);
+      // If user doesn't have permission to view future predictions,
+      // only show predictions where points have been earned
+      if (!userPermission?.can_view_future_predictions) {
+        console.log('Filtering for finished games only');
+        query = query.not('points_earned', 'is', null);
       }
 
       const { data, error } = await query.limit(50);
@@ -48,6 +54,8 @@ export function usePredictions(followedIds: string[], showFuturePredictions: boo
         console.error("Error fetching predictions:", error);
         throw error;
       }
+
+      console.log('Fetched predictions:', data);
 
       return data.map(prediction => ({
         ...prediction,
