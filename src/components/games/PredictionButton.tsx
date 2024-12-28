@@ -11,9 +11,14 @@ interface PredictionButtonProps {
   onPrediction: () => void;
   gameId: string;
   userId?: string;
+  prediction?: {
+    prediction_home_score: number;
+    prediction_away_score: number;
+    points_earned?: number;
+  };
 }
 
-export function PredictionButton({ isAuthenticated, gameDate, onPrediction, gameId, userId }: PredictionButtonProps) {
+export function PredictionButton({ isAuthenticated, gameDate, onPrediction, gameId, userId, prediction }: PredictionButtonProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
 

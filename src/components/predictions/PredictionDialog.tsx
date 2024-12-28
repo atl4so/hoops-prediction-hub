@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 
 interface PredictionDialogProps {
   isOpen: boolean;
-  onClose: () => void;
+  onOpenChange: (open: boolean) => void;
   gameId: string;
   userId?: string;
   gameDate: string;
@@ -32,7 +32,7 @@ interface PredictionDialogProps {
 
 export function PredictionDialog({ 
   isOpen, 
-  onClose, 
+  onOpenChange, 
   gameId, 
   userId, 
   gameDate,
@@ -89,7 +89,7 @@ export function PredictionDialog({
         description: "You have already made a prediction for this game",
         variant: "destructive",
       });
-      onClose();
+      onOpenChange(false);
       return;
     }
 
@@ -118,11 +118,11 @@ export function PredictionDialog({
       title: "Success",
       description: "Your prediction has been submitted!",
     });
-    onClose();
+    onOpenChange(false);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Make Prediction</DialogTitle>
@@ -156,7 +156,7 @@ export function PredictionDialog({
             </div>
           </div>
           <div className="flex justify-end space-x-2">
-            <Button variant="outline" type="button" onClick={onClose}>
+            <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
