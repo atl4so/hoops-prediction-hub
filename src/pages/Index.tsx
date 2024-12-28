@@ -29,7 +29,7 @@ const Index = () => {
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-8 animate-fade-in relative overflow-hidden">
       <div className="text-center space-y-6 max-w-3xl mx-auto px-4 z-10">
-        <h1 className="inline-block text-4xl md:text-6xl font-bold tracking-tight leading-relaxed mb-4">
+        <h1 className="inline-block text-4xl md:text-6xl font-bold tracking-tight leading-relaxed mb-4 font-display">
           <div className="py-4">
             {titleText.split('').map((char, index) => (
               <span
@@ -38,6 +38,8 @@ const Index = () => {
                   inline-block
                   ${isAnimationComplete ? 'bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent' : ''}
                   animate-[scale-in_0.3s_ease-out]
+                  font-display
+                  tracking-tight
                 `}
                 style={{
                   animationDelay: `${index * 0.1}s`,
@@ -57,7 +59,7 @@ const Index = () => {
               onClick={() => navigate("/login")}
               variant="default"
               size="lg"
-              className="min-w-[120px] bg-primary hover:bg-primary/90"
+              className="min-w-[120px] bg-primary hover:bg-primary/90 font-medium tracking-wide"
             >
               Login
             </Button>
@@ -65,7 +67,7 @@ const Index = () => {
               onClick={() => navigate("/register")}
               variant="outline"
               size="lg"
-              className="min-w-[120px] border-primary/20 hover:bg-primary/10"
+              className="min-w-[120px] border-primary/20 hover:bg-primary/10 font-medium tracking-wide"
             >
               Register
             </Button>
