@@ -39,11 +39,6 @@ export function GameInfo({ game, prediction }: GameInfoProps) {
             className="w-16 h-16 object-contain"
           />
           <p className="text-sm mt-2 text-center">{game.home_team.name}</p>
-          {prediction && (
-            <p className="text-sm font-medium text-primary mt-1">
-              Predicted: {prediction.prediction_home_score}
-            </p>
-          )}
         </div>
         <div className="text-xl font-semibold text-center">
           {gameResult ? (
@@ -76,11 +71,6 @@ export function GameInfo({ game, prediction }: GameInfoProps) {
             className="w-16 h-16 object-contain"
           />
           <p className="text-sm mt-2 text-center">{game.away_team.name}</p>
-          {prediction && (
-            <p className="text-sm font-medium text-primary mt-1">
-              Predicted: {prediction.prediction_away_score}
-            </p>
-          )}
         </div>
       </div>
     </div>
