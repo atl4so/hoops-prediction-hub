@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { subHours } from "date-fns";
+import { subHours, isAfter, isBefore } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -22,9 +22,18 @@ export function PredictionButton({ isAuthenticated, gameDate, onPrediction }: Pr
     console.log('Game date:', gameDateObj);
     console.log('Current time:', now);
     console.log('One hour before:', oneHourBefore);
-    console.log('Is prediction allowed:', now < oneHourBefore);
     
-    return now < oneHourBefore;
+    // Allow predictions if:
+    // 1. Current time is before the game start time AND
+    // 2. Current time is before the cutoff time (1 hour before game)
+    const isBeforeGame = isBefore(now, gameDateObj);
+    const isBeforeCutoff = isBefore(now, oneHourBefore);
+    
+    console.log('Is before game:', isBeforeGame);
+    console.log('Is before cutoff:', isBeforeCutoff);
+    console.log('Is prediction allowed:', isBeforeGame && isBeforeCutoff);
+    
+    return isBeforeGame && isBeforeCutoff;
   };
 
   const handleClick = () => {
