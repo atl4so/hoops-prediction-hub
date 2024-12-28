@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { GameCard } from "@/components/games/GameCard";
+import { UserPredictionCard } from "./UserPredictionCard";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface UserPredictionsDialogProps {
@@ -141,10 +141,9 @@ export function UserPredictionsDialog({
           ) : (
             <div className="grid gap-6 sm:grid-cols-2">
               {predictions?.map((prediction) => (
-                <GameCard
+                <UserPredictionCard
                   key={prediction.game.id}
                   game={prediction.game}
-                  isAuthenticated={true}
                   prediction={{
                     prediction_home_score: prediction.prediction_home_score,
                     prediction_away_score: prediction.prediction_away_score,
