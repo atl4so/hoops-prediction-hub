@@ -1,16 +1,9 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { GameResultItem } from "./GameResultItem";
+import { EditGameResultDialog } from "./EditGameResultDialog";
 
 export function GameResultsList() {
   const { toast } = useToast();
@@ -58,7 +51,6 @@ export function GameResultsList() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['game-results'] });
-      // Also invalidate predictions and profiles as they will be updated by the trigger
       queryClient.invalidateQueries({ queryKey: ['predictions'] });
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
       
@@ -91,72 +83,25 @@ export function GameResultsList() {
       <h3 className="text-lg font-medium">Existing Results</h3>
       <div className="grid gap-4">
         {existingResults?.map((result) => (
-          <div
+          <GameResultItem
             key={result.id}
-            className="flex items-center justify-between p-4 border rounded-lg"
-          >
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">
-                {format(new Date(result.game.game_date), "PPP")}
-              </p>
-              <h4 className="font-medium">
-                {result.game.home_team.name} {result.home_score} - {result.away_score} {result.game.away_team.name}
-              </h4>
-            </div>
-            <Button 
-              variant="outline"
-              onClick={() => handleEdit(result)}
-              className="text-[#8B5CF6] hover:text-[#7C3AED] hover:bg-[#8B5CF6]/10"
-            >
-              Edit Result
-            </Button>
-          </div>
+            result={result}
+            onEdit={handleEdit}
+          />
         ))}
       </div>
 
-      <Dialog open={!!editingResult} onOpenChange={() => setEditingResult(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Game Result</DialogTitle>
-          </DialogHeader>
-          
-          {editingResult && (
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm text-muted-foreground mb-2">
-                  {format(new Date(editingResult.game.game_date), "PPP")}
-                </p>
-                <p className="font-medium">
-                  {editingResult.game.home_team.name} vs {editingResult.game.away_team.name}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  type="number"
-                  placeholder="Home Score"
-                  value={homeScore}
-                  onChange={(e) => setHomeScore(e.target.value)}
-                />
-                <Input
-                  type="number"
-                  placeholder="Away Score"
-                  value={awayScore}
-                  onChange={(e) => setAwayScore(e.target.value)}
-                />
-              </div>
-
-              <Button 
-                className="w-full"
-                onClick={() => updateResult.mutate()}
-                disabled={updateResult.isPending}
-              >
-                {updateResult.isPending ? "Updating..." : "Update Result"}
-              </Button>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <EditGameResultDialog
+        result={editingResult}
+        open={!!editingResult}
+        onOpenChange={() => setEditingResult(null)}
+        homeScore={homeScore}
+        awayScore={awayScore}
+        onHomeScoreChange={setHomeScore}
+        onAwayScoreChange={setAwayScore}
+        onUpdate={() => updateResult.mutate()}
+        isPending={updateResult.isPending}
+      />
     </div>
   );
 }
