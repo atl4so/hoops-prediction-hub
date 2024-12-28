@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSession } from "@supabase/auth-helpers-react";
 import { useNavigate } from "react-router-dom";
 import { GamesList } from "@/components/games/GamesList";
@@ -24,7 +24,10 @@ export default function Predictions() {
         </p>
       </section>
 
-      <GamesList />
+      <GamesList 
+        isAuthenticated={!!session} 
+        userId={session.user.id}
+      />
     </div>
   );
 }
