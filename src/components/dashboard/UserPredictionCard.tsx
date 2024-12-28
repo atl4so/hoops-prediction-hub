@@ -25,7 +25,7 @@ interface UserPredictionCardProps {
     prediction_home_score: number;
     prediction_away_score: number;
     points_earned?: number;
-  };
+  } | null;
   isOwnPrediction?: boolean;
 }
 
@@ -36,6 +36,11 @@ export function UserPredictionCard({
 }: UserPredictionCardProps) {
   const [showPointsBreakdown, setShowPointsBreakdown] = useState(false);
   const gameResult = game.game_results?.[0];
+
+  // If no prediction data, don't render the card
+  if (!prediction) {
+    return null;
+  }
 
   const handlePointsClick = () => {
     if (gameResult && prediction?.points_earned !== undefined) {

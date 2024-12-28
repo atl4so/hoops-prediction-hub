@@ -25,7 +25,7 @@ interface CollapsibleRoundSectionProps {
       prediction_home_score: number;
       prediction_away_score: number;
       points_earned?: number;
-    };
+    } | null;
   }>;
   defaultExpanded?: boolean;
 }

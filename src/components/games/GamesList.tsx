@@ -145,8 +145,9 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
           roundId={round.id}
           roundName={round.name}
           predictions={round.games.map(game => ({
+            id: game.id, // Add the id here
             game,
-            prediction: null
+            prediction: null // Set prediction to null for games without predictions
           }))}
         />
       ))}
