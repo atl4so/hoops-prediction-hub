@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
-import { GameCard } from "@/components/games/GameCard";
 import { StatsOverview } from "@/components/dashboard/StatsOverview";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { FollowingSection } from "@/components/dashboard/FollowingSection";
+import { CollapsibleRoundSection } from "@/components/dashboard/CollapsibleRoundSection";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -54,7 +54,7 @@ const Dashboard = () => {
         .gt('total_points', userProfile?.total_points || 0);
 
       if (error) throw error;
-      return data.length + 1; // Add 1 because we're counting positions ahead
+      return data.length + 1;
     },
     enabled: !!userId && !!userProfile
   });
@@ -65,7 +65,6 @@ const Dashboard = () => {
     queryFn: async () => {
       if (!userId) return null;
       
-      // First get the latest round
       const { data: rounds, error: roundError } = await supabase
         .from('rounds')
         .select('id')
@@ -125,12 +124,8 @@ const Dashboard = () => {
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching predictions:', error);
-        throw error;
-      }
+      if (error) throw error;
 
-      // Transform the data to ensure game_results is always an array
       return data.map(prediction => ({
         ...prediction,
         game: {
@@ -199,26 +194,13 @@ const Dashboard = () => {
 
       <div className="space-y-12">
         {Object.entries(predictionsByRound).map(([roundId, { name, predictions }]) => (
-          <section key={roundId} className="space-y-6">
-            <h2 className="text-2xl font-display font-semibold tracking-tight">
-              Round {name}
-            </h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {predictions.map((prediction) => (
-                <GameCard
-                  key={prediction.game.id}
-                  game={prediction.game}
-                  isAuthenticated={true}
-                  userId={userId}
-                  prediction={{
-                    prediction_home_score: prediction.prediction_home_score,
-                    prediction_away_score: prediction.prediction_away_score,
-                    points_earned: prediction.points_earned
-                  }}
-                />
-              ))}
-            </div>
-          </section>
+          <CollapsibleRoundSection
+            key={roundId}
+            roundId={roundId}
+            roundName={name}
+            predictions={predictions}
+            userId={userId}
+          />
         ))}
 
         {!predictions?.length && (
@@ -229,6 +211,6 @@ const Dashboard = () => {
       </div>
     </div>
   );
-}
+};
 
 export default Dashboard;
