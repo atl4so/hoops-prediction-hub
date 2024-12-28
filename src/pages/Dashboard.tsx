@@ -34,10 +34,15 @@ export default function Dashboard() {
   // Group predictions by round
   const predictionsByRound = predictions?.reduce((acc: any, prediction: any) => {
     const roundId = prediction.game.round_id;
+    const roundName = prediction.game.round.name;
     if (!acc[roundId]) {
-      acc[roundId] = [];
+      acc[roundId] = {
+        roundId,
+        roundName,
+        predictions: []
+      };
     }
-    acc[roundId].push(prediction);
+    acc[roundId].predictions.push(prediction);
     return acc;
   }, {});
 
@@ -63,11 +68,13 @@ export default function Dashboard() {
       <FollowingSection />
 
       <div className="space-y-4">
-        {predictionsByRound && Object.entries(predictionsByRound).map(([roundId, roundPredictions]: [string, any]) => (
+        {predictionsByRound && Object.values(predictionsByRound).map((roundData: any) => (
           <CollapsibleRoundSection
-            key={roundId}
-            roundId={roundId}
-            predictions={roundPredictions}
+            key={roundData.roundId}
+            roundId={roundData.roundId}
+            roundName={roundData.roundName}
+            predictions={roundData.predictions}
+            userId={userId}
           />
         ))}
       </div>

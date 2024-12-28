@@ -1,6 +1,6 @@
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useQuery } from "@tanstack/react-query";
-import { Database } from "@/types/supabase";
+import { Database } from "@/integrations/supabase/types";
 
 export function useUserPredictions(userId: string | null) {
   const session = useSession();
@@ -18,7 +18,8 @@ export function useUserPredictions(userId: string | null) {
           game: games (
             *,
             home_team: teams!games_home_team_id_fkey (*),
-            away_team: teams!games_away_team_id_fkey (*)
+            away_team: teams!games_away_team_id_fkey (*),
+            round: rounds (*)
           ),
           game_result: game_results (*)
         `)

@@ -1,6 +1,6 @@
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useQuery } from "@tanstack/react-query";
-import { Database } from "@/types/supabase";
+import { Database } from "@/integrations/supabase/types";
 
 export function useCurrentRoundRank(userId: string | null) {
   const session = useSession();

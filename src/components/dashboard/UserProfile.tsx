@@ -2,7 +2,7 @@ import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Database } from "@/types/supabase";
+import { Database } from "@/integrations/supabase/types";
 
 export function useUserProfile(userId: string | null) {
   const session = useSession();
