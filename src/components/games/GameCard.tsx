@@ -5,6 +5,7 @@ import { PredictionButton } from "./PredictionButton";
 import { PredictionDialog } from "../predictions/PredictionDialog";
 import { PredictionDisplay } from "./PredictionDisplay";
 import { PointsBreakdownDialog } from "./PointsBreakdownDialog";
+import { CountdownTimer } from "./CountdownTimer";
 import { useState } from "react";
 
 interface GameCardProps {
@@ -41,6 +42,7 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
   const [showPointsBreakdown, setShowPointsBreakdown] = useState(false);
 
   const gameResult = game.game_results?.[0];
+  const isUpcoming = !gameResult && new Date(game.game_date) > new Date();
 
   const handlePointsClick = () => {
     if (gameResult && prediction?.points_earned !== undefined) {
@@ -50,11 +52,16 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
 
   return (
     <Card className="w-full h-full flex flex-col">
-      <CardContent className="pt-6 px-6 flex-1 flex flex-col">
+      <CardContent className="pt-6 px-4 sm:px-6 flex-1 flex flex-col">
         <div className="flex flex-col h-full">
-          <GameDateTime date={game.game_date} />
+          <div className="space-y-1">
+            <GameDateTime date={game.game_date} />
+            {isUpcoming && (
+              <CountdownTimer gameDate={game.game_date} />
+            )}
+          </div>
           
-          <div className="grid grid-cols-3 gap-4 items-center flex-1">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 items-center flex-1 mt-4">
             <TeamDisplay
               align="right"
               team={game.home_team}
@@ -84,7 +91,7 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
             </div>
           )}
 
-          <div className="mt-6">
+          <div className="mt-4">
             <PredictionButton
               isAuthenticated={isAuthenticated}
               gameDate={game.game_date}
