@@ -39,6 +39,7 @@ export function PointsBreakdownDialog({
             <PointsBreakdown
               prediction={prediction}
               result={result}
+              points={points}
             />
           </AlertDialogDescription>
         </AlertDialogHeader>
