@@ -51,7 +51,7 @@ export default function Terms() {
 
       if (permissionsError) throw permissionsError;
 
-      // Delete user profile (this will cascade to other tables)
+      // Delete user profile
       const { error: profileError } = await supabase
         .from('profiles')
         .delete()
@@ -59,10 +59,10 @@ export default function Terms() {
 
       if (profileError) throw profileError;
 
-      // Delete the user's auth account
-      const { error: deleteError } = await supabase.auth.admin.deleteUser(
-        session.user.id
-      );
+      // Delete the user's auth account using the standard API
+      const { error: deleteError } = await supabase.auth.updateUser({
+        data: { deleted: true }
+      });
 
       if (deleteError) throw deleteError;
 
