@@ -15,13 +15,13 @@ export function useUserPredictions(userId: string | null) {
         .from('predictions')
         .select(`
           *,
-          game: games (
+          game:games (
             *,
-            home_team: teams!games_home_team_id_fkey (*),
-            away_team: teams!games_away_team_id_fkey (*),
-            round: rounds (*)
-          ),
-          game_result: game_results (*)
+            home_team:teams!games_home_team_id_fkey (*),
+            away_team:teams!games_away_team_id_fkey (*),
+            round:rounds (*),
+            game_results (*)
+          )
         `)
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
