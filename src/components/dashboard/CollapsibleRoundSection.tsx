@@ -56,26 +56,33 @@ export function CollapsibleRoundSection({
   }, [queryClient]);
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-6 rounded-xl bg-background/50 p-6 border border-border/50 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-border/80">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-display font-semibold tracking-tight">
-          Round {roundName}
-        </h2>
+        <div className="space-y-1">
+          <h2 className="text-2xl font-display font-semibold tracking-tight">
+            Round {roundName}
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {predictions.length} {predictions.length === 1 ? 'game' : 'games'} in this round
+          </p>
+        </div>
         {hasMoreGames && isExpanded && (
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setIsExpanded(false)}
-            className="flex items-center gap-1 text-muted-foreground hover:text-primary"
+            className="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors group"
           >
-            Show Less <ChevronUp className="h-4 w-4" />
+            Show Less 
+            <ChevronUp className="h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
           </Button>
         )}
       </div>
       
       <div className={cn(
         "grid gap-6 sm:grid-cols-2 lg:grid-cols-3",
-        "transition-all duration-300"
+        "transition-all duration-300",
+        isExpanded ? "animate-fade-in" : ""
       )}>
         {visiblePredictions.map((prediction) => (
           <GameCard
@@ -100,9 +107,10 @@ export function CollapsibleRoundSection({
       {hasMoreGames && !isExpanded && (
         <button
           onClick={() => setIsExpanded(true)}
-          className="w-full text-sm text-center text-muted-foreground hover:text-primary transition-colors"
+          className="w-full py-3 mt-2 rounded-lg border border-border/50 bg-accent/50 text-sm text-center text-muted-foreground hover:text-primary hover:bg-accent transition-colors group flex items-center justify-center gap-2"
         >
           {remainingGamesCount} more {remainingGamesCount === 1 ? 'game' : 'games'} in this round
+          <ChevronDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
         </button>
       )}
     </section>
