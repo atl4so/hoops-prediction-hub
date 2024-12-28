@@ -39,7 +39,11 @@ export function CollapsibleRoundSection({
           <UserPredictionCard
             key={prediction.game.id}
             game={prediction.game}
-            prediction={prediction.prediction!}
+            prediction={prediction.prediction || {
+              prediction_home_score: 0,
+              prediction_away_score: 0,
+              points_earned: undefined
+            }}
             isOwnPrediction={true}
           />
         ))}
