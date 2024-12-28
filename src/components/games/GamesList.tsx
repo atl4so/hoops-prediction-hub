@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { GameCard } from "./GameCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface GamesListProps {
   isAuthenticated: boolean;
@@ -9,6 +11,8 @@ interface GamesListProps {
 }
 
 export function GamesList({ isAuthenticated, userId }: GamesListProps) {
+  const queryClient = useQueryClient();
+
   const { data: games, isLoading } = useQuery({
     queryKey: ["games"],
     queryFn: async () => {
@@ -30,13 +34,38 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
 
       if (error) throw error;
       
-      // Transform the data to ensure game_results is always an array
       return data.map(game => ({
         ...game,
         game_results: Array.isArray(game.game_results) ? game.game_results : [game.game_results].filter(Boolean)
       }));
     },
   });
+
+  // Subscribe to real-time updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('games-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'game_results'
+        },
+        () => {
+          // Invalidate and refetch queries when game results change
+          queryClient.invalidateQueries({ queryKey: ['games'] });
+          queryClient.invalidateQueries({ queryKey: ['predictions'] });
+          queryClient.invalidateQueries({ queryKey: ['user-stats'] });
+          queryClient.invalidateQueries({ queryKey: ['profiles'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   if (isLoading) {
     return (

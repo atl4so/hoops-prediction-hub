@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { GameResultItem } from "./GameResultItem";
 import { EditGameResultDialog } from "./EditGameResultDialog";
+import { useEffect } from "react";
 
 export function GameResultsList() {
   const { toast } = useToast();
@@ -36,6 +37,32 @@ export function GameResultsList() {
     },
   });
 
+  // Subscribe to real-time updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('game-results-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'game_results'
+        },
+        () => {
+          // Invalidate and refetch queries when game results change
+          queryClient.invalidateQueries({ queryKey: ['game-results'] });
+          queryClient.invalidateQueries({ queryKey: ['predictions'] });
+          queryClient.invalidateQueries({ queryKey: ['user-stats'] });
+          queryClient.invalidateQueries({ queryKey: ['profiles'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   const updateResult = useMutation({
     mutationFn: async () => {
       if (!editingResult || !homeScore || !awayScore) {
@@ -57,11 +84,6 @@ export function GameResultsList() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['game-results'] });
-      queryClient.invalidateQueries({ queryKey: ['predictions'] });
-      queryClient.invalidateQueries({ queryKey: ['profiles'] });
-      queryClient.invalidateQueries({ queryKey: ['user-stats'] });
-      
       toast({ 
         title: "Success", 
         description: "Game result updated and points recalculated successfully",
