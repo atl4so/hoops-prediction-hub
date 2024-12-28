@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { validateEmail, normalizeEmail } from "@/utils/validation";
+import { normalizeEmail } from "@/utils/validation";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useRegistrationValidation } from "@/hooks/useRegistrationValidation";
 
 export function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -14,69 +15,34 @@ export function RegisterForm() {
     displayName: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [emailError, setEmailError] = useState<string | null>(null);
-  const [displayNameError, setDisplayNameError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const {
+    emailError,
+    displayNameError,
+    validateDisplayName,
+    validateRegistrationEmail,
+  } = useRegistrationValidation();
 
   const handleEmailChange = async (email: string) => {
     setFormData(prev => ({ ...prev, email }));
-    const validationError = validateEmail(email);
-    if (validationError) {
-      setEmailError(validationError);
-      return;
-    }
-    setEmailError(null);
-  };
-
-  const checkDisplayNameAvailability = async (displayName: string) => {
-    if (!displayName) {
-      setDisplayNameError("Display name is required");
-      return false;
-    }
-    if (displayName.length < 3) {
-      setDisplayNameError("Display name must be at least 3 characters long");
-      return false;
-    }
-    
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('display_name', displayName)
-        .maybeSingle();
-
-      if (error) {
-        console.error('Error checking display name:', error);
-        return false;
-      }
-
-      if (data) {
-        setDisplayNameError("This display name is already taken");
-        return false;
-      }
-
-      setDisplayNameError(null);
-      return true;
-    } catch (error) {
-      console.error('Error checking display name:', error);
-      setDisplayNameError("Error checking display name availability");
-      return false;
-    }
+    await validateRegistrationEmail(email);
   };
 
   const handleDisplayNameChange = async (displayName: string) => {
     setFormData(prev => ({ ...prev, displayName }));
-    await checkDisplayNameAvailability(displayName);
+    await validateDisplayName(displayName);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (emailError || displayNameError || isLoading) return;
 
-    // Validate display name before proceeding
-    const isDisplayNameValid = await checkDisplayNameAvailability(formData.displayName);
-    if (!isDisplayNameValid) return;
+    // Validate display name and email before proceeding
+    const isDisplayNameValid = await validateDisplayName(formData.displayName);
+    const isEmailValid = await validateRegistrationEmail(formData.email);
+    
+    if (!isDisplayNameValid || !isEmailValid) return;
 
     setIsLoading(true);
     try {
