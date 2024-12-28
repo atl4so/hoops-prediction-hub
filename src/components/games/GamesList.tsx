@@ -18,7 +18,8 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
           id,
           game_date,
           home_team:teams!games_home_team_id_fkey(name, logo_url),
-          away_team:teams!games_away_team_id_fkey(name, logo_url)
+          away_team:teams!games_away_team_id_fkey(name, logo_url),
+          round:rounds(name)
         `)
         .order("game_date", { ascending: true });
 
@@ -29,7 +30,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((i) => (
           <Skeleton key={i} className="h-[200px]" />
         ))}
@@ -38,7 +39,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {games?.map((game) => (
         <GameCard 
           key={game.id} 
