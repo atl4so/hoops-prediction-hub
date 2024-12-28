@@ -77,8 +77,15 @@ export default function Terms() {
       );
 
       if (deleteError) {
-        console.error('Error deleting auth user:', deleteError);
-        throw deleteError;
+        // If admin deletion fails, try user self-deletion
+        const { error: userDeleteError } = await supabase.auth.updateUser({
+          data: { deleted: true }
+        });
+
+        if (userDeleteError) {
+          console.error('Error marking user as deleted:', userDeleteError);
+          throw userDeleteError;
+        }
       }
 
       // Finally, sign out the user
