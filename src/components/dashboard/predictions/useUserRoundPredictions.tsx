@@ -35,7 +35,8 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
               )
             )
           `)
-          .eq("user_id", userId);
+          .eq("user_id", userId)
+          .order('created_at', { ascending: false });
 
         if (selectedRound !== "all") {
           query = query.eq("game.round_id", selectedRound);
@@ -50,9 +51,12 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
         }
 
         return data?.map(prediction => ({
+          id: prediction.id,
           game: {
             ...prediction.game,
-            game_results: prediction.game.game_results || []
+            game_results: Array.isArray(prediction.game.game_results) 
+              ? prediction.game.game_results 
+              : [prediction.game.game_results].filter(Boolean)
           },
           prediction: {
             prediction_home_score: prediction.prediction_home_score,

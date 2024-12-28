@@ -4,6 +4,7 @@ interface CollapsibleRoundSectionProps {
   roundId: string;
   roundName: string;
   predictions: Array<{
+    id: string;
     game: {
       id: string;
       game_date: string;
@@ -37,7 +38,7 @@ export function CollapsibleRoundSection({
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {predictions.map((prediction) => (
           <UserPredictionCard
-            key={prediction.game.id}
+            key={prediction.id}
             game={prediction.game}
             prediction={prediction.prediction}
             isOwnPrediction={true}
