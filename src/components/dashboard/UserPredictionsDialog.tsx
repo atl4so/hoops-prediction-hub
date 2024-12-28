@@ -30,7 +30,7 @@ export function UserPredictionsDialog({
   userId,
   userName,
 }: UserPredictionsDialogProps) {
-  const [selectedRound, setSelectedRound] = useState<string>("");
+  const [selectedRound, setSelectedRound] = useState<string>("all");
 
   const { data: rounds, isLoading: isLoadingRounds } = useQuery({
     queryKey: ["rounds"],
@@ -82,7 +82,7 @@ export function UserPredictionsDialog({
         .eq("user_id", userId)
         .order("created_at", { ascending: false });
 
-      if (selectedRound) {
+      if (selectedRound !== "all") {
         query = query.eq("game.round_id", selectedRound);
       }
 
@@ -123,7 +123,7 @@ export function UserPredictionsDialog({
               <SelectValue placeholder="Filter by round" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Rounds</SelectItem>
+              <SelectItem value="all">All Rounds</SelectItem>
               {rounds?.map((round) => (
                 <SelectItem key={round.id} value={round.id}>
                   Round {round.name}
