@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { StatsOverview } from "@/components/dashboard/StatsOverview";
 import { CollapsibleRoundSection } from "@/components/dashboard/CollapsibleRoundSection";
-import { UserProfile } from "@/components/dashboard/UserProfile";
+import { useUserProfile } from "@/components/dashboard/UserProfile";
 import { useCurrentRoundRank } from "@/components/dashboard/useCurrentRoundRank";
 import { useUserPredictions } from "@/components/dashboard/useUserPredictions";
 import { useQueryClient } from "@tanstack/react-query";
