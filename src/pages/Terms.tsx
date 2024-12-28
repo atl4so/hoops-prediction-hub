@@ -28,36 +28,23 @@ export default function Terms() {
     setIsDeleting(true);
     try {
       // First, delete the auth user using the Edge Function
-      const { error: deleteAuthError } = await supabase.functions.invoke('delete-user', {
+      const { error: deleteError } = await supabase.functions.invoke('delete-user', {
         body: { user_id: session.user.id }
       });
 
-      if (deleteAuthError) {
-        console.error('Error deleting auth user:', deleteAuthError);
-        throw deleteAuthError;
+      if (deleteError) {
+        console.error('Error deleting account:', deleteError);
+        throw deleteError;
       }
 
-      // Then delete all user data using the database function
-      const { error: dbError } = await supabase.rpc('delete_user', {
-        user_id: session.user.id
-      });
-
-      if (dbError) {
-        console.error('Error deleting user data:', dbError);
-        throw dbError;
-      }
-
+      // Force sign out after successful deletion
+      await supabase.auth.signOut();
+      
       toast.success("Your account has been deleted successfully");
       navigate("/");
     } catch (error) {
       console.error('Error deleting account:', error);
       toast.error("Failed to delete account. Please try again.");
-      
-      // If deletion partially succeeded, sign out anyway
-      if (error.message?.includes('auth user')) {
-        await supabase.auth.signOut();
-        navigate("/");
-      }
     } finally {
       setIsDeleting(false);
     }
