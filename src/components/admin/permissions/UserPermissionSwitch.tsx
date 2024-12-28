@@ -15,6 +15,8 @@ export function UserPermissionSwitch({ userId, initialState }: UserPermissionSwi
 
   const updatePermission = useMutation({
     mutationFn: async (canViewFuturePredictions: boolean) => {
+      console.log('Updating permission:', { userId, canViewFuturePredictions });
+      
       if (canViewFuturePredictions) {
         const { error } = await supabase
           .from('user_permissions')
@@ -29,6 +31,7 @@ export function UserPermissionSwitch({ userId, initialState }: UserPermissionSwi
           );
         if (error) throw error;
       } else {
+        // When disabling permission, delete the record
         const { error } = await supabase
           .from('user_permissions')
           .delete()
@@ -36,12 +39,15 @@ export function UserPermissionSwitch({ userId, initialState }: UserPermissionSwi
         if (error) throw error;
       }
     },
-    onSuccess: () => {
+    onSuccess: (_, canViewFuturePredictions) => {
+      console.log('Permission update successful');
+      // Invalidate both queries to refresh the lists
       queryClient.invalidateQueries({ queryKey: ['users-permissions'] });
       queryClient.invalidateQueries({ queryKey: ['users-with-permissions'] });
+      
       toast({ 
         title: "Success", 
-        description: "Permission updated successfully",
+        description: `Permission ${canViewFuturePredictions ? 'enabled' : 'disabled'} successfully`,
         variant: "default"
       });
     },
@@ -55,15 +61,17 @@ export function UserPermissionSwitch({ userId, initialState }: UserPermissionSwi
     },
   });
 
+  const handleToggle = (checked: boolean) => {
+    console.log('Toggle clicked:', { userId, checked });
+    updatePermission.mutate(checked);
+  };
+
   return (
     <div className="flex items-center space-x-2">
       <Switch
         id={`permission-${userId}`}
         checked={initialState}
-        onCheckedChange={(checked) => {
-          console.log('Updating permission for user:', userId, 'to:', checked);
-          updatePermission.mutate(checked);
-        }}
+        onCheckedChange={handleToggle}
       />
       <Label htmlFor={`permission-${userId}`}>
         View Future Predictions
