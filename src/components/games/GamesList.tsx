@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { CollapsibleRoundSection } from "../dashboard/CollapsibleRoundSection";
 import { subHours } from "date-fns";
+import { useSession } from "@supabase/auth-helpers-react";
 
 interface GamesListProps {
   isAuthenticated: boolean;
@@ -13,37 +14,26 @@ interface GamesListProps {
 }
 
 export function GamesList({ isAuthenticated, userId }: GamesListProps) {
+  const session = useSession();
   const queryClient = useQueryClient();
 
-  const { data: games, isLoading } = useQuery({
-    queryKey: ["games"],
+  // Add a query to get the user's display name
+  const { data: userProfile } = useQuery({
+    queryKey: ["userProfile", userId],
     queryFn: async () => {
+      if (!userId) return null;
       const { data, error } = await supabase
-        .from("games")
-        .select(`
-          id,
-          game_date,
-          home_team:teams!games_home_team_id_fkey(id, name, logo_url),
-          away_team:teams!games_away_team_id_fkey(id, name, logo_url),
-          round:rounds(id, name),
-          game_results!game_results_game_id_fkey(
-            home_score,
-            away_score,
-            is_final
-          )
-        `)
-        .order("game_date", { ascending: true });
+        .from("profiles")
+        .select("display_name")
+        .eq("id", userId)
+        .single();
 
       if (error) throw error;
-      
-      return data.map(game => ({
-        ...game,
-        game_results: Array.isArray(game.game_results) ? game.game_results : [game.game_results].filter(Boolean)
-      }));
+      return data;
     },
+    enabled: !!userId,
   });
 
-  // Subscribe to real-time updates
   useEffect(() => {
     const channel = supabase
       .channel('games-updates')
@@ -75,6 +65,34 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
       supabase.removeChannel(channel);
     };
   }, [queryClient]);
+
+  const { data: games, isLoading } = useQuery({
+    queryKey: ["games"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("games")
+        .select(`
+          id,
+          game_date,
+          home_team:teams!games_home_team_id_fkey(id, name, logo_url),
+          away_team:teams!games_away_team_id_fkey(id, name, logo_url),
+          round:rounds(id, name),
+          game_results!game_results_game_id_fkey(
+            home_score,
+            away_score,
+            is_final
+          )
+        `)
+        .order("game_date", { ascending: true });
+
+      if (error) throw error;
+      
+      return data.map(game => ({
+        ...game,
+        game_results: Array.isArray(game.game_results) ? game.game_results : [game.game_results].filter(Boolean)
+      }));
+    },
+  });
 
   if (isLoading) {
     return (
@@ -145,10 +163,11 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
           roundId={round.id}
           roundName={round.name}
           predictions={round.games.map(game => ({
-            id: game.id, // Add the id here
+            id: game.id,
             game,
-            prediction: null // Set prediction to null for games without predictions
+            prediction: null
           }))}
+          userName={userProfile?.display_name || "User"}
         />
       ))}
     </div>
