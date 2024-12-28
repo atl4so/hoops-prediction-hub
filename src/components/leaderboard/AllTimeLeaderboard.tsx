@@ -28,6 +28,7 @@ export function AllTimeLeaderboard({ searchQuery }: AllTimeLeaderboardProps) {
           points_per_game,
           total_predictions
         `)
+        .gt('total_predictions', 0) // Only show users with predictions
         .order("total_points", { ascending: false })
         .limit(100);
 
