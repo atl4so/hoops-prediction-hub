@@ -84,11 +84,16 @@ export function FollowedUsersPredictions() {
         `)
         .in("user_id", followedIds)
         .order("created_at", { ascending: false })
+        // Only show predictions for finished games unless user has permission
+        .or(
+          permissions?.can_view_future_predictions 
+            ? `game_date.gt.${now},game_results.is_final.eq.true` 
+            : 'game_results.is_final.eq.true'
+        )
         .limit(50);
 
       if (error) throw error;
 
-      // Transform the data to ensure game_results is always an array
       return data.map(prediction => ({
         ...prediction,
         game: {
@@ -97,7 +102,7 @@ export function FollowedUsersPredictions() {
             ? prediction.game.game_results 
             : [prediction.game.game_results].filter(Boolean)
         }
-      })) as Prediction[];
+      }));
     },
   });
 
