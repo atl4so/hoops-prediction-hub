@@ -47,8 +47,8 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
     };
 
     // Subscribe to auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
         queryClient.clear();
       }
     });
