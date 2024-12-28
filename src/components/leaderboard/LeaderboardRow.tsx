@@ -5,6 +5,7 @@ import { useFollowStatus } from "@/hooks/useFollowStatus";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 interface LeaderboardRowProps {
   player: {
