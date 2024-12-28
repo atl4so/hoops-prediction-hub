@@ -4,16 +4,7 @@ import { GameDateTime } from "./GameDateTime";
 import { PredictionButton } from "./PredictionButton";
 import { PredictionDialog } from "../predictions/PredictionDialog";
 import { PredictionDisplay } from "./PredictionDisplay";
-import { PointsBreakdown } from "./PointsBreakdown";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-} from "@/components/ui/alert-dialog";
+import { PointsBreakdownDialog } from "./PointsBreakdownDialog";
 import { useState } from "react";
 
 interface GameCardProps {
@@ -106,25 +97,15 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
       />
 
       {prediction?.points_earned !== undefined && gameResult && (
-        <AlertDialog open={showPointsBreakdown} onOpenChange={setShowPointsBreakdown}>
-          <AlertDialogContent className="max-w-md">
-            <AlertDialogHeader>
-              <AlertDialogTitle>Points Breakdown</AlertDialogTitle>
-              <AlertDialogDescription>
-                <PointsBreakdown
-                  prediction={prediction}
-                  result={{
-                    home_score: gameResult.home_score,
-                    away_score: gameResult.away_score
-                  }}
-                />
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Close</AlertDialogCancel>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <PointsBreakdownDialog
+          isOpen={showPointsBreakdown}
+          onClose={() => setShowPointsBreakdown(false)}
+          prediction={prediction}
+          result={{
+            home_score: gameResult.home_score,
+            away_score: gameResult.away_score
+          }}
+        />
       )}
     </Card>
   );
