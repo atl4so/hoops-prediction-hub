@@ -40,8 +40,7 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
             )
           `)
           .eq("user_id", userId)
-          .eq("game.round_id", selectedRound)
-          .order('created_at', { ascending: false });
+          .eq("game.round_id", selectedRound);
 
         if (error) {
           console.error("Error fetching predictions:", error);
@@ -49,7 +48,6 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
           throw error;
         }
 
-        // Map the data to ensure proper structure
         return data?.map(prediction => ({
           id: prediction.id,
           game: {
