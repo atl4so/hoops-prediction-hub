@@ -4,6 +4,7 @@ import { GameCard } from "./GameCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { CollapsibleRoundSection } from "../dashboard/CollapsibleRoundSection";
 
 interface GamesListProps {
   isAuthenticated: boolean;
@@ -114,22 +115,18 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
 
   return (
     <div className="space-y-12">
-      {sortedRounds.map((round) => (
-        <section key={round.id} className="space-y-6">
-          <h2 className="text-2xl font-display font-semibold tracking-tight">
-            Round {round.name}
-          </h2>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {round.games.map((game) => (
-              <GameCard 
-                key={game.id} 
-                game={game} 
-                isAuthenticated={isAuthenticated}
-                userId={userId}
-              />
-            ))}
-          </div>
-        </section>
+      {sortedRounds.map((round, index) => (
+        <CollapsibleRoundSection
+          key={round.id}
+          roundId={round.id}
+          roundName={round.name}
+          predictions={round.games.map(game => ({
+            game,
+            prediction: null // We don't have predictions in this context
+          }))}
+          userId={userId}
+          defaultExpanded={index === 0} // Only expand the latest round by default
+        />
       ))}
     </div>
   );

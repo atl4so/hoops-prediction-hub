@@ -13,6 +13,7 @@ interface CollapsibleRoundSectionProps {
   predictions: any[];
   userId: string | null;
   onRefresh?: () => Promise<void>;
+  defaultExpanded?: boolean;
 }
 
 export function CollapsibleRoundSection({ 
@@ -20,9 +21,10 @@ export function CollapsibleRoundSection({
   roundName, 
   predictions, 
   userId,
-  onRefresh 
+  onRefresh,
+  defaultExpanded = false
 }: CollapsibleRoundSectionProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshStartY, setRefreshStartY] = useState(0);
   const isMobile = useIsMobile();
