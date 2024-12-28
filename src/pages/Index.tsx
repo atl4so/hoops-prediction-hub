@@ -1,18 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useQuery } from "@tanstack/react-query";
-import { Trophy, Users, CheckSquare } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import { useSession } from "@supabase/auth-helpers-react";
 
 const Index = () => {
   const navigate = useNavigate();
   const session = useSession();
-  const [isAnimationComplete, setIsAnimationComplete] = useState(false);
-  const isMobile = useIsMobile();
   const titleText = "euroleague.bet";
 
   // Redirect authenticated users to predictions page
@@ -21,19 +14,6 @@ const Index = () => {
       navigate('/predictions');
     }
   }, [session, navigate]);
-
-  // Fetch statistics
-  const { data: stats } = useQuery({
-    queryKey: ['websiteStats'],
-    queryFn: async () => {
-      const [{ count: usersCount }, { count: predictionsCount }] = await Promise.all([
-        supabase.from('profiles').select('*', { count: 'exact', head: true }),
-        supabase.from('predictions').select('*', { count: 'exact', head: true })
-          .not('points_earned', 'is', null)
-      ]);
-      return { usersCount, predictionsCount };
-    },
-  });
 
   return (
     <div className="min-h-[80vh] flex flex-col items-center space-y-8 animate-fade-in relative overflow-hidden">
@@ -80,26 +60,6 @@ const Index = () => {
             </Button>
           </div>
         )}
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12 opacity-0 animate-[fade-in_0.5s_ease-out_2s_forwards]">
-          <Card className="p-6 text-center bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-            <Users className="w-8 h-8 mx-auto mb-3 text-primary" />
-            <h3 className="text-2xl font-bold">{stats?.usersCount || '...'}</h3>
-            <p className="text-sm text-muted-foreground">Active Users</p>
-          </Card>
-          
-          <Card className="p-6 text-center bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-            <CheckSquare className="w-8 h-8 mx-auto mb-3 text-primary" />
-            <h3 className="text-2xl font-bold">{stats?.predictionsCount || '...'}</h3>
-            <p className="text-sm text-muted-foreground">Predictions Made</p>
-          </Card>
-          
-          <Card className="p-6 text-center bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-            <Trophy className="w-8 h-8 mx-auto mb-3 text-primary" />
-            <h3 className="text-2xl font-bold">50</h3>
-            <p className="text-sm text-muted-foreground">Max Points Per Game</p>
-          </Card>
-        </div>
       </div>
 
       <div className="w-full max-w-3xl px-4 py-12 text-center">
