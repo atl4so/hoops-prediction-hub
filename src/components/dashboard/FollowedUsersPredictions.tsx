@@ -3,9 +3,35 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
+import { useEffect } from "react";
+
+interface Prediction {
+  prediction_home_score: number;
+  prediction_away_score: number;
+  points_earned: number | null;
+  user: {
+    id: string;
+    display_name: string;
+  };
+  game: {
+    id: string;
+    game_date: string;
+    home_team: {
+      name: string;
+    };
+    away_team: {
+      name: string;
+    };
+    game_results: Array<{
+      home_score: number;
+      away_score: number;
+      is_final: boolean;
+    }>;
+  };
+}
 
 export function FollowedUsersPredictions() {
-  const { data: predictions, isLoading } = useQuery({
+  const { data: predictions, isLoading, refetch } = useQuery({
     queryKey: ["followed-users-predictions"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -37,15 +63,22 @@ export function FollowedUsersPredictions() {
           prediction_away_score,
           points_earned,
           user:profiles!predictions_user_id_fkey (
+            id,
             display_name
           ),
           game:games (
+            id,
             game_date,
             home_team:teams!games_home_team_id_fkey (
               name
             ),
             away_team:teams!games_away_team_id_fkey (
               name
+            ),
+            game_results (
+              home_score,
+              away_score,
+              is_final
             )
           )
         `)
@@ -55,13 +88,51 @@ export function FollowedUsersPredictions() {
 
       if (error) throw error;
 
-      // Filter predictions based on permissions
-      return data.filter(pred => 
-        permissions?.can_view_future_predictions || 
-        new Date(pred.game.game_date) <= new Date()
-      );
+      // Filter predictions based on permissions and game results
+      return data.filter(pred => {
+        const gameResult = pred.game.game_results?.[0];
+        return (
+          // Show if admin enabled future predictions viewing
+          permissions?.can_view_future_predictions ||
+          // Or if the game has a final result
+          (gameResult?.is_final && pred.points_earned !== null)
+        );
+      });
     },
   });
+
+  // Subscribe to real-time updates for follows and predictions
+  useEffect(() => {
+    const channel = supabase
+      .channel('dashboard-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_follows'
+        },
+        () => {
+          refetch();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'predictions'
+        },
+        () => {
+          refetch();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [refetch]);
 
   if (isLoading) {
     return (
@@ -78,7 +149,7 @@ export function FollowedUsersPredictions() {
       <Card>
         <CardContent className="pt-6">
           <p className="text-center text-muted-foreground">
-            No predictions to show.
+            No predictions to show. Follow other users to see their predictions here.
           </p>
         </CardContent>
       </Card>
@@ -87,7 +158,7 @@ export function FollowedUsersPredictions() {
 
   return (
     <div className="space-y-4">
-      {predictions.map((prediction) => (
+      {predictions.map((prediction: Prediction) => (
         <Card key={`${prediction.user.id}-${prediction.game.id}`}>
           <CardContent className="pt-6">
             <div className="space-y-2">
