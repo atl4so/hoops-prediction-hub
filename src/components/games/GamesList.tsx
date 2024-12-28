@@ -124,9 +124,6 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     }))
     .sort((a, b) => parseInt(b.name) - parseInt(a.name));
 
-  // Get the latest round number
-  const latestRoundNumber = sortedRounds.length > 0 ? parseInt(sortedRounds[0].name) : 0;
-
   if (sortedRounds.length === 0) {
     return (
       <div className="text-center py-12">
@@ -142,24 +139,17 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
 
   return (
     <div className="space-y-12">
-      {sortedRounds.map((round) => {
-        const roundNumber = parseInt(round.name);
-        const isLatestRound = roundNumber === latestRoundNumber;
-        
-        return (
-          <CollapsibleRoundSection
-            key={round.id}
-            roundId={round.id}
-            roundName={round.name}
-            predictions={round.games.map(game => ({
-              game,
-              prediction: null
-            }))}
-            userId={userId}
-            defaultExpanded={isLatestRound}
-          />
-        );
-      })}
+      {sortedRounds.map((round) => (
+        <CollapsibleRoundSection
+          key={round.id}
+          roundId={round.id}
+          roundName={round.name}
+          predictions={round.games.map(game => ({
+            game,
+            prediction: null
+          }))}
+        />
+      ))}
     </div>
   );
 }
