@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useState, useEffect } from "react";
 
 interface UserPermissionSwitchProps {
   userId: string;
@@ -12,6 +13,11 @@ interface UserPermissionSwitchProps {
 export function UserPermissionSwitch({ userId, initialState }: UserPermissionSwitchProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isChecked, setIsChecked] = useState(initialState);
+
+  useEffect(() => {
+    setIsChecked(initialState);
+  }, [initialState]);
 
   const updatePermission = useMutation({
     mutationFn: async (canViewFuturePredictions: boolean) => {
@@ -41,6 +47,7 @@ export function UserPermissionSwitch({ userId, initialState }: UserPermissionSwi
     },
     onSuccess: (_, canViewFuturePredictions) => {
       console.log('Permission update successful');
+      setIsChecked(canViewFuturePredictions);
       // Invalidate both queries to refresh the lists
       queryClient.invalidateQueries({ queryKey: ['users-permissions'] });
       queryClient.invalidateQueries({ queryKey: ['users-with-permissions'] });
@@ -53,6 +60,7 @@ export function UserPermissionSwitch({ userId, initialState }: UserPermissionSwi
     },
     onError: (error) => {
       console.error('Permission update error:', error);
+      setIsChecked(!isChecked); // Revert the switch state on error
       toast({
         title: "Error",
         description: "Failed to update permission",
@@ -63,6 +71,7 @@ export function UserPermissionSwitch({ userId, initialState }: UserPermissionSwi
 
   const handleToggle = (checked: boolean) => {
     console.log('Toggle clicked:', { userId, checked });
+    setIsChecked(checked); // Update the state immediately for better UX
     updatePermission.mutate(checked);
   };
 
@@ -70,7 +79,7 @@ export function UserPermissionSwitch({ userId, initialState }: UserPermissionSwi
     <div className="flex items-center space-x-2">
       <Switch
         id={`permission-${userId}`}
-        checked={initialState}
+        checked={isChecked}
         onCheckedChange={handleToggle}
       />
       <Label htmlFor={`permission-${userId}`}>
