@@ -87,14 +87,14 @@ export function StatsOverview({
       icon: Crown,
       label: "All-Time Rank",
       value: formatRank(allTimeRank),
-      description: "Your overall ranking among all players since the beginning",
+      description: "Your overall ranking among all players",
       highlight: true,
     },
     {
       icon: Medal,
       label: "Latest Round Rank",
       value: formatRank(currentRoundRank),
-      description: "Your current position in latest round's leaderboard",
+      description: "Your position in latest round's leaderboard",
       highlight: true,
     },
     {
@@ -107,31 +107,31 @@ export function StatsOverview({
       icon: TrendingUp,
       label: "Total Predictions",
       value: totalPredictions || 0,
-      description: "Number of predictions you've made so far"
+      description: "Number of predictions you've made"
     },
     {
       icon: ArrowUp,
       label: "Highest Game Points",
       value: highestGamePoints || 0,
-      description: "Your best performance in a single game prediction"
+      description: "Best performance in a single game"
     },
     {
       icon: ArrowDown,
       label: "Lowest Game Points",
       value: lowestGamePoints || 0,
-      description: "Your lowest score in a single game prediction"
+      description: "Lowest score in a single game"
     },
     {
       icon: ArrowUp,
       label: "Highest Round Points",
       value: highestRoundPoints || 0,
-      description: "Your best total points achieved in a single round"
+      description: "Best total points in a single round"
     },
     {
       icon: ArrowDown,
       label: "Lowest Round Points",
       value: lowestRoundPoints || 0,
-      description: "Your lowest total points in a completed round"
+      description: "Lowest total points in a round"
     }
   ];
 
@@ -140,8 +140,8 @@ export function StatsOverview({
     : allStats;
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 sm:gap-4">
+    <div className="space-y-6 animate-fade-in">
+      <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {visibleStats.map((stat, index) => (
           <StatCard
             key={stat.label}
@@ -154,9 +154,9 @@ export function StatsOverview({
         ))}
       </div>
       
-      <div className="mt-6">
-        <h3 className="text-lg font-semibold mb-2">Round Points</h3>
-        <div className="flex gap-4 items-center">
+      <div className="mt-8 p-6 bg-accent/5 rounded-lg border animate-fade-in">
+        <h3 className="text-lg font-semibold mb-4">Round Performance</h3>
+        <div className="flex gap-4 items-center flex-wrap">
           <Select value={selectedRound} onValueChange={setSelectedRound}>
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="Select a round" />
@@ -170,7 +170,7 @@ export function StatsOverview({
             </SelectContent>
           </Select>
           {selectedRound && (
-            <div className="text-lg">
+            <div className="text-lg animate-fade-in">
               Points: <span className="font-semibold">{roundPoints || 0}</span>
             </div>
           )}
@@ -179,8 +179,8 @@ export function StatsOverview({
       
       {isMobile && (
         <div className={cn(
-          "flex justify-center transition-opacity duration-200",
-          showAllCards ? "mt-4" : "mt-2"
+          "flex justify-center transition-all duration-300",
+          showAllCards ? "mt-6" : "mt-4"
         )}>
           <Button 
             variant="outline" 

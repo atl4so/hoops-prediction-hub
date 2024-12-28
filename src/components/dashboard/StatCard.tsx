@@ -19,22 +19,27 @@ export function StatCard({
 }: StatCardProps) {
   return (
     <Card className={cn(
-      "transition-all duration-200 hover:shadow-md",
-      highlight && "border-primary/50 bg-primary/5"
+      "group transition-all duration-300 hover:shadow-lg border-2",
+      "hover:scale-[1.02] hover:-translate-y-0.5",
+      highlight ? "bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20" : "hover:bg-accent/5",
     )}>
-      <CardContent className="p-3 sm:p-6">
-        <div className="flex flex-col items-center text-center space-y-3 sm:space-y-4">
+      <CardContent className="p-4 sm:p-6">
+        <div className="flex flex-col items-center text-center space-y-4">
           <div className={cn(
-            "rounded-lg p-2 sm:p-3",
-            highlight ? "bg-primary text-primary-foreground" : "bg-muted"
+            "rounded-xl p-3 sm:p-4 transition-colors duration-300",
+            highlight 
+              ? "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground group-hover:from-primary/90 group-hover:to-primary/70" 
+              : "bg-muted group-hover:bg-muted/80"
           )}>
-            <Icon className="h-5 w-5 sm:h-7 sm:w-7" />
+            <Icon className="h-6 w-6 sm:h-8 sm:w-8" />
           </div>
-          <div className="space-y-1 sm:space-y-2">
-            <p className="text-xs sm:text-sm font-medium text-muted-foreground">{label}</p>
-            <p className="text-lg sm:text-3xl font-bold tracking-tight">{value}</p>
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-muted-foreground">{label}</p>
+            <p className="text-2xl sm:text-3xl font-bold tracking-tight animate-fade-in">
+              {value}
+            </p>
             {description && (
-              <p className="text-[10px] sm:text-sm text-muted-foreground max-w-[200px] mx-auto leading-tight">
+              <p className="text-xs sm:text-sm text-muted-foreground max-w-[200px] mx-auto leading-relaxed">
                 {description}
               </p>
             )}
