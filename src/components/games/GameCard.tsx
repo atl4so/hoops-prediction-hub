@@ -24,9 +24,14 @@ interface GameCardProps {
   };
   isAuthenticated: boolean;
   userId?: string;
+  prediction?: {
+    prediction_home_score: number;
+    prediction_away_score: number;
+    points_earned?: number;
+  };
 }
 
-export function GameCard({ game, isAuthenticated, userId }: GameCardProps) {
+export function GameCard({ game, isAuthenticated, userId, prediction }: GameCardProps) {
   const [showPredictionDialog, setShowPredictionDialog] = useState(false);
   const location = useLocation();
   const isAdminPage = location.pathname === '/admin';
