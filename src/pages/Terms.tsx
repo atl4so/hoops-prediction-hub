@@ -27,11 +27,42 @@ export default function Terms() {
     
     setIsDeleting(true);
     try {
-      // Delete user data from profiles table (this will cascade to other tables)
-      const { error: deleteError } = await supabase
+      // Delete user predictions
+      const { error: predictionsError } = await supabase
+        .from('predictions')
+        .delete()
+        .eq('user_id', session.user.id);
+
+      if (predictionsError) throw predictionsError;
+
+      // Delete user follows
+      const { error: followsError } = await supabase
+        .from('user_follows')
+        .delete()
+        .or(`follower_id.eq.${session.user.id},following_id.eq.${session.user.id}`);
+
+      if (followsError) throw followsError;
+
+      // Delete user permissions
+      const { error: permissionsError } = await supabase
+        .from('user_permissions')
+        .delete()
+        .eq('user_id', session.user.id);
+
+      if (permissionsError) throw permissionsError;
+
+      // Delete user profile (this will cascade to other tables)
+      const { error: profileError } = await supabase
         .from('profiles')
         .delete()
         .eq('id', session.user.id);
+
+      if (profileError) throw profileError;
+
+      // Delete the user's auth account
+      const { error: deleteError } = await supabase.auth.admin.deleteUser(
+        session.user.id
+      );
 
       if (deleteError) throw deleteError;
 
