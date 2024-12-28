@@ -26,6 +26,7 @@ export function CollapsibleRoundSection({
     : predictions;
 
   const hasMoreGames = isMobile && predictions.length > 2;
+  const remainingGamesCount = predictions.length - 2;
 
   return (
     <section className="space-y-6">
@@ -73,9 +74,12 @@ export function CollapsibleRoundSection({
       </div>
       
       {hasMoreGames && !isExpanded && (
-        <p className="text-sm text-center text-muted-foreground">
-          {predictions.length - 2} more games in this round
-        </p>
+        <button
+          onClick={() => setIsExpanded(true)}
+          className="w-full text-sm text-center text-muted-foreground hover:text-primary transition-colors"
+        >
+          {remainingGamesCount} more {remainingGamesCount === 1 ? 'game' : 'games'} in this round
+        </button>
       )}
     </section>
   );
