@@ -85,6 +85,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
             : []
       }));
     },
+    enabled: isAuthenticated,
   });
 
   if (isLoading) {
@@ -110,8 +111,9 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     const gameDate = new Date(game.game_date);
     const predictionDeadline = subHours(gameDate, 1);
     
-    // Show games that have no results or non-final results
-    // AND current time is before prediction deadline
+    // Show games that:
+    // 1. Have no final results
+    // 2. Current time is before prediction deadline
     const hasNoFinalResult = !game.game_results?.some(result => result.is_final);
     const isBeforeDeadline = now < predictionDeadline;
     
