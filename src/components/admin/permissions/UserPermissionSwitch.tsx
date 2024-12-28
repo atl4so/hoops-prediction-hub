@@ -39,13 +39,17 @@ export function UserPermissionSwitch({ userId, initialState }: UserPermissionSwi
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users-permissions'] });
       queryClient.invalidateQueries({ queryKey: ['users-with-permissions'] });
-      queryClient.invalidateQueries({ queryKey: ['followed-users-predictions'] });
-      toast({ title: "Success", description: "Permission updated successfully" });
+      toast({ 
+        title: "Success", 
+        description: "Permission updated successfully",
+        variant: "default"
+      });
     },
     onError: (error) => {
+      console.error('Permission update error:', error);
       toast({
         title: "Error",
-        description: error.message,
+        description: "Failed to update permission",
         variant: "destructive",
       });
     },
@@ -56,7 +60,10 @@ export function UserPermissionSwitch({ userId, initialState }: UserPermissionSwi
       <Switch
         id={`permission-${userId}`}
         checked={initialState}
-        onCheckedChange={(checked) => updatePermission.mutate(checked)}
+        onCheckedChange={(checked) => {
+          console.log('Updating permission for user:', userId, 'to:', checked);
+          updatePermission.mutate(checked);
+        }}
       />
       <Label htmlFor={`permission-${userId}`}>
         View Future Predictions

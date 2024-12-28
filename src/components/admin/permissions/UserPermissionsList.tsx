@@ -4,21 +4,32 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Eye } from "lucide-react";
 import { UserPermissionSwitch } from "./UserPermissionSwitch";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function UserPermissionsList({ searchEmail }: { searchEmail: string }) {
   const { data: searchedUsers, isLoading } = useQuery({
     queryKey: ['users-permissions', searchEmail],
     queryFn: async () => {
+      console.log('Searching users with email:', searchEmail);
       const { data, error } = await supabase
         .from('profiles')
         .select(`
-          *,
-          permissions:user_permissions(*)
+          id,
+          email,
+          display_name,
+          total_points,
+          permissions:user_permissions (
+            can_view_future_predictions
+          )
         `)
         .ilike('email', `%${searchEmail}%`)
         .order('email');
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error searching users:', error);
+        throw error;
+      }
+      console.log('Search results:', data);
       return data;
     },
     enabled: searchEmail.length > 2,
@@ -26,8 +37,9 @@ export function UserPermissionsList({ searchEmail }: { searchEmail: string }) {
 
   if (isLoading && searchEmail.length > 2) {
     return (
-      <div className="text-center py-4 text-muted-foreground">
-        Loading users...
+      <div className="space-y-4">
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-20 w-full" />
       </div>
     );
   }
@@ -40,7 +52,7 @@ export function UserPermissionsList({ searchEmail }: { searchEmail: string }) {
     );
   }
 
-  if (searchedUsers?.length === 0) {
+  if (!searchedUsers || searchedUsers.length === 0) {
     return (
       <div className="text-center py-4 text-muted-foreground">
         No users found matching "{searchEmail}"
@@ -50,7 +62,7 @@ export function UserPermissionsList({ searchEmail }: { searchEmail: string }) {
 
   return (
     <div className="space-y-4">
-      {searchedUsers?.map((user) => (
+      {searchedUsers.map((user) => (
         <Card key={user.id} className="bg-card">
           <CardContent className="pt-6 flex items-center justify-between">
             <div className="space-y-1">
