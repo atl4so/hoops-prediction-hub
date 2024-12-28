@@ -13,17 +13,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export default function Dashboard() {
   const session = useSession();
   const navigate = useNavigate();
   const [userId, setUserId] = useState<string | null>(null);
   const queryClient = useQueryClient();
-  const [isRoundsOpen, setIsRoundsOpen] = useState(false);
 
   useEffect(() => {
     if (!session) {
@@ -146,30 +146,29 @@ export default function Dashboard() {
 
       <FollowingSection />
 
-      <Collapsible
-        open={isRoundsOpen}
-        onOpenChange={setIsRoundsOpen}
-        className="w-full"
-      >
-        <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-2 text-sm font-medium text-left bg-accent/50 hover:bg-accent/80 rounded-lg transition-colors">
-          <span>Your Predictions by Round</span>
-          <ChevronDown className={cn(
-            "h-4 w-4 transition-transform duration-200",
-            isRoundsOpen && "transform rotate-180"
-          )} />
-        </CollapsibleTrigger>
-        <CollapsibleContent className="mt-4 space-y-4">
-          {predictionsByRound && Object.values(predictionsByRound).map((roundData: any) => (
-            <CollapsibleRoundSection
-              key={roundData.roundId}
-              roundId={roundData.roundId}
-              roundName={roundData.roundName}
-              predictions={roundData.predictions}
-              userId={userId}
-            />
-          ))}
-        </CollapsibleContent>
-      </Collapsible>
+      <div className="rounded-lg border">
+        <Accordion type="single" collapsible className="w-full">
+          {predictionsByRound && Object.values(predictionsByRound)
+            .sort((a: any, b: any) => parseInt(b.roundName) - parseInt(a.roundName))
+            .map((roundData: any) => (
+              <AccordionItem key={roundData.roundId} value={roundData.roundId}>
+                <AccordionTrigger className="px-4 hover:no-underline hover:bg-accent/50">
+                  <span className="text-sm font-medium">
+                    Round {roundData.roundName}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="pt-4 px-4">
+                  <CollapsibleRoundSection
+                    roundId={roundData.roundId}
+                    roundName={roundData.roundName}
+                    predictions={roundData.predictions}
+                    userId={userId}
+                  />
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+        </Accordion>
+      </div>
     </div>
   );
 }
