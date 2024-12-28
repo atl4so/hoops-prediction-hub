@@ -36,7 +36,7 @@ export function UserPredictionCard({ game, prediction, gameResult }: UserPredict
       <Card>
         <CardContent className="pt-6">
           <div className="flex flex-col items-center">
-            <GameDateTime date={game.game_date} className="mb-4" />
+            <GameDateTime date={game.game_date} />
             <div className="grid grid-cols-3 items-center gap-4 w-full">
               <div className="flex flex-col items-center">
                 <img
