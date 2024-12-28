@@ -88,16 +88,16 @@ export function FollowedUsersPredictions() {
 
       if (error) throw error;
 
-      // Filter predictions based on permissions and game results
-      return data.filter(pred => {
-        const gameResult = pred.game.game_results?.[0];
-        return (
-          // Show if admin enabled future predictions viewing
-          permissions?.can_view_future_predictions ||
-          // Or if the game has a final result
-          (gameResult?.is_final && pred.points_earned !== null)
-        );
-      });
+      // Transform the data to ensure game_results is always an array
+      return data.map(prediction => ({
+        ...prediction,
+        game: {
+          ...prediction.game,
+          game_results: Array.isArray(prediction.game.game_results) 
+            ? prediction.game.game_results 
+            : [prediction.game.game_results].filter(Boolean)
+        }
+      })) as Prediction[];
     },
   });
 
