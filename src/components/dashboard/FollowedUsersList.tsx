@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent } from "@/components/ui/card";
-import { FollowButton } from "@/components/users/FollowButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserPredictionsDialog } from "./UserPredictionsDialog";
+import { FollowedUserCard } from "./following/FollowedUserCard";
+import { EmptyFollowingState } from "./following/EmptyFollowingState";
 
 export function FollowedUsersList() {
   const [selectedUser, setSelectedUser] = useState<{
@@ -38,7 +38,7 @@ export function FollowedUsersList() {
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 animate-pulse">
         <Skeleton className="h-24 w-full" />
         <Skeleton className="h-24 w-full" />
         <Skeleton className="h-24 w-full" />
@@ -47,47 +47,18 @@ export function FollowedUsersList() {
   }
 
   if (!followedUsers?.length) {
-    return (
-      <Card>
-        <CardContent className="pt-6">
-          <p className="text-center text-muted-foreground">
-            You are not following anyone yet.
-          </p>
-        </CardContent>
-      </Card>
-    );
+    return <EmptyFollowingState />;
   }
 
   return (
     <>
       <div className="space-y-4">
         {followedUsers.map((follow) => (
-          <Card key={follow.following_id}>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p 
-                    className="font-semibold cursor-pointer hover:text-primary"
-                    onClick={() => setSelectedUser({
-                      id: follow.following.id,
-                      display_name: follow.following.display_name
-                    })}
-                  >
-                    {follow.following.display_name}
-                  </p>
-                  <div className="text-sm text-muted-foreground">
-                    <p>Total Points: {follow.following.total_points}</p>
-                    <p>PPG: {follow.following.points_per_game?.toFixed(1)}</p>
-                  </div>
-                </div>
-                <FollowButton
-                  userId={follow.following_id}
-                  isFollowing={true}
-                  onFollowChange={() => {}}
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <FollowedUserCard
+            key={follow.following_id}
+            user={follow.following}
+            onUserClick={setSelectedUser}
+          />
         ))}
       </div>
 
