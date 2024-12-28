@@ -32,7 +32,7 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
                 name,
                 logo_url
               ),
-              game_results!inner (
+              game_results (
                 home_score,
                 away_score,
                 is_final
