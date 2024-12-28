@@ -25,12 +25,13 @@ export default function Dashboard() {
     setUserId(session.user.id);
   }, [session, navigate]);
 
-  // Subscribe to real-time updates
+  // Enhanced real-time subscriptions
   useEffect(() => {
     if (!userId) return;
 
-    const channel = supabase
-      .channel('dashboard-updates')
+    // Subscribe to game results changes
+    const gameResultsChannel = supabase
+      .channel('game-results-changes')
       .on(
         'postgres_changes',
         {
@@ -39,11 +40,17 @@ export default function Dashboard() {
           table: 'game_results'
         },
         () => {
+          console.log('Game results changed, invalidating queries...');
           queryClient.invalidateQueries({ queryKey: ['userProfile', userId] });
           queryClient.invalidateQueries({ queryKey: ['userPredictions', userId] });
           queryClient.invalidateQueries({ queryKey: ['currentRoundRank', userId] });
         }
       )
+      .subscribe();
+
+    // Subscribe to predictions changes
+    const predictionsChannel = supabase
+      .channel('predictions-changes')
       .on(
         'postgres_changes',
         {
@@ -52,6 +59,7 @@ export default function Dashboard() {
           table: 'predictions'
         },
         () => {
+          console.log('Predictions changed, invalidating queries...');
           queryClient.invalidateQueries({ queryKey: ['userProfile', userId] });
           queryClient.invalidateQueries({ queryKey: ['userPredictions', userId] });
           queryClient.invalidateQueries({ queryKey: ['currentRoundRank', userId] });
@@ -59,8 +67,28 @@ export default function Dashboard() {
       )
       .subscribe();
 
+    // Subscribe to profile changes
+    const profileChannel = supabase
+      .channel('profile-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${userId}`
+        },
+        () => {
+          console.log('Profile changed, invalidating queries...');
+          queryClient.invalidateQueries({ queryKey: ['userProfile', userId] });
+        }
+      )
+      .subscribe();
+
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(gameResultsChannel);
+      supabase.removeChannel(predictionsChannel);
+      supabase.removeChannel(profileChannel);
     };
   }, [userId, queryClient]);
 
