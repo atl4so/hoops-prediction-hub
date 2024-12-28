@@ -32,7 +32,7 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
                 name,
                 logo_url
               ),
-              game_results (
+              game_results!inner (
                 home_score,
                 away_score,
                 is_final
@@ -71,7 +71,7 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
         throw error;
       }
     },
-    enabled: isOpen && !!selectedRound, // Only run query when dialog is open AND a round is selected
+    enabled: isOpen && !!selectedRound,
     staleTime: 1000 * 60,
     retry: 2,
   });
