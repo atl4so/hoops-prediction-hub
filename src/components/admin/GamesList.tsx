@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
+import { GameCard } from "@/components/games/GameCard";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function GamesList() {
   const { data: games, isLoading } = useQuery({
@@ -9,10 +10,11 @@ export function GamesList() {
       const { data, error } = await supabase
         .from('games')
         .select(`
-          *,
-          home_team:teams!games_home_team_id_fkey(name),
-          away_team:teams!games_away_team_id_fkey(name),
-          round:rounds(name)
+          id,
+          game_date,
+          home_team:teams!games_home_team_id_fkey(name, logo_url),
+          away_team:teams!games_away_team_id_fkey(name, logo_url),
+          round:rounds(id, name)
         `)
         .order('game_date', { ascending: true });
       
@@ -21,29 +23,54 @@ export function GamesList() {
     },
   });
 
-  if (isLoading) return <div>Loading...</div>;
-
-  return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-medium">Existing Games</h3>
-      <div className="grid gap-4">
-        {games?.map((game) => (
-          <div
-            key={game.id}
-            className="flex items-center justify-between p-4 border rounded-lg"
-          >
-            <div>
-              <p className="text-sm text-muted-foreground">{game.round.name}</p>
-              <h4 className="font-medium">
-                {game.home_team.name} vs {game.away_team.name}
-              </h4>
-              <p className="text-sm text-muted-foreground">
-                {format(new Date(game.game_date), "PPP p")}
-              </p>
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        {[1, 2].map((roundIndex) => (
+          <div key={roundIndex} className="space-y-4">
+            <Skeleton className="h-8 w-32" />
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-[200px]" />
+              ))}
             </div>
           </div>
         ))}
       </div>
+    );
+  }
+
+  // Group games by round
+  const gamesByRound = games?.reduce((acc, game) => {
+    const roundId = game.round.id;
+    if (!acc[roundId]) {
+      acc[roundId] = {
+        name: game.round.name,
+        games: []
+      };
+    }
+    acc[roundId].games.push(game);
+    return acc;
+  }, {} as Record<string, { name: string; games: typeof games }>) || {};
+
+  return (
+    <div className="space-y-12">
+      {Object.entries(gamesByRound).map(([roundId, { name, games }]) => (
+        <section key={roundId} className="space-y-6">
+          <h2 className="text-2xl font-display font-semibold tracking-tight">
+            Round {name}
+          </h2>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {games.map((game) => (
+              <GameCard 
+                key={game.id} 
+                game={game} 
+                isAuthenticated={true}
+              />
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }
