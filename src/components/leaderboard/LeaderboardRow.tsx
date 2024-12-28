@@ -100,13 +100,7 @@ export function LeaderboardRow({ player, rank, onFollowChange }: LeaderboardRowP
             <DialogTitle>{player.display_name}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Points Per Game</p>
-                <p className="text-lg font-medium">
-                  {player.points_per_game?.toFixed(1)}
-                </p>
-              </div>
+            <div className="grid grid-cols-1 gap-4">
               <div>
                 <p className="text-sm text-muted-foreground">Total Predictions</p>
                 <p className="text-lg font-medium">
