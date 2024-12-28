@@ -21,7 +21,7 @@ interface GameInfoProps {
     prediction_home_score: number;
     prediction_away_score: number;
     points_earned?: number;
-  };
+  } | null;
 }
 
 export function GameInfo({ game, prediction }: GameInfoProps) {
@@ -60,17 +60,20 @@ export function GameInfo({ game, prediction }: GameInfoProps) {
                 <span className="text-xs text-muted-foreground mt-1">Final</span>
               )}
             </div>
-          ) : (
-            prediction ? (
-              <div className="flex flex-col items-center">
-                <span className="text-base text-primary">Prediction</span>
-                <span className="text-lg">
-                  {prediction.prediction_home_score} - {prediction.prediction_away_score}
+          ) : prediction ? (
+            <div className="flex flex-col items-center">
+              <span className="text-base text-primary">Prediction</span>
+              <span className="text-lg">
+                {prediction.prediction_home_score} - {prediction.prediction_away_score}
+              </span>
+              {prediction.points_earned !== undefined && (
+                <span className="text-sm text-primary mt-1">
+                  Points: {prediction.points_earned}
                 </span>
-              </div>
-            ) : (
-              <span>vs</span>
-            )
+              )}
+            </div>
+          ) : (
+            <span>vs</span>
           )}
         </div>
         <div className="flex flex-col items-center">

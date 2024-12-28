@@ -49,29 +49,23 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
           throw error;
         }
 
-        // Map the data to ensure proper structure even if game_results is null
-        return data?.map(prediction => {
-          if (!prediction.game) {
-            return null;
+        // Map the data to ensure proper structure
+        return data?.map(prediction => ({
+          id: prediction.id,
+          game: {
+            ...prediction.game,
+            game_results: prediction.game.game_results 
+              ? Array.isArray(prediction.game.game_results)
+                ? prediction.game.game_results
+                : [prediction.game.game_results]
+              : []
+          },
+          prediction: {
+            prediction_home_score: prediction.prediction_home_score,
+            prediction_away_score: prediction.prediction_away_score,
+            points_earned: prediction.points_earned
           }
-
-          return {
-            id: prediction.id,
-            game: {
-              ...prediction.game,
-              game_results: prediction.game.game_results 
-                ? Array.isArray(prediction.game.game_results)
-                  ? prediction.game.game_results
-                  : [prediction.game.game_results]
-                : []
-            },
-            prediction: {
-              prediction_home_score: prediction.prediction_home_score,
-              prediction_away_score: prediction.prediction_away_score,
-              points_earned: prediction.points_earned
-            }
-          };
-        }).filter(Boolean) || [];
+        })) || [];
       } catch (error) {
         console.error("Error in useUserRoundPredictions:", error);
         toast.error("Failed to load predictions");
