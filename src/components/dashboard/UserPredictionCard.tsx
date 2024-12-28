@@ -76,6 +76,7 @@ export function UserPredictionCard({ game, prediction, gameResult }: UserPredict
                 pointsEarned={prediction.points_earned}
                 onClick={handlePointsClick}
                 showBreakdownHint={!!gameResult && prediction.points_earned !== undefined}
+                label="Prediction"
               />
             </div>
           </div>

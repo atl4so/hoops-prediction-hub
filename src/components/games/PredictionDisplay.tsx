@@ -6,6 +6,7 @@ interface PredictionDisplayProps {
   pointsEarned?: number;
   onClick?: () => void;
   showBreakdownHint?: boolean;
+  label?: string;
 }
 
 export function PredictionDisplay({ 
@@ -13,7 +14,8 @@ export function PredictionDisplay({
   awayScore, 
   pointsEarned,
   onClick,
-  showBreakdownHint = false
+  showBreakdownHint = false,
+  label = "Your Prediction"
 }: PredictionDisplayProps) {
   return (
     <div 
@@ -23,7 +25,7 @@ export function PredictionDisplay({
       )}
       onClick={onClick}
     >
-      <p className="font-medium">Your Prediction</p>
+      <p className="font-medium">{label}</p>
       <p>
         {homeScore} - {awayScore}
       </p>
