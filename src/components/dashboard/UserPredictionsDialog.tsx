@@ -84,6 +84,7 @@ export function UserPredictionsDialog({
           game:games (
             id,
             game_date,
+            round_id,
             home_team:teams!games_home_team_id_fkey (
               id,
               name,
@@ -105,24 +106,30 @@ export function UserPredictionsDialog({
             )
           )
         `)
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
+        .eq("user_id", userId);
 
       if (selectedRound !== "all") {
+        // Join with games table and filter by round_id
         query = query.eq("game.round_id", selectedRound);
       }
 
       const { data, error } = await query;
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching predictions:", error);
+        throw error;
+      }
 
-      return data.map(prediction => ({
-        ...prediction,
-        game: {
-          ...prediction.game,
-          game_results: prediction.game.game_results || []
-        }
-      }));
+      // Filter out any null games (in case of data inconsistencies)
+      return data
+        .filter(prediction => prediction.game)
+        .map(prediction => ({
+          ...prediction,
+          game: {
+            ...prediction.game,
+            game_results: prediction.game.game_results || []
+          }
+        }));
     },
     enabled: isOpen,
   });
@@ -176,7 +183,7 @@ export function UserPredictionsDialog({
                   gameResult={prediction.game.game_results?.[0]}
                 />
               ))}
-              {predictions?.length === 0 && (
+              {(!predictions || predictions.length === 0) && (
                 <p className="text-muted-foreground col-span-2 text-center py-8">
                   No predictions found for the selected round.
                 </p>
