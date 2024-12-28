@@ -7,11 +7,6 @@ export const getNavigationItems = async (isAuthenticated: boolean) => {
     { title: "Leaderboard", icon: Trophy, path: "/leaderboard" },
   ];
 
-  const adminItems = [
-    ...authenticatedItems,
-    { title: "Admin", icon: Settings, path: "/admin" },
-  ];
-
   const publicItems = [
     { title: "Home", icon: Home, path: "/" },
     { title: "Leaderboard", icon: Trophy, path: "/leaderboard" },
@@ -22,5 +17,12 @@ export const getNavigationItems = async (isAuthenticated: boolean) => {
   const { data: { user } } = await supabase.auth.getUser();
   const isAdmin = user?.email === 'likasvy@gmail.com';
 
-  return isAdmin ? adminItems : authenticatedItems;
+  if (isAdmin) {
+    return [
+      ...authenticatedItems,
+      { title: "Admin", icon: Settings, path: "/admin" },
+    ];
+  }
+
+  return authenticatedItems;
 };
