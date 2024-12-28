@@ -17,8 +17,8 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
         .select(`
           id,
           game_date,
-          home_team:teams!games_home_team_id_fkey(name),
-          away_team:teams!games_away_team_id_fkey(name)
+          home_team:teams!games_home_team_id_fkey(name, logo_url),
+          away_team:teams!games_away_team_id_fkey(name, logo_url)
         `)
         .order("game_date", { ascending: true });
 

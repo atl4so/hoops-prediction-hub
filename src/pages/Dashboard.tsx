@@ -35,8 +35,8 @@ const Dashboard = () => {
           *,
           game:games (
             game_date,
-            home_team:teams!games_home_team_id_fkey (name),
-            away_team:teams!games_away_team_id_fkey (name)
+            home_team:teams!games_home_team_id_fkey (name, logo_url),
+            away_team:teams!games_away_team_id_fkey (name, logo_url)
           )
         `)
         .eq('user_id', userId)
@@ -77,9 +77,26 @@ const Dashboard = () => {
         {predictions?.map((prediction) => (
           <Card key={prediction.id} className="hover:shadow-md transition-shadow">
             <CardHeader className="space-y-1">
-              <CardTitle className="text-xl flex items-center gap-2">
-                <Trophy className="h-5 w-5 text-yellow-500" />
-                {prediction.game.home_team.name} vs {prediction.game.away_team.name}
+              <CardTitle className="text-xl">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2">
+                    <img 
+                      src={prediction.game.home_team.logo_url} 
+                      alt={`${prediction.game.home_team.name} logo`}
+                      className="w-8 h-8 object-contain"
+                    />
+                    <span>{prediction.game.home_team.name}</span>
+                  </div>
+                  <span className="text-muted-foreground">vs</span>
+                  <div className="flex items-center gap-2">
+                    <span>{prediction.game.away_team.name}</span>
+                    <img 
+                      src={prediction.game.away_team.logo_url} 
+                      alt={`${prediction.game.away_team.name} logo`}
+                      className="w-8 h-8 object-contain"
+                    />
+                  </div>
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent>

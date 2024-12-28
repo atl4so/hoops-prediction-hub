@@ -10,8 +10,8 @@ interface GameCardProps {
   game: {
     id: string;
     game_date: string;
-    home_team: { name: string };
-    away_team: { name: string };
+    home_team: { name: string; logo_url: string };
+    away_team: { name: string; logo_url: string };
   };
   isAuthenticated: boolean;
   userId?: string;
@@ -56,8 +56,26 @@ export function GameCard({ game, isAuthenticated, userId }: GameCardProps) {
     <>
       <Card className="w-full">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">
-            {game.home_team.name} vs {game.away_team.name}
+          <CardTitle className="text-lg font-semibold space-y-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <img 
+                  src={game.home_team.logo_url} 
+                  alt={`${game.home_team.name} logo`}
+                  className="w-8 h-8 object-contain"
+                />
+                <span>{game.home_team.name}</span>
+              </div>
+              <span className="text-muted-foreground">vs</span>
+              <div className="flex items-center gap-2">
+                <span>{game.away_team.name}</span>
+                <img 
+                  src={game.away_team.logo_url} 
+                  alt={`${game.away_team.name} logo`}
+                  className="w-8 h-8 object-contain"
+                />
+              </div>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
