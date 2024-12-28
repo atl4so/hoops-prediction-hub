@@ -24,7 +24,7 @@ interface GameCardProps {
     game_results?: Array<{
       home_score: number;
       away_score: number;
-      is_final?: boolean;
+      is_final: boolean;  // Changed from optional to required
     }>;
   };
   isAuthenticated: boolean;
