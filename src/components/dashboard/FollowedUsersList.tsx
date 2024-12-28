@@ -1,10 +1,17 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { FollowButton } from "@/components/users/FollowButton";
 import { Skeleton } from "@/components/ui/skeleton";
+import { UserPredictionsDialog } from "./UserPredictionsDialog";
 
 export function FollowedUsersList() {
+  const [selectedUser, setSelectedUser] = useState<{
+    id: string;
+    display_name: string;
+  } | null>(null);
+
   const { data: followedUsers, isLoading } = useQuery({
     queryKey: ["followed-users"],
     queryFn: async () => {
@@ -52,27 +59,46 @@ export function FollowedUsersList() {
   }
 
   return (
-    <div className="space-y-4">
-      {followedUsers.map((follow) => (
-        <Card key={follow.following_id}>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-semibold">{follow.following.display_name}</p>
-                <div className="text-sm text-muted-foreground">
-                  <p>Total Points: {follow.following.total_points}</p>
-                  <p>PPG: {follow.following.points_per_game?.toFixed(1)}</p>
+    <>
+      <div className="space-y-4">
+        {followedUsers.map((follow) => (
+          <Card key={follow.following_id}>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p 
+                    className="font-semibold cursor-pointer hover:text-primary"
+                    onClick={() => setSelectedUser({
+                      id: follow.following.id,
+                      display_name: follow.following.display_name
+                    })}
+                  >
+                    {follow.following.display_name}
+                  </p>
+                  <div className="text-sm text-muted-foreground">
+                    <p>Total Points: {follow.following.total_points}</p>
+                    <p>PPG: {follow.following.points_per_game?.toFixed(1)}</p>
+                  </div>
                 </div>
+                <FollowButton
+                  userId={follow.following_id}
+                  isFollowing={true}
+                  onFollowChange={() => {}}
+                />
               </div>
-              <FollowButton
-                userId={follow.following_id}
-                isFollowing={true}
-                onFollowChange={() => {}}
-              />
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {selectedUser && (
+        <UserPredictionsDialog
+          isOpen={!!selectedUser}
+          onClose={() => setSelectedUser(null)}
+          userId={selectedUser.id}
+          userName={selectedUser.display_name}
+        />
+      )}
+    </>
   );
 }
