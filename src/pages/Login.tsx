@@ -19,25 +19,29 @@ const Login = () => {
     password: "",
   });
 
-  // Check for and clear invalid session on component mount
+  // Clear invalid session on component mount
   useEffect(() => {
-    const checkSession = async () => {
+    const clearInvalidSession = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          // Clear any existing session if no valid user
-          await supabase.auth.signOut();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError?.status === 403 || (userError && userError.message?.includes('User from sub claim in JWT does not exist'))) {
+          console.log('Clearing invalid session');
+          // Clear all storage
+          localStorage.clear();
+          sessionStorage.clear();
+          // Force clear the Supabase session
+          await supabase.auth.signOut({ scope: 'global' });
         }
       } catch (error) {
-        // If we get a 403, clear the session
-        if (error.status === 403) {
-          await supabase.auth.signOut();
-        }
-        console.error("Session check error:", error);
+        console.error('Session check error:', error);
+        // If there's any error, clear everything to be safe
+        localStorage.clear();
+        sessionStorage.clear();
+        await supabase.auth.signOut({ scope: 'global' });
       }
     };
-    
-    checkSession();
+
+    clearInvalidSession();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,6 +50,13 @@ const Login = () => {
     setError(null);
 
     try {
+      // First, ensure any existing session is cleared
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (signOutError) {
+        console.log("Sign out error (expected if no session):", signOutError);
+      }
+
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: normalizeEmail(formData.email),
         password: formData.password,
