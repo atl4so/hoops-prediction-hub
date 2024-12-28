@@ -84,12 +84,15 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
                 Your Prediction: {prediction.prediction_home_score} - {prediction.prediction_away_score}
               </div>
               {prediction.points_earned !== undefined && (
-                <button
-                  onClick={() => setIsBreakdownOpen(true)}
-                  className="text-sm text-primary hover:underline font-medium"
-                >
-                  Points: {prediction.points_earned} (See breakdown)
-                </button>
+                <div className="text-sm">
+                  Points: {prediction.points_earned}{" "}
+                  <button
+                    onClick={() => setIsBreakdownOpen(true)}
+                    className="text-[#8B5CF6] hover:text-[#7C3AED] font-medium hover:underline"
+                  >
+                    (See breakdown)
+                  </button>
+                </div>
               )}
             </div>
           )}
