@@ -70,9 +70,10 @@ const Dashboard = () => {
               id,
               name
             ),
-            game_results (
+            game_results!game_results_game_id_fkey (
               home_score,
-              away_score
+              away_score,
+              is_final
             )
           )
         `)
@@ -83,7 +84,17 @@ const Dashboard = () => {
         console.error('Error fetching predictions:', error);
         throw error;
       }
-      return data;
+
+      // Transform the data to ensure game_results is always an array
+      return data.map(prediction => ({
+        ...prediction,
+        game: {
+          ...prediction.game,
+          game_results: Array.isArray(prediction.game.game_results) 
+            ? prediction.game.game_results 
+            : [prediction.game.game_results].filter(Boolean)
+        }
+      }));
     },
     enabled: !!userId
   });

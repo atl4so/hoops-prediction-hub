@@ -20,7 +20,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
           home_team:teams!games_home_team_id_fkey(id, name, logo_url),
           away_team:teams!games_away_team_id_fkey(id, name, logo_url),
           round:rounds(id, name),
-          game_results(
+          game_results!game_results_game_id_fkey(
             home_score,
             away_score,
             is_final
@@ -29,7 +29,12 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
         .order("game_date", { ascending: true });
 
       if (error) throw error;
-      return data;
+      
+      // Transform the data to ensure game_results is always an array
+      return data.map(game => ({
+        ...game,
+        game_results: Array.isArray(game.game_results) ? game.game_results : [game.game_results].filter(Boolean)
+      }));
     },
   });
 
