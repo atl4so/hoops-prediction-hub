@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { CollapsibleRoundSection } from "../dashboard/CollapsibleRoundSection";
+import { subHours } from "date-fns";
 
 interface GamesListProps {
   isAuthenticated: boolean;
@@ -42,7 +43,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     },
   });
 
-  // Subscribe to real-time updates for both game_results and predictions
+  // Subscribe to real-time updates
   useEffect(() => {
     const channel = supabase
       .channel('games-updates')
@@ -92,8 +93,18 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     );
   }
 
-  // Group games by round
-  const gamesByRound = games?.reduce((acc, game) => {
+  // Filter games to only show upcoming games where predictions are still allowed
+  const now = new Date();
+  const availableGames = games?.filter(game => {
+    const gameDate = new Date(game.game_date);
+    const predictionDeadline = subHours(gameDate, 1);
+    const hasNoResult = !game.game_results?.length;
+    
+    return hasNoResult && now < predictionDeadline;
+  }) || [];
+
+  // Group available games by round
+  const gamesByRound = availableGames.reduce((acc, game) => {
     const roundId = game.round.id;
     if (!acc[roundId]) {
       acc[roundId] = {
@@ -116,6 +127,19 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
   // Get the latest round number
   const latestRoundNumber = sortedRounds.length > 0 ? parseInt(sortedRounds[0].name) : 0;
 
+  if (sortedRounds.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-lg text-muted-foreground">
+          No games available for predictions at the moment.
+        </p>
+        <p className="text-sm text-muted-foreground mt-2">
+          Check back later for upcoming games.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-12">
       {sortedRounds.map((round) => {
@@ -129,7 +153,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
             roundName={round.name}
             predictions={round.games.map(game => ({
               game,
-              prediction: null // We don't have predictions in this context
+              prediction: null
             }))}
             userId={userId}
             defaultExpanded={isLatestRound}
