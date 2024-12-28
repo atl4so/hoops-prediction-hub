@@ -30,6 +30,19 @@ export default function Terms() {
     
     setIsDeleting(true);
     try {
+      // First make the request to delete the auth user while we still have a valid session
+      const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': SUPABASE_ANON_KEY
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete auth user');
+      }
+
       // Delete user predictions
       const { error: predictionsError } = await supabase
         .from('predictions')
@@ -62,22 +75,8 @@ export default function Terms() {
 
       if (profileError) throw profileError;
 
-      // Delete the user's auth account
-      const { error: deleteError } = await supabase.auth.signOut();
-      if (deleteError) throw deleteError;
-
-      // After signing out, make a final request to delete the auth user
-      const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'apikey': SUPABASE_ANON_KEY
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete auth user');
-      }
+      // Finally, sign out the user
+      await supabase.auth.signOut();
       
       toast.success("Your account has been deleted successfully");
       navigate("/");
