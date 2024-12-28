@@ -12,7 +12,7 @@ export function GameResultsList() {
   const [homeScore, setHomeScore] = useState("");
   const [awayScore, setAwayScore] = useState("");
 
-  const { data: existingResults } = useQuery({
+  const { data: existingResults, isError } = useQuery({
     queryKey: ['game-results'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -86,6 +86,14 @@ export function GameResultsList() {
     setHomeScore(result.home_score.toString());
     setAwayScore(result.away_score.toString());
   };
+
+  if (isError) {
+    return (
+      <div className="text-center py-4 text-destructive">
+        Error loading game results. Please try again later.
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
