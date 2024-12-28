@@ -71,26 +71,20 @@ export default function Terms() {
         throw profileError;
       }
 
-      // Delete the auth user using the user endpoint
+      // Delete the auth user
       const { error: deleteError } = await supabase.auth.admin.deleteUser(
         session.user.id
       );
 
       if (deleteError) {
-        // If admin deletion fails, try user self-deletion
-        const { error: userDeleteError } = await supabase.auth.updateUser({
-          data: { deleted: true }
-        });
-
-        if (userDeleteError) {
-          console.error('Error marking user as deleted:', userDeleteError);
-          throw userDeleteError;
+        // If we can't delete the user, at least sign them out
+        const { error: signOutError } = await supabase.auth.signOut();
+        if (signOutError) {
+          console.error('Error signing out:', signOutError);
+          throw signOutError;
         }
       }
 
-      // Finally, sign out the user
-      await supabase.auth.signOut();
-      
       toast.success("Your account has been deleted successfully");
       navigate("/");
     } catch (error) {
