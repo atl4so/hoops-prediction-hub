@@ -44,15 +44,19 @@ export function GameResultsList() {
         .update({
           home_score: parseInt(homeScore),
           away_score: parseInt(awayScore),
+          // Force trigger update by touching updated_at
+          updated_at: new Date().toISOString(),
         })
         .eq('id', editingResult.id);
 
       if (error) throw error;
     },
     onSuccess: () => {
+      // Invalidate all affected queries
       queryClient.invalidateQueries({ queryKey: ['game-results'] });
       queryClient.invalidateQueries({ queryKey: ['predictions'] });
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
+      queryClient.invalidateQueries({ queryKey: ['user-stats'] });
       
       toast({ 
         title: "Success", 
