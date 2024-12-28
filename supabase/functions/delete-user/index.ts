@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
 
     console.log('Starting user deletion process for:', user_id)
 
-    // Initialize Supabase admin client
+    // Initialize Supabase admin client with service role key
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
@@ -33,18 +33,7 @@ Deno.serve(async (req) => {
       }
     )
 
-    // First, delete the user from auth.users using admin API
-    console.log('Deleting auth user...')
-    const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(
-      user_id
-    )
-
-    if (authError) {
-      console.error('Error deleting auth user:', authError)
-      throw authError
-    }
-
-    // Then delete all user data using database function
+    // First, delete all user data using database function
     console.log('Deleting user data...')
     const { error: dbError } = await supabaseAdmin.rpc('delete_user', {
       user_id: user_id
@@ -53,6 +42,17 @@ Deno.serve(async (req) => {
     if (dbError) {
       console.error('Error deleting user data:', dbError)
       throw dbError
+    }
+
+    // Then, delete the auth user using admin API
+    console.log('Deleting auth user...')
+    const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(
+      user_id
+    )
+
+    if (authError) {
+      console.error('Error deleting auth user:', authError)
+      throw authError
     }
 
     console.log('User deletion completed successfully')

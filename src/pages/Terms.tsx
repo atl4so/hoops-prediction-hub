@@ -27,7 +27,7 @@ export default function Terms() {
     
     setIsDeleting(true);
     try {
-      // First, delete the auth user using the Edge Function
+      // First, delete the user using the Edge Function
       const { error: deleteError } = await supabase.functions.invoke('delete-user', {
         body: { user_id: session.user.id }
       });
@@ -41,7 +41,7 @@ export default function Terms() {
       await supabase.auth.signOut();
       
       toast.success("Your account has been deleted successfully");
-      navigate("/");
+      navigate("/register");
     } catch (error) {
       console.error('Error deleting account:', error);
       toast.error("Failed to delete account. Please try again.");
