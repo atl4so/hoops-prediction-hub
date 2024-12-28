@@ -16,6 +16,7 @@ interface UserPredictionsDialogProps {
   onClose: () => void;
   userId: string;
   userName: string;
+  isOwnPredictions?: boolean;
 }
 
 export function UserPredictionsDialog({
@@ -23,11 +24,11 @@ export function UserPredictionsDialog({
   onClose,
   userId,
   userName,
+  isOwnPredictions = false,
 }: UserPredictionsDialogProps) {
   const [selectedRound, setSelectedRound] = useState<string>("all");
   const queryClient = useQueryClient();
 
-  // Subscribe to real-time updates
   useEffect(() => {
     if (!isOpen) return;
 
@@ -58,7 +59,9 @@ export function UserPredictionsDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{userName}'s Predictions</DialogTitle>
+          <DialogTitle>
+            {isOwnPredictions ? "Your Predictions" : `${userName}'s Predictions`}
+          </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -68,7 +71,8 @@ export function UserPredictionsDialog({
           />
           <UserPredictionsGrid 
             predictions={predictions} 
-            isLoading={isLoading} 
+            isLoading={isLoading}
+            isOwnPredictions={isOwnPredictions}
           />
         </div>
       </DialogContent>

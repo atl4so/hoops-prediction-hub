@@ -26,9 +26,15 @@ interface UserPredictionCardProps {
     home_score: number;
     away_score: number;
   };
+  isOwnPrediction?: boolean;
 }
 
-export function UserPredictionCard({ game, prediction, gameResult }: UserPredictionCardProps) {
+export function UserPredictionCard({ 
+  game, 
+  prediction, 
+  gameResult,
+  isOwnPrediction = false
+}: UserPredictionCardProps) {
   const [showPointsBreakdown, setShowPointsBreakdown] = useState(false);
 
   const handlePointsClick = () => {
@@ -76,7 +82,7 @@ export function UserPredictionCard({ game, prediction, gameResult }: UserPredict
                 pointsEarned={prediction.points_earned}
                 onClick={handlePointsClick}
                 showBreakdownHint={!!gameResult && prediction.points_earned !== undefined}
-                label="Prediction"
+                label={isOwnPrediction ? "Your Prediction" : "Prediction"}
               />
             </div>
           </div>

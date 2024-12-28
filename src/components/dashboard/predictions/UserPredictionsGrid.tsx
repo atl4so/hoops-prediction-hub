@@ -4,9 +4,14 @@ import { UserPredictionCard } from "../UserPredictionCard";
 interface UserPredictionsGridProps {
   predictions: any[] | undefined;
   isLoading: boolean;
+  isOwnPredictions?: boolean;
 }
 
-export function UserPredictionsGrid({ predictions, isLoading }: UserPredictionsGridProps) {
+export function UserPredictionsGrid({ 
+  predictions, 
+  isLoading,
+  isOwnPredictions = false
+}: UserPredictionsGridProps) {
   if (isLoading) {
     return (
       <div className="grid gap-4 sm:grid-cols-2">
@@ -37,6 +42,7 @@ export function UserPredictionsGrid({ predictions, isLoading }: UserPredictionsG
             points_earned: prediction.points_earned
           }}
           gameResult={prediction.game.game_results?.[0]}
+          isOwnPrediction={isOwnPredictions}
         />
       ))}
     </div>
