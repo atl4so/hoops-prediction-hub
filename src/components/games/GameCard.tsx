@@ -53,7 +53,13 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
               align="right"
               team={game.home_team}
             />
-            <div className="text-center text-2xl font-bold">vs</div>
+            <div className="text-center text-2xl font-bold">
+              {gameResult ? (
+                `${gameResult.home_score} - ${gameResult.away_score}`
+              ) : (
+                'vs'
+              )}
+            </div>
             <TeamDisplay
               align="left"
               team={game.away_team}
