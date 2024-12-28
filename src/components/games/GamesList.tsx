@@ -5,9 +5,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 interface GamesListProps {
   isAuthenticated: boolean;
+  userId?: string;
 }
 
-export function GamesList({ isAuthenticated }: GamesListProps) {
+export function GamesList({ isAuthenticated, userId }: GamesListProps) {
   const { data: games, isLoading } = useQuery({
     queryKey: ["games"],
     queryFn: async () => {
@@ -42,7 +43,8 @@ export function GamesList({ isAuthenticated }: GamesListProps) {
         <GameCard 
           key={game.id} 
           game={game} 
-          isAuthenticated={isAuthenticated} 
+          isAuthenticated={isAuthenticated}
+          userId={userId}
         />
       ))}
     </div>

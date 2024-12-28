@@ -8,6 +8,7 @@ import { GamesList } from "@/components/games/GamesList";
 const Index = () => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userId, setUserId] = useState<string | undefined>();
   const [isAnimationComplete, setIsAnimationComplete] = useState(false);
   const isMobile = useIsMobile();
   const titleText = "euroleague.bet";
@@ -15,6 +16,7 @@ const Index = () => {
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       setIsAuthenticated(!!session);
+      setUserId(session?.user?.id);
     });
 
     const timer = setTimeout(() => {
@@ -78,7 +80,7 @@ const Index = () => {
 
       <div className="w-full max-w-7xl px-4 mt-8">
         <h2 className="text-2xl font-bold mb-6">Upcoming Games</h2>
-        <GamesList isAuthenticated={isAuthenticated} />
+        <GamesList isAuthenticated={isAuthenticated} userId={userId} />
       </div>
     </div>
   );
