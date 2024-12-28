@@ -1,130 +1,26 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { format } from "date-fns";
 import { useEffect } from "react";
-
-interface Prediction {
-  prediction_home_score: number;
-  prediction_away_score: number;
-  points_earned: number | null;
-  user: {
-    id: string;
-    display_name: string;
-  };
-  game: {
-    id: string;
-    game_date: string;
-    home_team: {
-      name: string;
-    };
-    away_team: {
-      name: string;
-    };
-    game_results: Array<{
-      home_score: number;
-      away_score: number;
-      is_final: boolean;
-    }>;
-  };
-}
+import { supabase } from "@/integrations/supabase/client";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
+import { PredictionCard } from "./predictions/PredictionCard";
+import { usePredictions } from "./predictions/usePredictions";
+import { useFollowedUsers } from "./predictions/useFollowedUsers";
+import { useUserPermissions } from "./predictions/useUserPermissions";
 
 export function FollowedUsersPredictions() {
-  // First, check if the current user has permission to view future predictions
-  const { data: userPermission } = useQuery({
-    queryKey: ["user-future-predictions-permission"],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+  const { data: userPermission } = useUserPermissions();
+  const { data: followedIds = [] } = useFollowedUsers();
+  
+  const { 
+    data: predictions, 
+    isLoading, 
+    refetch 
+  } = usePredictions(
+    followedIds,
+    !!userPermission?.can_view_future_predictions
+  );
 
-      const { data, error } = await supabase
-        .from("user_permissions")
-        .select("can_view_future_predictions")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (error) {
-        console.error("Error fetching user permissions:", error);
-        return null;
-      }
-
-      return data;
-    },
-  });
-
-  const { data: predictions, isLoading, refetch } = useQuery({
-    queryKey: ["followed-users-predictions", userPermission?.can_view_future_predictions],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
-
-      // Get followed users
-      const { data: follows } = await supabase
-        .from("user_follows")
-        .select("following_id")
-        .eq("follower_id", user.id);
-
-      if (!follows?.length) return [];
-
-      const followedIds = follows.map(f => f.following_id);
-      const now = new Date().toISOString();
-
-      // Build the query based on permissions
-      let query = supabase
-        .from("predictions")
-        .select(`
-          prediction_home_score,
-          prediction_away_score,
-          points_earned,
-          user:profiles!predictions_user_id_fkey (
-            id,
-            display_name
-          ),
-          game:games (
-            id,
-            game_date,
-            home_team:teams!games_home_team_id_fkey (
-              name
-            ),
-            away_team:teams!games_away_team_id_fkey (
-              name
-            ),
-            game_results (
-              home_score,
-              away_score,
-              is_final
-            )
-          )
-        `)
-        .in("user_id", followedIds)
-        .order("created_at", { ascending: false });
-
-      // If user doesn't have permission, only show predictions for finished games
-      if (!userPermission?.can_view_future_predictions) {
-        query = query.not("points_earned", "is", null);
-      }
-
-      const { data, error } = await query.limit(50);
-
-      if (error) {
-        console.error("Error fetching predictions:", error);
-        throw error;
-      }
-
-      return data.map(prediction => ({
-        ...prediction,
-        game: {
-          ...prediction.game,
-          game_results: Array.isArray(prediction.game.game_results) 
-            ? prediction.game.game_results 
-            : [prediction.game.game_results].filter(Boolean)
-        }
-      }));
-    },
-  });
-
-  // Subscribe to real-time updates for follows and predictions
+  // Subscribe to real-time updates
   useEffect(() => {
     const channel = supabase
       .channel('dashboard-updates')
@@ -192,32 +88,11 @@ export function FollowedUsersPredictions() {
 
   return (
     <div className="space-y-4">
-      {predictions.map((prediction: Prediction) => (
-        <Card key={`${prediction.user.id}-${prediction.game.id}`}>
-          <CardContent className="pt-6">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <p className="font-semibold">{prediction.user.display_name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {format(new Date(prediction.game.game_date), "PPp")}
-                </p>
-              </div>
-              <div className="text-sm">
-                <p>
-                  {prediction.game.home_team.name} vs {prediction.game.away_team.name}
-                </p>
-                <p className="font-medium">
-                  Prediction: {prediction.prediction_home_score} - {prediction.prediction_away_score}
-                </p>
-                {prediction.points_earned !== null && (
-                  <p className="text-primary">
-                    Points earned: {prediction.points_earned}
-                  </p>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {predictions.map((prediction) => (
+        <PredictionCard 
+          key={`${prediction.user.id}-${prediction.game.id}`}
+          prediction={prediction}
+        />
       ))}
     </div>
   );
