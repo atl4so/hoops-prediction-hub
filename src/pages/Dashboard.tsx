@@ -42,6 +42,50 @@ const Dashboard = () => {
     enabled: !!userId
   });
 
+  // Fetch all-time rank
+  const { data: allTimeRank } = useQuery({
+    queryKey: ['allTimeRank', userId],
+    queryFn: async () => {
+      if (!userId) return null;
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id')
+        .gt('total_points', userProfile?.total_points || 0);
+
+      if (error) throw error;
+      return data.length + 1; // Add 1 because we're counting positions ahead
+    },
+    enabled: !!userId && !!userProfile
+  });
+
+  // Fetch current round rank
+  const { data: currentRoundRank } = useQuery({
+    queryKey: ['currentRoundRank', userId],
+    queryFn: async () => {
+      if (!userId) return null;
+      
+      // First get the latest round
+      const { data: rounds, error: roundError } = await supabase
+        .from('rounds')
+        .select('id')
+        .order('start_date', { ascending: false })
+        .limit(1);
+
+      if (roundError) throw roundError;
+      if (!rounds?.length) return null;
+
+      const { data, error } = await supabase
+        .rpc('get_round_rankings', { round_id: rounds[0].id });
+
+      if (error) throw error;
+
+      const userRank = data.findIndex(user => user.user_id === userId) + 1;
+      return userRank || null;
+    },
+    enabled: !!userId
+  });
+
   const { data: predictions, isLoading } = useQuery({
     queryKey: ['predictions', userId],
     queryFn: async () => {
@@ -147,6 +191,8 @@ const Dashboard = () => {
         lowestGamePoints={userProfile?.lowest_game_points}
         highestRoundPoints={userProfile?.highest_round_points}
         lowestRoundPoints={userProfile?.lowest_round_points}
+        allTimeRank={allTimeRank}
+        currentRoundRank={currentRoundRank}
       />
 
       <FollowingSection />

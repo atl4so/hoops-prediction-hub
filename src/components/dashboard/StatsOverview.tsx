@@ -1,4 +1,4 @@
-import { Trophy, Target, TrendingUp, ArrowUp, ArrowDown } from "lucide-react";
+import { Trophy, Target, TrendingUp, ArrowUp, ArrowDown, Crown, Medal } from "lucide-react";
 import { StatCard } from "./StatCard";
 
 interface StatsOverviewProps {
@@ -9,6 +9,8 @@ interface StatsOverviewProps {
   lowestGamePoints?: number | null;
   highestRoundPoints?: number | null;
   lowestRoundPoints?: number | null;
+  allTimeRank?: number | null;
+  currentRoundRank?: number | null;
 }
 
 export function StatsOverview({ 
@@ -18,14 +20,38 @@ export function StatsOverview({
   highestGamePoints,
   lowestGamePoints,
   highestRoundPoints,
-  lowestRoundPoints
+  lowestRoundPoints,
+  allTimeRank,
+  currentRoundRank
 }: StatsOverviewProps) {
+  const formatRank = (rank: number | null | undefined) => {
+    if (!rank) return "-";
+    const suffix = ["th", "st", "nd", "rd"];
+    const v = rank % 100;
+    return rank + (suffix[(v - 20) % 10] || suffix[v] || suffix[0]);
+  };
+
   return (
     <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4 mb-8">
       <StatCard
         icon={Trophy}
         label="Total Points"
         value={totalPoints || 0}
+        highlight={true}
+      />
+      <StatCard
+        icon={Crown}
+        label="All-Time Rank"
+        value={formatRank(allTimeRank)}
+        description="Your position in the all-time leaderboard"
+        highlight={true}
+      />
+      <StatCard
+        icon={Medal}
+        label="Current Round Rank"
+        value={formatRank(currentRoundRank)}
+        description="Your position in the current round"
+        highlight={true}
       />
       <StatCard
         icon={Target}
