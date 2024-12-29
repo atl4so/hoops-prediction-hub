@@ -11,17 +11,48 @@ export const supabase = createClient<Database>(
     auth: {
       persistSession: true,
       autoRefreshToken: true,
-      detectSessionInUrl: true
+      detectSessionInUrl: true,
+      storageKey: 'supabase.auth.token',
+      storage: {
+        getItem: (key) => {
+          try {
+            const item = localStorage.getItem(key);
+            return item;
+          } catch (error) {
+            console.error('Error accessing localStorage:', error);
+            return null;
+          }
+        },
+        setItem: (key, value) => {
+          try {
+            localStorage.setItem(key, value);
+          } catch (error) {
+            console.error('Error setting localStorage:', error);
+          }
+        },
+        removeItem: (key) => {
+          try {
+            localStorage.removeItem(key);
+          } catch (error) {
+            console.error('Error removing from localStorage:', error);
+          }
+        },
+      },
     },
     realtime: {
       params: {
-        eventsPerSecond: 10
-      }
+        eventsPerSecond: 10,
+      },
+      reconnectAfterMs: (retries) => {
+        // Exponential backoff for reconnection attempts
+        return Math.min(1000 + retries * 1000, 10000);
+      },
+      timeout: 60000, // Increase timeout to 60 seconds
     },
     global: {
       headers: {
-        'x-application-name': 'euroleague.bet'
-      }
-    }
+        'x-application-name': 'euroleague.bet',
+      },
+    },
   }
 );
