@@ -1,16 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { AdminGameCard } from "./AdminGameCard";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
+import { GameListSkeleton } from "./games/GameListSkeleton";
+import { EditGameDialog } from "./games/EditGameDialog";
+import { GamesByRound } from "./games/GamesByRound";
 
 export function GamesList() {
   const { toast } = useToast();
@@ -74,13 +69,12 @@ export function GamesList() {
       combinedDateTime.setHours(parseInt(hours, 10));
       combinedDateTime.setMinutes(parseInt(minutes, 10));
 
-      // Fixed the update query by using .eq() instead of .in()
       const { error } = await supabase
         .from('games')
         .update({
           game_date: combinedDateTime.toISOString(),
         })
-        .eq('id', editingGame.id); // Using .eq() for single record update
+        .eq('id', editingGame.id);
 
       if (error) throw error;
     },
@@ -118,20 +112,7 @@ export function GamesList() {
   };
 
   if (isLoading) {
-    return (
-      <div className="space-y-8">
-        {[1, 2].map((roundIndex) => (
-          <div key={roundIndex} className="space-y-4">
-            <Skeleton className="h-8 w-32" />
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-[200px]" />
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    );
+    return <GameListSkeleton />;
   }
 
   // Group games by round
@@ -160,60 +141,27 @@ export function GamesList() {
         </div>
       )}
 
-      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Game Date/Time</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "justify-start text-left font-normal",
-                    !gameDate && "text-muted-foreground"
-                  )}
-                >
-                  {gameDate ? format(gameDate, "PPP") : "Game Date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={gameDate}
-                  onSelect={setGameDate}
-                />
-              </PopoverContent>
-            </Popover>
-            <Input
-              type="time"
-              value={gameTime}
-              onChange={(e) => setGameTime(e.target.value)}
-            />
-            <Button onClick={() => updateGame.mutate()}>Update Game</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <EditGameDialog
+        isOpen={isEditOpen}
+        onOpenChange={setIsEditOpen}
+        gameDate={gameDate}
+        onGameDateChange={setGameDate}
+        gameTime={gameTime}
+        onGameTimeChange={setGameTime}
+        onUpdate={() => updateGame.mutate()}
+      />
 
       <div className="space-y-12">
         {Object.entries(gamesByRound).map(([roundId, { name, games }]) => (
-          <section key={roundId} className="space-y-6">
-            <h2 className="text-2xl font-display font-semibold tracking-tight">
-              Round {name}
-            </h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {games.map((game) => (
-                <AdminGameCard
-                  key={game.id}
-                  game={game}
-                  onEdit={handleEdit}
-                  onDelete={toggleGameSelection}
-                  isSelected={selectedGames.includes(game.id)}
-                />
-              ))}
-            </div>
-          </section>
+          <GamesByRound
+            key={roundId}
+            roundId={roundId}
+            roundName={name}
+            games={games}
+            onEdit={handleEdit}
+            onDelete={toggleGameSelection}
+            selectedGames={selectedGames}
+          />
         ))}
       </div>
     </div>
