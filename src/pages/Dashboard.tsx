@@ -105,7 +105,10 @@ export default function Dashboard() {
     }
     acc[roundId].predictions.push({
       id: prediction.id,
-      game: prediction.game,
+      game: {
+        ...prediction.game,
+        game_results: prediction.game.game_results || []
+      },
       prediction: {
         prediction_home_score: prediction.prediction_home_score,
         prediction_away_score: prediction.prediction_away_score,

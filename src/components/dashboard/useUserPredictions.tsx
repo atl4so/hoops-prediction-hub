@@ -46,7 +46,10 @@ export function useUserPredictions(userId: string | null) {
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching predictions:', error);
+        throw error;
+      }
       
       return data.map(prediction => ({
         ...prediction,
