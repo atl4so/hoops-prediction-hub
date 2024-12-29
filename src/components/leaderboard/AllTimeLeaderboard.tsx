@@ -10,18 +10,33 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LeaderboardRow } from "./LeaderboardRow";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { 
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { useState } from "react";
 
 interface AllTimeLeaderboardProps {
   searchQuery: string;
 }
 
+const USERS_PER_PAGE = 50;
+
 export function AllTimeLeaderboard({ searchQuery }: AllTimeLeaderboardProps) {
-  const isMobile = useIsMobile();
+  const [currentPage, setCurrentPage] = useState(1);
+  const isMobile = window.innerWidth <= 768;
+
   const { data: allRankings, isLoading, refetch } = useQuery({
-    queryKey: ["leaderboard", "all-time", searchQuery],
+    queryKey: ["leaderboard", "all-time", searchQuery, currentPage],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const startRange = (currentPage - 1) * USERS_PER_PAGE;
+      const endRange = startRange + USERS_PER_PAGE - 1;
+
+      let query = supabase
         .from("profiles")
         .select(`
           id,
@@ -32,24 +47,43 @@ export function AllTimeLeaderboard({ searchQuery }: AllTimeLeaderboardProps) {
         `)
         .gt('total_predictions', 0)
         .order("total_points", { ascending: false })
-        .limit(100);
+        .range(startRange, endRange);
 
+      if (searchQuery) {
+        query = query.ilike('display_name', `%${searchQuery}%`);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       
       const rankedData = data.map((player, index) => ({
         ...player,
-        rank: index + 1
+        rank: startRange + index + 1
       }));
-
-      if (searchQuery) {
-        return rankedData.filter(player => 
-          player.display_name.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-      }
 
       return rankedData;
     },
   });
+
+  const { data: totalCount } = useQuery({
+    queryKey: ["leaderboard", "all-time", "count", searchQuery],
+    queryFn: async () => {
+      let query = supabase
+        .from("profiles")
+        .select('id', { count: 'exact', head: true })
+        .gt('total_predictions', 0);
+
+      if (searchQuery) {
+        query = query.ilike('display_name', `%${searchQuery}%`);
+      }
+
+      const { count, error } = await query;
+      if (error) throw error;
+      return count || 0;
+    },
+  });
+
+  const totalPages = Math.ceil((totalCount || 0) / USERS_PER_PAGE);
 
   if (isLoading) {
     return (
@@ -62,34 +96,81 @@ export function AllTimeLeaderboard({ searchQuery }: AllTimeLeaderboardProps) {
   }
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-12">Rank</TableHead>
-            <TableHead>Player</TableHead>
-            <TableHead className="text-right">Points</TableHead>
-            {!isMobile && (
-              <>
-                <TableHead className="text-right">PPG</TableHead>
-                <TableHead className="text-right">Predictions</TableHead>
-              </>
-            )}
-            <TableHead className="w-28"></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {allRankings?.map((player) => (
-            <LeaderboardRow
-              key={player.id}
-              player={player}
-              rank={player.rank}
-              onFollowChange={refetch}
-              isRoundLeaderboard={false}
-            />
-          ))}
-        </TableBody>
-      </Table>
+    <div className="space-y-4">
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-12">Rank</TableHead>
+              <TableHead>Player</TableHead>
+              <TableHead className="text-right">Points</TableHead>
+              {!isMobile && (
+                <>
+                  <TableHead className="text-right">PPG</TableHead>
+                  <TableHead className="text-right">Predictions</TableHead>
+                </>
+              )}
+              <TableHead className="w-28"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {allRankings?.map((player) => (
+              <LeaderboardRow
+                key={player.id}
+                player={player}
+                rank={player.rank}
+                onFollowChange={refetch}
+                isRoundLeaderboard={false}
+              />
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious 
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              />
+            </PaginationItem>
+            
+            {!isMobile && Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(page => {
+                const distance = Math.abs(page - currentPage);
+                return distance === 0 || distance === 1 || page === 1 || page === totalPages;
+              })
+              .map((page, index, array) => {
+                if (index > 0 && array[index - 1] !== page - 1) {
+                  return (
+                    <PaginationItem key={`ellipsis-${page}`}>
+                      <PaginationLink disabled>...</PaginationLink>
+                    </PaginationItem>
+                  );
+                }
+                return (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      onClick={() => setCurrentPage(page)}
+                      isActive={currentPage === page}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
+
+            <PaginationItem>
+              <PaginationNext 
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 }

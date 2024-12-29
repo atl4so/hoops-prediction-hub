@@ -1,13 +1,5 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -18,111 +10,159 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LeaderboardRow } from "./LeaderboardRow";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { RoundSelector } from "../dashboard/predictions/RoundSelector";
+import { useState } from "react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface RoundLeaderboardProps {
   searchQuery: string;
 }
 
+const USERS_PER_PAGE = 50;
+
 export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
-  const [selectedRound, setSelectedRound] = useState<string>("");
-  const isMobile = useIsMobile();
+  const [selectedRound, setSelectedRound] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const isMobile = window.innerWidth <= 768;
 
-  const { data: rounds, isLoading: isLoadingRounds } = useQuery({
-    queryKey: ["rounds"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("rounds")
-        .select("*")
-        .order("start_date", { ascending: false });
-
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  useState(() => {
-    if (rounds && rounds.length > 0 && !selectedRound) {
-      setSelectedRound(rounds[0].id);
-    }
-  });
-
-  const { data: rankings, isLoading: isLoadingRankings, refetch } = useQuery({
-    queryKey: ["leaderboard", "round", selectedRound, searchQuery],
+  const { data: rankings, isLoading, refetch } = useQuery({
+    queryKey: ["leaderboard", "round", selectedRound, searchQuery, currentPage],
     queryFn: async () => {
       if (!selectedRound) return null;
 
+      const startRange = (currentPage - 1) * USERS_PER_PAGE;
+      const endRange = startRange + USERS_PER_PAGE - 1;
+
       const { data, error } = await supabase
-        .rpc('get_round_rankings', {
-          round_id: selectedRound
-        });
+        .rpc('get_round_rankings', { round_id: selectedRound })
+        .range(startRange, endRange);
 
       if (error) throw error;
-      
-      const rankedData = data.map((player, index) => ({
+
+      const filteredData = searchQuery
+        ? data.filter(player => 
+            player.display_name.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        : data;
+
+      return filteredData.map((player, index) => ({
         ...player,
-        rank: index + 1
+        rank: startRange + index + 1
       }));
-      
-      if (searchQuery) {
-        return rankedData.filter(player => 
-          player.display_name.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-      }
-      
-      return rankedData;
     },
     enabled: !!selectedRound,
   });
 
-  const isLoading = isLoadingRounds || isLoadingRankings;
+  const { data: totalCount } = useQuery({
+    queryKey: ["leaderboard", "round", selectedRound, "count", searchQuery],
+    queryFn: async () => {
+      if (!selectedRound) return 0;
+
+      const { count, error } = await supabase
+        .rpc('get_round_rankings', { round_id: selectedRound })
+        .select('*', { count: 'exact', head: true });
+
+      if (error) throw error;
+      return count || 0;
+    },
+    enabled: !!selectedRound,
+  });
+
+  const totalPages = Math.ceil((totalCount || 0) / USERS_PER_PAGE);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-12 w-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <Select value={selectedRound} onValueChange={setSelectedRound}>
-        <SelectTrigger>
-          <SelectValue placeholder="Select a round" />
-        </SelectTrigger>
-        <SelectContent>
-          {rounds?.map((round) => (
-            <SelectItem key={round.id} value={round.id}>
-              Round {round.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <RoundSelector selectedRound={selectedRound} onRoundChange={setSelectedRound} />
 
-      <div className="rounded-md border">
-        {isLoading ? (
-          <div className="space-y-4 p-4">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
+      {selectedRound && (
+        <div className="space-y-4">
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-12">Rank</TableHead>
+                  <TableHead>Player</TableHead>
+                  <TableHead className="text-right">Points</TableHead>
+                  <TableHead className="w-28"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rankings?.map((player) => (
+                  <LeaderboardRow
+                    key={player.user_id}
+                    player={player}
+                    rank={player.rank}
+                    onFollowChange={refetch}
+                    isRoundLeaderboard={true}
+                  />
+                ))}
+              </TableBody>
+            </Table>
           </div>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-12">Rank</TableHead>
-                <TableHead>Player</TableHead>
-                <TableHead className="text-right">Points</TableHead>
-                <TableHead className="w-28"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rankings?.map((player) => (
-                <LeaderboardRow
-                  key={player.user_id}
-                  player={player}
-                  rank={player.rank}
-                  onFollowChange={refetch}
-                  isRoundLeaderboard={true}
-                />
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </div>
+
+          {totalPages > 1 && (
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                  />
+                </PaginationItem>
+
+                {!isMobile && Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter(page => {
+                    const distance = Math.abs(page - currentPage);
+                    return distance === 0 || distance === 1 || page === 1 || page === totalPages;
+                  })
+                  .map((page, index, array) => {
+                    if (index > 0 && array[index - 1] !== page - 1) {
+                      return (
+                        <PaginationItem key={`ellipsis-${page}`}>
+                          <PaginationLink disabled>...</PaginationLink>
+                        </PaginationItem>
+                      );
+                    }
+                    return (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          onClick={() => setCurrentPage(page)}
+                          isActive={currentPage === page}
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  })}
+
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
+        </div>
+      )}
     </div>
   );
 }
