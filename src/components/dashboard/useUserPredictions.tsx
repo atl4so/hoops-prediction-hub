@@ -42,7 +42,6 @@ export function useUserPredictions(userId: string | null) {
           } else if (status === 'CLOSED' && retryCount < maxRetries) {
             console.log('Subscription closed, attempting to reconnect...');
             retryCount++;
-            // Implement exponential backoff
             const delay = Math.min(1000 * Math.pow(2, retryCount), 10000);
             if (retryTimeout) clearTimeout(retryTimeout);
             retryTimeout = setTimeout(() => {
@@ -51,11 +50,7 @@ export function useUserPredictions(userId: string | null) {
             }, delay);
           } else if (retryCount >= maxRetries) {
             console.error('Failed to establish reliable connection after multiple attempts');
-            // Only show the toast once after all retries have failed
-            toast.error("Connection issues detected. Data updates may be delayed.", {
-              duration: 5000,
-              id: 'connection-error' // Prevent duplicate toasts
-            });
+            // Connection error toast removed as requested
           }
         });
 
