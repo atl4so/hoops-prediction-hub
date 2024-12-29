@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { subHours, isBefore } from "date-fns";
 import { PredictionForm } from "./PredictionForm";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface PredictionButtonProps {
   isAuthenticated: boolean;
@@ -40,6 +41,7 @@ export function PredictionButton({
 }: PredictionButtonProps) {
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
 
   const isPredictionAllowed = () => {
     if (gameResult?.is_final || prediction) {
@@ -69,6 +71,23 @@ export function PredictionButton({
         });
 
       if (error) throw error;
+
+      // Immediately update local state and cache
+      queryClient.setQueryData(['games'], (oldData: any) => {
+        if (!oldData) return oldData;
+        return oldData.map((game: any) => {
+          if (game.id === gameId) {
+            return {
+              ...game,
+              prediction: {
+                prediction_home_score: homeScore,
+                prediction_away_score: awayScore
+              }
+            };
+          }
+          return game;
+        });
+      });
 
       toast.success("Prediction submitted successfully!");
       setShowForm(false);

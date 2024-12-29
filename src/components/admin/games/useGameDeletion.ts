@@ -10,47 +10,21 @@ export function useGameDeletion() {
     mutationFn: async (gameIds: string[]) => {
       const results = [];
       
-      // Delete one game at a time
       for (const gameId of gameIds) {
         console.log('Attempting to delete game:', gameId);
         
         try {
-          // First delete related game_results
-          const { error: resultError } = await supabase
-            .from('game_results')
-            .delete()
-            .eq('game_id', gameId);
-            
-          if (resultError) {
-            console.error('Error deleting game results:', resultError);
-            throw resultError;
+          // Delete everything in one transaction
+          const { data, error } = await supabase.rpc('delete_game_completely', {
+            game_id: gameId
+          });
+          
+          if (error) {
+            console.error('Error in deletion process:', error);
+            throw error;
           }
           
-          // Then delete predictions
-          const { error: predError } = await supabase
-            .from('predictions')
-            .delete()
-            .eq('game_id', gameId);
-            
-          if (predError) {
-            console.error('Error deleting predictions:', predError);
-            throw predError;
-          }
-          
-          // Finally delete the game
-          const { data, error: gameError } = await supabase
-            .from('games')
-            .delete()
-            .eq('id', gameId)
-            .select('id')
-            .single();
-          
-          if (gameError) {
-            console.error('Error deleting game:', gameError);
-            throw gameError;
-          }
-          
-          results.push(data);
+          results.push({ id: gameId });
           console.log('Successfully deleted game:', gameId);
         } catch (error) {
           console.error('Error in deletion process:', error);
