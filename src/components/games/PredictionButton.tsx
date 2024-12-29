@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { subHours, isBefore } from "date-fns";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface PredictionButtonProps {
   isAuthenticated: boolean;
@@ -34,40 +34,8 @@ export function PredictionButton({
   gameResult
 }: PredictionButtonProps) {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const queryClient = useQueryClient();
-
-  // Set up real-time subscription
-  useEffect(() => {
-    if (!userId || !gameId) return;
-
-    console.log('Setting up real-time subscription for predictions');
-    
-    const channel = supabase
-      .channel('prediction-updates')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'predictions',
-          filter: `game_id=eq.${gameId} AND user_id=eq.${userId}`,
-        },
-        (payload) => {
-          console.log('Prediction changed:', payload);
-          // Invalidate and refetch the prediction query
-          queryClient.invalidateQueries({ queryKey: ['prediction', gameId, userId] });
-        }
-      )
-      .subscribe((status) => {
-        console.log('Realtime subscription status:', status);
-      });
-
-    return () => {
-      console.log('Cleaning up real-time subscription');
-      supabase.removeChannel(channel);
-    };
-  }, [gameId, userId, queryClient]);
+  const [hasPredicted, setHasPredicted] = useState(!!prediction);
 
   // Query to check if user already has a prediction for this game
   const { data: existingPrediction } = useQuery({
@@ -91,14 +59,45 @@ export function PredictionButton({
     enabled: !!userId && !!gameId,
   });
 
-  const isPredictionAllowed = () => {
-    // If game has a final result, don't allow predictions
-    if (gameResult?.is_final) {
-      return false;
-    }
+  // Update local state when prediction data changes
+  useEffect(() => {
+    setHasPredicted(!!existingPrediction || !!prediction);
+  }, [existingPrediction, prediction]);
 
-    // If user already has a prediction, don't allow another one
-    if (existingPrediction) {
+  // Set up real-time subscription
+  useEffect(() => {
+    if (!userId || !gameId) return;
+
+    console.log('Setting up real-time subscription for predictions');
+    
+    const channel = supabase
+      .channel('prediction-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'predictions',
+          filter: `game_id=eq.${gameId} AND user_id=eq.${userId}`,
+        },
+        (payload) => {
+          console.log('Prediction changed:', payload);
+          setHasPredicted(true);
+          queryClient.invalidateQueries({ queryKey: ['prediction', gameId, userId] });
+        }
+      )
+      .subscribe((status) => {
+        console.log('Realtime subscription status:', status);
+      });
+
+    return () => {
+      console.log('Cleaning up real-time subscription');
+      supabase.removeChannel(channel);
+    };
+  }, [gameId, userId, queryClient]);
+
+  const isPredictionAllowed = () => {
+    if (gameResult?.is_final || hasPredicted) {
       return false;
     }
 
@@ -106,59 +105,31 @@ export function PredictionButton({
     const now = new Date();
     const oneHourBefore = subHours(gameDateObj, 1);
     
-    // For debugging
-    console.log('Game date:', gameDateObj);
-    console.log('Current time:', now);
-    console.log('One hour before:', oneHourBefore);
-    
-    // Allow predictions if:
-    // 1. Current time is before the game start time AND
-    // 2. Current time is before the cutoff time (1 hour before game)
     const isBeforeGame = isBefore(now, gameDateObj);
     const isBeforeCutoff = isBefore(now, oneHourBefore);
-    
-    console.log('Is before game:', isBeforeGame);
-    console.log('Is before cutoff:', isBeforeCutoff);
-    console.log('Is prediction allowed:', isBeforeGame && isBeforeCutoff);
     
     return isBeforeGame && isBeforeCutoff;
   };
 
   const handleClick = () => {
     if (!isAuthenticated) {
-      toast({
-        title: "Authentication required",
-        description: "Please log in to make predictions",
-        variant: "destructive",
-      });
+      toast.error("Please log in to make predictions");
       navigate("/login");
       return;
     }
 
-    if (existingPrediction) {
-      toast({
-        title: "Prediction exists",
-        description: "You have already made a prediction for this game",
-        variant: "destructive",
-      });
+    if (hasPredicted) {
+      toast.error("You have already made a prediction for this game");
       return;
     }
 
     if (gameResult?.is_final) {
-      toast({
-        title: "Game completed",
-        description: "This game has ended and predictions are closed",
-        variant: "destructive",
-      });
+      toast.error("This game has ended and predictions are closed");
       return;
     }
 
     if (!isPredictionAllowed()) {
-      toast({
-        title: "Predictions closed",
-        description: "Predictions are closed 1 hour before the game starts",
-        variant: "destructive",
-      });
+      toast.error("Predictions are closed 1 hour before the game starts");
       return;
     }
 
@@ -166,7 +137,7 @@ export function PredictionButton({
   };
 
   const getButtonText = () => {
-    if (existingPrediction) {
+    if (hasPredicted) {
       return "Prediction Submitted";
     }
     if (gameResult?.is_final) {
@@ -179,12 +150,12 @@ export function PredictionButton({
     <Button 
       onClick={handleClick}
       className={`w-full shadow-sm transition-all duration-300 font-medium tracking-wide ${
-        isPredictionAllowed() && !existingPrediction
+        isPredictionAllowed() && !hasPredicted
           ? "bg-primary/90 hover:bg-primary" 
           : "bg-[#8B5CF6] text-white hover:bg-[#7C3AED]"
       }`}
-      disabled={!isPredictionAllowed() || !!existingPrediction || gameResult?.is_final}
-      variant={isPredictionAllowed() && !existingPrediction ? "default" : "secondary"}
+      disabled={!isPredictionAllowed() || hasPredicted || gameResult?.is_final}
+      variant={isPredictionAllowed() && !hasPredicted ? "default" : "secondary"}
     >
       {getButtonText()}
     </Button>
