@@ -24,7 +24,7 @@ const queryClient = new QueryClient({
       retry: 1,
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60, // Cache data for 1 minute
-      cacheTime: 1000 * 60 * 5, // Keep unused data in cache for 5 minutes
+      gcTime: 1000 * 60 * 5, // Keep unused data in cache for 5 minutes (renamed from cacheTime)
     },
   },
 });
