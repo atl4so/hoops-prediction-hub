@@ -8,6 +8,12 @@ import { GameListSkeleton } from "./games/GameListSkeleton";
 import { EditGameDialog } from "./games/EditGameDialog";
 import { GamesByRound } from "./games/GamesByRound";
 import { useGameDeletion } from "./games/useGameDeletion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export function GamesList() {
   const { toast } = useToast();
@@ -142,19 +148,25 @@ export function GamesList() {
         onUpdate={() => updateGame.mutate()}
       />
 
-      <div className="space-y-12">
+      <Accordion type="single" collapsible className="space-y-4">
         {Object.entries(gamesByRound).map(([roundId, { name, games }]) => (
-          <GamesByRound
-            key={roundId}
-            roundId={roundId}
-            roundName={name}
-            games={games}
-            onEdit={handleEdit}
-            onDelete={toggleGameSelection}
-            selectedGames={selectedGames}
-          />
+          <AccordionItem key={roundId} value={roundId} className="border rounded-lg">
+            <AccordionTrigger className="px-4 hover:no-underline">
+              <span className="text-lg font-semibold">Round {name}</span>
+            </AccordionTrigger>
+            <AccordionContent className="px-4 pb-4">
+              <GamesByRound
+                roundId={roundId}
+                roundName={name}
+                games={games}
+                onEdit={handleEdit}
+                onDelete={toggleGameSelection}
+                selectedGames={selectedGames}
+              />
+            </AccordionContent>
+          </AccordionItem>
         ))}
-      </div>
+      </Accordion>
     </div>
   );
 }

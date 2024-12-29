@@ -5,6 +5,12 @@ import { useToast } from "@/hooks/use-toast";
 import { GameResultItem } from "./GameResultItem";
 import { EditGameResultDialog } from "./EditGameResultDialog";
 import { useEffect } from "react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export function GameResultsList() {
   const { toast } = useToast();
@@ -55,6 +61,7 @@ export function GameResultsList() {
           game:games(
             id,
             game_date,
+            round:rounds(id, name),
             home_team:teams!games_home_team_id_fkey(name),
             away_team:teams!games_away_team_id_fkey(name)
           )
@@ -130,23 +137,52 @@ export function GameResultsList() {
     );
   }
 
+  // Group results by round
+  const resultsByRound = existingResults?.reduce((acc, result) => {
+    const roundId = result.game.round.id;
+    const roundName = result.game.round.name;
+    
+    if (!acc[roundId]) {
+      acc[roundId] = {
+        roundName,
+        results: []
+      };
+    }
+    
+    acc[roundId].results.push(result);
+    return acc;
+  }, {} as Record<string, { roundName: string; results: typeof existingResults }>) || {};
+
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium">Existing Results</h3>
-      <div className="grid gap-4">
-        {existingResults?.map((result) => (
-          <GameResultItem
-            key={result.id}
-            result={result}
-            onEdit={handleEdit}
-          />
+      <h3 className="text-lg font-medium mb-4">Existing Results</h3>
+      
+      <Accordion type="single" collapsible className="space-y-4">
+        {Object.entries(resultsByRound).map(([roundId, { roundName, results }]) => (
+          <AccordionItem key={roundId} value={roundId} className="border rounded-lg">
+            <AccordionTrigger className="px-4 hover:no-underline">
+              <span className="text-lg font-semibold">Round {roundName}</span>
+            </AccordionTrigger>
+            <AccordionContent className="px-4 pb-4">
+              <div className="grid gap-4">
+                {results.map((result) => (
+                  <GameResultItem
+                    key={result.id}
+                    result={result}
+                    onEdit={handleEdit}
+                  />
+                ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
         ))}
-        {(!existingResults || existingResults.length === 0) && (
-          <p className="text-muted-foreground text-center py-4">
-            No game results found
-          </p>
-        )}
-      </div>
+      </Accordion>
+
+      {(!existingResults || existingResults.length === 0) && (
+        <p className="text-muted-foreground text-center py-4">
+          No game results found
+        </p>
+      )}
 
       <EditGameResultDialog
         result={editingResult}
