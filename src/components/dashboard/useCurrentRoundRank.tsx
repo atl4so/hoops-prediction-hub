@@ -12,15 +12,24 @@ export function useCurrentRoundRank(userId: string | null) {
       if (!userId) return null;
 
       // Get the current round
-      const { data: currentRound } = await supabase
+      const { data: currentRound, error: roundError } = await supabase
         .from('rounds')
         .select('id')
         .gte('end_date', new Date().toISOString())
         .order('start_date', { ascending: true })
         .limit(1)
-        .single();
+        .maybeSingle();  // Changed from .single() to .maybeSingle()
 
-      if (!currentRound) return null;
+      if (roundError) {
+        console.error('Error fetching current round:', roundError);
+        return null;
+      }
+
+      // If no current round exists, return null
+      if (!currentRound) {
+        console.log('No current round found');
+        return null;
+      }
 
       // Get rankings for the current round
       const { data: roundRankings, error } = await supabase
@@ -33,7 +42,10 @@ export function useCurrentRoundRank(userId: string | null) {
         return null;
       }
 
-      if (!roundRankings || roundRankings.length === 0) return null;
+      if (!roundRankings || roundRankings.length === 0) {
+        console.log('No rankings found for current round');
+        return null;
+      }
 
       // Find user's rank in the current round
       const userRankIndex = roundRankings.findIndex(r => r.user_id === userId);
