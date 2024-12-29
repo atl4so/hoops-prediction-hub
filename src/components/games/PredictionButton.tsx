@@ -2,8 +2,9 @@ import { Button } from "@/components/ui/button";
 import { subHours, isBefore } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useEffect } from "react";
 
 interface PredictionButtonProps {
   isAuthenticated: boolean;
@@ -34,6 +35,39 @@ export function PredictionButton({
 }: PredictionButtonProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Set up real-time subscription
+  useEffect(() => {
+    if (!userId || !gameId) return;
+
+    console.log('Setting up real-time subscription for predictions');
+    
+    const channel = supabase
+      .channel('prediction-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'predictions',
+          filter: `game_id=eq.${gameId}`,
+        },
+        (payload) => {
+          console.log('Prediction changed:', payload);
+          // Invalidate and refetch the prediction query
+          queryClient.invalidateQueries({ queryKey: ['prediction', gameId, userId] });
+        }
+      )
+      .subscribe((status) => {
+        console.log('Realtime subscription status:', status);
+      });
+
+    return () => {
+      console.log('Cleaning up real-time subscription');
+      supabase.removeChannel(channel);
+    };
+  }, [gameId, userId, queryClient]);
 
   // Query to check if user already has a prediction for this game
   const { data: existingPrediction } = useQuery({
