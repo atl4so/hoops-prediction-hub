@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -11,6 +11,7 @@ import { useGameDeletion } from "./games/useGameDeletion";
 
 export function GamesList() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [selectedGames, setSelectedGames] = useState<string[]>([]);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingGame, setEditingGame] = useState<any>(null);
