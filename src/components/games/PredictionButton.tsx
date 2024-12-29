@@ -51,7 +51,7 @@ export function PredictionButton({
           event: '*',
           schema: 'public',
           table: 'predictions',
-          filter: `game_id=eq.${gameId}`,
+          filter: `game_id=eq.${gameId} AND user_id=eq.${userId}`,
         },
         (payload) => {
           console.log('Prediction changed:', payload);
