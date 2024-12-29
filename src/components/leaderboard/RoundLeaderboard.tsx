@@ -68,7 +68,7 @@ export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
 
       const { count, error } = await supabase
         .rpc('get_round_rankings', { round_id: selectedRound })
-        .select('*', { count: 'exact', head: true });
+        .select('*', { count: 'exact' });
 
       if (error) throw error;
       return count || 0;
