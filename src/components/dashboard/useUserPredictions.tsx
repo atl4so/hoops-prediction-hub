@@ -9,6 +9,7 @@ export function useUserPredictions(userId: string | null) {
   return useQuery({
     queryKey: ['userPredictions', userId],
     queryFn: async () => {
+      console.log('Fetching predictions for user:', userId);
       if (!userId) return null;
 
       const { data, error } = await supabase
@@ -50,8 +51,10 @@ export function useUserPredictions(userId: string | null) {
         console.error('Error fetching predictions:', error);
         throw error;
       }
+
+      console.log('Raw predictions data:', data);
       
-      return data.map(prediction => ({
+      const transformedData = data.map(prediction => ({
         ...prediction,
         game: {
           ...prediction.game,
@@ -62,7 +65,11 @@ export function useUserPredictions(userId: string | null) {
               : []
         }
       }));
+
+      console.log('Transformed predictions data:', transformedData);
+      return transformedData;
     },
-    enabled: !!userId && !!session
+    enabled: !!userId && !!session,
+    staleTime: 1000 * 60 // Cache for 1 minute
   });
 }
