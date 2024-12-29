@@ -52,9 +52,7 @@ export function GamesList() {
 
       const { error } = await supabase
         .from('games')
-        .update({
-          game_date: combinedDateTime.toISOString(),
-        })
+        .update({ game_date: combinedDateTime.toISOString() })
         .eq('id', editingGame.id);
 
       if (error) throw error;
