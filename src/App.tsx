@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { MainLayout } from "./components/layout/MainLayout";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
@@ -23,35 +23,36 @@ const queryClient = new QueryClient({
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
-      staleTime: 1000 * 60, // Cache data for 1 minute
-      gcTime: 1000 * 60 * 5, // Keep unused data in cache for 5 minutes
+      staleTime: 1000 * 60,
+      gcTime: 1000 * 60 * 5,
     },
   },
 });
 
 const SessionHandler = ({ children }: { children: React.ReactNode }) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   useEffect(() => {
-    // Initial session check
     const checkSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setIsAuthenticated(!!session);
+      } catch (error) {
         console.error('Session check error:', error);
-      } else if (!session && window.location.pathname !== '/login' && window.location.pathname !== '/register') {
-        window.location.href = '/login';
+      } finally {
+        setIsLoading(false);
       }
     };
 
     checkSession();
 
-    // Subscribe to auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, !!session);
-      
+      setIsAuthenticated(!!session);
+
       if (event === 'SIGNED_OUT') {
         queryClient.clear();
-        if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
-          window.location.href = '/login';
-        }
       } else if (event === 'SIGNED_IN') {
         queryClient.invalidateQueries();
       }
@@ -61,6 +62,18 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
       subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated && 
+        window.location.pathname !== '/login' && 
+        window.location.pathname !== '/register') {
+      window.location.href = '/login';
+    }
+  }, [isLoading, isAuthenticated]);
+
+  if (isLoading) {
+    return null; // Or a loading spinner
+  }
 
   return <>{children}</>;
 };
