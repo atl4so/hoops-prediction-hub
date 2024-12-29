@@ -12,7 +12,6 @@ export const supabase = createClient<Database>(
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
-      flowType: 'pkce',
       storage: localStorage,
       storageKey: 'supabase.auth.token',
     },
@@ -20,18 +19,11 @@ export const supabase = createClient<Database>(
       params: {
         eventsPerSecond: 2,
       },
-      reconnectAfterMs: (retries) => {
-        return Math.min(1000 + retries * 2000, 20000);
-      },
-      timeout: 30000,
     },
     global: {
       headers: {
         'x-application-name': 'euroleague.bet',
       },
-    },
-    db: {
-      schema: 'public'
     },
   }
 );

@@ -29,20 +29,19 @@ const queryClient = new QueryClient({
   },
 });
 
-// Session handler component to manage invalid sessions
 const SessionHandler = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
-    const handleInvalidSession = async () => {
-      try {
-        const { error } = await supabase.auth.signOut();
-        if (!error) {
-          queryClient.clear();
-          window.location.href = '/login';
-        }
-      } catch (error) {
-        console.error('Error handling invalid session:', error);
+    // Initial session check
+    const checkSession = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error('Session check error:', error);
+      } else if (!session && window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+        window.location.href = '/login';
       }
     };
+
+    checkSession();
 
     // Subscribe to auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -50,29 +49,13 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
       
       if (event === 'SIGNED_OUT') {
         queryClient.clear();
-      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        const { data: { user }, error } = await supabase.auth.getUser();
-        if (error || !user) {
-          console.error('Session verification failed:', error);
-          await handleInvalidSession();
-        } else {
-          console.log('Session verified successfully');
-          queryClient.invalidateQueries();
-        }
-      }
-    });
-
-    // Initial session check
-    const checkSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error || !session) {
         if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
           window.location.href = '/login';
         }
+      } else if (event === 'SIGNED_IN') {
+        queryClient.invalidateQueries();
       }
-    };
-
-    checkSession();
+    });
 
     return () => {
       subscription.unsubscribe();
@@ -85,7 +68,7 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
 const App = () => {
   return (
     <SessionContextProvider 
-      supabaseClient={supabase} 
+      supabaseClient={supabase}
       initialSession={null}
     >
       <QueryClientProvider client={queryClient}>
