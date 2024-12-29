@@ -13,6 +13,7 @@ export function useUserPredictions(userId: string | null) {
     if (!userId) return;
 
     let retryCount = 0;
+    let retryTimeout: NodeJS.Timeout;
     const maxRetries = 3;
 
     const setupChannel = () => {
@@ -37,14 +38,24 @@ export function useUserPredictions(userId: string | null) {
           if (status === 'SUBSCRIBED') {
             console.log('Successfully subscribed to predictions changes');
             retryCount = 0;
+            if (retryTimeout) clearTimeout(retryTimeout);
           } else if (status === 'CLOSED' && retryCount < maxRetries) {
             console.log('Subscription closed, attempting to reconnect...');
             retryCount++;
-            await supabase.removeChannel(channel);
-            setupChannel();
+            // Implement exponential backoff
+            const delay = Math.min(1000 * Math.pow(2, retryCount), 10000);
+            if (retryTimeout) clearTimeout(retryTimeout);
+            retryTimeout = setTimeout(() => {
+              console.log(`Retrying connection (attempt ${retryCount})...`);
+              supabase.removeChannel(channel).then(() => setupChannel());
+            }, delay);
           } else if (retryCount >= maxRetries) {
             console.error('Failed to establish reliable connection after multiple attempts');
-            toast.error("Connection issues detected. Please refresh the page.");
+            // Only show the toast once after all retries have failed
+            toast.error("Connection issues detected. Data updates may be delayed.", {
+              duration: 5000,
+              id: 'connection-error' // Prevent duplicate toasts
+            });
           }
         });
 
@@ -55,6 +66,7 @@ export function useUserPredictions(userId: string | null) {
 
     return () => {
       console.log('Cleaning up predictions channel...');
+      if (retryTimeout) clearTimeout(retryTimeout);
       supabase.removeChannel(channel);
     };
   }, [userId, queryClient, supabase]);
@@ -124,7 +136,9 @@ export function useUserPredictions(userId: string | null) {
         return transformedData;
       } catch (error) {
         console.error('Error in predictions query:', error);
-        toast.error("Failed to load predictions");
+        toast.error("Failed to load predictions", {
+          id: 'predictions-error' // Prevent duplicate toasts
+        });
         throw error;
       }
     },
