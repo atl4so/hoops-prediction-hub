@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Trophy, Users, Target } from "lucide-react";
 import { normalizeEmail } from "@/utils/validation";
 
 const Login = () => {
@@ -23,21 +24,14 @@ const Login = () => {
   useEffect(() => {
     const clearSession = async () => {
       try {
-        // First clear any existing session data
         localStorage.clear();
         sessionStorage.clear();
-        
-        // Force clear the Supabase session
         try {
           await supabase.auth.signOut({ scope: 'global' });
         } catch (signOutError) {
           console.log("Sign out error (expected if no session):", signOutError);
         }
-
-        // Get current session state
         const { data: { session } } = await supabase.auth.getSession();
-        
-        // If somehow we still have a session, try one more time to clear it
         if (session) {
           await supabase.auth.signOut();
         }
@@ -87,70 +81,86 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-[80vh] items-center justify-center px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">Welcome Back</CardTitle>
-          <CardDescription className="text-center">
-            Sign in to your account to continue
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {error && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={(e) => {
-                  setError(null);
-                  setFormData({ ...formData, email: e.target.value });
-                }}
-                required
-              />
+    <div className="flex flex-col min-h-[80vh] items-center justify-center px-4 py-8 bg-gradient-to-b from-background to-background/95">
+      <div className="w-full max-w-4xl mb-8 text-center">
+        <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent animate-gradient">
+          euroleague.bet
+        </h1>
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          Join the ultimate Euroleague basketball prediction community. Test your knowledge, compete with friends, and climb the leaderboard!
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-[1fr,auto,1fr] gap-8 w-full max-w-6xl px-4 mb-8">
+        <div className="flex flex-col items-center p-6 space-y-2 text-center">
+          <Trophy className="h-8 w-8 mb-2 text-primary" />
+          <h3 className="font-semibold">Earn Points</h3>
+          <p className="text-sm text-muted-foreground">Make predictions and earn points based on accuracy</p>
+        </div>
+
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl text-center">Sign In</CardTitle>
+            <CardDescription className="text-center">
+              Enter your credentials or create a new account
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {error && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={(e) => {
+                    setError(null);
+                    setFormData({ ...formData, email: e.target.value });
+                  }}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={(e) => {
+                    setError(null);
+                    setFormData({ ...formData, password: e.target.value });
+                  }}
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Signing in..." : "Sign in"}
+              </Button>
+            </form>
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-4">
+            <div className="text-sm text-center text-muted-foreground">
+              Don't have an account?{" "}
+              <Button variant="link" className="p-0" onClick={() => navigate("/register")}>
+                Register here
+              </Button>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={(e) => {
-                  setError(null);
-                  setFormData({ ...formData, password: e.target.value });
-                }}
-                required
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign in"}
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="flex flex-col space-y-4">
-          <div className="text-sm text-center text-muted-foreground">
-            Don't have an account?{" "}
-            <Button variant="link" className="p-0" onClick={() => navigate("/register")}>
-              Register here
-            </Button>
-          </div>
-          <Button 
-            variant="outline" 
-            className="w-full"
-            onClick={() => navigate("/")}
-          >
-            Back to Home
-          </Button>
-        </CardFooter>
-      </Card>
+          </CardFooter>
+        </Card>
+
+        <div className="flex flex-col items-center p-6 space-y-2 text-center">
+          <Users className="h-8 w-8 mb-2 text-primary" />
+          <h3 className="font-semibold">Follow Friends</h3>
+          <p className="text-sm text-muted-foreground">Connect with other predictors and see their picks</p>
+        </div>
+      </div>
     </div>
   );
 };
