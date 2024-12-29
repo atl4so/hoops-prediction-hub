@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useState } from "react";
 
 interface PredictionFormProps {
   homeTeam: { name: string };
@@ -11,12 +11,12 @@ interface PredictionFormProps {
   isSubmitting: boolean;
 }
 
-export function PredictionForm({ 
-  homeTeam, 
-  awayTeam, 
-  onSubmit, 
+export function PredictionForm({
+  homeTeam,
+  awayTeam,
+  onSubmit,
   onCancel,
-  isSubmitting 
+  isSubmitting
 }: PredictionFormProps) {
   const [homeScore, setHomeScore] = useState("");
   const [awayScore, setAwayScore] = useState("");
@@ -29,8 +29,8 @@ export function PredictionForm({
   return (
     <form onSubmit={handleSubmit} className="p-4 border rounded-lg bg-background shadow-sm space-y-4">
       <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="homeScore">{homeTeam.name}</Label>
+        <div className="flex flex-col space-y-2">
+          <Label htmlFor="homeScore" className="text-center">{homeTeam.name}</Label>
           <Input
             id="homeScore"
             type="number"
@@ -39,10 +39,11 @@ export function PredictionForm({
             onChange={(e) => setHomeScore(e.target.value)}
             placeholder="Score"
             required
+            className="text-center"
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="awayScore">{awayTeam.name}</Label>
+        <div className="flex flex-col space-y-2">
+          <Label htmlFor="awayScore" className="text-center">{awayTeam.name}</Label>
           <Input
             id="awayScore"
             type="number"
@@ -51,6 +52,7 @@ export function PredictionForm({
             onChange={(e) => setAwayScore(e.target.value)}
             placeholder="Score"
             required
+            className="text-center"
           />
         </div>
       </div>
