@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { TeamDisplay } from "./TeamDisplay";
 import { GameDateTime } from "./GameDateTime";
-import { PredictionButton } from "./PredictionButton";
+import { PredictionButton } from "./prediction/PredictionButton";
 import { PredictionDisplay } from "./PredictionDisplay";
 import { PointsBreakdownDialog } from "./PointsBreakdownDialog";
 import { CountdownTimer } from "./CountdownTimer";
