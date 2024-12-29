@@ -53,29 +53,12 @@ export default function Dashboard() {
           queryClient.invalidateQueries({ queryKey: ['games'] });
         }
       )
-      .subscribe();
-
-    const predictionsChannel = supabase
-      .channel('predictions-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'predictions'
-        },
-        () => {
-          console.log('Predictions changed, invalidating queries...');
-          queryClient.invalidateQueries({ queryKey: ['userProfile', userId] });
-          queryClient.invalidateQueries({ queryKey: ['userPredictions', userId] });
-          queryClient.invalidateQueries({ queryKey: ['currentRoundRank', userId] });
-        }
-      )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Game results subscription status:', status);
+      });
 
     return () => {
       supabase.removeChannel(gameResultsChannel);
-      supabase.removeChannel(predictionsChannel);
     };
   }, [userId, queryClient]);
 

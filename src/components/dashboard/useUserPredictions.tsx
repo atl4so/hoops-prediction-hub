@@ -1,10 +1,38 @@
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Database } from "@/integrations/supabase/types";
+import { useEffect } from "react";
 
 export function useUserPredictions(userId: string | null) {
   const session = useSession();
   const supabase = useSupabaseClient<Database>();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const channel = supabase
+      .channel('predictions-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'predictions'
+        },
+        () => {
+          console.log('Predictions changed, invalidating queries...');
+          queryClient.invalidateQueries({ queryKey: ['userPredictions', userId] });
+        }
+      )
+      .subscribe((status) => {
+        console.log('Predictions subscription status:', status);
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId, queryClient, supabase]);
 
   return useQuery({
     queryKey: ['userPredictions', userId],
@@ -70,6 +98,8 @@ export function useUserPredictions(userId: string | null) {
       return transformedData;
     },
     enabled: !!userId && !!session,
-    staleTime: 1000 * 60 // Cache for 1 minute
+    staleTime: 1000 * 60, // Cache for 1 minute
+    refetchOnWindowFocus: true,
+    refetchOnMount: true
   });
 }
