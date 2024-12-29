@@ -23,6 +23,8 @@ const queryClient = new QueryClient({
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
+      staleTime: 1000 * 60, // Cache data for 1 minute
+      cacheTime: 1000 * 60 * 5, // Keep unused data in cache for 5 minutes
     },
   },
 });
@@ -32,42 +34,39 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const handleInvalidSession = async () => {
       try {
-        console.log('Handling invalid session...');
-        // Clear all storage
         localStorage.clear();
         sessionStorage.clear();
-        // Clear the Supabase session
         await supabase.auth.signOut();
-        // Clear query cache
         queryClient.clear();
-        // Reload the page to reset all states
         window.location.href = '/login';
       } catch (error) {
         console.error('Error handling invalid session:', error);
       }
     };
 
-    // Subscribe to auth state changes
+    // Subscribe to auth state changes with debounced handler
+    let debounceTimeout: NodeJS.Timeout;
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, !!session);
-      
-      if (event === 'SIGNED_OUT') {
-        queryClient.clear();
-      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        // Verify the session is valid
-        const { data: { user }, error } = await supabase.auth.getUser();
-        if (error || !user) {
-          console.error('Session verification failed:', error);
-          await handleInvalidSession();
-        } else {
-          console.log('Session verified successfully');
-          // Refresh queries to ensure data is up to date
-          queryClient.invalidateQueries();
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(async () => {
+        console.log('Auth state changed:', event, !!session);
+        
+        if (event === 'SIGNED_OUT') {
+          queryClient.clear();
+        } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          const { data: { user }, error } = await supabase.auth.getUser();
+          if (error || !user) {
+            console.error('Session verification failed:', error);
+            await handleInvalidSession();
+          } else {
+            console.log('Session verified successfully');
+            queryClient.invalidateQueries();
+          }
         }
-      }
+      }, 100); // Debounce auth state changes
     });
 
-    // Add response interceptor
+    // Add response interceptor with error handling
     const originalFetch = window.fetch;
     window.fetch = async (...args) => {
       try {
@@ -78,7 +77,6 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
             errorData.message?.includes('Session from session_id claim in JWT does not exist') ||
             errorData.code === 'session_not_found'
           ) {
-            console.error('Session error detected:', errorData);
             await handleInvalidSession();
           }
         }
@@ -93,12 +91,9 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
     const checkSession = async () => {
       const { data: { session }, error } = await supabase.auth.getSession();
       if (error || !session) {
-        console.log('No valid session found during initial check');
         if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
           window.location.href = '/login';
         }
-      } else {
-        console.log('Valid session found during initial check');
       }
     };
 
@@ -107,6 +102,7 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
     return () => {
       subscription.unsubscribe();
       window.fetch = originalFetch;
+      clearTimeout(debounceTimeout);
     };
   }, []);
 

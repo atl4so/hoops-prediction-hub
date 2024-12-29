@@ -16,8 +16,7 @@ export const supabase = createClient<Database>(
       storage: {
         getItem: (key) => {
           try {
-            const item = localStorage.getItem(key);
-            return item;
+            return localStorage.getItem(key);
           } catch (error) {
             console.error('Error accessing localStorage:', error);
             return null;
@@ -41,18 +40,20 @@ export const supabase = createClient<Database>(
     },
     realtime: {
       params: {
-        eventsPerSecond: 10,
+        eventsPerSecond: 2, // Reduced from 10
       },
       reconnectAfterMs: (retries) => {
-        // Exponential backoff for reconnection attempts
-        return Math.min(1000 + retries * 1000, 10000);
+        return Math.min(1000 + retries * 2000, 20000);
       },
-      timeout: 60000, // Increase timeout to 60 seconds
+      timeout: 30000, // Reduced from 60000
     },
     global: {
       headers: {
         'x-application-name': 'euroleague.bet',
       },
+    },
+    db: {
+      schema: 'public'
     },
   }
 );
