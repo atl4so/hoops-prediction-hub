@@ -32,6 +32,7 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const handleInvalidSession = async () => {
       try {
+        console.log('Handling invalid session...');
         // Clear all storage
         localStorage.clear();
         sessionStorage.clear();
@@ -47,9 +48,22 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
     };
 
     // Subscribe to auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, !!session);
+      
       if (event === 'SIGNED_OUT') {
         queryClient.clear();
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        // Verify the session is valid
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error || !user) {
+          console.error('Session verification failed:', error);
+          await handleInvalidSession();
+        } else {
+          console.log('Session verified successfully');
+          // Refresh queries to ensure data is up to date
+          queryClient.invalidateQueries();
+        }
       }
     });
 
@@ -64,6 +78,7 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
             errorData.message?.includes('Session from session_id claim in JWT does not exist') ||
             errorData.code === 'session_not_found'
           ) {
+            console.error('Session error detected:', errorData);
             await handleInvalidSession();
           }
         }
@@ -73,6 +88,21 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
         throw error;
       }
     };
+
+    // Initial session check
+    const checkSession = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error || !session) {
+        console.log('No valid session found during initial check');
+        if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+          window.location.href = '/login';
+        }
+      } else {
+        console.log('Valid session found during initial check');
+      }
+    };
+
+    checkSession();
 
     return () => {
       subscription.unsubscribe();
@@ -85,7 +115,10 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
 
 const App = () => {
   return (
-    <SessionContextProvider supabaseClient={supabase} initialSession={null}>
+    <SessionContextProvider 
+      supabaseClient={supabase} 
+      initialSession={null}
+    >
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
