@@ -60,6 +60,27 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     };
   }, [queryClient]);
 
+  // Query to get user's existing predictions
+  const { data: userPredictions } = useQuery({
+    queryKey: ["user-predictions", userId],
+    queryFn: async () => {
+      if (!userId) return [];
+      
+      const { data, error } = await supabase
+        .from("predictions")
+        .select("game_id")
+        .eq("user_id", userId);
+
+      if (error) {
+        console.error("Error fetching user predictions:", error);
+        throw error;
+      }
+
+      return data.map(p => p.game_id);
+    },
+    enabled: !!userId
+  });
+
   const { data: games, isLoading } = useQuery({
     queryKey: ["games"],
     queryFn: async () => {
@@ -115,27 +136,29 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     );
   }
 
-  // Filter games to show only those that are available for predictions
+  // Filter games to show only those that are:
+  // 1. Available for predictions (before deadline)
+  // 2. Not already predicted by the user
+  // 3. Don't have final results
   const now = new Date();
   const availableGames = games?.filter(game => {
     const gameDate = new Date(game.game_date);
     const predictionDeadline = subHours(gameDate, 1);
     
-    // Show games that:
-    // 1. Have no final results
-    // 2. Current time is before prediction deadline
     const hasNoFinalResult = !game.game_results?.some(result => result.is_final);
     const isBeforeDeadline = now < predictionDeadline;
+    const notPredictedByUser = !userPredictions?.includes(game.id);
     
     console.log(`Game ${game.id}:`, {
       hasNoFinalResult,
       isBeforeDeadline,
+      notPredictedByUser,
       gameResults: game.game_results,
       predictionDeadline: predictionDeadline.toISOString(),
       now: now.toISOString()
     });
     
-    return hasNoFinalResult && isBeforeDeadline;
+    return hasNoFinalResult && isBeforeDeadline && notPredictedByUser;
   }) || [];
 
   console.log("Available games:", availableGames);
@@ -153,7 +176,6 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     );
   }
 
-  // Display games directly in a grid instead of grouping by rounds
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {availableGames.map((game) => (
