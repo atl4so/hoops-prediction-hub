@@ -73,16 +73,25 @@ export function RoundManager() {
         throw new Error("Please fill in all fields");
       }
 
-      const { error } = await supabase
+      console.log('Attempting to update round:', editingRound.id);
+      
+      const { data, error } = await supabase
         .from('rounds')
         .update({
           name,
           start_date: startDate.toISOString(),
           end_date: endDate.toISOString(),
         })
-        .eq('id', editingRound.id); // This is the key fix - adding the WHERE clause
+        .eq('id', editingRound.id)
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating round:', error);
+        throw error;
+      }
+      
+      console.log('Successfully updated round:', data);
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rounds'] });
@@ -94,6 +103,7 @@ export function RoundManager() {
       setEndDate(undefined);
     },
     onError: (error) => {
+      console.error('Update round error:', error);
       toast({
         title: "Error",
         description: error.message,
@@ -104,18 +114,28 @@ export function RoundManager() {
 
   const deleteRound = useMutation({
     mutationFn: async (roundId: string) => {
-      const { error } = await supabase
+      console.log('Attempting to delete round:', roundId);
+      
+      const { data, error } = await supabase
         .from('rounds')
         .delete()
-        .eq('id', roundId);
+        .eq('id', roundId)
+        .select();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error deleting round:', error);
+        throw error;
+      }
+      
+      console.log('Successfully deleted round:', data);
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rounds'] });
       toast({ title: "Success", description: "Round and associated games deleted successfully" });
     },
     onError: (error) => {
+      console.error('Delete round error:', error);
       toast({
         title: "Error",
         description: error.message,
