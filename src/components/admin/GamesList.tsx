@@ -75,7 +75,7 @@ export function GamesList() {
         .update({
           game_date: combinedDateTime.toISOString(),
         })
-        .eq('id', editingGame.id);
+        .eq('id', editingGame.id); // Fixed: Using .eq() instead of .in()
 
       if (error) throw error;
     },
