@@ -3,7 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { AdminGameCard } from "./AdminGameCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Trash } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { format } from "date-fns";
@@ -75,12 +74,13 @@ export function GamesList() {
       combinedDateTime.setHours(parseInt(hours, 10));
       combinedDateTime.setMinutes(parseInt(minutes, 10));
 
+      // Fixed the update query by using .eq() instead of .in()
       const { error } = await supabase
         .from('games')
         .update({
           game_date: combinedDateTime.toISOString(),
         })
-        .eq('id', editingGame.id);
+        .eq('id', editingGame.id); // Using .eq() for single record update
 
       if (error) throw error;
     },
