@@ -80,7 +80,7 @@ export function RoundManager() {
           start_date: startDate.toISOString(),
           end_date: endDate.toISOString(),
         })
-        .eq('id', editingRound.id);
+        .eq('id', editingRound.id); // This is the key fix - adding the WHERE clause
 
       if (error) throw error;
     },
