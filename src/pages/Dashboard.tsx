@@ -93,6 +93,28 @@ export default function Dashboard() {
   const totalPredictions = userProfileData?.total_predictions || 0;
   const pointsPerGame = userProfileData?.points_per_game || 0;
 
+  // Group predictions by round
+  const predictionsByRound = predictions?.reduce((acc, prediction) => {
+    const roundId = prediction.game.round.id;
+    if (!acc[roundId]) {
+      acc[roundId] = {
+        roundId,
+        roundName: prediction.game.round.name,
+        predictions: []
+      };
+    }
+    acc[roundId].predictions.push({
+      id: prediction.id,
+      game: prediction.game,
+      prediction: {
+        prediction_home_score: prediction.prediction_home_score,
+        prediction_away_score: prediction.prediction_away_score,
+        points_earned: prediction.points_earned
+      }
+    });
+    return acc;
+  }, {} as Record<string, { roundId: string; roundName: string; predictions: any[] }>);
+
   return (
     <div className="space-y-8">
       <DashboardHeader />
@@ -121,18 +143,18 @@ export default function Dashboard() {
         <h2 className="text-2xl font-semibold tracking-tight">Your Predictions</h2>
         <div className="rounded-lg border">
           <Accordion type="single" collapsible className="w-full">
-            {predictions?.map((prediction) => (
-              <AccordionItem key={prediction.game.round.id} value={prediction.game.round.id}>
+            {predictionsByRound && Object.values(predictionsByRound).map((roundData) => (
+              <AccordionItem key={roundData.roundId} value={roundData.roundId}>
                 <AccordionTrigger className="px-4 hover:no-underline hover:bg-accent/50">
                   <span className="text-sm font-medium">
-                    Round {prediction.game.round.name}
+                    Round {roundData.roundName}
                   </span>
                 </AccordionTrigger>
                 <AccordionContent className="pt-4 px-4">
                   <CollapsibleRoundSection
-                    roundId={prediction.game.round.id}
-                    roundName={prediction.game.round.name}
-                    predictions={[prediction]}
+                    roundId={roundData.roundId}
+                    roundName={roundData.roundName}
+                    predictions={roundData.predictions}
                     userName={userProfileData?.display_name || "User"}
                   />
                 </AccordionContent>

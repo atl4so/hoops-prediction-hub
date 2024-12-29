@@ -2,32 +2,39 @@ import { UserPredictionCard } from "./UserPredictionCard";
 import { DownloadPredictionsButton } from "./DownloadPredictionsButton";
 import { GameCard } from "../games/GameCard";
 
+interface Game {
+  id: string;
+  game_date: string;
+  home_team: {
+    id: string;
+    name: string;
+    logo_url: string;
+  };
+  away_team: {
+    id: string;
+    name: string;
+    logo_url: string;
+  };
+  game_results?: Array<{
+    home_score: number;
+    away_score: number;
+    is_final: boolean;
+  }>;
+}
+
+interface Prediction {
+  prediction_home_score: number;
+  prediction_away_score: number;
+  points_earned?: number;
+}
+
 interface CollapsibleRoundSectionProps {
   roundId: string;
   roundName: string;
   predictions: Array<{
     id: string;
-    game: {
-      id: string;
-      game_date: string;
-      home_team: {
-        name: string;
-        logo_url: string;
-      };
-      away_team: {
-        name: string;
-        logo_url: string;
-      };
-      game_results?: Array<{
-        home_score: number;
-        away_score: number;
-      }>;
-    };
-    prediction: {
-      prediction_home_score: number;
-      prediction_away_score: number;
-      points_earned?: number;
-    } | null;
+    game: Game;
+    prediction: Prediction | null;
   }>;
   userName: string;
   showGames?: boolean;
