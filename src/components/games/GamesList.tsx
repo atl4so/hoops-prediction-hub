@@ -6,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { CollapsibleRoundSection } from "../dashboard/CollapsibleRoundSection";
 import { subHours } from "date-fns";
 import { useSession } from "@supabase/auth-helpers-react";
+import { GameCard } from "./GameCard";
 
 interface GamesListProps {
   isAuthenticated: boolean;
@@ -75,7 +76,6 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
       
       console.log("Raw games data:", data);
       
-      // Transform the data to ensure game_results is always an array
       return data.map(game => ({
         ...game,
         game_results: Array.isArray(game.game_results) 
@@ -85,7 +85,6 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
             : []
       }));
     },
-    enabled: true, // Always fetch games regardless of authentication status
   });
 
   if (isLoading) {
@@ -143,43 +142,15 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     );
   }
 
-  // Group available games by round
-  const gamesByRound = availableGames.reduce((acc, game) => {
-    const roundId = game.round.id;
-    if (!acc[roundId]) {
-      acc[roundId] = {
-        name: game.round.name,
-        games: []
-      };
-    }
-    acc[roundId].games.push(game);
-    return acc;
-  }, {} as Record<string, { name: string; games: typeof games }>) || {};
-
-  // Convert to array and sort by round name in descending order
-  const sortedRounds = Object.entries(gamesByRound)
-    .map(([roundId, data]) => ({
-      id: roundId,
-      ...data
-    }))
-    .sort((a, b) => parseInt(b.name) - parseInt(a.name));
-
+  // Display games directly in a grid instead of grouping by rounds
   return (
-    <div className="space-y-12">
-      {sortedRounds.map((round) => (
-        <CollapsibleRoundSection
-          key={round.id}
-          roundId={round.id}
-          roundName={round.name}
-          predictions={round.games.map(game => ({
-            id: game.id,
-            game: {
-              ...game,
-              game_results: game.game_results || []
-            },
-            prediction: null
-          }))}
-          userName={session?.user?.email || "User"}
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {availableGames.map((game) => (
+        <GameCard
+          key={game.id}
+          game={game}
+          isAuthenticated={isAuthenticated}
+          userId={userId}
         />
       ))}
     </div>

@@ -1,5 +1,6 @@
 import { UserPredictionCard } from "./UserPredictionCard";
 import { DownloadPredictionsButton } from "./DownloadPredictionsButton";
+import { GameCard } from "../games/GameCard";
 
 interface CollapsibleRoundSectionProps {
   roundId: string;
@@ -29,12 +30,14 @@ interface CollapsibleRoundSectionProps {
     } | null;
   }>;
   userName: string;
+  showGames?: boolean;
 }
 
 export function CollapsibleRoundSection({
   predictions,
   roundName,
   userName,
+  showGames = false
 }: CollapsibleRoundSectionProps) {
   if (!predictions?.length) {
     return null;
@@ -42,24 +45,35 @@ export function CollapsibleRoundSection({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end mb-4">
-        <DownloadPredictionsButton
-          userName={userName}
-          roundName={roundName}
-          predictions={predictions.filter(p => p.prediction !== null).map(p => ({
-            game: p.game,
-            prediction: p.prediction!
-          }))}
-        />
-      </div>
+      {!showGames && (
+        <div className="flex justify-end mb-4">
+          <DownloadPredictionsButton
+            userName={userName}
+            roundName={roundName}
+            predictions={predictions.filter(p => p.prediction !== null).map(p => ({
+              game: p.game,
+              prediction: p.prediction!
+            }))}
+          />
+        </div>
+      )}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {predictions.map((prediction) => (
-          <UserPredictionCard
-            key={prediction.id}
-            game={prediction.game}
-            prediction={prediction.prediction}
-            isOwnPrediction={true}
-          />
+          showGames ? (
+            <GameCard
+              key={prediction.id}
+              game={prediction.game}
+              isAuthenticated={true}
+              prediction={prediction.prediction}
+            />
+          ) : (
+            <UserPredictionCard
+              key={prediction.id}
+              game={prediction.game}
+              prediction={prediction.prediction}
+              isOwnPrediction={true}
+            />
+          )
         ))}
       </div>
     </div>

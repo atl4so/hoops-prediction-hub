@@ -33,7 +33,6 @@ export default function Dashboard() {
     setUserId(session.user.id);
   }, [session, navigate]);
 
-  // Enhanced real-time subscriptions
   useEffect(() => {
     if (!userId) return;
 
@@ -89,35 +88,6 @@ export default function Dashboard() {
     return null;
   }
 
-  // Group predictions by round
-  const predictionsByRound = predictions?.reduce((acc: any, prediction: any) => {
-    const roundId = prediction.game.round_id;
-    const roundName = prediction.game.round.name;
-    if (!acc[roundId]) {
-      acc[roundId] = {
-        roundId,
-        roundName,
-        predictions: []
-      };
-    }
-    acc[roundId].predictions.push({
-      id: prediction.id,
-      game: {
-        id: prediction.game.id,
-        game_date: prediction.game.game_date,
-        home_team: prediction.game.home_team,
-        away_team: prediction.game.away_team,
-        game_results: prediction.game.game_results
-      },
-      prediction: {
-        prediction_home_score: prediction.prediction_home_score,
-        prediction_away_score: prediction.prediction_away_score,
-        points_earned: prediction.points_earned
-      }
-    });
-    return acc;
-  }, {});
-
   // Calculate statistics
   const totalPoints = userProfileData?.total_points || 0;
   const totalPredictions = userProfileData?.total_predictions || 0;
@@ -141,7 +111,7 @@ export default function Dashboard() {
       />
 
       <div className="space-y-6">
-        <h2 className="text-2xl font-semibold tracking-tight">Upcoming Games</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">Available Games</h2>
         <GamesList isAuthenticated={!!session} userId={userId || undefined} />
       </div>
 
@@ -151,25 +121,23 @@ export default function Dashboard() {
         <h2 className="text-2xl font-semibold tracking-tight">Your Predictions</h2>
         <div className="rounded-lg border">
           <Accordion type="single" collapsible className="w-full">
-            {predictionsByRound && Object.values(predictionsByRound)
-              .sort((a: any, b: any) => parseInt(b.roundName) - parseInt(a.roundName))
-              .map((roundData: any) => (
-                <AccordionItem key={roundData.roundId} value={roundData.roundId}>
-                  <AccordionTrigger className="px-4 hover:no-underline hover:bg-accent/50">
-                    <span className="text-sm font-medium">
-                      Round {roundData.roundName}
-                    </span>
-                  </AccordionTrigger>
-                  <AccordionContent className="pt-4 px-4">
-                    <CollapsibleRoundSection
-                      roundId={roundData.roundId}
-                      roundName={roundData.roundName}
-                      predictions={roundData.predictions}
-                      userName={userProfileData?.display_name || "User"}
-                    />
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
+            {predictions?.map((prediction) => (
+              <AccordionItem key={prediction.game.round.id} value={prediction.game.round.id}>
+                <AccordionTrigger className="px-4 hover:no-underline hover:bg-accent/50">
+                  <span className="text-sm font-medium">
+                    Round {prediction.game.round.name}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="pt-4 px-4">
+                  <CollapsibleRoundSection
+                    roundId={prediction.game.round.id}
+                    roundName={prediction.game.round.name}
+                    predictions={[prediction]}
+                    userName={userProfileData?.display_name || "User"}
+                  />
+                </AccordionContent>
+              </AccordionItem>
+            ))}
           </Accordion>
         </div>
       </div>
