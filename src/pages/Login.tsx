@@ -81,84 +81,93 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-[80vh] items-center justify-center px-4 py-8 bg-gradient-to-b from-background to-background/95">
-      <div className="w-full max-w-4xl mb-8 text-center">
-        <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent animate-gradient">
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/95 px-4 py-8">
+      {/* Header Section */}
+      <div className="max-w-4xl mx-auto text-center mb-12">
+        <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary/90 to-primary bg-clip-text text-transparent animate-gradient">
           euroleague.bet
         </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
           Join the ultimate Euroleague basketball prediction community. Test your knowledge, compete with friends, and climb the leaderboard!
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-[1fr,auto,1fr] gap-8 w-full max-w-6xl px-4 mb-8">
-        <div className="flex flex-col items-center p-6 space-y-2 text-center">
-          <Trophy className="h-8 w-8 mb-2 text-primary" />
-          <h3 className="font-semibold">Earn Points</h3>
-          <p className="text-sm text-muted-foreground">Make predictions and earn points based on accuracy</p>
-        </div>
+      {/* Features and Auth Section */}
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+          {/* Feature 1 */}
+          <div className="text-center p-6 rounded-lg bg-card/50 backdrop-blur-sm">
+            <Trophy className="h-8 w-8 mx-auto mb-3 text-primary" />
+            <h3 className="font-semibold mb-2">Earn Points</h3>
+            <p className="text-sm text-muted-foreground">Make predictions and earn points based on accuracy</p>
+          </div>
 
-        <Card className="w-full max-w-md">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">Sign In</CardTitle>
-            <CardDescription className="text-center">
-              Enter your credentials or create a new account
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {error && (
-              <Alert variant="destructive" className="mb-4">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={(e) => {
-                    setError(null);
-                    setFormData({ ...formData, email: e.target.value });
-                  }}
-                  required
-                />
+          {/* Auth Card */}
+          <Card className="w-full shadow-lg">
+            <CardHeader className="space-y-1 pb-4">
+              <CardTitle className="text-xl text-center">Welcome</CardTitle>
+              <CardDescription className="text-center">
+                Sign in or create a new account
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {error && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              <form onSubmit={handleSubmit} className="space-y-3">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-sm">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={formData.email}
+                    onChange={(e) => {
+                      setError(null);
+                      setFormData({ ...formData, email: e.target.value });
+                    }}
+                    required
+                    className="h-9"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-sm">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    value={formData.password}
+                    onChange={(e) => {
+                      setError(null);
+                      setFormData({ ...formData, password: e.target.value });
+                    }}
+                    required
+                    className="h-9"
+                  />
+                </div>
+                <Button type="submit" className="w-full h-9" disabled={isLoading}>
+                  {isLoading ? "Signing in..." : "Sign in"}
+                </Button>
+              </form>
+            </CardContent>
+            <CardFooter className="flex flex-col space-y-2 pt-0">
+              <div className="text-sm text-center text-muted-foreground">
+                New to euroleague.bet?{" "}
+                <Button variant="link" className="p-0 h-auto" onClick={() => navigate("/register")}>
+                  Create account
+                </Button>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={(e) => {
-                    setError(null);
-                    setFormData({ ...formData, password: e.target.value });
-                  }}
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Signing in..." : "Sign in"}
-              </Button>
-            </form>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <div className="text-sm text-center text-muted-foreground">
-              Don't have an account?{" "}
-              <Button variant="link" className="p-0" onClick={() => navigate("/register")}>
-                Register here
-              </Button>
-            </div>
-          </CardFooter>
-        </Card>
+            </CardFooter>
+          </Card>
 
-        <div className="flex flex-col items-center p-6 space-y-2 text-center">
-          <Users className="h-8 w-8 mb-2 text-primary" />
-          <h3 className="font-semibold">Follow Friends</h3>
-          <p className="text-sm text-muted-foreground">Connect with other predictors and see their picks</p>
+          {/* Feature 2 */}
+          <div className="text-center p-6 rounded-lg bg-card/50 backdrop-blur-sm">
+            <Users className="h-8 w-8 mx-auto mb-3 text-primary" />
+            <h3 className="font-semibold mb-2">Follow Friends</h3>
+            <p className="text-sm text-muted-foreground">Connect with other predictors and see their picks</p>
+          </div>
         </div>
       </div>
     </div>
