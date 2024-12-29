@@ -67,7 +67,7 @@ export function GamesList() {
       setGameTime("20:00");
       toast({ title: "Success", description: "Game updated successfully" });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         title: "Error",
         description: error.message,

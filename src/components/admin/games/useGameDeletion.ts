@@ -8,18 +8,21 @@ export function useGameDeletion() {
 
   return useMutation({
     mutationFn: async (gameIds: string[]) => {
-      const { error } = await supabase
-        .from('games')
-        .delete()
-        .in('id', gameIds);
-      
-      if (error) throw error;
+      // Delete one game at a time to avoid issues with the response stream
+      for (const gameId of gameIds) {
+        const { error } = await supabase
+          .from('games')
+          .delete()
+          .eq('id', gameId);
+        
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['games'] });
       toast({ title: "Success", description: "Games deleted successfully" });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Error deleting games:', error);
       toast({
         title: "Error",
