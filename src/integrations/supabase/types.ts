@@ -329,6 +329,12 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      delete_game_completely: {
+        Args: {
+          game_id: string
+        }
+        Returns: undefined
+      }
       delete_user: {
         Args: {
           user_id: string
