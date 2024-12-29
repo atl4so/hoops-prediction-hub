@@ -2,7 +2,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TeamDisplay } from "./TeamDisplay";
 import { GameDateTime } from "./GameDateTime";
 import { PredictionButton } from "./PredictionButton";
-import { PredictionDialog } from "../predictions/PredictionDialog";
 import { PredictionDisplay } from "./PredictionDisplay";
 import { PointsBreakdownDialog } from "./PointsBreakdownDialog";
 import { CountdownTimer } from "./CountdownTimer";
@@ -38,7 +37,6 @@ interface GameCardProps {
 }
 
 export function GameCard({ game, isAuthenticated, userId, prediction }: GameCardProps) {
-  const [showPredictionDialog, setShowPredictionDialog] = useState(false);
   const [showPointsBreakdown, setShowPointsBreakdown] = useState(false);
 
   const gameResult = game.game_results?.[0];
@@ -95,25 +93,16 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
             <PredictionButton
               isAuthenticated={isAuthenticated}
               gameDate={game.game_date}
-              onPrediction={() => setShowPredictionDialog(true)}
               gameId={game.id}
               userId={userId}
               prediction={prediction}
               gameResult={gameResult}
+              homeTeam={game.home_team}
+              awayTeam={game.away_team}
             />
           </div>
         </div>
       </CardContent>
-
-      <PredictionDialog
-        isOpen={showPredictionDialog}
-        onOpenChange={setShowPredictionDialog}
-        gameId={game.id}
-        userId={userId}
-        gameDate={game.game_date}
-        homeTeam={game.home_team}
-        awayTeam={game.away_team}
-      />
 
       {prediction?.points_earned !== undefined && gameResult && (
         <PointsBreakdownDialog

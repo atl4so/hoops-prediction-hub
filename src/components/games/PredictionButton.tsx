@@ -1,9 +1,12 @@
-import { Button } from "@/components/ui/button";
 import { subHours, isBefore } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface PredictionButtonProps {
   isAuthenticated: boolean;
@@ -21,18 +24,29 @@ interface PredictionButtonProps {
     away_score: number;
     is_final: boolean;
   };
+  homeTeam: {
+    name: string;
+  };
+  awayTeam: {
+    name: string;
+  };
 }
 
 export function PredictionButton({ 
   isAuthenticated, 
   gameDate, 
-  onPrediction, 
   gameId, 
   userId,
   prediction,
-  gameResult
+  gameResult,
+  homeTeam,
+  awayTeam
 }: PredictionButtonProps) {
   const navigate = useNavigate();
+  const [showForm, setShowForm] = useState(false);
+  const [homeScore, setHomeScore] = useState("");
+  const [awayScore, setAwayScore] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Query to check if user already has a prediction for this game
   const { data: existingPrediction } = useQuery({
@@ -41,10 +55,10 @@ export function PredictionButton({
       if (!userId) return null;
       
       const { data, error } = await supabase
-        .from('predictions')
-        .select('*')
-        .eq('game_id', gameId)
-        .eq('user_id', userId)
+        .from("predictions")
+        .select("*")
+        .eq("game_id", gameId)
+        .eq("user_id", userId)
         .maybeSingle();
 
       if (error) {
@@ -90,7 +104,46 @@ export function PredictionButton({
       return;
     }
 
-    onPrediction();
+    setShowForm(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!userId || !gameId) return;
+    
+    const homeScoreNum = parseInt(homeScore);
+    const awayScoreNum = parseInt(awayScore);
+
+    if (isNaN(homeScoreNum) || isNaN(awayScoreNum)) {
+      toast.error("Please enter valid scores");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const { error } = await supabase
+        .from("predictions")
+        .insert({
+          user_id: userId,
+          game_id: gameId,
+          prediction_home_score: homeScoreNum,
+          prediction_away_score: awayScoreNum,
+        });
+
+      if (error) throw error;
+
+      toast.success("Prediction submitted successfully!");
+      setShowForm(false);
+      setHomeScore("");
+      setAwayScore("");
+    } catch (error) {
+      console.error('Error submitting prediction:', error);
+      toast.error("Failed to submit prediction. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const getButtonText = () => {
@@ -104,12 +157,60 @@ export function PredictionButton({
   };
 
   return (
-    <Button 
-      onClick={handleClick}
-      className="w-full shadow-sm transition-all duration-300"
-      disabled={!isPredictionAllowed()}
-    >
-      {getButtonText()}
-    </Button>
+    <div className="space-y-2">
+      <Button 
+        onClick={handleClick}
+        className="w-full shadow-sm transition-all duration-300"
+        disabled={!isPredictionAllowed()}
+      >
+        {getButtonText()}
+      </Button>
+
+      {showForm && isPredictionAllowed() && (
+        <form onSubmit={handleSubmit} className="p-4 border rounded-lg bg-background shadow-sm space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="homeScore">{homeTeam.name}</Label>
+              <Input
+                id="homeScore"
+                type="number"
+                min="0"
+                value={homeScore}
+                onChange={(e) => setHomeScore(e.target.value)}
+                placeholder="Score"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="awayScore">{awayTeam.name}</Label>
+              <Input
+                id="awayScore"
+                type="number"
+                min="0"
+                value={awayScore}
+                onChange={(e) => setAwayScore(e.target.value)}
+                placeholder="Score"
+                required
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setShowForm(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="submit"
+              disabled={isSubmitting}
+            >
+              Submit
+            </Button>
+          </div>
+        </form>
+      )}
+    </div>
   );
 }
