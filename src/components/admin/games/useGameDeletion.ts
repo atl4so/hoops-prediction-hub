@@ -14,7 +14,6 @@ export function useGameDeletion() {
         console.log('Attempting to delete game:', gameId);
         
         try {
-          // Delete everything in one transaction
           const { data, error } = await supabase.rpc('delete_game_completely', {
             game_id: gameId
           });

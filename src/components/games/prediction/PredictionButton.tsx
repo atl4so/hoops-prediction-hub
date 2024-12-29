@@ -89,6 +89,9 @@ export function PredictionButton({
         });
       });
 
+      // Also update the predictions query
+      queryClient.invalidateQueries({ queryKey: ['userPredictions'] });
+
       toast.success("Prediction submitted successfully!");
       setShowForm(false);
     } catch (error) {
@@ -138,12 +141,12 @@ export function PredictionButton({
       <Button 
         onClick={handleClick}
         className="w-full shadow-sm transition-all duration-300"
-        disabled={!isPredictionAllowed()}
+        disabled={!isPredictionAllowed() || !!prediction}
       >
         {getButtonText()}
       </Button>
 
-      {showForm && isPredictionAllowed() && (
+      {showForm && isPredictionAllowed() && !prediction && (
         <PredictionForm
           homeTeam={homeTeam}
           awayTeam={awayTeam}
