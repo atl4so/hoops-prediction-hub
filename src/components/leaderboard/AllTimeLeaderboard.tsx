@@ -19,6 +19,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface AllTimeLeaderboardProps {
   searchQuery: string;
@@ -132,8 +133,8 @@ export function AllTimeLeaderboard({ searchQuery }: AllTimeLeaderboardProps) {
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious 
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
+                onClick={() => currentPage > 1 && setCurrentPage(p => p - 1)}
+                className={cn(currentPage === 1 && "pointer-events-none opacity-50")}
               />
             </PaginationItem>
             
@@ -146,7 +147,7 @@ export function AllTimeLeaderboard({ searchQuery }: AllTimeLeaderboardProps) {
                 if (index > 0 && array[index - 1] !== page - 1) {
                   return (
                     <PaginationItem key={`ellipsis-${page}`}>
-                      <PaginationLink disabled>...</PaginationLink>
+                      <PaginationLink className="pointer-events-none">...</PaginationLink>
                     </PaginationItem>
                   );
                 }
@@ -164,8 +165,8 @@ export function AllTimeLeaderboard({ searchQuery }: AllTimeLeaderboardProps) {
 
             <PaginationItem>
               <PaginationNext 
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
+                onClick={() => currentPage < totalPages && setCurrentPage(p => p + 1)}
+                className={cn(currentPage === totalPages && "pointer-events-none opacity-50")}
               />
             </PaginationItem>
           </PaginationContent>

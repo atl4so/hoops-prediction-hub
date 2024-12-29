@@ -20,6 +20,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { cn } from "@/lib/utils";
 
 interface RoundLeaderboardProps {
   searchQuery: string;
@@ -122,8 +123,8 @@ export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious 
-                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
+                    onClick={() => currentPage > 1 && setCurrentPage(p => p - 1)}
+                    className={cn(currentPage === 1 && "pointer-events-none opacity-50")}
                   />
                 </PaginationItem>
 
@@ -136,7 +137,7 @@ export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
                     if (index > 0 && array[index - 1] !== page - 1) {
                       return (
                         <PaginationItem key={`ellipsis-${page}`}>
-                          <PaginationLink disabled>...</PaginationLink>
+                          <PaginationLink className="pointer-events-none">...</PaginationLink>
                         </PaginationItem>
                       );
                     }
@@ -154,8 +155,8 @@ export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
 
                 <PaginationItem>
                   <PaginationNext 
-                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                    disabled={currentPage === totalPages}
+                    onClick={() => currentPage < totalPages && setCurrentPage(p => p + 1)}
+                    className={cn(currentPage === totalPages && "pointer-events-none opacity-50")}
                   />
                 </PaginationItem>
               </PaginationContent>
