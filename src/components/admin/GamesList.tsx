@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -7,10 +7,10 @@ import { format } from "date-fns";
 import { GameListSkeleton } from "./games/GameListSkeleton";
 import { EditGameDialog } from "./games/EditGameDialog";
 import { GamesByRound } from "./games/GamesByRound";
+import { useGameDeletion } from "./games/useGameDeletion";
 
 export function GamesList() {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
   const [selectedGames, setSelectedGames] = useState<string[]>([]);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingGame, setEditingGame] = useState<any>(null);
@@ -36,28 +36,7 @@ export function GamesList() {
     },
   });
 
-  const deleteGames = useMutation({
-    mutationFn: async (gameIds: string[]) => {
-      const { error } = await supabase
-        .from('games')
-        .delete()
-        .in('id', gameIds);
-      
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['games'] });
-      setSelectedGames([]);
-      toast({ title: "Success", description: "Games deleted successfully" });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+  const deleteGames = useGameDeletion();
 
   const updateGame = useMutation({
     mutationFn: async () => {
@@ -112,6 +91,17 @@ export function GamesList() {
     );
   };
 
+  const handleDeleteSelected = async () => {
+    if (selectedGames.length === 0) return;
+    
+    try {
+      await deleteGames.mutateAsync(selectedGames);
+      setSelectedGames([]); // Clear selection after successful deletion
+    } catch (error) {
+      console.error('Error in handleDeleteSelected:', error);
+    }
+  };
+
   if (isLoading) {
     return <GameListSkeleton />;
   }
@@ -135,9 +125,10 @@ export function GamesList() {
         <div className="flex justify-end">
           <Button
             variant="destructive"
-            onClick={() => deleteGames.mutate(selectedGames)}
+            onClick={handleDeleteSelected}
+            disabled={deleteGames.isPending}
           >
-            Delete Selected Games ({selectedGames.length})
+            {deleteGames.isPending ? "Deleting..." : `Delete Selected Games (${selectedGames.length})`}
           </Button>
         </div>
       )}
