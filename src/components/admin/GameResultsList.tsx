@@ -13,9 +13,41 @@ export function GameResultsList() {
   const [homeScore, setHomeScore] = useState("");
   const [awayScore, setAwayScore] = useState("");
 
+  // Set up real-time subscription for game results
+  useEffect(() => {
+    console.log('Setting up game results subscription...');
+    
+    const channel = supabase
+      .channel('game-results-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'game_results'
+        },
+        (payload) => {
+          console.log('Game result changed:', payload);
+          queryClient.invalidateQueries({ queryKey: ['game-results'] });
+          // Also invalidate related queries
+          queryClient.invalidateQueries({ queryKey: ['predictions'] });
+          queryClient.invalidateQueries({ queryKey: ['profiles'] });
+        }
+      )
+      .subscribe((status) => {
+        console.log('Game results subscription status:', status);
+      });
+
+    return () => {
+      console.log('Cleaning up game results subscription...');
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   const { data: existingResults, isError } = useQuery({
     queryKey: ['game-results'],
     queryFn: async () => {
+      console.log('Fetching game results...');
       const { data, error } = await supabase
         .from('game_results')
         .select(`
@@ -33,37 +65,22 @@ export function GameResultsList() {
         console.error('Error fetching game results:', error);
         throw error;
       }
+      console.log('Fetched game results:', data);
       return data || [];
     },
   });
-
-  // Subscribe to real-time updates
-  useEffect(() => {
-    const channel = supabase
-      .channel('game-results-updates')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'game_results'
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['game-results'] });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
 
   const updateResult = useMutation({
     mutationFn: async () => {
       if (!editingResult || !homeScore || !awayScore) {
         throw new Error("Please fill in all fields");
       }
+
+      console.log('Updating game result:', {
+        id: editingResult.id,
+        home_score: homeScore,
+        away_score: awayScore
+      });
 
       const { error } = await supabase
         .from('game_results')

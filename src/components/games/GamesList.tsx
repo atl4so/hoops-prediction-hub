@@ -18,8 +18,10 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    console.log('Setting up real-time subscriptions for games and results...');
+    
     const channel = supabase
-      .channel('games-updates')
+      .channel('games-and-results-updates')
       .on(
         'postgres_changes',
         {
@@ -27,8 +29,12 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
           schema: 'public',
           table: 'game_results'
         },
-        () => {
+        (payload) => {
+          console.log('Game result changed:', payload);
+          // Invalidate both games and predictions queries
           queryClient.invalidateQueries({ queryKey: ['games'] });
+          queryClient.invalidateQueries({ queryKey: ['predictions'] });
+          queryClient.invalidateQueries({ queryKey: ['profiles'] });
         }
       )
       .on(
@@ -38,13 +44,18 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
           schema: 'public',
           table: 'predictions'
         },
-        () => {
+        (payload) => {
+          console.log('Prediction changed:', payload);
           queryClient.invalidateQueries({ queryKey: ['predictions'] });
+          queryClient.invalidateQueries({ queryKey: ['profiles'] });
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Subscription status:', status);
+      });
 
     return () => {
+      console.log('Cleaning up subscriptions...');
       supabase.removeChannel(channel);
     };
   }, [queryClient]);
