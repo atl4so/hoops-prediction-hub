@@ -5,6 +5,10 @@ import { GameCard } from "../games/GameCard";
 interface Game {
   id: string;
   game_date: string;
+  round: {
+    id: string;
+    name: string;
+  };
   home_team: {
     id: string;
     name: string;
@@ -50,39 +54,62 @@ export function CollapsibleRoundSection({
     return null;
   }
 
+  // Group predictions by round
+  const predictionsByRound = predictions.reduce((acc, prediction) => {
+    const roundId = prediction.game.round.id;
+    const roundName = prediction.game.round.name;
+    
+    if (!acc[roundId]) {
+      acc[roundId] = {
+        roundName,
+        predictions: []
+      };
+    }
+    
+    acc[roundId].predictions.push(prediction);
+    return acc;
+  }, {} as Record<string, { roundName: string; predictions: typeof predictions }>);
+
   return (
-    <div className="space-y-4">
-      {!showGames && (
-        <div className="flex justify-end mb-4">
-          <DownloadPredictionsButton
-            userName={userName}
-            roundName={roundName}
-            predictions={predictions.filter(p => p.prediction !== null).map(p => ({
-              game: p.game,
-              prediction: p.prediction!
-            }))}
-          />
+    <div className="space-y-8">
+      {Object.entries(predictionsByRound).map(([roundId, { roundName, predictions: roundPredictions }]) => (
+        <div key={roundId} className="space-y-4">
+          <h3 className="text-lg font-semibold">Round {roundName}</h3>
+          
+          {!showGames && (
+            <div className="flex justify-end mb-4">
+              <DownloadPredictionsButton
+                userName={userName}
+                roundName={roundName}
+                predictions={roundPredictions.filter(p => p.prediction !== null).map(p => ({
+                  game: p.game,
+                  prediction: p.prediction!
+                }))}
+              />
+            </div>
+          )}
+          
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {roundPredictions.map((prediction) => (
+              showGames ? (
+                <GameCard
+                  key={prediction.id}
+                  game={prediction.game}
+                  isAuthenticated={true}
+                  prediction={prediction.prediction}
+                />
+              ) : (
+                <UserPredictionCard
+                  key={prediction.id}
+                  game={prediction.game}
+                  prediction={prediction.prediction}
+                  isOwnPrediction={true}
+                />
+              )
+            ))}
+          </div>
         </div>
-      )}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {predictions.map((prediction) => (
-          showGames ? (
-            <GameCard
-              key={prediction.id}
-              game={prediction.game}
-              isAuthenticated={true}
-              prediction={prediction.prediction}
-            />
-          ) : (
-            <UserPredictionCard
-              key={prediction.id}
-              game={prediction.game}
-              prediction={prediction.prediction}
-              isOwnPrediction={true}
-            />
-          )
-        ))}
-      </div>
+      ))}
     </div>
   );
 }
