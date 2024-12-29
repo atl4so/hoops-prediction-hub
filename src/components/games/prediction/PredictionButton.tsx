@@ -34,17 +34,18 @@ export function PredictionButton({
   gameDate, 
   gameId, 
   userId,
-  prediction,
+  prediction: initialPrediction,
   gameResult,
   homeTeam,
   awayTeam
 }: PredictionButtonProps) {
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [localPrediction, setLocalPrediction] = useState(initialPrediction);
   const queryClient = useQueryClient();
 
   const isPredictionAllowed = () => {
-    if (gameResult?.is_final || prediction) {
+    if (gameResult?.is_final || localPrediction) {
       return false;
     }
 
@@ -61,36 +62,29 @@ export function PredictionButton({
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("predictions")
         .insert({
           user_id: userId,
           game_id: gameId,
           prediction_home_score: homeScore,
           prediction_away_score: awayScore,
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
 
-      // Immediately update local state and cache
-      queryClient.setQueryData(['games'], (oldData: any) => {
-        if (!oldData) return oldData;
-        return oldData.map((game: any) => {
-          if (game.id === gameId) {
-            return {
-              ...game,
-              prediction: {
-                prediction_home_score: homeScore,
-                prediction_away_score: awayScore
-              }
-            };
-          }
-          return game;
-        });
+      // Immediately update local state
+      setLocalPrediction({
+        prediction_home_score: homeScore,
+        prediction_away_score: awayScore
       });
 
-      // Also update the predictions query
+      // Update cache for both queries
+      queryClient.setQueryData(['prediction', gameId, userId], data);
       queryClient.invalidateQueries({ queryKey: ['userPredictions'] });
+      queryClient.invalidateQueries({ queryKey: ['games'] });
 
       toast.success("Prediction submitted successfully!");
       setShowForm(false);
@@ -103,7 +97,7 @@ export function PredictionButton({
   };
 
   const getButtonText = () => {
-    if (prediction) {
+    if (localPrediction) {
       return "Prediction Submitted";
     }
     if (gameResult?.is_final) {
@@ -118,7 +112,7 @@ export function PredictionButton({
       return;
     }
 
-    if (prediction) {
+    if (localPrediction) {
       toast.error("You have already made a prediction for this game");
       return;
     }
@@ -141,12 +135,12 @@ export function PredictionButton({
       <Button 
         onClick={handleClick}
         className="w-full shadow-sm transition-all duration-300"
-        disabled={!isPredictionAllowed() || !!prediction}
+        disabled={!isPredictionAllowed() || !!localPrediction}
       >
         {getButtonText()}
       </Button>
 
-      {showForm && isPredictionAllowed() && !prediction && (
+      {showForm && isPredictionAllowed() && !localPrediction && (
         <PredictionForm
           homeTeam={homeTeam}
           awayTeam={awayTeam}
