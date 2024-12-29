@@ -80,10 +80,10 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-background/95 px-4 py-8">
-      {/* Header Section */}
-      <div className="max-w-4xl mx-auto text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary/90 to-primary bg-clip-text text-transparent animate-gradient">
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/95 px-4 py-12">
+      {/* Header Section with increased bottom margin and padding */}
+      <div className="max-w-4xl mx-auto text-center mb-16">
+        <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary/90 to-primary bg-clip-text text-transparent animate-gradient tracking-tight leading-relaxed pb-2">
           euroleague.bet
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
