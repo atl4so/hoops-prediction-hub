@@ -8,15 +8,25 @@ export function useGameDeletion() {
 
   return useMutation({
     mutationFn: async (gameIds: string[]) => {
-      // Delete one game at a time to avoid issues with the response stream
+      const results = [];
+      
+      // Delete one game at a time
       for (const gameId of gameIds) {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('games')
           .delete()
-          .eq('id', gameId);
+          .eq('id', gameId)
+          .select(); // Add select() to get the response data
         
-        if (error) throw error;
+        if (error) {
+          console.error('Error deleting game:', error);
+          throw error;
+        }
+        
+        results.push(data);
       }
+      
+      return results;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['games'] });
