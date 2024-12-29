@@ -66,12 +66,11 @@ export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
     queryFn: async () => {
       if (!selectedRound) return 0;
 
-      const { count, error } = await supabase
-        .rpc('get_round_rankings', { round_id: selectedRound })
-        .select('*', { count: 'exact' });
+      const { data, count, error } = await supabase
+        .rpc('get_round_rankings', { round_id: selectedRound });
 
       if (error) throw error;
-      return count || 0;
+      return data?.length || 0;
     },
     enabled: !!selectedRound,
   });
