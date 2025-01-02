@@ -47,7 +47,10 @@ export function RoundLeaderboard() {
 
       if (error) throw error;
 
-      return data.map((player, index) => ({
+      // Filter out users with no points
+      const usersWithPoints = data.filter(player => player.total_points > 0);
+
+      return usersWithPoints.map((player, index) => ({
         ...player,
         rank: startRange + index + 1,
         avatar_url: users.find(u => u.id === player.user_id)?.avatar_url

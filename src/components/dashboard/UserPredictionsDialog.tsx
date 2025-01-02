@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface UserPredictionsDialogProps {
   isOpen: boolean;
@@ -36,9 +37,12 @@ export function UserPredictionsDialog({
     },
   });
 
+  const finishedPredictions = predictions?.filter(p => p.game.game_results?.length > 0) || [];
+  const upcomingPredictions = predictions?.filter(p => !p.game.game_results?.length) || [];
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-2">
@@ -55,28 +59,53 @@ export function UserPredictionsDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-6 flex-1 overflow-y-auto">
           <RoundSelector selectedRound={selectedRound} onRoundChange={setSelectedRound} />
 
-          {selectedRound && predictions && (
-            <div className="space-y-4">
-              {predictions.map((prediction) => (
-                <UserPredictionCard
-                  key={prediction.id}
-                  game={prediction.game}
-                  prediction={{
-                    prediction_home_score: prediction.prediction.prediction_home_score,
-                    prediction_away_score: prediction.prediction.prediction_away_score,
-                    points_earned: prediction.prediction.points_earned
-                  }}
-                />
-              ))}
-              {predictions.length === 0 && (
-                <p className="text-center text-muted-foreground">
-                  No predictions for this round
-                </p>
-              )}
-            </div>
+          {selectedRound && (
+            <Tabs defaultValue="finished" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="finished">Finished Games</TabsTrigger>
+                <TabsTrigger value="upcoming">Upcoming Games</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="finished" className="space-y-4 mt-4">
+                {finishedPredictions.map((prediction) => (
+                  <UserPredictionCard
+                    key={prediction.id}
+                    game={prediction.game}
+                    prediction={{
+                      prediction_home_score: prediction.prediction.prediction_home_score,
+                      prediction_away_score: prediction.prediction.prediction_away_score,
+                      points_earned: prediction.prediction.points_earned
+                    }}
+                  />
+                ))}
+                {finishedPredictions.length === 0 && (
+                  <p className="text-center text-muted-foreground">
+                    No finished predictions for this round
+                  </p>
+                )}
+              </TabsContent>
+
+              <TabsContent value="upcoming" className="space-y-4 mt-4">
+                {upcomingPredictions.map((prediction) => (
+                  <UserPredictionCard
+                    key={prediction.id}
+                    game={prediction.game}
+                    prediction={{
+                      prediction_home_score: prediction.prediction.prediction_home_score,
+                      prediction_away_score: prediction.prediction.prediction_away_score
+                    }}
+                  />
+                ))}
+                {upcomingPredictions.length === 0 && (
+                  <p className="text-center text-muted-foreground">
+                    No upcoming predictions for this round
+                  </p>
+                )}
+              </TabsContent>
+            </Tabs>
           )}
         </div>
       </DialogContent>

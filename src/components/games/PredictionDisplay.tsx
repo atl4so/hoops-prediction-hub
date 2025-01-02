@@ -16,7 +16,7 @@ export function PredictionDisplay({
   pointsEarned,
   onClick,
   showBreakdownHint = false,
-  label = "Your Prediction"
+  label = "Prediction"
 }: PredictionDisplayProps) {
   return (
     <div 
