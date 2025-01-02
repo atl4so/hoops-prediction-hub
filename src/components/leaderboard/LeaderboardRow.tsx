@@ -26,7 +26,6 @@ interface LeaderboardRowProps {
 export function LeaderboardRow({ 
   player, 
   rank, 
-  onFollowChange, 
   isRoundLeaderboard = false,
   showFollowButton = true 
 }: LeaderboardRowProps) {
@@ -81,10 +80,10 @@ export function LeaderboardRow({
         <TableCell className="text-right">{player.total_points}</TableCell>
         {!isMobile && !isRoundLeaderboard && (
           <>
-            <TableCell className="text-right">
+            <TableCell className="text-right hidden md:table-cell">
               {(player.points_per_game || 0).toFixed(1)}
             </TableCell>
-            <TableCell className="text-right">
+            <TableCell className="text-right hidden md:table-cell">
               {player.total_predictions || player.predictions_count || 0}
             </TableCell>
           </>

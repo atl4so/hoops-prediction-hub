@@ -44,8 +44,8 @@ export function AllTimeLeaderboard() {
             <TableHead className="w-12">Rank</TableHead>
             <TableHead>Player</TableHead>
             <TableHead className="text-right">Points</TableHead>
-            <TableHead className="text-right">PPG</TableHead>
-            <TableHead className="text-right">Predictions</TableHead>
+            <TableHead className="text-right hidden md:table-cell">PPG</TableHead>
+            <TableHead className="text-right hidden md:table-cell">Predictions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
