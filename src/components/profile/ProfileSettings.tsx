@@ -101,12 +101,16 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
     setIsDeleting(true);
     try {
       // First call the delete-user function
-      const { error: functionError } = await supabase.functions.invoke('delete-user', {
+      const { data, error: functionError } = await supabase.functions.invoke('delete-user', {
         body: { user_id: profile.id }
       });
 
       if (functionError) {
         console.error('Error from delete-user function:', functionError);
+        throw new Error(functionError.message || 'Failed to delete account data');
+      }
+
+      if (!data?.success) {
         throw new Error('Failed to delete account data');
       }
 
@@ -121,7 +125,7 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
       window.location.href = '/';
     } catch (error: any) {
       console.error('Error deleting account:', error);
-      toast.error('Failed to delete account. Please try again.');
+      toast.error(error.message || 'Failed to delete account. Please try again.');
     } finally {
       setIsDeleting(false);
     }
