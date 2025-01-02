@@ -322,6 +322,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_list_auth_users: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          email: string
+          created_at: string
+        }[]
+      }
       calculate_prediction_points: {
         Args: {
           pred_home: number
@@ -344,6 +352,12 @@ export type Database = {
       delete_user: {
         Args: {
           user_id: string
+        }
+        Returns: undefined
+      }
+      delete_user_completely: {
+        Args: {
+          email_arg: string
         }
         Returns: undefined
       }
