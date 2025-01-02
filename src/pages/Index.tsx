@@ -17,9 +17,9 @@ const Index = () => {
   }, [session, navigate]);
 
   return (
-    <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-8 animate-fade-in relative overflow-hidden px-4 sm:px-6 -mt-12">
+    <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-8 animate-fade-in relative overflow-hidden px-4 sm:px-6">
       <div className="text-center space-y-6 max-w-3xl mx-auto z-10">
-        <h1 className="inline-block text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-relaxed mb-4 font-display">
+        <h1 className="inline-block text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-relaxed mb-4 font-display mt-8">
           <div className="py-4">
             {titleText.split('').map((char, index) => (
               <span

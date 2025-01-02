@@ -81,9 +81,9 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-b from-background to-background/95 px-4 py-8 sm:px-6 -mt-12">
+    <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-b from-background to-background/95 px-4 py-8 sm:px-6">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 mt-8">
           <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary/90 to-primary bg-clip-text text-transparent animate-gradient tracking-tight leading-relaxed pb-2">
             euroleague.bet
           </h1>
