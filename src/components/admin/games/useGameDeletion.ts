@@ -1,51 +1,43 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 export function useGameDeletion() {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (gameIds: string[]) => {
-      const results = [];
+    mutationFn: async (gameId: string) => {
+      if (!gameId) {
+        throw new Error('Game ID is required');
+      }
+
+      console.log('Attempting to delete game:', gameId);
       
-      for (const gameId of gameIds) {
-        console.log('Attempting to delete game:', gameId);
+      try {
+        // Delete the game directly using DELETE query instead of RPC
+        const { data, error } = await supabase
+          .from('games')
+          .delete()
+          .eq('id', gameId);
         
-        try {
-          // Delete the game directly using DELETE query instead of RPC
-          const { data, error } = await supabase
-            .from('games')
-            .delete()
-            .eq('id', gameId);
-          
-          if (error) {
-            console.error('Error in deletion process:', error);
-            throw error;
-          }
-          
-          results.push({ id: gameId });
-          console.log('Successfully deleted game:', gameId);
-        } catch (error) {
+        if (error) {
           console.error('Error in deletion process:', error);
           throw error;
         }
+
+        return data;
+      } catch (error) {
+        console.error('Error in deletion process:', error);
+        throw error;
       }
-      
-      return results;
     },
     onSuccess: () => {
+      toast.success('Game deleted successfully');
       queryClient.invalidateQueries({ queryKey: ['games'] });
-      toast({ title: "Success", description: "Games deleted successfully" });
     },
-    onError: (error: any) => {
-      console.error('Error deleting games:', error);
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
+    onError: (error) => {
+      console.error('Error deleting game:', error);
+      toast.error('Failed to delete game');
+    }
   });
 }
