@@ -13,6 +13,20 @@ import {
 } from "@/components/ui/select";
 import { format } from "date-fns";
 
+type GameWithResult = {
+  id: string;
+  game_date: string;
+  home_team: {
+    name: string;
+  };
+  away_team: {
+    name: string;
+  };
+  game_results: {
+    id: string;
+  }[] | null;
+};
+
 export function GameResultForm() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -42,7 +56,7 @@ export function GameResultForm() {
       }
       
       // Filter out games that already have results
-      return games.filter(game => !game.game_results || game.game_results.length === 0);
+      return (games as GameWithResult[]).filter(game => !game.game_results || game.game_results.length === 0);
     },
   });
 
