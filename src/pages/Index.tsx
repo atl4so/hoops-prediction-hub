@@ -8,6 +8,7 @@ const Index = () => {
   const navigate = useNavigate();
   const session = useSession();
   const titleText = "euroleague.bet";
+  const howItWorksText = "How It Works";
 
   useEffect(() => {
     if (session) {
@@ -19,7 +20,7 @@ const Index = () => {
     <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-8 animate-fade-in relative overflow-hidden px-4 sm:px-6">
       <div className="text-center space-y-6 max-w-3xl mx-auto z-10">
         <h1 className="inline-block text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-relaxed mb-4 font-display mt-8">
-          <div className="py-4 bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-primary dark:from-primary dark:via-primary/90 dark:to-primary/80">
+          <div className="py-4 text-black dark:text-white">
             {titleText.split('').map((char, index) => (
               <span
                 key={index}
@@ -65,8 +66,20 @@ const Index = () => {
       </div>
 
       <div className="w-full max-w-3xl px-4 py-12 text-center">
-        <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80 dark:from-primary dark:to-primary/90">
-          How It Works
+        <h2 className="text-2xl font-bold mb-6 text-black dark:text-white">
+          {howItWorksText.split('').map((char, index) => (
+            <span
+              key={index}
+              className="inline-block animate-[scale-in_0.3s_ease-out] font-display tracking-tight"
+              style={{
+                animationDelay: `${(titleText.length + index) * 0.1}s`,
+                display: 'inline-block',
+                lineHeight: '1.4'
+              }}
+            >
+              {char}
+            </span>
+          ))}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
           <div className="space-y-2 p-6 rounded-2xl bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 border border-primary/10 hover:border-primary/20">
