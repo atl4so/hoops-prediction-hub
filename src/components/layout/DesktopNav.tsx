@@ -1,4 +1,3 @@
-import { LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
@@ -15,7 +14,7 @@ interface DesktopNavProps {
   onLogout: () => void;
 }
 
-export function DesktopNav({ menuItems, currentPath, isAuthenticated, onLogout }: DesktopNavProps) {
+export function DesktopNav({ menuItems, currentPath, isAuthenticated }: DesktopNavProps) {
   return (
     <nav className="hidden md:flex items-center space-x-4">
       {menuItems.map((item) => (
@@ -31,17 +30,6 @@ export function DesktopNav({ menuItems, currentPath, isAuthenticated, onLogout }
           </Link>
         </Button>
       ))}
-      {isAuthenticated && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onLogout}
-          className="text-red-500 hover:text-red-500 hover:bg-red-500/10"
-        >
-          <LogOut className="h-4 w-4 mr-2" />
-          Logout
-        </Button>
-      )}
     </nav>
   );
 }
