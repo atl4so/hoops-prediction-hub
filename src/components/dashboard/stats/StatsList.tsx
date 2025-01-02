@@ -44,21 +44,18 @@ export function StatsList({
       label: "Total Points",
       value: totalPoints || 0,
       description: "Your cumulative points from all predictions",
-      highlight: true,
     },
     {
       icon: Crown,
       label: "All-Time Rank",
       value: formatRank(allTimeRank),
       description: "Your overall ranking among all players",
-      highlight: true,
     },
     {
       icon: Medal,
       label: "Latest Round Rank",
       value: formatRank(currentRoundRank),
       description: "Your position in latest round's leaderboard",
-      highlight: true,
     },
     {
       icon: Target,
@@ -112,7 +109,6 @@ export function StatsList({
             label={stat.label}
             value={stat.value}
             description={stat.description}
-            highlight={stat.highlight}
             delay={index}
           />
         ))}
