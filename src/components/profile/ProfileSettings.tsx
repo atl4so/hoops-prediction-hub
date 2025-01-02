@@ -7,20 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import { AvatarUpload } from "./AvatarUpload";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -32,7 +19,6 @@ interface ProfileSettingsProps {
 
 export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettingsProps) {
   const [isUploading, setIsUploading] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
 
   const handleAvatarChange = async (file: File | null) => {
@@ -95,42 +81,6 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
     }
   };
 
-  const handleDeleteAccount = async () => {
-    if (!profile?.id) return;
-
-    setIsDeleting(true);
-    try {
-      console.log('Starting account deletion process...');
-      
-      // Call the delete-user function
-      const { data, error } = await supabase.functions.invoke('delete-user', {
-        body: { user_id: profile.id }
-      });
-
-      console.log('Delete function response:', { data, error });
-
-      if (error) {
-        console.error('Error from delete-user function:', error);
-        throw new Error(error.message || 'Failed to delete account');
-      }
-
-      if (!data?.success) {
-        throw new Error('Failed to delete account');
-      }
-
-      toast.success('Your account has been deleted');
-      
-      // Sign out and redirect
-      await supabase.auth.signOut();
-      window.location.href = '/login';
-    } catch (error: any) {
-      console.error('Error deleting account:', error);
-      toast.error(error.message || 'Failed to delete account');
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
@@ -147,34 +97,6 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
             isUploading={isUploading}
             displayName={profile?.display_name}
           />
-          
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" className="mt-4">
-                Delete Account
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete your account
-                  and remove all your data from our servers, including all your predictions
-                  and statistics.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={handleDeleteAccount}
-                  disabled={isDeleting}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                >
-                  {isDeleting ? 'Deleting...' : 'Delete Account'}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
         </div>
       </DialogContent>
     </Dialog>

@@ -1,55 +1,6 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
 
 export default function Terms() {
-  const [isDeleting, setIsDeleting] = useState(false);
-  const session = useSession();
-  const supabase = useSupabaseClient();
-  const navigate = useNavigate();
-
-  const handleDeleteAccount = async () => {
-    if (!session?.user) return;
-    
-    setIsDeleting(true);
-    try {
-      // First, delete the user using the Edge Function
-      const { error: deleteError } = await supabase.functions.invoke('delete-user', {
-        body: { user_id: session.user.id }
-      });
-
-      if (deleteError) {
-        console.error('Error deleting account:', deleteError);
-        throw deleteError;
-      }
-
-      // Force sign out after successful deletion
-      await supabase.auth.signOut();
-      
-      toast.success("Your account has been deleted successfully");
-      navigate("/register");
-    } catch (error) {
-      console.error('Error deleting account:', error);
-      toast.error("Failed to delete account. Please try again.");
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
   return (
     <div className="container max-w-4xl mx-auto space-y-8 py-8">
       <h1 className="text-4xl font-bold text-center mb-8">Terms & Conditions</h1>
@@ -89,36 +40,17 @@ export default function Terms() {
         <CardContent>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              You have the right to delete your account and all associated data at any time.
-              This action cannot be undone.
+              If you wish to delete your account and all associated data, please contact us on X (Twitter) at{' '}
+              <a 
+                href="https://twitter.com/beteuroleague" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                @beteuroleague
+              </a>
+              . We will process your request as soon as possible.
             </p>
-            
-            {session && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive">Delete Account</Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete your
-                      account and remove all of your data from our servers.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={handleDeleteAccount}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                      disabled={isDeleting}
-                    >
-                      {isDeleting ? "Deleting..." : "Delete Account"}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
           </div>
         </CardContent>
       </Card>
