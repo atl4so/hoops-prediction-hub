@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { format } from "date-fns";
 
-type GameWithResult = {
+interface Game {
   id: string;
   game_date: string;
   home_team: {
@@ -22,129 +22,125 @@ type GameWithResult = {
   away_team: {
     name: string;
   };
-  game_results: {
-    id: string;
-  }[] | null;
-};
+  game_results: GameResult[];
+}
 
-export function GameResultForm() {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+interface GameResult {
+  id: string;
+  home_score: number;
+  away_score: number;
+}
+
+interface GameResultFormProps {
+  onSubmit: (gameId: string, homeScore: string, awayScore: string) => void;
+  isPending: boolean;
+}
+
+export function GameResultForm({ onSubmit, isPending }: GameResultFormProps) {
   const [selectedGame, setSelectedGame] = useState<string>("");
-  const [homeScore, setHomeScore] = useState<string>("");
-  const [awayScore, setAwayScore] = useState<string>("");
+  const [homeScore, setHomeScore] = useState("");
+  const [awayScore, setAwayScore] = useState("");
 
-  const { data: gamesWithResults } = useQuery({
-    queryKey: ['games-without-results'],
+  const { data: games, isLoading, error } = useQuery({
+    queryKey: ["games-without-results"],
     queryFn: async () => {
+      console.log("Fetching games without results...");
+      
       const { data: games, error: gamesError } = await supabase
-        .from('games')
+        .from("games")
         .select(`
           id,
           game_date,
-          home_team:teams!games_home_team_id_fkey(name),
-          away_team:teams!games_away_team_id_fkey(name),
-          game_results!left (
-            id
-          )
+          home_team:home_team_id(name),
+          away_team:away_team_id(name),
+          game_results(id, home_score, away_score)
         `)
-        .order('game_date', { ascending: true });
-      
+        .order('game_date', { ascending: false });
+
       if (gamesError) {
         console.error('Error fetching games:', gamesError);
         throw gamesError;
       }
 
-      // Ensure the games array is properly typed before filtering
-      const typedGames = (games || []) as unknown as GameWithResult[];
+      console.log("Fetched games:", games);
       
       // Filter out games that already have results
-      return typedGames.filter(game => !game.game_results || game.game_results.length === 0);
+      return (games || []).filter(game => 
+        !game.game_results || game.game_results.length === 0
+      ) as Game[];
     },
   });
 
-  const createResult = useMutation({
-    mutationFn: async () => {
-      if (!selectedGame || !homeScore || !awayScore) {
-        throw new Error("Please fill in all fields");
-      }
-
-      const { error } = await supabase
-        .from('game_results')
-        .insert([
-          {
-            game_id: selectedGame,
-            home_score: parseInt(homeScore),
-            away_score: parseInt(awayScore),
-          },
-        ]);
-
-      if (error) {
-        console.error('Error creating game result:', error);
-        throw error;
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['games-without-results'] });
-      queryClient.invalidateQueries({ queryKey: ['game-results'] });
-      queryClient.invalidateQueries({ queryKey: ['predictions'] });
-      queryClient.invalidateQueries({ queryKey: ['profiles'] });
-      
-      toast({ 
-        title: "Success", 
-        description: "Game result saved and points calculated successfully",
-      });
-      
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedGame && homeScore && awayScore) {
+      onSubmit(selectedGame, homeScore, awayScore);
+      // Reset form
       setSelectedGame("");
       setHomeScore("");
       setAwayScore("");
-    },
-    onError: (error: Error) => {
-      console.error('Mutation error:', error);
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+    }
+  };
+
+  if (error) {
+    return <div>Error loading games: {(error as Error).message}</div>;
+  }
 
   return (
-    <div className="grid gap-4">
-      <Select value={selectedGame} onValueChange={setSelectedGame}>
-        <SelectTrigger>
-          <SelectValue placeholder="Select Game" />
-        </SelectTrigger>
-        <SelectContent>
-          {gamesWithResults?.map((game) => (
-            <SelectItem key={game.id} value={game.id}>
-              {game.home_team.name} vs {game.away_team.name} ({format(new Date(game.game_date), "PPP")})
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="game">Select Game</Label>
+        <Select
+          value={selectedGame}
+          onValueChange={setSelectedGame}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select a game" />
+          </SelectTrigger>
+          <SelectContent>
+            {games?.map((game) => (
+              <SelectItem key={game.id} value={game.id}>
+                {format(new Date(game.game_date), "MMM d, yyyy")} -{" "}
+                {game.home_team.name} vs {game.away_team.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <Input
-          type="number"
-          placeholder="Home Score"
-          value={homeScore}
-          onChange={(e) => setHomeScore(e.target.value)}
-        />
-        <Input
-          type="number"
-          placeholder="Away Score"
-          value={awayScore}
-          onChange={(e) => setAwayScore(e.target.value)}
-        />
+        <div className="space-y-2">
+          <Label htmlFor="homeScore">Home Score</Label>
+          <Input
+            id="homeScore"
+            type="number"
+            value={homeScore}
+            onChange={(e) => setHomeScore(e.target.value)}
+            min="0"
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="awayScore">Away Score</Label>
+          <Input
+            id="awayScore"
+            type="number"
+            value={awayScore}
+            onChange={(e) => setAwayScore(e.target.value)}
+            min="0"
+            required
+          />
+        </div>
       </div>
 
       <Button 
-        onClick={() => createResult.mutate()}
-        disabled={createResult.isPending}
+        type="submit" 
+        disabled={!selectedGame || !homeScore || !awayScore || isPending}
+        className="w-full"
       >
-        {createResult.isPending ? "Saving..." : "Save Result"}
+        {isPending ? "Saving..." : "Save Result"}
       </Button>
-    </div>
+    </form>
   );
 }
