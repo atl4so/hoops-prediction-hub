@@ -20,28 +20,29 @@ export function GameResultForm() {
   const [homeScore, setHomeScore] = useState<string>("");
   const [awayScore, setAwayScore] = useState<string>("");
 
-  // Fetch games and their results in a single query
   const { data: gamesWithResults } = useQuery({
-    queryKey: ['games-with-results'],
+    queryKey: ['games-without-results'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: games, error: gamesError } = await supabase
         .from('games')
         .select(`
           id,
           game_date,
           home_team:teams!games_home_team_id_fkey(name),
           away_team:teams!games_away_team_id_fkey(name),
-          game_results(id)
+          game_results!left (
+            id
+          )
         `)
         .order('game_date', { ascending: true });
       
-      if (error) {
-        console.error('Error fetching games:', error);
-        throw error;
+      if (gamesError) {
+        console.error('Error fetching games:', gamesError);
+        throw gamesError;
       }
       
       // Filter out games that already have results
-      return data.filter(game => !game.game_results?.length);
+      return games.filter(game => !game.game_results || game.game_results.length === 0);
     },
   });
 
@@ -61,10 +62,13 @@ export function GameResultForm() {
           },
         ]);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error creating game result:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['games-with-results'] });
+      queryClient.invalidateQueries({ queryKey: ['games-without-results'] });
       queryClient.invalidateQueries({ queryKey: ['game-results'] });
       queryClient.invalidateQueries({ queryKey: ['predictions'] });
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
@@ -78,7 +82,8 @@ export function GameResultForm() {
       setHomeScore("");
       setAwayScore("");
     },
-    onError: (error) => {
+    onError: (error: Error) => {
+      console.error('Mutation error:', error);
       toast({
         title: "Error",
         description: error.message,
