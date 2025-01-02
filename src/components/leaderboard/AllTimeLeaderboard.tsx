@@ -44,7 +44,8 @@ export function AllTimeLeaderboard({ searchQuery }: AllTimeLeaderboardProps) {
           display_name,
           total_points,
           points_per_game,
-          total_predictions
+          total_predictions,
+          avatar_url
         `)
         .gt('total_predictions', 0)
         .order("total_points", { ascending: false })

@@ -69,7 +69,9 @@ export function LeaderboardRow({ player, rank, onFollowChange, isRoundLeaderboar
             onClick={handleUserClick}
           >
             <Avatar className="h-6 w-6">
-              <AvatarImage src={player.avatar_url} alt={player.display_name} />
+              {player.avatar_url ? (
+                <AvatarImage src={player.avatar_url} alt={player.display_name} />
+              ) : null}
               <AvatarFallback>
                 <User className="h-4 w-4" />
               </AvatarFallback>
@@ -107,7 +109,9 @@ export function LeaderboardRow({ player, rank, onFollowChange, isRoundLeaderboar
             <DialogTitle>
               <div className="flex items-center gap-2">
                 <Avatar>
-                  <AvatarImage src={player.avatar_url} alt={player.display_name} />
+                  {player.avatar_url ? (
+                    <AvatarImage src={player.avatar_url} alt={player.display_name} />
+                  ) : null}
                   <AvatarFallback>
                     <User className="h-4 w-4" />
                   </AvatarFallback>
