@@ -100,7 +100,10 @@ export function GamesList() {
     if (selectedGames.length === 0) return;
     
     try {
-      await deleteGames.mutateAsync(selectedGames);
+      // Delete games one by one
+      for (const gameId of selectedGames) {
+        await deleteGames.mutateAsync(gameId);
+      }
       setSelectedGames([]); // Clear selection after successful deletion
     } catch (error) {
       console.error('Error in handleDeleteSelected:', error);
