@@ -1,10 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useNavigate } from "react-router-dom";
 import { FollowingSection } from "@/components/dashboard/FollowingSection";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
 export default function Following() {
+  const [searchQuery, setSearchQuery] = useState("");
   const session = useSession();
   const navigate = useNavigate();
   const supabase = useSupabaseClient();
@@ -17,7 +19,6 @@ export default function Following() {
       }
 
       try {
-        // Verify the session is still valid
         const { data: { user }, error } = await supabase.auth.getUser();
         if (error || !user) {
           console.error('Session error:', error);
@@ -47,7 +48,17 @@ export default function Following() {
         </p>
       </section>
 
-      <FollowingSection />
+      <div className="max-w-sm mx-auto mb-8">
+        <Input
+          type="search"
+          placeholder="Search users by name..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full"
+        />
+      </div>
+
+      <FollowingSection searchQuery={searchQuery} />
     </div>
   );
 }

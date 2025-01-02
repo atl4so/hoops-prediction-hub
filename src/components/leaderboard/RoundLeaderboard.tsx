@@ -22,24 +22,24 @@ import {
 } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
 
-interface RoundLeaderboardProps {
-  searchQuery: string;
-}
-
 const USERS_PER_PAGE = 50;
 
-export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
+export function RoundLeaderboard() {
   const [selectedRound, setSelectedRound] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const isMobile = window.innerWidth <= 768;
 
   const { data: rankings, isLoading, refetch } = useQuery({
-    queryKey: ["leaderboard", "round", selectedRound, searchQuery, currentPage],
+    queryKey: ["leaderboard", "round", selectedRound, currentPage],
     queryFn: async () => {
       if (!selectedRound) return null;
 
       const startRange = (currentPage - 1) * USERS_PER_PAGE;
       const endRange = startRange + USERS_PER_PAGE - 1;
+
+      const { data: users } = await supabase
+        .from('profiles')
+        .select('id, display_name, avatar_url');
 
       const { data, error } = await supabase
         .rpc('get_round_rankings', { round_id: selectedRound })
@@ -47,22 +47,17 @@ export function RoundLeaderboard({ searchQuery }: RoundLeaderboardProps) {
 
       if (error) throw error;
 
-      const filteredData = searchQuery
-        ? data.filter(player => 
-            player.display_name.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-        : data;
-
-      return filteredData.map((player, index) => ({
+      return data.map((player, index) => ({
         ...player,
-        rank: startRange + index + 1
+        rank: startRange + index + 1,
+        avatar_url: users.find(u => u.id === player.user_id)?.avatar_url
       }));
     },
     enabled: !!selectedRound,
   });
 
   const { data: totalCount } = useQuery({
-    queryKey: ["leaderboard", "round", selectedRound, "count", searchQuery],
+    queryKey: ["leaderboard", "round", selectedRound, "count"],
     queryFn: async () => {
       if (!selectedRound) return 0;
 

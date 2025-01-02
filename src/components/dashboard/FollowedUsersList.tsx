@@ -6,14 +6,18 @@ import { UserPredictionsDialog } from "./UserPredictionsDialog";
 import { FollowedUserCard } from "./following/FollowedUserCard";
 import { EmptyFollowingState } from "./following/EmptyFollowingState";
 
-export function FollowedUsersList() {
+interface FollowedUsersListProps {
+  searchQuery: string;
+}
+
+export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
   const [selectedUser, setSelectedUser] = useState<{
     id: string;
     display_name: string;
   } | null>(null);
 
-  const { data: followedUsers, isLoading } = useQuery({
-    queryKey: ["followed-users"],
+  const { data: followedUsers, isLoading, refetch } = useQuery({
+    queryKey: ["followed-users", searchQuery],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
@@ -25,6 +29,7 @@ export function FollowedUsersList() {
           following:profiles!user_follows_following_id_fkey (
             id,
             display_name,
+            avatar_url,
             total_points,
             points_per_game
           )
@@ -32,7 +37,15 @@ export function FollowedUsersList() {
         .eq("follower_id", user.id);
 
       if (error) throw error;
-      return data;
+
+      // Filter users based on search query
+      const filteredData = searchQuery
+        ? data.filter(follow => 
+            follow.following.display_name.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        : data;
+
+      return filteredData;
     },
   });
 
@@ -46,8 +59,16 @@ export function FollowedUsersList() {
     );
   }
 
-  if (!followedUsers?.length) {
+  if (!followedUsers?.length && !searchQuery) {
     return <EmptyFollowingState />;
+  }
+
+  if (!followedUsers?.length && searchQuery) {
+    return (
+      <div className="text-center text-muted-foreground py-8">
+        No users found matching "{searchQuery}"
+      </div>
+    );
   }
 
   return (
@@ -58,6 +79,7 @@ export function FollowedUsersList() {
             key={follow.following_id}
             user={follow.following}
             onUserClick={setSelectedUser}
+            onFollowChange={refetch}
           />
         ))}
       </div>
