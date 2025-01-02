@@ -22,7 +22,7 @@ export function UserPredictionsDialog({
   userName 
 }: UserPredictionsDialogProps) {
   const [selectedRound, setSelectedRound] = useState("");
-  const { data: predictions } = useUserRoundPredictions(userId, selectedRound);
+  const { data: predictions } = useUserRoundPredictions(userId, selectedRound, isOpen);
 
   const { data: userProfile } = useQuery({
     queryKey: ["user-profile", userId],
@@ -62,9 +62,13 @@ export function UserPredictionsDialog({
             <div className="space-y-4">
               {predictions.map((prediction) => (
                 <UserPredictionCard
-                  key={prediction.game.id}
+                  key={prediction.id}
                   game={prediction.game}
-                  prediction={prediction}
+                  prediction={{
+                    prediction_home_score: prediction.prediction.prediction_home_score,
+                    prediction_away_score: prediction.prediction.prediction_away_score,
+                    points_earned: prediction.prediction.points_earned
+                  }}
                 />
               ))}
               {predictions.length === 0 && (
