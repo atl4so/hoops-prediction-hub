@@ -362,6 +362,17 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      update_profile_stats: {
+        Args: {
+          user_id_arg: string
+          total_points_arg: number
+          total_predictions_arg: number
+          points_per_game_arg: number
+          highest_game_points_arg: number
+          lowest_game_points_arg: number
+        }
+        Returns: undefined
+      }
       update_user_profile: {
         Args: {
           avatar_url_arg: string
