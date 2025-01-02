@@ -102,34 +102,30 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
     try {
       console.log('Starting account deletion process...');
       
-      // First call the delete-user function
-      const { data, error: functionError } = await supabase.functions.invoke('delete-user', {
+      // Call the delete-user function
+      const { data, error } = await supabase.functions.invoke('delete-user', {
         body: { user_id: profile.id }
       });
 
-      console.log('Delete function response:', { data, functionError });
+      console.log('Delete function response:', { data, error });
 
-      if (functionError) {
-        console.error('Error from delete-user function:', functionError);
-        throw new Error(functionError.message || 'Failed to delete account data');
+      if (error) {
+        console.error('Error from delete-user function:', error);
+        throw new Error(error.message || 'Failed to delete account');
       }
 
       if (!data?.success) {
-        throw new Error('Failed to delete account data');
-      }
-
-      // Then sign out the user
-      const { error: signOutError } = await supabase.auth.signOut();
-      if (signOutError) {
-        console.error('Error signing out:', signOutError);
-        throw signOutError;
+        throw new Error('Failed to delete account');
       }
 
       toast.success('Your account has been deleted');
-      window.location.href = '/';
+      
+      // Sign out and redirect
+      await supabase.auth.signOut();
+      window.location.href = '/login';
     } catch (error: any) {
       console.error('Error deleting account:', error);
-      toast.error(error.message || 'Failed to delete account. Please try again.');
+      toast.error(error.message || 'Failed to delete account');
     } finally {
       setIsDeleting(false);
     }
