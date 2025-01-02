@@ -29,7 +29,7 @@ export function RoundLeaderboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const isMobile = window.innerWidth <= 768;
 
-  const { data: rankings, isLoading, refetch } = useQuery({
+  const { data: rankings, isLoading } = useQuery({
     queryKey: ["leaderboard", "round", selectedRound, currentPage],
     queryFn: async () => {
       if (!selectedRound) return null;
@@ -95,7 +95,7 @@ export function RoundLeaderboard() {
                   <TableHead className="w-12">Rank</TableHead>
                   <TableHead>Player</TableHead>
                   <TableHead className="text-right">Points</TableHead>
-                  <TableHead className="w-28"></TableHead>
+                  <TableHead className="text-right">Predictions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -104,7 +104,7 @@ export function RoundLeaderboard() {
                     key={player.user_id}
                     player={player}
                     rank={player.rank}
-                    onFollowChange={refetch}
+                    showFollowButton={false}
                     isRoundLeaderboard={true}
                   />
                 ))}

@@ -20,17 +20,24 @@ interface LeaderboardRowProps {
     avatar_url?: string;
   };
   rank: number;
-  onFollowChange: () => void;
+  onFollowChange?: () => void;
   isRoundLeaderboard?: boolean;
+  showFollowButton?: boolean;
 }
 
-export function LeaderboardRow({ player, rank, onFollowChange, isRoundLeaderboard = false }: LeaderboardRowProps) {
+export function LeaderboardRow({ 
+  player, 
+  rank, 
+  onFollowChange, 
+  isRoundLeaderboard = false,
+  showFollowButton = true 
+}: LeaderboardRowProps) {
   const [showDetails, setShowDetails] = useState(false);
   const userId = player.id || player.user_id;
   const { isFollowing, currentUser, isLoading } = useFollowStatus(userId);
   const isMobile = useIsMobile();
 
-  const showFollowButton = !isLoading && currentUser && currentUser.id !== userId && !isFollowing;
+  const showFollowButtonFinal = !isLoading && currentUser && currentUser.id !== userId && showFollowButton && isFollowing;
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -92,15 +99,15 @@ export function LeaderboardRow({ player, rank, onFollowChange, isRoundLeaderboar
             </TableCell>
           </>
         )}
-        <TableCell className="text-right">
-          {showFollowButton && (
+        {showFollowButtonFinal && (
+          <TableCell className="text-right">
             <FollowButton
               userId={userId}
               isFollowing={isFollowing}
               onFollowChange={onFollowChange}
             />
-          )}
-        </TableCell>
+          </TableCell>
+        )}
       </TableRow>
 
       <Dialog open={showDetails} onOpenChange={setShowDetails}>
