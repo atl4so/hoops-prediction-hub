@@ -10,8 +10,15 @@ export function AllTimeLeaderboard() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("*")
-        .gt('total_points', 0)  // Only fetch users with points
+        .select(`
+          id,
+          display_name,
+          avatar_url,
+          total_points,
+          points_per_game,
+          total_predictions
+        `)
+        .gt('total_points', 0)
         .order("total_points", { ascending: false });
 
       if (error) throw error;
@@ -42,10 +49,10 @@ export function AllTimeLeaderboard() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users?.map((user, index) => (
+          {users?.map((player, index) => (
             <LeaderboardRow
-              key={user.id}
-              player={user}
+              key={player.id}
+              player={player}
               rank={index + 1}
               showFollowButton={false}
             />

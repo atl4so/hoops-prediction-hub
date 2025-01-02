@@ -1,7 +1,5 @@
 import { Trophy, Medal, Award, User } from "lucide-react";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { FollowButton } from "@/components/users/FollowButton";
-import { useFollowStatus } from "@/hooks/useFollowStatus";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -33,11 +31,7 @@ export function LeaderboardRow({
   showFollowButton = true 
 }: LeaderboardRowProps) {
   const [showDetails, setShowDetails] = useState(false);
-  const userId = player.id || player.user_id;
-  const { isFollowing, currentUser, isLoading } = useFollowStatus(userId);
   const isMobile = useIsMobile();
-
-  const showFollowButtonFinal = !isLoading && currentUser && currentUser.id !== userId && showFollowButton && isFollowing;
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -76,7 +70,7 @@ export function LeaderboardRow({
             onClick={handleUserClick}
           >
             <Avatar className="h-6 w-6">
-              <AvatarImage src={player.avatar_url} alt={player.display_name} />
+              <AvatarImage src={player.avatar_url} />
               <AvatarFallback>
                 <User className="h-4 w-4" />
               </AvatarFallback>
@@ -88,21 +82,12 @@ export function LeaderboardRow({
         {!isMobile && !isRoundLeaderboard && (
           <>
             <TableCell className="text-right">
-              {player.points_per_game?.toFixed(1) || "0.0"}
+              {(player.points_per_game || 0).toFixed(1)}
             </TableCell>
             <TableCell className="text-right">
               {player.total_predictions || player.predictions_count || 0}
             </TableCell>
           </>
-        )}
-        {showFollowButtonFinal && (
-          <TableCell className="text-right">
-            <FollowButton
-              userId={userId}
-              isFollowing={isFollowing}
-              onFollowChange={onFollowChange}
-            />
-          </TableCell>
         )}
       </TableRow>
 
@@ -112,7 +97,7 @@ export function LeaderboardRow({
             <DialogTitle>
               <div className="flex items-center gap-2">
                 <Avatar>
-                  <AvatarImage src={player.avatar_url} alt={player.display_name} />
+                  <AvatarImage src={player.avatar_url} />
                   <AvatarFallback>
                     <User className="h-4 w-4" />
                   </AvatarFallback>
@@ -127,7 +112,7 @@ export function LeaderboardRow({
                 <div>
                   <p className="text-sm text-muted-foreground">Points Per Game</p>
                   <p className="text-lg font-medium">
-                    {player.points_per_game?.toFixed(1) || "0.0"}
+                    {(player.points_per_game || 0).toFixed(1)}
                   </p>
                 </div>
               )}
