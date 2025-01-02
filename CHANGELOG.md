@@ -4,48 +4,54 @@ All notable changes to the euroleague.bet project will be documented in this fil
 
 ## [Current Development]
 
+### Core Features
+- Complete predictions system with points calculation
+- Admin dashboard for game management
+- User profiles with avatar support
+- Following system for users
+- Comprehensive statistics tracking
+
 ### Database Structure
 - Teams table with 18 Euroleague teams and their logos
 - Rounds table for managing competition rounds
 - Games table for managing matches within rounds
-- Profiles table for user information
+- Profiles table for user information and avatars
+- Predictions table for user predictions
+- Game results table for final scores
+- User follows table for following system
+- User permissions table for special access
 
 ### Authentication & Authorization
 - Admin access restricted to likasvy@gmail.com
-- Row Level Security (RLS) policies implemented for all tables
+- Row Level Security (RLS) policies implemented
 - Public access for viewing teams, rounds, and games
 - Protected routes for admin functionality
+- Secure file storage for avatars
 
 ### Admin Features
-- Admin dashboard at /admin route
 - Teams management with logo display
 - Rounds creation and management
 - Games scheduling within rounds
+- Results management and points calculation
 
 ### User Interface
 - Responsive navigation with mobile and desktop views
 - Dynamic navigation items based on user role
 - Protected admin routes
+- Profile management with avatar support
 - Consistent branding and typography
 
-## [Planned Features]
-- User predictions for games
-- Leaderboard system
-- User profiles
-- Statistics dashboard
-- Following other users
-- Points calculation system
+### Technical Details
 
-## [Technical Details]
-
-### Tech Stack
+#### Tech Stack
 - Frontend: React + TypeScript
 - Styling: Tailwind CSS + shadcn/ui
 - Backend: Supabase
 - Authentication: Supabase Auth
 - Database: PostgreSQL (via Supabase)
+- File Storage: Supabase Storage
 
-### Database Tables
+#### Database Tables
 
 #### Teams
 - id (UUID)
@@ -80,12 +86,13 @@ All notable changes to the euroleague.bet project will be documented in this fil
 - Admin-only access for data modification
 - Public read access for necessary data
 - Protected routes with role-based access
+- Secure file storage access control
 
 ## [Development Guidelines]
-1. All database changes must be documented with SQL migrations
+1. All database changes must be documented
 2. New features should be added to this changelog
-3. Admin functionality is restricted to likasvy@gmail.com
-4. All data modifications should go through RLS policies
-5. User data should be properly isolated
-6. Keep UI components small and focused
-7. Maintain responsive design across all features
+3. Admin functionality is restricted
+4. All data modifications through RLS policies
+5. User data properly isolated
+6. UI components small and focused
+7. Responsive design maintained

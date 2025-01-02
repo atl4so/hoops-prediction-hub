@@ -5,14 +5,14 @@ euroleague.bet is a web application for managing and predicting Euroleague baske
 
 ## Core Features & Rules
 
-### 1. Predictions System
+### 1. Predictions System (IMMUTABLE RULES)
 - Users can make ONE prediction per game
 - Predictions are locked 1 hour before game start
 - No editing or deleting predictions once submitted
 - Points are calculated automatically when admin sets final result
 - Predictions cannot be made after a game result is posted
 
-### 2. Points Calculation
+### 2. Points Calculation (IMMUTABLE RULES)
 - Winner prediction: 5 points
 - Point difference accuracy:
   - Exact: 25 points
@@ -38,14 +38,20 @@ euroleague.bet is a web application for managing and predicting Euroleague baske
   - Within 9: 1 point
 - Maximum possible points per game: 50
 
-### 3. Admin Controls
+### 3. Admin Controls (IMMUTABLE RULES)
 - Access restricted to likasvy@gmail.com
 - Can manage teams, rounds, and games
 - Can set and update game results
 - Results trigger automatic point calculations
 - Can manage user permissions
 
-### 4. User Statistics
+### 4. User Features
+- Profile management with avatar support
+- Following other users
+- Viewing predictions and statistics
+- Accessing leaderboards
+
+### 5. User Statistics (IMMUTABLE RULES)
 Automatically tracked metrics:
 - Total points
 - Points per game (PPG)
@@ -60,44 +66,29 @@ Automatically tracked metrics:
 ### Pages
 - `/` - Home page with upcoming games
 - `/admin` - Admin dashboard (restricted)
-- `/dashboard` - User dashboard with statistics and predictions
+- `/dashboard` - User dashboard with statistics
 - `/login` - Authentication
 - `/register` - User registration
-- `/leaderboard` - Global and round-specific rankings
+- `/leaderboard` - Rankings
+- `/profile` - User profile management
+- `/following` - Following management
 
 ### Core Components
 ```
 src/
 ├── components/
 │   ├── admin/
-│   │   ├── TeamsList.tsx
-│   │   ├── RoundManager.tsx
-│   │   ├── GameManager.tsx
-│   │   ├── GameResults.tsx
-│   │   └── GameResultsList.tsx
+│   │   └── ... (admin components)
+│   ├── profile/
+│   │   ├── ProfileMenu.tsx
+│   │   ├── AvatarUpload.tsx
+│   │   └── ProfileSettings.tsx
 │   ├── dashboard/
-│   │   ├── StatsOverview.tsx
-│   │   ├── DashboardHeader.tsx
-│   │   ├── StatCard.tsx
-│   │   ├── CollapsibleRoundSection.tsx
-│   │   ├── UserProfile.tsx
-│   │   ├── useCurrentRoundRank.tsx
-│   │   └── useUserPredictions.tsx
+│   │   └── ... (dashboard components)
 │   ├── games/
-│   │   ├── GameCard.tsx
-│   │   ├── PredictionButton.tsx
-│   │   └── GamesList.tsx
+│   │   └── ... (game components)
 │   └── layout/
-│       ├── AppHeader.tsx
-│       └── MainLayout.tsx
-```
-
-### Custom Hooks
-```
-src/hooks/
-├── useUserProfile.tsx - Manages user profile data and statistics
-├── useCurrentRoundRank.tsx - Calculates user's rank in current round
-└── useUserPredictions.tsx - Handles user's prediction data
+│       └── ... (layout components)
 ```
 
 ## Data Flow
@@ -106,21 +97,24 @@ src/hooks/
    - Admin access by email
    - RLS policies control data access
 
-2. Admin Operations
-   - Teams Management: Create/Read teams
-   - Rounds Management: Create/Read/Update rounds
-   - Games Management: Create/Read/Update games
-   - Results Management: Set/Update results
+2. Profile Management
+   - Avatar storage in Supabase Storage
+   - Profile data in profiles table
+   - Real-time avatar updates
 
-3. User Operations
+3. Game Operations
+   - Teams Management
+   - Rounds Management
+   - Games Management
+   - Results Management
+   - Points Calculation
+
+4. User Operations
    - View games and rounds
    - Make predictions (with time restrictions)
    - Track points and rankings
    - Follow other users
    - View followed users' predictions
-
-## Database Schema
-See CHANGELOG.md for detailed table structures
 
 ## Security Model
 1. Authentication
@@ -133,6 +127,11 @@ See CHANGELOG.md for detailed table structures
    - Admin-only operations
    - Public read access where appropriate
 
+3. File Storage
+   - Avatars stored in Supabase Storage
+   - Public read access for avatars
+   - User-specific write access
+
 ## Development Guidelines
 1. Document changes in CHANGELOG.md
 2. Follow component-based architecture
@@ -144,7 +143,7 @@ See CHANGELOG.md for detailed table structures
 8. Use custom hooks for data fetching
 9. Implement proper error handling
 
-## Testing Strategy (Planned)
+## Testing Strategy
 1. Component testing
 2. Integration testing
 3. End-to-end testing
@@ -153,10 +152,3 @@ See CHANGELOG.md for detailed table structures
 - Frontend: Vite build process
 - Backend: Supabase managed services
 - Database: PostgreSQL on Supabase
-
-## Future Considerations
-1. Performance optimization
-2. Caching strategy
-3. Real-time updates
-4. Mobile responsiveness
-5. Accessibility compliance
