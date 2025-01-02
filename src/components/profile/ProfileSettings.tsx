@@ -100,10 +100,14 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
 
     setIsDeleting(true);
     try {
+      console.log('Starting account deletion process...');
+      
       // First call the delete-user function
       const { data, error: functionError } = await supabase.functions.invoke('delete-user', {
         body: { user_id: profile.id }
       });
+
+      console.log('Delete function response:', { data, error: functionError });
 
       if (functionError) {
         console.error('Error from delete-user function:', functionError);
