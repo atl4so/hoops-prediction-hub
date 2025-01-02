@@ -21,7 +21,9 @@ export function FollowedUserCard({ user, onUserClick }: FollowedUserCardProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={user.avatar_url} alt={user.display_name} />
+              {user.avatar_url ? (
+                <AvatarImage src={user.avatar_url} alt={user.display_name} />
+              ) : null}
               <AvatarFallback>
                 <User className="h-4 w-4" />
               </AvatarFallback>
