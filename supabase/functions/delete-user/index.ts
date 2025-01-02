@@ -12,7 +12,6 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Get the user ID from the request
     const { user_id } = await req.json()
     
     if (!user_id) {
@@ -61,7 +60,7 @@ Deno.serve(async (req) => {
       JSON.stringify({ success: true }),
       { 
         headers: { 
-          ...corsHeaders, 
+          ...corsHeaders,
           'Content-Type': 'application/json'
         },
         status: 200 
@@ -73,7 +72,7 @@ Deno.serve(async (req) => {
       JSON.stringify({ error: error.message }),
       { 
         headers: { 
-          ...corsHeaders, 
+          ...corsHeaders,
           'Content-Type': 'application/json'
         },
         status: 400 
