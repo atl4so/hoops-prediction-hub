@@ -7,8 +7,6 @@ import { Lock, User } from "lucide-react";
 const Index = () => {
   const navigate = useNavigate();
   const session = useSession();
-  const titleText = "euroleague.bet";
-  const howItWorksText = "How It Works";
 
   useEffect(() => {
     if (session) {
@@ -17,32 +15,20 @@ const Index = () => {
   }, [session, navigate]);
 
   return (
-    <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-8 animate-fade-in relative overflow-hidden px-4 sm:px-6">
+    <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-8 relative overflow-hidden px-4 sm:px-6">
       <div className="text-center space-y-6 max-w-3xl mx-auto z-10">
-        <h1 className="inline-block text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-relaxed mb-4 font-display mt-8">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-relaxed mb-4 font-display mt-8">
           <div className="py-4 text-black dark:text-white">
-            {titleText.split('').map((char, index) => (
-              <span
-                key={index}
-                className="inline-block animate-[scale-in_0.3s_ease-out] font-display tracking-tight"
-                style={{
-                  animationDelay: `${index * 0.1}s`,
-                  display: 'inline-block',
-                  lineHeight: '1.4'
-                }}
-              >
-                {char}
-              </span>
-            ))}
+            euroleague.bet
           </div>
         </h1>
 
-        <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto opacity-0 animate-[fade-in_0.5s_ease-out_1.5s_forwards] leading-relaxed">
+        <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
           Join the ultimate Euroleague basketball prediction community. Test your knowledge, compete with friends, and climb the leaderboard!
         </p>
         
         {!session && (
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 opacity-0 animate-[fade-in_0.5s_ease-out_2.5s_forwards]">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
             <Button
               onClick={() => navigate("/login")}
               variant="default"
@@ -67,19 +53,7 @@ const Index = () => {
 
       <div className="w-full max-w-3xl px-4 py-12 text-center">
         <h2 className="text-2xl font-bold mb-6 text-black dark:text-white">
-          {howItWorksText.split('').map((char, index) => (
-            <span
-              key={index}
-              className="inline-block animate-[scale-in_0.3s_ease-out] font-display tracking-tight"
-              style={{
-                animationDelay: `${(titleText.length + index) * 0.1}s`,
-                display: 'inline-block',
-                lineHeight: '1.4'
-              }}
-            >
-              {char}
-            </span>
-          ))}
+          How It Works
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
           <div className="space-y-2 p-6 rounded-2xl bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 border border-primary/10 hover:border-primary/20">
