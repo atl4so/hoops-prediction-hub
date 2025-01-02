@@ -95,7 +95,6 @@ export function RoundLeaderboard() {
                   <TableHead className="w-12">Rank</TableHead>
                   <TableHead>Player</TableHead>
                   <TableHead className="text-right">Points</TableHead>
-                  <TableHead className="text-right">Predictions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

@@ -18,7 +18,6 @@ interface LeaderboardRowProps {
     avatar_url?: string;
   };
   rank: number;
-  onFollowChange?: () => void;
   isRoundLeaderboard?: boolean;
   showFollowButton?: boolean;
 }
@@ -78,12 +77,12 @@ export function LeaderboardRow({
           </div>
         </TableCell>
         <TableCell className="text-right">{player.total_points}</TableCell>
-        {!isMobile && !isRoundLeaderboard && (
+        {!isRoundLeaderboard && (
           <>
-            <TableCell className="text-right hidden md:table-cell">
+            <TableCell className="text-right">
               {(player.points_per_game || 0).toFixed(1)}
             </TableCell>
-            <TableCell className="text-right hidden md:table-cell">
+            <TableCell className="text-right">
               {player.total_predictions || player.predictions_count || 0}
             </TableCell>
           </>
@@ -108,19 +107,21 @@ export function LeaderboardRow({
           <div className="space-y-4">
             <div className={cn("grid gap-4", !isRoundLeaderboard ? "grid-cols-2" : "grid-cols-1")}>
               {!isRoundLeaderboard && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Points Per Game</p>
-                  <p className="text-lg font-medium">
-                    {(player.points_per_game || 0).toFixed(1)}
-                  </p>
-                </div>
+                <>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Points Per Game</p>
+                    <p className="text-lg font-medium">
+                      {(player.points_per_game || 0).toFixed(1)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Total Predictions</p>
+                    <p className="text-lg font-medium">
+                      {player.total_predictions || player.predictions_count || 0}
+                    </p>
+                  </div>
+                </>
               )}
-              <div>
-                <p className="text-sm text-muted-foreground">Total Predictions</p>
-                <p className="text-lg font-medium">
-                  {player.total_predictions || player.predictions_count || 0}
-                </p>
-              </div>
             </div>
           </div>
         </DialogContent>
