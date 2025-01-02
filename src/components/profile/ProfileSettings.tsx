@@ -100,20 +100,28 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
 
     setIsDeleting(true);
     try {
-      const { error } = await supabase.functions.invoke('delete-user', {
+      // First call the delete-user function
+      const { error: functionError } = await supabase.functions.invoke('delete-user', {
         body: { user_id: profile.id }
       });
 
-      if (error) throw error;
+      if (functionError) {
+        console.error('Error from delete-user function:', functionError);
+        throw new Error('Failed to delete account data');
+      }
 
+      // Then sign out the user
       const { error: signOutError } = await supabase.auth.signOut();
-      if (signOutError) throw signOutError;
+      if (signOutError) {
+        console.error('Error signing out:', signOutError);
+        throw signOutError;
+      }
 
       toast.success('Your account has been deleted');
       window.location.href = '/';
     } catch (error: any) {
       console.error('Error deleting account:', error);
-      toast.error('Failed to delete account');
+      toast.error('Failed to delete account. Please try again.');
     } finally {
       setIsDeleting(false);
     }
