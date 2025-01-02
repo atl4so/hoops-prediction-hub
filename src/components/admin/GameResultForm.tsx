@@ -54,9 +54,12 @@ export function GameResultForm() {
         console.error('Error fetching games:', gamesError);
         throw gamesError;
       }
+
+      // Ensure the games array is properly typed before filtering
+      const typedGames = (games || []) as unknown as GameWithResult[];
       
       // Filter out games that already have results
-      return (games as GameWithResult[]).filter(game => !game.game_results || game.game_results.length === 0);
+      return typedGames.filter(game => !game.game_results || game.game_results.length === 0);
     },
   });
 
