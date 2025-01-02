@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface LeaderboardRowProps {
   player: {
@@ -16,6 +17,7 @@ interface LeaderboardRowProps {
     points_per_game?: number;
     total_predictions?: number;
     predictions_count?: number;
+    avatar_url?: string;
   };
   rank: number;
   onFollowChange: () => void;
@@ -28,7 +30,6 @@ export function LeaderboardRow({ player, rank, onFollowChange, isRoundLeaderboar
   const { isFollowing, currentUser, isLoading } = useFollowStatus(userId);
   const isMobile = useIsMobile();
 
-  // Don't show follow button for the current user, if already following, or while loading
   const showFollowButton = !isLoading && currentUser && currentUser.id !== userId && !isFollowing;
 
   const getRankIcon = (rank: number) => {
@@ -67,7 +68,12 @@ export function LeaderboardRow({ player, rank, onFollowChange, isRoundLeaderboar
             )}
             onClick={handleUserClick}
           >
-            <User className="h-4 w-4 text-muted-foreground" />
+            <Avatar className="h-6 w-6">
+              <AvatarImage src={player.avatar_url} alt={player.display_name} />
+              <AvatarFallback>
+                <User className="h-4 w-4" />
+              </AvatarFallback>
+            </Avatar>
             {player.display_name}
           </div>
         </TableCell>
@@ -98,7 +104,17 @@ export function LeaderboardRow({ player, rank, onFollowChange, isRoundLeaderboar
       <Dialog open={showDetails} onOpenChange={setShowDetails}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{player.display_name}</DialogTitle>
+            <DialogTitle>
+              <div className="flex items-center gap-2">
+                <Avatar>
+                  <AvatarImage src={player.avatar_url} alt={player.display_name} />
+                  <AvatarFallback>
+                    <User className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
+                {player.display_name}
+              </div>
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className={cn("grid gap-4", !isRoundLeaderboard ? "grid-cols-2" : "grid-cols-1")}>

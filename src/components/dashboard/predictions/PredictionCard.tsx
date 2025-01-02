@@ -1,6 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
 import { GameInfo } from "./GameInfo";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User } from "lucide-react";
 
 interface PredictionCardProps {
   prediction: {
@@ -10,6 +12,7 @@ interface PredictionCardProps {
     user: {
       id: string;
       display_name: string;
+      avatar_url?: string;
     };
     game: {
       id: string;
@@ -37,7 +40,15 @@ export function PredictionCard({ prediction }: PredictionCardProps) {
       <CardContent className="pt-6">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="font-semibold">{prediction.user.display_name}</p>
+            <div className="flex items-center gap-2">
+              <Avatar className="h-6 w-6">
+                <AvatarImage src={prediction.user.avatar_url} alt={prediction.user.display_name} />
+                <AvatarFallback>
+                  <User className="h-4 w-4" />
+                </AvatarFallback>
+              </Avatar>
+              <p className="font-semibold">{prediction.user.display_name}</p>
+            </div>
             <p className="text-sm text-muted-foreground">
               {format(new Date(prediction.game.game_date), "PPp")}
             </p>
