@@ -57,7 +57,12 @@ export function GameResultsList() {
       const { data, error } = await supabase
         .from('game_results')
         .select(`
-          *,
+          id,
+          home_score,
+          away_score,
+          is_final,
+          created_at,
+          updated_at,
           game:games(
             id,
             game_date,
