@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react";
 
 interface AvatarUploadProps {
   currentAvatarUrl?: string;
@@ -21,13 +22,14 @@ export function AvatarUpload({
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null;
     if (file) {
-      // Validate file type and size
+      // Validate file type
       if (!file.type.startsWith('image/')) {
-        alert('Please upload an image file');
+        toast.error('Please upload an image file');
         return;
       }
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        alert('File size must be less than 5MB');
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('File size must be less than 5MB');
         return;
       }
       onAvatarChange(file);
@@ -39,8 +41,13 @@ export function AvatarUpload({
       <Label htmlFor="avatar">Profile Picture</Label>
       <div className="flex items-center gap-4">
         <Avatar className="h-16 w-16">
-          <AvatarImage src={currentAvatarUrl || undefined} alt={displayName || "Profile"} />
-          <AvatarFallback>{displayName?.[0]?.toUpperCase() || "U"}</AvatarFallback>
+          <AvatarImage 
+            src={currentAvatarUrl || undefined} 
+            alt={displayName || "Profile"} 
+          />
+          <AvatarFallback>
+            {displayName?.[0]?.toUpperCase() || "U"}
+          </AvatarFallback>
         </Avatar>
         <input
           ref={fileInputRef}
@@ -56,7 +63,14 @@ export function AvatarUpload({
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
           >
-            {isUploading ? "Uploading..." : "Change"}
+            {isUploading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Uploading...
+              </>
+            ) : (
+              'Change'
+            )}
           </Button>
           {currentAvatarUrl && (
             <Button

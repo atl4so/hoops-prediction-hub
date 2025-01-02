@@ -6,6 +6,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { MobileMenu } from "./MobileMenu";
 import { DesktopNav } from "./DesktopNav";
 import { getNavigationItems } from "./NavigationItems";
+import { ProfileMenu } from "../profile/ProfileMenu";
 
 export function AppHeader() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -84,7 +85,8 @@ export function AppHeader() {
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
+          {isAuthenticated && <ProfileMenu />}
           <ThemeToggle />
         </div>
       </div>

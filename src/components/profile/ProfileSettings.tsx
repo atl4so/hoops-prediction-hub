@@ -21,16 +21,30 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
   const queryClient = useQueryClient();
 
   const handleAvatarChange = async (file: File | null) => {
-    if (!file || !profile?.id) return;
+    if (!profile?.id) return;
 
     setIsUploading(true);
     try {
-      // Delete existing avatar if it exists
+      // Delete existing avatar if it exists and we're either removing or replacing it
       if (profile.avatar_url) {
         const oldPath = profile.avatar_url.split('/').pop();
         if (oldPath) {
           await supabase.storage.from('avatars').remove([oldPath]);
         }
+      }
+
+      // If file is null, we're just removing the avatar
+      if (!file) {
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ avatar_url: null })
+          .eq('id', profile.id);
+
+        if (updateError) throw updateError;
+        
+        queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+        toast.success('Profile picture removed successfully');
+        return;
       }
 
       // Upload new avatar
