@@ -13,7 +13,7 @@ import { useUserRoundPredictions } from "./predictions/useUserRoundPredictions";
 
 interface UserPredictionsDialogProps {
   isOpen: boolean;
-  onClose: () => void;
+  onOpenChange: (open: boolean) => void;
   userId: string;
   userName: string;
   isOwnPredictions?: boolean;
@@ -21,7 +21,7 @@ interface UserPredictionsDialogProps {
 
 export function UserPredictionsDialog({
   isOpen,
-  onClose,
+  onOpenChange,
   userId,
   userName,
   isOwnPredictions = false,
@@ -56,7 +56,7 @@ export function UserPredictionsDialog({
   const { data: predictions, isLoading } = useUserRoundPredictions(userId, selectedRound, isOpen);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>

@@ -149,12 +149,14 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
           created_at: string
           display_name: string
           email: string
           highest_game_points: number | null
           highest_round_points: number | null
           id: string
+          is_admin: boolean | null
           lowest_game_points: number | null
           lowest_round_points: number | null
           points_per_game: number | null
@@ -163,12 +165,14 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string
           display_name: string
           email: string
           highest_game_points?: number | null
           highest_round_points?: number | null
           id: string
+          is_admin?: boolean | null
           lowest_game_points?: number | null
           lowest_round_points?: number | null
           points_per_game?: number | null
@@ -177,12 +181,14 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string
           display_name?: string
           email?: string
           highest_game_points?: number | null
           highest_round_points?: number | null
           id?: string
+          is_admin?: boolean | null
           lowest_game_points?: number | null
           lowest_round_points?: number | null
           points_per_game?: number | null
@@ -329,12 +335,6 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
-      delete_game_completely: {
-        Args: {
-          game_id: string
-        }
-        Returns: undefined
-      }
       delete_user: {
         Args: {
           user_id: string
@@ -354,6 +354,13 @@ export type Database = {
       }
       recalculate_all_prediction_points: {
         Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      update_user_profile: {
+        Args: {
+          avatar_url_arg: string
+          user_id_arg: string
+        }
         Returns: undefined
       }
     }

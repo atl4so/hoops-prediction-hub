@@ -65,7 +65,7 @@ export function FollowedUsersList() {
       {selectedUser && (
         <UserPredictionsDialog
           isOpen={!!selectedUser}
-          onClose={() => setSelectedUser(null)}
+          onOpenChange={() => setSelectedUser(null)}
           userId={selectedUser.id}
           userName={selectedUser.display_name}
         />
