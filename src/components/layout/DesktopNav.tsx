@@ -17,7 +17,7 @@ interface DesktopNavProps {
 
 export function DesktopNav({ menuItems, currentPath, isAuthenticated }: DesktopNavProps) {
   return (
-    <nav className="hidden md:flex items-center space-x-1">
+    <nav className="hidden md:flex items-center space-x-1 bg-background/50 backdrop-blur-sm px-4 py-1.5 rounded-full border border-border/50 shadow-sm">
       {menuItems.map((item) => (
         <Button
           key={item.title}
@@ -26,17 +26,16 @@ export function DesktopNav({ menuItems, currentPath, isAuthenticated }: DesktopN
           asChild
           className={`relative px-4 py-2 transition-all duration-200 hover:bg-primary/10 
             ${currentPath === item.path ? 
-              'bg-primary/15 text-primary hover:bg-primary/20 hover:text-primary font-medium' : 
+              'bg-background text-foreground hover:bg-background/90 font-medium' : 
               'hover:text-primary'
-            } 
-            ${item.className || ''}`}
+            }`}
         >
           <Link 
             to={item.path} 
             className="flex items-center gap-2 relative group"
           >
             <item.icon className={`h-4 w-4 transition-colors duration-200 
-              ${currentPath === item.path ? 'text-primary' : 'group-hover:text-primary'}`} 
+              ${currentPath === item.path ? 'text-foreground' : 'group-hover:text-primary'}`} 
             />
             <span className="relative">
               {item.title}

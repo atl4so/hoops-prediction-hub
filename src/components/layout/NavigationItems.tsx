@@ -4,12 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const getNavigationItems = async (isAuthenticated: boolean) => {
   const authenticatedItems = [
     { title: "Dashboard", icon: Home, path: "/dashboard" },
-    { 
-      title: "PREDICT", 
-      icon: Target, 
-      path: "/predictions",
-      className: "bg-primary text-primary-foreground hover:bg-primary/90" 
-    },
+    { title: "Predict", icon: Target, path: "/predict" },
     { title: "Following", icon: Users, path: "/following" },
     { title: "Leaderboard", icon: Trophy, path: "/leaderboard" },
     { title: "Rules", icon: Scroll, path: "/rules" },
