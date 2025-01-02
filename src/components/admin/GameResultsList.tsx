@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { EditGameResultDialog } from "./EditGameResultDialog";
@@ -9,6 +9,7 @@ import { RoundResultsSection } from "./games/RoundResultsSection";
 
 export function GameResultsList() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [editingResult, setEditingResult] = useState<any>(null);
   const [homeScore, setHomeScore] = useState("");
   const [awayScore, setAwayScore] = useState("");
@@ -17,6 +18,11 @@ export function GameResultsList() {
 
   const updateResult = useMutation({
     mutationFn: async () => {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session?.user || session.session.user.email !== 'likasvy@gmail.com') {
+        throw new Error('Unauthorized');
+      }
+
       if (!editingResult || !homeScore || !awayScore) {
         throw new Error("Please fill in all fields");
       }
@@ -40,7 +46,7 @@ export function GameResultsList() {
         title: "Success", 
         description: "Game result updated successfully",
       });
-      
+      queryClient.invalidateQueries({ queryKey: ['game-results'] });
       setEditingResult(null);
       setHomeScore("");
       setAwayScore("");

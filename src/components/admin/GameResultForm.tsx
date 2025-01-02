@@ -22,7 +22,7 @@ interface Game {
   away_team: {
     name: string;
   };
-  game_results: GameResult[];
+  game_results: GameResult[] | null;
 }
 
 interface GameResult {
@@ -46,6 +46,11 @@ export function GameResultForm({ onSubmit, isPending }: GameResultFormProps) {
     queryFn: async () => {
       console.log("Fetching games without results...");
       
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session?.user || session.session.user.email !== 'likasvy@gmail.com') {
+        throw new Error('Unauthorized');
+      }
+
       const { data: gamesData, error: gamesError } = await supabase
         .from("games")
         .select(`
@@ -64,10 +69,8 @@ export function GameResultForm({ onSubmit, isPending }: GameResultFormProps) {
 
       console.log("Fetched games:", gamesData);
       
-      // Cast the response to unknown first, then to Game[]
       const typedGames = gamesData as unknown as Game[];
       
-      // Filter out games that already have results
       return typedGames.filter(game => 
         !game.game_results || game.game_results.length === 0
       );

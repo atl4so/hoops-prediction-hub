@@ -15,6 +15,11 @@ export function GameResults() {
       homeScore: string; 
       awayScore: string; 
     }) => {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session?.user || session.session.user.email !== 'likasvy@gmail.com') {
+        throw new Error('Unauthorized');
+      }
+
       const { data, error } = await supabase
         .from('game_results')
         .insert([
@@ -39,7 +44,7 @@ export function GameResults() {
     },
     onError: (error) => {
       console.error('Error saving game result:', error);
-      toast.error('Failed to save game result');
+      toast.error('Failed to save game result. Please make sure you are logged in as admin.');
     },
     onSettled: () => {
       setIsPending(false);
