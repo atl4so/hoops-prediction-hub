@@ -7,7 +7,6 @@ interface StatCardProps {
   label: string;
   value: string | number;
   description?: string;
-  highlight?: boolean;
   delay?: number;
 }
 
@@ -16,7 +15,6 @@ export function StatCard({
   label, 
   value, 
   description,
-  highlight = false,
   delay = 0
 }: StatCardProps) {
   return (
@@ -24,7 +22,7 @@ export function StatCard({
       className={cn(
         "group transition-all duration-300 hover:shadow-lg border-2",
         "hover:scale-[1.02] hover:-translate-y-0.5",
-        highlight ? "bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20" : "hover:bg-accent/5",
+        "bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20",
         "opacity-0" // Start invisible for animation
       )}
       style={{
@@ -36,9 +34,8 @@ export function StatCard({
         <div className="flex flex-col items-center text-center space-y-4">
           <div className={cn(
             "rounded-xl p-3 sm:p-4 transition-colors duration-300",
-            highlight 
-              ? "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground group-hover:from-primary/90 group-hover:to-primary/70" 
-              : "bg-muted group-hover:bg-muted/80"
+            "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground",
+            "group-hover:from-primary/90 group-hover:to-primary/70"
           )}>
             <Icon className="h-6 w-6 sm:h-8 sm:w-8" />
           </div>
