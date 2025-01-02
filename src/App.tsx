@@ -63,16 +63,8 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated && 
-        window.location.pathname !== '/login' && 
-        window.location.pathname !== '/register') {
-      window.location.href = '/login';
-    }
-  }, [isLoading, isAuthenticated]);
-
   if (isLoading) {
-    return null; // Or a loading spinner
+    return null;
   }
 
   return <>{children}</>;
@@ -92,7 +84,7 @@ const App = () => {
             <SessionHandler>
               <MainLayout>
                 <Routes>
-                  <Route path="/" element={<Navigate to="/predict" replace />} />
+                  <Route path="/" element={<Index />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<RegisterForm />} />
                   <Route path="/dashboard" element={<Dashboard />} />
@@ -102,7 +94,7 @@ const App = () => {
                   <Route path="/following" element={<Following />} />
                   <Route path="/rules" element={<Rules />} />
                   <Route path="/terms" element={<Terms />} />
-                  <Route path="*" element={<Navigate to="/predict" replace />} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </MainLayout>
             </SessionHandler>

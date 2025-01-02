@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Lock, Mail } from "lucide-react";
 import { normalizeEmail } from "@/utils/validation";
 
 const Login = () => {
@@ -80,19 +81,14 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-background/95 px-4 py-12">
-      {/* Header Section with increased bottom margin and padding */}
-      <div className="max-w-4xl mx-auto text-center mb-16">
-        <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary/90 to-primary bg-clip-text text-transparent animate-gradient tracking-tight leading-relaxed pb-2">
-          euroleague.bet
-        </h1>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-          Join the ultimate Euroleague basketball prediction community. Test your knowledge, compete with friends, and climb the leaderboard!
-        </p>
-      </div>
+    <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-b from-background to-background/95 px-4 py-8 sm:px-6">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary/90 to-primary bg-clip-text text-transparent animate-gradient tracking-tight leading-relaxed pb-2">
+            euroleague.bet
+          </h1>
+        </div>
 
-      {/* Auth Section */}
-      <div className="max-w-md mx-auto">
         <Card className="w-full shadow-lg">
           <CardHeader className="space-y-1 pb-4">
             <CardTitle className="text-xl text-center">Sign In</CardTitle>
@@ -106,38 +102,44 @@ const Login = () => {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            <form onSubmit={handleSubmit} className="space-y-3">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={(e) => {
-                    setError(null);
-                    setFormData({ ...formData, email: e.target.value });
-                  }}
-                  required
-                  className="h-9"
-                />
+                <Label htmlFor="email">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={formData.email}
+                    onChange={(e) => {
+                      setError(null);
+                      setFormData({ ...formData, email: e.target.value });
+                    }}
+                    required
+                    className="pl-10"
+                  />
+                </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={(e) => {
-                    setError(null);
-                    setFormData({ ...formData, password: e.target.value });
-                  }}
-                  required
-                  className="h-9"
-                />
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    value={formData.password}
+                    onChange={(e) => {
+                      setError(null);
+                      setFormData({ ...formData, password: e.target.value });
+                    }}
+                    required
+                    className="pl-10"
+                  />
+                </div>
               </div>
-              <Button type="submit" className="w-full h-9" disabled={isLoading}>
+              <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Signing in..." : "Sign in"}
               </Button>
             </form>
