@@ -5,6 +5,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { UserPredictionsDialog } from "./UserPredictionsDialog";
 import { FollowedUserCard } from "./following/FollowedUserCard";
 import { EmptyFollowingState } from "./following/EmptyFollowingState";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface FollowedUsersListProps {
   searchQuery: string;
@@ -106,6 +108,13 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
 
   return (
     <>
+      <Alert className="mb-6">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>
+          Click on a username to view their predictions
+        </AlertDescription>
+      </Alert>
+
       <div className="space-y-4">
         {followedUsers.map((follow) => (
           <FollowedUserCard

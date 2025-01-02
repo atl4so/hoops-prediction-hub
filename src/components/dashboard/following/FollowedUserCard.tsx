@@ -18,7 +18,7 @@ interface FollowedUserCardProps {
 
 export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowing }: FollowedUserCardProps) {
   return (
-    <Card className="group hover:shadow-md transition-all duration-300">
+    <Card>
       <CardContent className="pt-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -54,7 +54,6 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
             userId={user.id}
             isFollowing={isFollowing}
             onFollowChange={onFollowChange}
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
           />
         </div>
       </CardContent>
