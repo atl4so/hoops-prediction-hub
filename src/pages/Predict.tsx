@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { GamesList } from "@/components/games/GamesList";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, InfoIcon } from "lucide-react";
 
 export default function Predict() {
   const session = useSession();
@@ -49,6 +49,13 @@ export default function Predict() {
           Predict the outcomes of upcoming Euroleague games
         </p>
       </section>
+
+      <Alert>
+        <InfoIcon className="h-4 w-4" />
+        <AlertDescription>
+          Points are calculated automatically after each game. Updates may take up to 6 hours.
+        </AlertDescription>
+      </Alert>
 
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
