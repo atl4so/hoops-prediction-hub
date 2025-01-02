@@ -20,22 +20,9 @@ export function GameResultForm() {
   const [homeScore, setHomeScore] = useState<string>("");
   const [awayScore, setAwayScore] = useState<string>("");
 
-  // First, fetch all game results to get their game_ids
-  const { data: gameResults } = useQuery({
-    queryKey: ['game-results-ids'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('game_results')
-        .select('game_id');
-      
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  // Then fetch games that don't have results
-  const { data: games } = useQuery({
-    queryKey: ['games-without-results', gameResults],
+  // Fetch games and their results in a single query
+  const { data: gamesWithResults } = useQuery({
+    queryKey: ['games-with-results'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('games')
@@ -43,17 +30,19 @@ export function GameResultForm() {
           id,
           game_date,
           home_team:teams!games_home_team_id_fkey(name),
-          away_team:teams!games_away_team_id_fkey(name)
+          away_team:teams!games_away_team_id_fkey(name),
+          game_results(id)
         `)
         .order('game_date', { ascending: true });
       
-      if (error) throw error;
-
+      if (error) {
+        console.error('Error fetching games:', error);
+        throw error;
+      }
+      
       // Filter out games that already have results
-      const gameIdsWithResults = new Set(gameResults?.map(r => r.game_id) || []);
-      return data.filter(game => !gameIdsWithResults.has(game.id));
+      return data.filter(game => !game.game_results?.length);
     },
-    enabled: true,
   });
 
   const createResult = useMutation({
@@ -75,10 +64,8 @@ export function GameResultForm() {
       if (error) throw error;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['games-with-results'] });
       queryClient.invalidateQueries({ queryKey: ['game-results'] });
-      queryClient.invalidateQueries({ queryKey: ['games-without-results'] });
-      queryClient.invalidateQueries({ queryKey: ['game-results-ids'] });
-      // Also invalidate predictions and profiles as they will be updated by the trigger
       queryClient.invalidateQueries({ queryKey: ['predictions'] });
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
       
@@ -107,7 +94,7 @@ export function GameResultForm() {
           <SelectValue placeholder="Select Game" />
         </SelectTrigger>
         <SelectContent>
-          {games?.map((game) => (
+          {gamesWithResults?.map((game) => (
             <SelectItem key={game.id} value={game.id}>
               {game.home_team.name} vs {game.away_team.name} ({format(new Date(game.game_date), "PPP")})
             </SelectItem>
