@@ -76,9 +76,7 @@ export function LeaderboardRow({
             onClick={handleUserClick}
           >
             <Avatar className="h-6 w-6">
-              {player.avatar_url ? (
-                <AvatarImage src={player.avatar_url} alt={player.display_name} />
-              ) : null}
+              <AvatarImage src={player.avatar_url} alt={player.display_name} />
               <AvatarFallback>
                 <User className="h-4 w-4" />
               </AvatarFallback>
@@ -89,13 +87,11 @@ export function LeaderboardRow({
         <TableCell className="text-right">{player.total_points}</TableCell>
         {!isMobile && !isRoundLeaderboard && (
           <>
-            {player.points_per_game !== undefined && (
-              <TableCell className="text-right">
-                {player.points_per_game?.toFixed(1)}
-              </TableCell>
-            )}
             <TableCell className="text-right">
-              {player.total_predictions || player.predictions_count}
+              {player.points_per_game?.toFixed(1) || "0.0"}
+            </TableCell>
+            <TableCell className="text-right">
+              {player.total_predictions || player.predictions_count || 0}
             </TableCell>
           </>
         )}
@@ -116,9 +112,7 @@ export function LeaderboardRow({
             <DialogTitle>
               <div className="flex items-center gap-2">
                 <Avatar>
-                  {player.avatar_url ? (
-                    <AvatarImage src={player.avatar_url} alt={player.display_name} />
-                  ) : null}
+                  <AvatarImage src={player.avatar_url} alt={player.display_name} />
                   <AvatarFallback>
                     <User className="h-4 w-4" />
                   </AvatarFallback>
@@ -129,18 +123,18 @@ export function LeaderboardRow({
           </DialogHeader>
           <div className="space-y-4">
             <div className={cn("grid gap-4", !isRoundLeaderboard ? "grid-cols-2" : "grid-cols-1")}>
-              {!isRoundLeaderboard && player.points_per_game !== undefined && (
+              {!isRoundLeaderboard && (
                 <div>
                   <p className="text-sm text-muted-foreground">Points Per Game</p>
                   <p className="text-lg font-medium">
-                    {player.points_per_game?.toFixed(1)}
+                    {player.points_per_game?.toFixed(1) || "0.0"}
                   </p>
                 </div>
               )}
               <div>
                 <p className="text-sm text-muted-foreground">Total Predictions</p>
                 <p className="text-lg font-medium">
-                  {player.total_predictions || player.predictions_count}
+                  {player.total_predictions || player.predictions_count || 0}
                 </p>
               </div>
             </div>
