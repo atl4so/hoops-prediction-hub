@@ -1,59 +1,45 @@
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Database } from "@/integrations/supabase/types";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 export function useUserPredictions(userId: string | null) {
   const session = useSession();
   const supabase = useSupabaseClient<Database>();
   const queryClient = useQueryClient();
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
   useEffect(() => {
     if (!userId) return;
 
-    let retryCount = 0;
-    let retryTimeout: NodeJS.Timeout;
-    const maxRetries = 3;
-
     const setupChannel = () => {
+      // Clean up existing channel if any
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+      }
+
       console.log('Setting up predictions channel...');
       const channel = supabase
-        .channel('predictions-changes')
+        .channel(`predictions-${userId}`)
         .on(
           'postgres_changes',
           {
             event: '*',
             schema: 'public',
-            table: 'predictions'
+            table: 'predictions',
+            filter: `user_id=eq.${userId}`
           },
           (payload) => {
             console.log('Predictions changed:', payload);
             queryClient.invalidateQueries({ queryKey: ['userPredictions', userId] });
           }
         )
-        .subscribe(async (status) => {
+        .subscribe((status) => {
           console.log('Predictions subscription status:', status);
-          
-          if (status === 'SUBSCRIBED') {
-            console.log('Successfully subscribed to predictions changes');
-            retryCount = 0;
-            if (retryTimeout) clearTimeout(retryTimeout);
-          } else if (status === 'CLOSED' && retryCount < maxRetries) {
-            console.log('Subscription closed, attempting to reconnect...');
-            retryCount++;
-            const delay = Math.min(1000 * Math.pow(2, retryCount), 10000);
-            if (retryTimeout) clearTimeout(retryTimeout);
-            retryTimeout = setTimeout(() => {
-              console.log(`Retrying connection (attempt ${retryCount})...`);
-              supabase.removeChannel(channel).then(() => setupChannel());
-            }, delay);
-          } else if (retryCount >= maxRetries) {
-            console.error('Failed to establish reliable connection after multiple attempts');
-            // Connection error toast removed as requested
-          }
         });
 
+      channelRef.current = channel;
       return channel;
     };
 
@@ -61,8 +47,9 @@ export function useUserPredictions(userId: string | null) {
 
     return () => {
       console.log('Cleaning up predictions channel...');
-      if (retryTimeout) clearTimeout(retryTimeout);
-      supabase.removeChannel(channel);
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
   }, [userId, queryClient, supabase]);
 
@@ -113,8 +100,6 @@ export function useUserPredictions(userId: string | null) {
           throw error;
         }
 
-        console.log('Raw predictions data:', data);
-        
         const transformedData = data.map(prediction => ({
           ...prediction,
           game: {
@@ -127,20 +112,20 @@ export function useUserPredictions(userId: string | null) {
           }
         }));
 
-        console.log('Transformed predictions data:', transformedData);
         return transformedData;
       } catch (error) {
         console.error('Error in predictions query:', error);
         toast.error("Failed to load predictions", {
-          id: 'predictions-error' // Prevent duplicate toasts
+          id: 'predictions-error'
         });
         throw error;
       }
     },
     enabled: !!userId && !!session,
-    staleTime: 1000 * 60, // Cache for 1 minute
-    refetchOnWindowFocus: true,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes instead of 1
+    gcTime: 1000 * 60 * 10, // Keep unused data for 10 minutes
+    refetchOnWindowFocus: false, // Disable automatic refetch on window focus
     refetchOnMount: true,
-    retry: 3
+    retry: 2
   });
 }

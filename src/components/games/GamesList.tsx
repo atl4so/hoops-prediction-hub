@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import { useQueryClient } from "@tanstack/react-query";
-import { CollapsibleRoundSection } from "../dashboard/CollapsibleRoundSection";
 import { subHours } from "date-fns";
 import { useSession } from "@supabase/auth-helpers-react";
 import { GameCard } from "./GameCard";
@@ -17,7 +16,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
   const session = useSession();
   const queryClient = useQueryClient();
 
-  useEffect(() => {
+  const setupSubscriptions = useCallback(() => {
     console.log('Setting up real-time subscriptions for games and results...');
     
     const channel = supabase
@@ -29,9 +28,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
           schema: 'public',
           table: 'game_results'
         },
-        (payload) => {
-          console.log('Game result changed:', payload);
-          // Invalidate both games and predictions queries
+        () => {
           queryClient.invalidateQueries({ queryKey: ['games'] });
           queryClient.invalidateQueries({ queryKey: ['predictions'] });
           queryClient.invalidateQueries({ queryKey: ['profiles'] });
@@ -44,15 +41,12 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
           schema: 'public',
           table: 'predictions'
         },
-        (payload) => {
-          console.log('Prediction changed:', payload);
+        () => {
           queryClient.invalidateQueries({ queryKey: ['predictions'] });
           queryClient.invalidateQueries({ queryKey: ['profiles'] });
         }
       )
-      .subscribe((status) => {
-        console.log('Subscription status:', status);
-      });
+      .subscribe();
 
     return () => {
       console.log('Cleaning up subscriptions...');
@@ -60,7 +54,11 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     };
   }, [queryClient]);
 
-  // Query to get user's existing predictions
+  useEffect(() => {
+    return setupSubscriptions();
+  }, [setupSubscriptions]);
+
+  // Query to get user's existing predictions with increased cache time
   const { data: userPredictions } = useQuery({
     queryKey: ["user-predictions", userId],
     queryFn: async () => {
@@ -78,13 +76,14 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
 
       return data.map(p => p.game_id);
     },
-    enabled: !!userId
+    enabled: !!userId,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    gcTime: 1000 * 60 * 10, // Keep unused data for 10 minutes
   });
 
   const { data: games, isLoading } = useQuery({
     queryKey: ["games"],
     queryFn: async () => {
-      console.log("Fetching games...");
       const { data, error } = await supabase
         .from("games")
         .select(`
@@ -106,8 +105,6 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
         throw error;
       }
       
-      console.log("Raw games data:", data);
-      
       return data.map(game => ({
         ...game,
         game_results: Array.isArray(game.game_results) 
@@ -117,51 +114,36 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
             : []
       }));
     },
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    gcTime: 1000 * 60 * 10, // Keep unused data for 10 minutes
   });
+
+  // Memoize the filtered games to prevent unnecessary recalculations
+  const availableGames = useMemo(() => {
+    if (!games) return [];
+    
+    const now = new Date();
+    return games.filter(game => {
+      const gameDate = new Date(game.game_date);
+      const predictionDeadline = subHours(gameDate, 1);
+      
+      const hasNoFinalResult = !game.game_results?.some(result => result.is_final);
+      const isBeforeDeadline = now < predictionDeadline;
+      const notPredictedByUser = !userPredictions?.includes(game.id);
+      
+      return hasNoFinalResult && isBeforeDeadline && notPredictedByUser;
+    });
+  }, [games, userPredictions]);
 
   if (isLoading) {
     return (
-      <div className="space-y-8">
-        {[1, 2].map((roundIndex) => (
-          <div key={roundIndex} className="space-y-4">
-            <Skeleton className="h-8 w-32" />
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-[200px]" />
-              ))}
-            </div>
-          </div>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {[1, 2, 3].map((i) => (
+          <Skeleton key={i} className="h-[200px]" />
         ))}
       </div>
     );
   }
-
-  // Filter games to show only those that are:
-  // 1. Available for predictions (before deadline)
-  // 2. Not already predicted by the user
-  // 3. Don't have final results
-  const now = new Date();
-  const availableGames = games?.filter(game => {
-    const gameDate = new Date(game.game_date);
-    const predictionDeadline = subHours(gameDate, 1);
-    
-    const hasNoFinalResult = !game.game_results?.some(result => result.is_final);
-    const isBeforeDeadline = now < predictionDeadline;
-    const notPredictedByUser = !userPredictions?.includes(game.id);
-    
-    console.log(`Game ${game.id}:`, {
-      hasNoFinalResult,
-      isBeforeDeadline,
-      notPredictedByUser,
-      gameResults: game.game_results,
-      predictionDeadline: predictionDeadline.toISOString(),
-      now: now.toISOString()
-    });
-    
-    return hasNoFinalResult && isBeforeDeadline && notPredictedByUser;
-  }) || [];
-
-  console.log("Available games:", availableGames);
 
   if (!availableGames?.length) {
     return (
