@@ -22,30 +22,63 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
-      const { data, error } = await supabase
-        .from("user_follows")
-        .select(`
-          following_id,
-          following:profiles!user_follows_following_id_fkey (
+      if (searchQuery) {
+        // Search all users when there's a search query
+        const { data: searchResults, error: searchError } = await supabase
+          .from("profiles")
+          .select(`
             id,
             display_name,
             avatar_url,
             total_points,
             points_per_game
-          )
-        `)
-        .eq("follower_id", user.id);
+          `)
+          .ilike('display_name', `%${searchQuery}%`)
+          .neq('id', user.id); // Exclude current user
 
-      if (error) throw error;
+        if (searchError) throw searchError;
 
-      // Filter users based on search query
-      const filteredData = searchQuery
-        ? data.filter(follow => 
-            follow.following.display_name.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-        : data;
+        // Check which users are being followed
+        const { data: followedData } = await supabase
+          .from("user_follows")
+          .select("following_id")
+          .eq("follower_id", user.id);
 
-      return filteredData;
+        const followedIds = new Set(followedData?.map(f => f.following_id) || []);
+
+        return searchResults.map(profile => ({
+          following_id: profile.id,
+          following: {
+            ...profile,
+            isFollowed: followedIds.has(profile.id)
+          }
+        }));
+      } else {
+        // Only show followed users when there's no search
+        const { data, error } = await supabase
+          .from("user_follows")
+          .select(`
+            following_id,
+            following:profiles!user_follows_following_id_fkey (
+              id,
+              display_name,
+              avatar_url,
+              total_points,
+              points_per_game
+            )
+          `)
+          .eq("follower_id", user.id);
+
+        if (error) throw error;
+
+        return data.map(item => ({
+          ...item,
+          following: {
+            ...item.following,
+            isFollowed: true
+          }
+        }));
+      }
     },
   });
 
@@ -77,9 +110,14 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
         {followedUsers.map((follow) => (
           <FollowedUserCard
             key={follow.following_id}
-            user={follow.following}
+            user={{
+              ...follow.following,
+              total_points: follow.following.total_points || 0,
+              points_per_game: follow.following.points_per_game || 0
+            }}
             onUserClick={setSelectedUser}
             onFollowChange={refetch}
+            isFollowing={follow.following.isFollowed}
           />
         ))}
       </div>

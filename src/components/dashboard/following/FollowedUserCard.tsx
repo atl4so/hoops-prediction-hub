@@ -13,9 +13,10 @@ interface FollowedUserCardProps {
   };
   onUserClick: (user: { id: string; display_name: string }) => void;
   onFollowChange: () => void;
+  isFollowing: boolean;
 }
 
-export function FollowedUserCard({ user, onUserClick, onFollowChange }: FollowedUserCardProps) {
+export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowing }: FollowedUserCardProps) {
   return (
     <Card className="group hover:shadow-md transition-all duration-300">
       <CardContent className="pt-6">
@@ -51,7 +52,7 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange }: Followed
           </div>
           <FollowButton
             userId={user.id}
-            isFollowing={true}
+            isFollowing={isFollowing}
             onFollowChange={onFollowChange}
             className="opacity-0 group-hover:opacity-100 transition-opacity"
           />
