@@ -17,9 +17,9 @@ export function Footer() {
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="inline-flex items-center ml-2 hover:text-primary transition-colors"
+                aria-label="Follow us on X (formerly Twitter)"
               >
-                <X className="h-4 w-4 mr-1" />
-                @beteuroleague
+                <X className="h-4 w-4" />
               </a>
             </div>
             <Link to="/terms" className="text-sm hover:text-primary transition-colors">
