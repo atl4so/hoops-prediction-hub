@@ -14,9 +14,11 @@ export function useGameDeletion() {
         console.log('Attempting to delete game:', gameId);
         
         try {
-          const { data, error } = await supabase.rpc('delete_game_completely', {
-            game_id: gameId
-          });
+          // Delete the game directly using DELETE query instead of RPC
+          const { data, error } = await supabase
+            .from('games')
+            .delete()
+            .eq('id', gameId);
           
           if (error) {
             console.error('Error in deletion process:', error);
