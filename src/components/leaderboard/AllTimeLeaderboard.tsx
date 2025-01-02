@@ -33,7 +33,11 @@ export function AllTimeLeaderboard() {
         <LeaderboardRow
           key={user.id}
           rank={index + 1}
-          user={user}
+          player={user}
+          onFollowChange={() => {
+            // Refetch the leaderboard data when follow status changes
+            // This is handled by the FollowButton component internally
+          }}
         />
       ))}
     </div>
