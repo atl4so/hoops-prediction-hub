@@ -46,7 +46,7 @@ export function GameResultForm({ onSubmit, isPending }: GameResultFormProps) {
     queryFn: async () => {
       console.log("Fetching games without results...");
       
-      const { data: games, error: gamesError } = await supabase
+      const { data: gamesData, error: gamesError } = await supabase
         .from("games")
         .select(`
           id,
@@ -62,12 +62,15 @@ export function GameResultForm({ onSubmit, isPending }: GameResultFormProps) {
         throw gamesError;
       }
 
-      console.log("Fetched games:", games);
+      console.log("Fetched games:", gamesData);
+      
+      // Cast the response to unknown first, then to Game[]
+      const typedGames = gamesData as unknown as Game[];
       
       // Filter out games that already have results
-      return (games || []).filter(game => 
+      return typedGames.filter(game => 
         !game.game_results || game.game_results.length === 0
-      ) as Game[];
+      );
     },
   });
 
