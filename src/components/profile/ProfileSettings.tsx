@@ -107,7 +107,7 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
         body: { user_id: profile.id }
       });
 
-      console.log('Delete function response:', { data, error: functionError });
+      console.log('Delete function response:', { data, functionError });
 
       if (functionError) {
         console.error('Error from delete-user function:', functionError);
