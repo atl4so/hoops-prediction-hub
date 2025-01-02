@@ -13,19 +13,13 @@ export function GameResultsList() {
   const [homeScore, setHomeScore] = useState("");
   const [awayScore, setAwayScore] = useState("");
   
-  const { data: existingResults, isError } = useGameResults();
+  const { data: existingResults, isError, error } = useGameResults();
 
   const updateResult = useMutation({
     mutationFn: async () => {
       if (!editingResult || !homeScore || !awayScore) {
         throw new Error("Please fill in all fields");
       }
-
-      console.log('Updating game result:', {
-        id: editingResult.id,
-        home_score: homeScore,
-        away_score: awayScore
-      });
 
       const { error } = await supabase
         .from('game_results')
@@ -44,14 +38,14 @@ export function GameResultsList() {
     onSuccess: () => {
       toast({ 
         title: "Success", 
-        description: "Game result updated and points recalculated successfully",
+        description: "Game result updated successfully",
       });
       
       setEditingResult(null);
       setHomeScore("");
       setAwayScore("");
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error('Mutation error:', error);
       toast({
         title: "Error",
@@ -70,7 +64,7 @@ export function GameResultsList() {
   if (isError) {
     return (
       <div className="text-center py-4 text-destructive">
-        Error loading game results. Please try again later.
+        Error loading game results: {(error as Error)?.message || 'Unknown error'}
       </div>
     );
   }

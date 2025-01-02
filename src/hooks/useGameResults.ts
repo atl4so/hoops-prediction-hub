@@ -6,8 +6,6 @@ export function useGameResults() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    console.log('Setting up game results subscription...');
-    
     const channel = supabase
       .channel('game-results-changes')
       .on(
@@ -47,12 +45,19 @@ export function useGameResults() {
           is_final,
           created_at,
           updated_at,
-          game:games(
+          game:games (
             id,
             game_date,
-            round:rounds(id, name),
-            home_team:teams!games_home_team_id_fkey(name),
-            away_team:teams!games_away_team_id_fkey(name)
+            round:rounds (
+              id,
+              name
+            ),
+            home_team:teams!games_home_team_id_fkey (
+              name
+            ),
+            away_team:teams!games_away_team_id_fkey (
+              name
+            )
           )
         `)
         .order('created_at', { ascending: false });
@@ -61,8 +66,9 @@ export function useGameResults() {
         console.error('Error fetching game results:', error);
         throw error;
       }
+
       console.log('Fetched game results:', data);
-      return data || [];
+      return data;
     },
   });
 }
