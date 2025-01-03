@@ -163,6 +163,8 @@ export type Database = {
           total_points: number | null
           total_predictions: number | null
           updated_at: string
+          winner_predictions_correct: number | null
+          winner_predictions_total: number | null
         }
         Insert: {
           avatar_url?: string | null
@@ -179,6 +181,8 @@ export type Database = {
           total_points?: number | null
           total_predictions?: number | null
           updated_at?: string
+          winner_predictions_correct?: number | null
+          winner_predictions_total?: number | null
         }
         Update: {
           avatar_url?: string | null
@@ -195,6 +199,8 @@ export type Database = {
           total_points?: number | null
           total_predictions?: number | null
           updated_at?: string
+          winner_predictions_correct?: number | null
+          winner_predictions_total?: number | null
         }
         Relationships: []
       }
