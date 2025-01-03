@@ -7,7 +7,6 @@ import { FollowedUserCard } from "./following/FollowedUserCard";
 import { EmptyFollowingState } from "./following/EmptyFollowingState";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 interface FollowedUsersListProps {
   searchQuery: string;
@@ -18,7 +17,6 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
     id: string;
     display_name: string;
   } | null>(null);
-  const isMobile = useIsMobile();
 
   const { data: followedUsers, isLoading, refetch } = useQuery({
     queryKey: ["followed-users", searchQuery],
@@ -110,14 +108,12 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
 
   return (
     <>
-      {isMobile && (
-        <Alert className="mb-6">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            Tap on a username to view their predictions
-          </AlertDescription>
-        </Alert>
-      )}
+      <Alert className="mb-6">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>
+          Click on a username to view their predictions
+        </AlertDescription>
+      </Alert>
 
       <div className="space-y-4">
         {followedUsers.map((follow) => (

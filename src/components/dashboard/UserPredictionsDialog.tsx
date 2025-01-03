@@ -38,6 +38,14 @@ export function UserPredictionsDialog({
   });
 
   const finishedPredictions = predictions?.filter(p => p.game.game_results?.length > 0) || [];
+  
+  console.log('Current time:', new Date().toISOString());
+  console.log('All predictions:', predictions?.map(p => ({
+    gameDate: p.game.game_date,
+    isInFuture: new Date(p.game.game_date) > new Date(),
+    hasResults: p.game.game_results?.length > 0
+  })));
+
   const now = new Date();
   const futurePredictions = predictions?.filter(p => {
     const gameDate = new Date(p.game.game_date);
@@ -53,7 +61,7 @@ export function UserPredictionsDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl h-[90vh] flex flex-col">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-2">
