@@ -63,7 +63,7 @@ export function LeaderboardTabs() {
           </TabsTrigger>
         </TabsList>
         {/* Only show round selector for by-round tab */}
-        <Tabs.Content value="by-round" asChild>
+        <TabsContent value="by-round" asChild>
           <div className="w-full sm:w-[200px]">
             <RoundSelector
               selectedRound={selectedRound}
@@ -71,7 +71,7 @@ export function LeaderboardTabs() {
               className="w-full"
             />
           </div>
-        </Tabs.Content>
+        </TabsContent>
       </div>
 
       <div className="min-h-[400px] animate-fade-in">
