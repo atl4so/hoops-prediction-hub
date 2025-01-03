@@ -11,92 +11,23 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { LeaderboardRow } from "./LeaderboardRow";
 import { useState } from "react";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
 import { Trophy } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { RoundSelector } from "@/components/ui/round-selector";
 
 export function RoundLeaderboard() {
   const [selectedRound, setSelectedRound] = useState("");
-  const ITEMS_PER_PAGE = 50;
-  const [page, setPage] = useState(1);
-  const startRange = (page - 1) * ITEMS_PER_PAGE;
-  const endRange = startRange + ITEMS_PER_PAGE - 1;
-
-  const { data: users } = useQuery({
-    queryKey: ["users"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, display_name, avatar_url');
-
-      if (error) throw error;
-      return data;
-    },
-  });
 
   const { data: rankings, isLoading } = useQuery({
-    queryKey: ["leaderboard", "round", selectedRound, page],
+    queryKey: ["leaderboard", "round", selectedRound],
     queryFn: async () => {
       if (!selectedRound) return [];
 
-      // Get all predictions for the round to show total games predicted
-      const { data: totalPredictions, error: totalError } = await supabase
-        .from('predictions')
-        .select('user_id, games!inner(round_id)')
-        .eq('games.round_id', selectedRound);
-
-      if (totalError) throw totalError;
-
-      // Get finished predictions to show completed games
-      const { data: finishedPredictions, error: finishedError } = await supabase
-        .from('predictions')
-        .select('user_id, games!inner(is_finished, round_id)')
-        .eq('games.is_finished', true)
-        .eq('games.round_id', selectedRound);
-
-      if (finishedError) throw finishedError;
-
-      // Count predictions per user
-      const totalCounts = totalPredictions?.reduce((acc, { user_id }) => {
-        acc[user_id] = (acc[user_id] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-
-      const finishedCounts = finishedPredictions?.reduce((acc, { user_id }) => {
-        acc[user_id] = (acc[user_id] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-
       const { data, error } = await supabase
-        .rpc('get_round_rankings', { round_id: selectedRound })
-        .range(startRange, endRange);
+        .rpc('get_round_rankings', { round_id: selectedRound });
 
       if (error) throw error;
-
-      // Filter out users with no points and map with user details
-      const usersWithPoints = (data || [])
-        .filter(player => player.total_points > 0)
-        .map(player => {
-          const userDetails = users?.find(u => u.id === player.user_id);
-          return {
-            ...player,
-            display_name: userDetails?.display_name || 'Unknown',
-            avatar_url: userDetails?.avatar_url,
-            total_games: totalCounts?.[player.user_id] || 0,
-            finished_games: finishedCounts?.[player.user_id] || 0
-          };
-        });
-
-      return usersWithPoints;
+      return data || [];
     },
     enabled: !!selectedRound,
   });
