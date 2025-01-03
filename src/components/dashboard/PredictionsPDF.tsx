@@ -5,7 +5,6 @@ const styles = StyleSheet.create({
   page: {
     padding: 30,
     fontFamily: 'Helvetica',
-    position: 'relative',
   },
   watermark: {
     position: 'absolute',
@@ -13,8 +12,8 @@ const styles = StyleSheet.create({
     left: '50%',
     transform: 'translate(-50%, -50%) rotate(-45deg)',
     fontSize: 60,
-    opacity: 0.06,
-    color: '#000',
+    opacity: 0.08,
+    color: '#666',
   },
   header: {
     marginBottom: 20,
@@ -24,13 +23,12 @@ const styles = StyleSheet.create({
   },
   websiteTitle: {
     fontSize: 24,
-    color: '#FF6B00',
+    color: '#333',
     fontFamily: 'Helvetica-Bold',
-    marginBottom: 4,
     textAlign: 'center',
+    marginBottom: 10,
   },
   userInfo: {
-    marginTop: 10,
     marginBottom: 15,
   },
   infoText: {
@@ -43,16 +41,16 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#000',
     fontFamily: 'Helvetica-Bold',
-    marginTop: 8,
     textAlign: 'center',
+    marginTop: 8,
   },
   predictionsContainer: {
-    gap: 12,
+    gap: 8,
   },
   prediction: {
     padding: 8,
     backgroundColor: '#f8f9fa',
-    borderRadius: 4,
+    marginBottom: 8,
   },
   gameInfo: {
     flexDirection: 'row',
