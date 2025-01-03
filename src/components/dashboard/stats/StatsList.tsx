@@ -1,4 +1,4 @@
-import { Trophy, Target, TrendingUp, ArrowUp, ArrowDown, Crown, Medal, CheckCircle } from "lucide-react";
+import { Trophy, Target, TrendingUp, ArrowUp, CheckCircle, Crown, Medal } from "lucide-react";
 import { StatCard } from "./StatCard";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -52,49 +52,56 @@ export function StatsList({
       label: "Total Points",
       value: totalPoints || 0,
       description: "Your cumulative points from all predictions",
+      highlight: true
     },
     {
       icon: Crown,
       label: "All-Time Rank",
       value: formatRank(allTimeRank),
       description: "Your overall ranking among all players",
+      highlight: true
     },
     {
       icon: Medal,
       label: "Latest Round Rank",
       value: formatRank(currentRoundRank?.rank),
       description: `Your position in Round ${currentRoundRank?.roundName} leaderboard`,
+      highlight: true
     },
     {
       icon: CheckCircle,
       label: "Winner Predictions",
       value: `${winnerPercentage}%`,
       description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} games`,
-      highlight: true,
+      highlight: true
     },
     {
       icon: Target,
       label: "Points per Game",
       value: (pointsPerGame || 0).toFixed(1),
-      description: "Average points earned per prediction"
+      description: "Average points earned per prediction",
+      highlight: false
     },
     {
       icon: TrendingUp,
       label: "Total Predictions",
       value: totalPredictions || 0,
-      description: "Number of predictions you've made"
+      description: "Number of predictions you've made",
+      highlight: false
     },
     {
       icon: ArrowUp,
       label: "Highest Game Points",
       value: highestGamePoints || 0,
-      description: "Best performance in a single game"
+      description: "Best performance in a single game",
+      highlight: false
     },
     {
       icon: ArrowUp,
       label: "Highest Round Points",
       value: highestRoundPoints || 0,
-      description: "Best total points in a single round"
+      description: "Best total points in a single round",
+      highlight: false
     }
   ];
 
@@ -116,6 +123,7 @@ export function StatsList({
             value={stat.value}
             description={stat.description}
             highlight={stat.highlight}
+            delay={index}
           />
         ))}
       </div>
