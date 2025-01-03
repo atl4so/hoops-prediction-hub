@@ -37,8 +37,8 @@ export function UserPredictionsDialog({
     },
   });
 
-  const finishedPredictions = predictions?.filter(p => p.game.game_results?.length > 0) || [];
   const now = new Date();
+  const finishedPredictions = predictions?.filter(p => p.game.game_results?.length > 0) || [];
   const futurePredictions = predictions?.filter(p => {
     const gameDate = new Date(p.game.game_date);
     return !p.game.game_results?.length && gameDate > now;
