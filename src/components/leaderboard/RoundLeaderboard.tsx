@@ -26,7 +26,19 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
         });
 
       if (error) throw error;
-      return data;
+
+      // Fetch avatar URLs for all users
+      const userIds = data.map((player: any) => player.user_id);
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, avatar_url')
+        .in('id', userIds);
+
+      // Merge avatar URLs with rankings data
+      return data.map((player: any) => ({
+        ...player,
+        avatar_url: profiles?.find((p: any) => p.id === player.user_id)?.avatar_url
+      }));
     },
     enabled: !!selectedRound
   });
@@ -71,7 +83,8 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
                   user_id: player.user_id,
                   display_name: player.display_name,
                   total_points: player.total_points,
-                  total_predictions: player.predictions_count
+                  total_predictions: player.predictions_count,
+                  avatar_url: player.avatar_url
                 }}
                 rank={index + 1}
                 index={index}
