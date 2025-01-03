@@ -7,11 +7,9 @@ import { useCurrentRoundRank } from "@/components/dashboard/useCurrentRoundRank"
 import { useUserPredictions } from "@/components/dashboard/useUserPredictions";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Separator } from "@/components/ui/separator";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardStats } from "@/components/dashboard/sections/DashboardStats";
 import { DashboardPredictions } from "@/components/dashboard/sections/DashboardPredictions";
-import { DashboardGames } from "@/components/dashboard/sections/DashboardGames";
 
 export default function Dashboard() {
   const session = useSession();
@@ -149,13 +147,6 @@ export default function Dashboard() {
       <DashboardPredictions
         predictionsByRound={predictionsByRound}
         userName={userProfileData?.display_name || "User"}
-      />
-
-      <Separator className="my-8" />
-
-      <DashboardGames
-        isAuthenticated={!!session}
-        userId={userId || undefined}
       />
     </div>
   );
