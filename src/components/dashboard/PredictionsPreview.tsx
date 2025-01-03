@@ -37,90 +37,79 @@ export const PredictionsPreview = ({
   const totalPoints = predictions.reduce((sum, p) => sum + (p.prediction.points_earned || 0), 0);
 
   return (
-    <div className="font-sans bg-gradient-to-br from-white to-gray-50 p-6 relative w-full max-w-[600px] mx-auto">
+    <div className="font-sans bg-gradient-to-br from-[#F6F6F7] to-[#F1F1F1] p-4 relative w-full max-w-[400px] mx-auto">
       {/* Watermark */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] text-black rotate-[-45deg] text-[80px] font-bold pointer-events-none select-none">
+      <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] text-[#8E9196] rotate-[-45deg] text-[60px] font-bold pointer-events-none select-none">
         euroleague.bet
       </div>
 
       {/* Header */}
-      <div className="text-center mb-6 relative z-10">
-        <div className="inline-flex items-center justify-center gap-2 mb-4">
-          <Award className="h-8 w-8 text-orange-500" strokeWidth={1.5} />
-          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-orange-500 via-orange-600 to-orange-500 text-transparent bg-clip-text">
+      <div className="text-center mb-4 relative z-10">
+        <div className="inline-flex items-center justify-center gap-2 mb-2">
+          <h1 className="text-xl font-bold bg-gradient-to-r from-orange-500 via-orange-600 to-orange-500 text-transparent bg-clip-text">
             euroleague.bet
           </h1>
-          <Award className="h-8 w-8 text-orange-500" strokeWidth={1.5} />
         </div>
         
-        <div className="flex items-center justify-center gap-2 mb-3">
-          <Trophy className="h-6 w-6 text-orange-500" strokeWidth={1.5} />
-          <p className="text-xl font-semibold">
-            Total Points: <span className="text-orange-500">{totalPoints}</span>
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <Trophy className="h-4 w-4 text-orange-500" strokeWidth={1.5} />
+          <p className="text-lg font-semibold text-[#8E9196]">
+            {totalPoints} pts
           </p>
         </div>
         
-        <div className="text-sm text-gray-600 space-y-1 font-medium">
+        <div className="text-sm text-[#aaadb0] space-y-0.5">
           <p className="flex items-center justify-center gap-1">
-            <Star className="h-4 w-4" strokeWidth={1.5} />
+            <Star className="h-3 w-3" strokeWidth={1.5} />
             {userName}
           </p>
-          <p>Round: {roundName}</p>
+          <p>{roundName}</p>
           <p className="text-xs">{format(new Date(), 'PP')}</p>
         </div>
       </div>
 
       {/* Predictions */}
-      <div className="space-y-4 relative z-10">
+      <div className="space-y-3 relative z-10">
         {predictions.map((pred, index) => (
           <div
             key={index}
-            className="border border-gray-100 rounded-xl p-4 bg-white shadow-sm hover:shadow-md transition-shadow"
+            className="border border-[#F1F0FB] rounded-lg p-3 bg-[#F1F1F1] shadow-sm"
           >
-            <div className="flex justify-between items-center mb-3">
-              <div className="flex items-center gap-2">
-                <Medal className="h-4 w-4 text-orange-500" strokeWidth={1.5} />
-                <span className="font-medium text-sm">
-                  {pred.game.home_team.name} vs {pred.game.away_team.name}
-                </span>
-              </div>
-              <span className="text-xs text-gray-500">
+            <div className="flex justify-between items-center mb-2">
+              <span className="font-medium text-sm text-[#8E9196]">
+                {pred.game.home_team.name} vs {pred.game.away_team.name}
+              </span>
+              <span className="text-xs text-[#aaadb0]">
                 {format(new Date(pred.game.game_date), 'PP')}
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               {pred.game.game_results?.[0] && (
-                <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-3 border border-orange-200">
+                <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-md p-2 border border-orange-200">
                   <p className="text-xs font-medium text-orange-700 mb-1 flex items-center gap-1">
-                    <CheckCircle className="h-3 w-3" strokeWidth={1.5} />
-                    Final Result
+                    ✅ Final
                   </p>
-                  <div className="flex items-center justify-between">
-                    <p className="text-lg font-bold text-gray-900">
-                      {pred.game.game_results[0].home_score} - {pred.game.game_results[0].away_score}
-                    </p>
-                  </div>
+                  <p className="text-base font-bold text-[#8E9196]">
+                    {pred.game.game_results[0].home_score} - {pred.game.game_results[0].away_score}
+                  </p>
                 </div>
               )}
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-3 border border-blue-200">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-md p-2 border border-blue-200">
                 <p className="text-xs font-medium text-blue-700 mb-1 flex items-center gap-1">
-                  <Star className="h-3 w-3" strokeWidth={1.5} />
-                  Your Prediction
+                  🏀 Prediction
                 </p>
-                <div className="flex items-center justify-between">
-                  <p className="text-lg font-bold text-gray-900">
-                    {pred.prediction.prediction_home_score} - {pred.prediction.prediction_away_score}
-                  </p>
-                </div>
+                <p className="text-base font-bold text-[#8E9196]">
+                  {pred.prediction.prediction_home_score} - {pred.prediction.prediction_away_score}
+                </p>
               </div>
             </div>
 
             {pred.prediction.points_earned !== undefined && (
-              <div className="flex items-center justify-end gap-1 mt-2">
-                <Trophy className="h-4 w-4 text-orange-500" strokeWidth={1.5} />
+              <div className="flex items-center justify-end gap-1 mt-1.5">
+                <Trophy className="h-3 w-3 text-orange-500" strokeWidth={1.5} />
                 <span className="text-sm font-medium text-orange-600">
-                  Points earned: {pred.prediction.points_earned}
+                  {pred.prediction.points_earned} pts
                 </span>
               </div>
             )}
