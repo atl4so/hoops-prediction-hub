@@ -47,9 +47,8 @@ export const DownloadPredictionsButton = ({
 
       // Render our preview component
       const root = document.createElement("div");
-      root.style.width = "800px"; // Fixed width for consistent rendering
+      root.style.width = "600px"; // Fixed width for consistent rendering
       root.style.backgroundColor = "white";
-      root.style.padding = "20px";
       tempDiv.appendChild(root);
 
       // Create preview content
@@ -71,12 +70,15 @@ export const DownloadPredictionsButton = ({
       const canvas = await html2canvas(root, {
         scale: 2, // Higher quality
         backgroundColor: "white",
+        logging: false,
+        useCORS: true,
+        allowTaint: true,
       });
 
       // Convert to PNG and download
-      const image = canvas.toDataURL("image/png");
+      const image = canvas.toDataURL("image/png", 1.0);
       const link = document.createElement("a");
-      link.download = `predictions-round-${roundName}.png`;
+      link.download = `predictions-${roundName.toLowerCase()}.png`;
       link.href = image;
       link.click();
 
