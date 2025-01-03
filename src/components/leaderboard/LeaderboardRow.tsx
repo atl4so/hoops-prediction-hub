@@ -117,15 +117,15 @@ export function LeaderboardRow({
         {!isRoundLeaderboard && (
           <TableCell className="text-right">
             <span className="font-medium">{player.points_per_game?.toFixed(1)}</span>
-            <span className="text-muted-foreground ml-1">avg</span>
+            <span className="text-muted-foreground ml-1">PPG</span>
           </TableCell>
         )}
 
         <TableCell className="text-right">
           <div className="flex flex-col items-end">
-            <span className="font-medium">{player.total_games}</span>
+            <span className="font-medium">{player.finished_games} / {player.total_predictions || player.total_games}</span>
             <span className="text-xs text-muted-foreground">
-              {player.finished_games} finished
+              predictions
             </span>
           </div>
         </TableCell>
@@ -160,6 +160,10 @@ export function LeaderboardRow({
                   <p className="text-2xl font-bold">{player.points_per_game?.toFixed(1)}</p>
                 </div>
               )}
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">Predictions</p>
+                <p className="text-2xl font-bold">{player.finished_games} / {player.total_predictions || player.total_games}</p>
+              </div>
             </div>
           </div>
         </DialogContent>
