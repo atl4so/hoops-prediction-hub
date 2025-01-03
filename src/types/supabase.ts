@@ -56,7 +56,7 @@ export interface StatsListProps {
   lowestRoundPoints?: number | null;
   allTimeRank?: number | null;
   currentRoundRank?: RoundRank;
-  userId: string;
+  userId: string | null;
 }
 
 export interface UserPrediction {
@@ -67,4 +67,12 @@ export interface UserPrediction {
     points_earned?: number;
   };
   game: Game;
+}
+
+export interface GameWithPrediction extends Game {
+  prediction?: {
+    prediction_home_score: number;
+    prediction_away_score: number;
+    points_earned?: number;
+  };
 }

@@ -51,12 +51,19 @@ export function usePredictions(followedIds: string[]) {
 
       return data.map((item): Prediction => ({
         id: item.id,
-        user: item.user,
+        user: {
+          id: item.user.id,
+          display_name: item.user.display_name,
+          avatar_url: item.user.avatar_url
+        },
         game: {
-          ...item.game,
-          game_results: Array.isArray(item.game.game_results) 
-            ? item.game.game_results 
-            : item.game.game_results 
+          id: item.game.id,
+          game_date: item.game.game_date,
+          home_team: item.game.home_team,
+          away_team: item.game.away_team,
+          game_results: Array.isArray(item.game.game_results)
+            ? item.game.game_results
+            : item.game.game_results
               ? [item.game.game_results]
               : []
         },
