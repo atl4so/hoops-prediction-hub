@@ -33,6 +33,10 @@ export function usePredictions(followedIds: string[]) {
               name,
               logo_url
             ),
+            round:rounds (
+              id,
+              name
+            ),
             game_results (
               home_score,
               away_score,
@@ -43,7 +47,7 @@ export function usePredictions(followedIds: string[]) {
         .in("user_id", followedIds)
         .order("created_at", { ascending: false })
         .limit(50);
-
+      
       if (error) {
         console.error("Error fetching predictions:", error);
         throw error;
@@ -59,6 +63,7 @@ export function usePredictions(followedIds: string[]) {
         game: {
           id: item.game.id,
           game_date: item.game.game_date,
+          round: item.game.round,
           home_team: item.game.home_team,
           away_team: item.game.away_team,
           game_results: Array.isArray(item.game.game_results)
