@@ -45,11 +45,11 @@ export function useGamesData() {
           id: game.round[0].id,
           name: game.round[0].name
         },
-        game_results: game.game_results?.map(result => ({
+        game_results: game.game_results ? game.game_results.map(result => ({
           home_score: result.home_score,
           away_score: result.away_score,
           is_final: result.is_final
-        }))
+        })) : []
       }));
 
       // Split into finished and unfinished games
