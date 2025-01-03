@@ -39,50 +39,45 @@ export const DownloadPredictionsButton = ({
 }: DownloadPredictionsButtonProps) => {
   const handleDownload = async () => {
     try {
-      // Create a temporary div to render our preview
       const tempDiv = document.createElement("div");
       tempDiv.style.position = "absolute";
       tempDiv.style.left = "-9999px";
       document.body.appendChild(tempDiv);
 
-      // Render our preview component
       const root = document.createElement("div");
-      root.style.width = "600px"; // Fixed width for consistent rendering
-      root.style.backgroundColor = "white";
+      root.style.width = "600px";
+      root.style.backgroundColor = "#f8f9fa";
       tempDiv.appendChild(root);
 
-      // Create preview content
-      const previewContent = <PredictionsPreview
-        userName={userName}
-        roundName={roundName}
-        predictions={predictions}
-      />;
+      const previewContent = (
+        <PredictionsPreview
+          userName={userName}
+          roundName={roundName}
+          predictions={predictions}
+        />
+      );
 
-      // Render the preview
       const { createRoot } = await import('react-dom/client');
       const reactRoot = createRoot(root);
       await new Promise<void>(resolve => {
         reactRoot.render(previewContent);
-        setTimeout(resolve, 100); // Give time for rendering
+        setTimeout(resolve, 100);
       });
 
-      // Capture the preview as an image
       const canvas = await html2canvas(root, {
-        scale: 2, // Higher quality
-        backgroundColor: "white",
+        scale: 2,
+        backgroundColor: "#f8f9fa",
         logging: false,
         useCORS: true,
         allowTaint: true,
       });
 
-      // Convert to PNG and download
       const image = canvas.toDataURL("image/png", 1.0);
       const link = document.createElement("a");
       link.download = `predictions-${roundName.toLowerCase()}.png`;
       link.href = image;
       link.click();
 
-      // Cleanup
       document.body.removeChild(tempDiv);
       toast.success("Predictions image downloaded successfully!");
     } catch (error) {
