@@ -57,6 +57,7 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
           game: {
             id: item.game.id,
             game_date: item.game.game_date,
+            parsedDate: new Date(item.game.game_date),
             round: {
               id: selectedRound,
               name: item.game.round_id.toString()

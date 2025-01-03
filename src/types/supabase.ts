@@ -18,6 +18,7 @@ export interface GameResult {
 export interface Game {
   id: string;
   game_date: string;
+  parsedDate: Date;
   round: Round;
   home_team: Team;
   away_team: Team;
@@ -28,6 +29,13 @@ export interface UserProfile {
   id: string;
   display_name: string;
   avatar_url?: string;
+  total_points?: number;
+  points_per_game?: number;
+  total_predictions?: number;
+  highest_game_points?: number;
+  lowest_game_points?: number;
+  highest_round_points?: number;
+  lowest_round_points?: number;
 }
 
 export interface Prediction {
@@ -47,4 +55,17 @@ export interface UserPrediction {
     points_earned?: number;
   };
   game: Game;
+}
+
+export interface StatsListProps {
+  totalPoints: number;
+  pointsPerGame: number;
+  totalPredictions: number;
+  highestGamePoints?: number;
+  lowestGamePoints?: number;
+  highestRoundPoints?: number;
+  lowestRoundPoints?: number;
+  allTimeRank?: number;
+  currentRoundRank?: number;
+  userId?: string | null;
 }

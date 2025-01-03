@@ -63,6 +63,7 @@ export function usePredictions(followedIds: string[]) {
         game: {
           id: item.game.id,
           game_date: item.game.game_date,
+          parsedDate: new Date(item.game.game_date),
           round: {
             id: item.game.round.id,
             name: item.game.round.name
