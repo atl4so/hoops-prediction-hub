@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -28,6 +28,31 @@ export function RoundPerformance({ userId }: RoundPerformanceProps) {
       return data;
     },
   });
+
+  // Find latest round with finished games
+  useEffect(() => {
+    async function findLatestRoundWithFinishedGames() {
+      if (!rounds?.length) return;
+
+      for (const round of rounds) {
+        const { data: finishedGames } = await supabase
+          .from('games')
+          .select('id, game_results!inner(is_final)')
+          .eq('round_id', round.id)
+          .eq('game_results.is_final', true)
+          .limit(1);
+
+        if (finishedGames?.length) {
+          setSelectedRound(round.id);
+          break;
+        }
+      }
+    }
+
+    if (!selectedRound && rounds?.length) {
+      findLatestRoundWithFinishedGames();
+    }
+  }, [rounds, selectedRound]);
 
   const { data: roundStats, isLoading: isLoadingRoundStats } = useQuery({
     queryKey: ["roundStats", selectedRound, userId],
