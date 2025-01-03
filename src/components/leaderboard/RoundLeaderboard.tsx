@@ -8,10 +8,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
 import { LeaderboardRow } from "./LeaderboardRow";
-import { Trophy, Info } from "lucide-react";
-import { motion } from "framer-motion";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/ui/card";
 
 interface RoundLeaderboardProps {
   selectedRound: string;
@@ -19,118 +18,76 @@ interface RoundLeaderboardProps {
 
 export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
   const { data: rankings, isLoading } = useQuery({
-    queryKey: ["leaderboard", "round", selectedRound],
+    queryKey: ["roundRankings", selectedRound],
     queryFn: async () => {
-      if (!selectedRound) return [];
-
       const { data, error } = await supabase
-        .from('predictions')
-        .select(`
-          user_id,
-          points_earned,
-          user:profiles!predictions_user_id_fkey (
-            id,
-            display_name,
-            avatar_url
-          ),
-          game:games!inner (
-            round_id,
-            game_results!inner (
-              is_final
-            )
-          )
-        `)
-        .eq('game.round_id', selectedRound)
-        .eq('game.game_results.is_final', true)
-        .not('points_earned', 'is', null);
+        .rpc('get_round_rankings', {
+          round_id: selectedRound
+        });
 
       if (error) throw error;
-
-      // Group and aggregate data by user
-      const userStats = (data || []).reduce((acc, pred) => {
-        const userId = pred.user_id;
-        if (!acc[userId]) {
-          acc[userId] = {
-            user_id: userId,
-            display_name: pred.user.display_name,
-            avatar_url: pred.user.avatar_url,
-            total_points: 0,
-            total_predictions: 0
-          };
-        }
-        acc[userId].total_predictions += 1;
-        acc[userId].total_points += pred.points_earned || 0;
-        return acc;
-      }, {} as Record<string, any>);
-
-      return Object.values(userStats)
-        .filter(user => user.total_points > 0)
-        .sort((a, b) => b.total_points - a.total_points);
+      return data;
     },
-    enabled: !!selectedRound,
+    enabled: !!selectedRound
   });
 
   if (!selectedRound) {
     return (
-      <div className="flex flex-col items-center justify-center space-y-4 py-8 sm:py-12">
-        <Trophy className="w-8 h-8 sm:w-12 sm:h-12 text-primary/20" />
-        <p className="text-sm sm:text-base text-muted-foreground">Select a round to view rankings</p>
-      </div>
+      <Card className="w-full p-8 text-center">
+        <p className="text-muted-foreground">Select a round to view rankings</p>
+      </Card>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="space-y-2">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-10 sm:h-12 w-full" />
-        ))}
-      </div>
+      <Card className="w-full p-4 md:p-6">
+        <div className="space-y-3">
+          {[...Array(5)].map((_, i) => (
+            <Skeleton key={i} className="w-full h-16" />
+          ))}
+        </div>
+      </Card>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Info className="h-4 w-4" />
-        <p>Tap on a player to view detailed statistics</p>
-      </div>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="rounded-md border bg-card"
-      >
-        <div className="w-full overflow-x-auto -mb-[1px]">
-          <Table>
-            <TableHeader>
+    <Card className="w-full overflow-hidden border-2 bg-card/50 backdrop-blur-sm">
+      <div className="w-full overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent border-b-2">
+              <TableHead className="w-20 font-bold text-base">Rank</TableHead>
+              <TableHead className="font-bold text-base">Player</TableHead>
+              <TableHead className="text-right font-bold text-base">Points</TableHead>
+              <TableHead className="text-right font-bold text-base">Games</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rankings?.map((player: any, index: number) => (
+              <LeaderboardRow
+                key={player.user_id}
+                player={{
+                  user_id: player.user_id,
+                  display_name: player.display_name,
+                  total_points: player.total_points,
+                  total_predictions: player.predictions_count
+                }}
+                rank={index + 1}
+                index={index}
+                isRoundLeaderboard={true}
+              />
+            ))}
+            {!rankings?.length && (
               <TableRow>
-                <TableHead className="w-[70px] py-2">Rank</TableHead>
-                <TableHead className="py-2">Player</TableHead>
-                <TableHead className="text-right py-2">Points</TableHead>
-                <TableHead className="text-right py-2">Games</TableHead>
+                <TableCell colSpan={4} className="h-24 text-center">
+                  No predictions found for this round
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rankings?.map((player, index) => (
-                <LeaderboardRow
-                  key={player.user_id}
-                  player={player}
-                  rank={index + 1}
-                  index={index}
-                  isRoundLeaderboard={true}
-                />
-              ))}
-              {!rankings?.length && (
-                <TableRow>
-                  <TableCell colSpan={4} className="h-20 sm:h-24 text-center text-sm sm:text-base">
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </motion.div>
-    </div>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </Card>
   );
 }

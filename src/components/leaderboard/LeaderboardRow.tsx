@@ -35,13 +35,13 @@ export function LeaderboardRow({
   const getRankIcon = (rank: number) => {
     switch (rank) {
       case 1:
-        return <Trophy className="h-4 w-4 text-yellow-500" />;
+        return <Trophy className="h-5 w-5 text-yellow-500" />;
       case 2:
-        return <Medal className="h-4 w-4 text-gray-400" />;
+        return <Medal className="h-5 w-5 text-gray-400" />;
       case 3:
-        return <Medal className="h-4 w-4 text-amber-600" />;
+        return <Medal className="h-5 w-5 text-amber-600" />;
       default:
-        return rank <= 10 ? <Star className="h-4 w-4 text-primary/40" /> : null;
+        return rank <= 10 ? <Star className="h-5 w-5 text-primary/40" /> : null;
     }
   };
 
@@ -74,15 +74,18 @@ export function LeaderboardRow({
         animate="visible"
         className={cn(
           "group cursor-pointer transition-colors hover:bg-accent/50",
-          rank <= 3 ? "bg-accent/20" : ""
+          rank <= 3 ? "bg-accent/20" : "",
+          rank === 1 ? "bg-yellow-500/10" : "",
+          rank === 2 ? "bg-gray-400/10" : "",
+          rank === 3 ? "bg-amber-600/10" : ""
         )}
         onClick={handleUserClick}
       >
-        <TableCell className="font-medium py-2 px-2">
-          <div className="flex items-center gap-1">
+        <TableCell className="font-medium py-4 px-4">
+          <div className="flex items-center gap-2">
             {getRankIcon(rank)}
             <span className={cn(
-              "font-semibold text-sm",
+              "font-bold text-base",
               rank === 1 ? "text-yellow-500" :
               rank === 2 ? "text-gray-400" :
               rank === 3 ? "text-amber-600" :
@@ -93,30 +96,30 @@ export function LeaderboardRow({
           </div>
         </TableCell>
 
-        <TableCell className="py-2">
-          <div className="flex items-center gap-2">
-            <Avatar className="h-6 w-6">
+        <TableCell className="py-4">
+          <div className="flex items-center gap-3">
+            <Avatar className="h-8 w-8">
               <AvatarImage src={player.avatar_url} />
               <AvatarFallback>
-                <User className="h-3 w-3" />
+                <User className="h-4 w-4" />
               </AvatarFallback>
             </Avatar>
-            <span className="font-medium text-sm">{player.display_name}</span>
+            <span className="font-semibold text-base">{player.display_name}</span>
           </div>
         </TableCell>
 
-        <TableCell className="text-right py-2 px-2">
-          <span className="font-semibold text-sm">{player.total_points}</span>
+        <TableCell className="text-right py-4 px-4">
+          <span className="font-bold text-base">{player.total_points}</span>
         </TableCell>
 
         {!isRoundLeaderboard && (
-          <TableCell className="text-right py-2 px-2 hidden sm:table-cell">
-            <span className="font-medium text-sm">{player.points_per_game?.toFixed(1)}</span>
+          <TableCell className="text-right py-4 px-4 hidden sm:table-cell">
+            <span className="font-semibold text-base">{player.points_per_game?.toFixed(1)}</span>
           </TableCell>
         )}
 
-        <TableCell className="text-right py-2 px-2">
-          <span className="font-medium text-sm">{player.total_predictions}</span>
+        <TableCell className="text-right py-4 px-4">
+          <span className="font-semibold text-base">{player.total_predictions}</span>
         </TableCell>
       </motion.tr>
 
@@ -125,33 +128,33 @@ export function LeaderboardRow({
           <DialogHeader>
             <DialogTitle>Player Details</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="flex items-center gap-4">
-              <Avatar className="h-12 w-12">
+              <Avatar className="h-16 w-16">
                 <AvatarImage src={player.avatar_url} />
                 <AvatarFallback>
-                  <User className="h-6 w-6" />
+                  <User className="h-8 w-8" />
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="text-base font-semibold">{player.display_name}</h3>
+                <h3 className="text-lg font-bold">{player.display_name}</h3>
                 <p className="text-sm text-muted-foreground">Rank #{rank}</p>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">Total Points</p>
-                <p className="text-xl font-bold">{player.total_points}</p>
+                <p className="text-2xl font-bold">{player.total_points}</p>
               </div>
               {!isRoundLeaderboard && (
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <p className="text-sm text-muted-foreground">PPG</p>
-                  <p className="text-xl font-bold">{player.points_per_game?.toFixed(1)}</p>
+                  <p className="text-2xl font-bold">{player.points_per_game?.toFixed(1)}</p>
                 </div>
               )}
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">Predictions</p>
-                <p className="text-xl font-bold">{player.total_predictions}</p>
+                <p className="text-2xl font-bold">{player.total_predictions}</p>
               </div>
             </div>
           </div>
