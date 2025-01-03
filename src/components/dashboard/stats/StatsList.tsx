@@ -1,4 +1,4 @@
-import { Trophy, Target, TrendingUp, ArrowUp, ArrowDown, Crown, Medal } from "lucide-react";
+import { Trophy, Target, TrendingUp, ArrowUp, ArrowDown, Crown, Medal, CheckCircle } from "lucide-react";
 import { StatCard } from "./StatCard";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,8 @@ interface StatsListProps {
   lowestRoundPoints?: number | null;
   allTimeRank?: number | null;
   currentRoundRank?: { rank: number | null; isCurrent: boolean; roundName: string };
+  winnerPredictionsCorrect?: number;
+  winnerPredictionsTotal?: number;
 }
 
 const formatRank = (rank: number | null | undefined) => {
@@ -34,9 +36,15 @@ export function StatsList({
   lowestRoundPoints,
   allTimeRank,
   currentRoundRank,
+  winnerPredictionsCorrect = 0,
+  winnerPredictionsTotal = 0,
 }: StatsListProps) {
   const [showAllCards, setShowAllCards] = useState(false);
   const isMobile = useIsMobile();
+
+  const winnerPercentage = winnerPredictionsTotal > 0
+    ? Math.round((winnerPredictionsCorrect / winnerPredictionsTotal) * 100)
+    : 0;
 
   const allStats = [
     {
@@ -56,6 +64,13 @@ export function StatsList({
       label: "Latest Round Rank",
       value: formatRank(currentRoundRank?.rank),
       description: `Your position in Round ${currentRoundRank?.roundName} leaderboard`,
+    },
+    {
+      icon: CheckCircle,
+      label: "Winner Predictions",
+      value: `${winnerPercentage}%`,
+      description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} games`,
+      highlight: true,
     },
     {
       icon: Target,
@@ -80,17 +95,11 @@ export function StatsList({
       label: "Highest Round Points",
       value: highestRoundPoints || 0,
       description: "Best total points in a single round"
-    },
-    {
-      icon: ArrowDown,
-      label: "Lowest Round Points",
-      value: lowestRoundPoints || 0,
-      description: "Lowest total points in a round"
     }
   ];
 
   const visibleStats = isMobile 
-    ? (showAllCards ? allStats : allStats.slice(0, 2))
+    ? (showAllCards ? allStats : allStats.slice(0, 3))
     : allStats;
 
   return (
@@ -106,10 +115,11 @@ export function StatsList({
             label={stat.label}
             value={stat.value}
             description={stat.description}
+            highlight={stat.highlight}
           />
         ))}
       </div>
-      {isMobile && allStats.length > 2 && (
+      {isMobile && allStats.length > 3 && (
         <Button
           variant="outline"
           className="w-full mt-4"

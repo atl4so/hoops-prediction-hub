@@ -1,4 +1,4 @@
-import { Trophy, Medal, Award, User, Star } from "lucide-react";
+import { Trophy, Medal, Award, User, Star, CheckCircle } from "lucide-react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
@@ -15,6 +15,9 @@ interface LeaderboardRowProps {
     points_per_game?: number;
     total_predictions: number;
     avatar_url?: string;
+    winner_predictions_correct?: number;
+    winner_predictions_total?: number;
+    winner_percentage?: number;
   };
   rank: number;
   isRoundLeaderboard?: boolean;
@@ -109,11 +112,13 @@ export function LeaderboardRow({
           <span className="font-semibold text-sm">{player.total_points}</span>
         </TableCell>
 
-        {!isRoundLeaderboard && (
-          <TableCell className="text-right py-2 px-2 hidden sm:table-cell">
-            <span className="font-medium text-sm">{player.points_per_game?.toFixed(1)}</span>
-          </TableCell>
-        )}
+        <TableCell className="text-right py-2 px-2 hidden sm:table-cell">
+          <span className="font-medium text-sm">{player.points_per_game?.toFixed(1)}</span>
+        </TableCell>
+
+        <TableCell className="text-right py-2 px-2 hidden sm:table-cell">
+          <span className="font-medium text-sm">{player.winner_percentage}%</span>
+        </TableCell>
 
         <TableCell className="text-right py-2 px-2">
           <span className="font-medium text-sm">{player.total_predictions}</span>
@@ -143,14 +148,16 @@ export function LeaderboardRow({
                 <p className="text-sm text-muted-foreground">Total Points</p>
                 <p className="text-xl font-bold">{player.total_points}</p>
               </div>
-              {!isRoundLeaderboard && (
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">PPG</p>
-                  <p className="text-xl font-bold">{player.points_per_game?.toFixed(1)}</p>
-                </div>
-              )}
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Predictions</p>
+                <p className="text-sm text-muted-foreground">PPG</p>
+                <p className="text-xl font-bold">{player.points_per_game?.toFixed(1)}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">Winner Predictions</p>
+                <p className="text-xl font-bold">{player.winner_percentage}%</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">Games Played</p>
                 <p className="text-xl font-bold">{player.total_predictions}</p>
               </div>
             </div>

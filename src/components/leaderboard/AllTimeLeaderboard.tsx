@@ -28,6 +28,8 @@ export function AllTimeLeaderboard() {
           total_points, 
           points_per_game,
           total_predictions,
+          winner_predictions_correct,
+          winner_predictions_total,
           predictions:predictions(
             points_earned,
             game:games(
@@ -76,6 +78,7 @@ export function AllTimeLeaderboard() {
                 <TableHead className="py-2">Player</TableHead>
                 <TableHead className="text-right py-2">Points</TableHead>
                 <TableHead className="text-right py-2 hidden sm:table-cell">PPG</TableHead>
+                <TableHead className="text-right py-2 hidden sm:table-cell">Winners</TableHead>
                 <TableHead className="text-right py-2">Games</TableHead>
               </TableRow>
             </TableHeader>
@@ -83,14 +86,19 @@ export function AllTimeLeaderboard() {
               {rankings?.map((player, index) => (
                 <LeaderboardRow
                   key={player.id}
-                  player={player}
+                  player={{
+                    ...player,
+                    winner_percentage: player.winner_predictions_total > 0
+                      ? Math.round((player.winner_predictions_correct / player.winner_predictions_total) * 100)
+                      : 0
+                  }}
                   rank={index + 1}
                   index={index}
                 />
               ))}
               {!rankings?.length && (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-20 sm:h-24 text-center text-sm sm:text-base">
+                  <TableCell colSpan={6} className="h-20 sm:h-24 text-center text-sm sm:text-base">
                     No results.
                   </TableCell>
                 </TableRow>
