@@ -5,11 +5,8 @@ const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    persistSession: true,
-    storageKey: 'euroleague-auth',
-    storage: window.localStorage,
     autoRefreshToken: true,
-    detectSessionInUrl: true,
-    flowType: 'pkce'
+    persistSession: true,
+    detectSessionInUrl: true
   }
 });

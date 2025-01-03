@@ -27,45 +27,30 @@ export function useGamesData() {
       }
       
       // Process games and parse dates
-      const processedGames = data.map((game): Game => {
-        // Ensure we have the required team data
-        if (!game.home_team || !game.away_team || !game.round) {
-          throw new Error(`Missing required data for game ${game.id}`);
-        }
-
-        return {
-          id: game.id,
-          game_date: game.game_date,
-          parsedDate: new Date(game.game_date),
-          home_team: {
-            id: game.home_team.id,
-            name: game.home_team.name,
-            logo_url: game.home_team.logo_url
-          },
-          away_team: {
-            id: game.away_team.id,
-            name: game.away_team.name,
-            logo_url: game.away_team.logo_url
-          },
-          round: {
-            id: game.round.id,
-            name: game.round.name
-          },
-          game_results: Array.isArray(game.game_results)
-            ? game.game_results.map(result => ({
-                home_score: result.home_score,
-                away_score: result.away_score,
-                is_final: result.is_final
-              }))
-            : game.game_results
-              ? [{
-                  home_score: game.game_results.home_score,
-                  away_score: game.game_results.away_score,
-                  is_final: game.game_results.is_final
-                }]
-              : []
-        };
-      });
+      const processedGames = data.map((game): Game => ({
+        id: game.id,
+        game_date: game.game_date,
+        parsedDate: new Date(game.game_date),
+        home_team: {
+          id: game.home_team[0].id,
+          name: game.home_team[0].name,
+          logo_url: game.home_team[0].logo_url
+        },
+        away_team: {
+          id: game.away_team[0].id,
+          name: game.away_team[0].name,
+          logo_url: game.away_team[0].logo_url
+        },
+        round: {
+          id: game.round[0].id,
+          name: game.round[0].name
+        },
+        game_results: game.game_results?.map(result => ({
+          home_score: result.home_score,
+          away_score: result.away_score,
+          is_final: result.is_final
+        }))
+      }));
 
       // Split into finished and unfinished games
       const unfinishedGames = processedGames

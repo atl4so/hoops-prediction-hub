@@ -38,6 +38,26 @@ export interface UserProfile {
   lowest_round_points?: number;
 }
 
+export interface RoundRank {
+  rank: number;
+  roundId: string;
+  roundName: string;
+  isCurrent: boolean;
+}
+
+export interface StatsListProps {
+  totalPoints: number;
+  pointsPerGame: number;
+  totalPredictions: number;
+  highestGamePoints?: number;
+  lowestGamePoints?: number;
+  highestRoundPoints?: number;
+  lowestRoundPoints?: number;
+  allTimeRank?: number;
+  currentRoundRank?: RoundRank;
+  userId?: string;
+}
+
 export interface Prediction {
   id: string;
   user: UserProfile;
@@ -55,17 +75,4 @@ export interface UserPrediction {
     points_earned?: number;
   };
   game: Game;
-}
-
-export interface StatsListProps {
-  totalPoints: number;
-  pointsPerGame: number;
-  totalPredictions: number;
-  highestGamePoints?: number;
-  lowestGamePoints?: number;
-  highestRoundPoints?: number;
-  lowestRoundPoints?: number;
-  allTimeRank?: number;
-  currentRoundRank?: number;
-  userId?: string | null;
 }
