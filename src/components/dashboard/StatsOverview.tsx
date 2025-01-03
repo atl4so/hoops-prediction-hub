@@ -7,7 +7,7 @@ export function StatsOverview(props: StatsListProps) {
   return (
     <div className="space-y-6">
       <StatsList {...props} />
-      <UserPredictionsGrid userId={props.userId} />
+      <UserPredictionsGrid userId={props.userId} isOwnPredictions={true} />
       <RoundPerformance userId={props.userId} />
     </div>
   );

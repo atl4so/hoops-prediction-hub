@@ -1,42 +1,19 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserPredictionCard } from "../UserPredictionCard";
 import { Card, CardContent } from "@/components/ui/card";
+import { useUserPredictions } from "../useUserPredictions";
 
 interface UserPredictionsGridProps {
-  predictions: Array<{
-    id: string;
-    game: {
-      id: string;
-      game_date: string;
-      home_team: {
-        name: string;
-        logo_url: string;
-      };
-      away_team: {
-        name: string;
-        logo_url: string;
-      };
-      game_results: Array<{
-        home_score: number;
-        away_score: number;
-        is_final: boolean;
-      }>;
-    };
-    prediction: {
-      prediction_home_score: number;
-      prediction_away_score: number;
-      points_earned?: number;
-    };
-  }> | undefined;
-  isLoading: boolean;
+  userId: string | null;
   isOwnPredictions?: boolean;
 }
 
 export function UserPredictionsGrid({ 
-  predictions, 
-  isLoading,
+  userId,
   isOwnPredictions = false
 }: UserPredictionsGridProps) {
+  const { data: predictions, isLoading } = useUserPredictions(userId);
+
   if (isLoading) {
     return (
       <div className="grid gap-4 sm:grid-cols-2">
