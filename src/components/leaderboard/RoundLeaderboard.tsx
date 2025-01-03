@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LeaderboardRow } from "./LeaderboardRow";
-import { Trophy, Info } from "lucide-react";
+import { Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface RoundLeaderboardProps {
@@ -31,8 +31,7 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
           user:profiles!predictions_user_id_fkey (
             id,
             display_name,
-            avatar_url,
-            total_predictions
+            avatar_url
           ),
           game:games!inner (
             round_id,
@@ -56,7 +55,7 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
             display_name: pred.user.display_name,
             avatar_url: pred.user.avatar_url,
             total_points: 0,
-            total_predictions: pred.user.total_predictions
+            total_predictions: 0
           };
         }
         acc[userId].total_predictions += 1;
@@ -65,7 +64,6 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
       }, {} as Record<string, any>);
 
       return Object.values(userStats)
-        .filter(user => user.total_points > 0)
         .sort((a, b) => b.total_points - a.total_points);
     },
     enabled: !!selectedRound,
@@ -91,47 +89,39 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Info className="h-4 w-4" />
-        <p>Tap on a player to view detailed statistics</p>
-      </div>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="rounded-md border bg-card"
-      >
-        <div className="w-full overflow-x-auto -mb-[1px]">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[70px] py-2">Rank</TableHead>
-                <TableHead className="py-2">Player</TableHead>
-                <TableHead className="text-right py-2">Points</TableHead>
-                <TableHead className="text-right py-2">Games</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rankings?.map((player, index) => (
-                <LeaderboardRow
-                  key={player.user_id}
-                  player={player}
-                  rank={index + 1}
-                  index={index}
-                  isRoundLeaderboard={true}
-                />
-              ))}
-              {!rankings?.length && (
-                <TableRow>
-                  <TableCell colSpan={4} className="h-20 sm:h-24 text-center text-sm sm:text-base">
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </motion.div>
-    </div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="rounded-md border bg-card overflow-x-auto"
+    >
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-12 sm:w-14 py-2">Rank</TableHead>
+            <TableHead className="py-2">Player</TableHead>
+            <TableHead className="text-right py-2">Points</TableHead>
+            <TableHead className="text-right py-2">Games</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rankings?.map((player, index) => (
+            <LeaderboardRow
+              key={player.user_id}
+              player={player}
+              rank={index + 1}
+              index={index}
+              isRoundLeaderboard={true}
+            />
+          ))}
+          {!rankings?.length && (
+            <TableRow>
+              <TableCell colSpan={4} className="h-20 sm:h-24 text-center text-sm sm:text-base">
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </motion.div>
   );
 }
