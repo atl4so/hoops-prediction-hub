@@ -14,7 +14,7 @@ interface StatsListProps {
   highestRoundPoints?: number | null;
   lowestRoundPoints?: number | null;
   allTimeRank?: number | null;
-  currentRoundRank?: number | null;
+  currentRoundRank?: { rank: number | null; isCurrent: boolean; roundName: string };
 }
 
 const formatRank = (rank: number | null | undefined) => {
@@ -54,8 +54,8 @@ export function StatsList({
     {
       icon: Medal,
       label: "Latest Round Rank",
-      value: formatRank(currentRoundRank),
-      description: "Your position in latest round's leaderboard",
+      value: formatRank(currentRoundRank?.rank),
+      description: `Your position in Round ${currentRoundRank?.roundName} leaderboard`,
     },
     {
       icon: Target,
@@ -76,12 +76,6 @@ export function StatsList({
       description: "Best performance in a single game"
     },
     {
-      icon: ArrowDown,
-      label: "Lowest Game Points",
-      value: lowestGamePoints || 0,
-      description: "Lowest score in a single game"
-    },
-    {
       icon: ArrowUp,
       label: "Highest Round Points",
       value: highestRoundPoints || 0,
@@ -100,8 +94,11 @@ export function StatsList({
     : allStats;
 
   return (
-    <div className="space-y-6">
-      <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+    <div>
+      <div className={cn(
+        "grid gap-4",
+        isMobile ? "grid-cols-1" : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+      )}>
         {visibleStats.map((stat, index) => (
           <StatCard
             key={stat.label}
@@ -109,24 +106,17 @@ export function StatsList({
             label={stat.label}
             value={stat.value}
             description={stat.description}
-            delay={index}
           />
         ))}
       </div>
-      
-      {isMobile && (
-        <div className={cn(
-          "flex justify-center transition-all duration-300",
-          showAllCards ? "mt-6" : "mt-4"
-        )}>
-          <Button 
-            variant="outline" 
-            onClick={() => setShowAllCards(!showAllCards)}
-            className="w-full max-w-xs"
-          >
-            {showAllCards ? "Show Less" : "Show More Stats"}
-          </Button>
-        </div>
+      {isMobile && allStats.length > 2 && (
+        <Button
+          variant="outline"
+          className="w-full mt-4"
+          onClick={() => setShowAllCards(!showAllCards)}
+        >
+          {showAllCards ? "Show Less" : "Show More"}
+        </Button>
       )}
     </div>
   );

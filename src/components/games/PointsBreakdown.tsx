@@ -1,4 +1,5 @@
-import { Award, Target, Home, Plane } from "lucide-react";
+import { Award, Target, Home, Plane, CheckCircle2, XCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface PointsBreakdownProps {
   prediction: {
@@ -71,41 +72,95 @@ export function PointsBreakdown({ prediction, result, points, isOwnPrediction = 
   }
 
   return (
-    <div className="space-y-2">
-      <div className="space-y-2">
-        <p className="font-medium">
-          {isOwnPrediction ? "Your Prediction" : "User's Prediction"}: {prediction.prediction_home_score} - {prediction.prediction_away_score}
-        </p>
-        <p className="font-medium">Final Result: {result.home_score} - {result.away_score}</p>
+    <div className="space-y-4">
+      {/* Score comparison */}
+      <div className="grid grid-cols-3 gap-4 p-4 bg-accent/10 rounded-lg">
+        <div className="text-center">
+          <p className="text-sm text-muted-foreground">Prediction</p>
+          <p className="text-xl font-semibold">{prediction.prediction_home_score} - {prediction.prediction_away_score}</p>
+        </div>
+        <div className="flex items-center justify-center">
+          {predictedWinnerCorrect ? (
+            <CheckCircle2 className="w-6 h-6 text-green-500" />
+          ) : (
+            <XCircle className="w-6 h-6 text-red-500" />
+          )}
+        </div>
+        <div className="text-center">
+          <p className="text-sm text-muted-foreground">Result</p>
+          <p className="text-xl font-semibold">{result.home_score} - {result.away_score}</p>
+        </div>
       </div>
 
-      <div className="space-y-2">
-        <div className="flex items-center gap-2 text-sm">
-          <Award className="w-4 h-4 text-primary" />
-          <span>Winner prediction: {winnerPoints} points</span>
-        </div>
+      {/* Points breakdown */}
+      <div className="space-y-3 bg-card p-4 rounded-lg">
+        <PointRow
+          icon={<Award className="w-4 h-4" />}
+          label="Winner prediction"
+          points={winnerPoints}
+          maxPoints={5}
+          success={winnerPoints > 0}
+        />
+        <PointRow
+          icon={<Target className="w-4 h-4" />}
+          label="Point difference"
+          points={diffPoints}
+          maxPoints={25}
+          success={diffPoints > 0}
+        />
+        <PointRow
+          icon={<Home className="w-4 h-4" />}
+          label="Home team score"
+          points={homeScorePoints}
+          maxPoints={10}
+          success={homeScorePoints > 0}
+        />
+        <PointRow
+          icon={<Plane className="w-4 h-4" />}
+          label="Away team score"
+          points={awayScorePoints}
+          maxPoints={10}
+          success={awayScorePoints > 0}
+        />
         
-        <div className="flex items-center gap-2 text-sm">
-          <Target className="w-4 h-4 text-primary" />
-          <span>Point difference: {diffPoints} points</span>
+        {/* Total points */}
+        <div className="pt-2 mt-2 border-t">
+          <div className="flex items-center justify-between font-semibold">
+            <span>Total Points</span>
+            <span className="text-lg text-primary">{points}</span>
+          </div>
         </div>
-        
-        <div className="flex items-center gap-2 text-sm">
-          <Home className="w-4 h-4 text-primary" />
-          <span>Home team score: {homeScorePoints} points</span>
-        </div>
-        
-        <div className="flex items-center gap-2 text-sm">
-          <Plane className="w-4 h-4 text-primary" />
-          <span>Away team score: {awayScorePoints} points</span>
-        </div>
+      </div>
+    </div>
+  );
+}
 
-        <div className="pt-2 border-t">
-          <p className="text-lg font-semibold text-primary flex items-center gap-2">
-            <Award className="w-5 h-5" />
-            Total: {points}
-          </p>
-        </div>
+function PointRow({ icon, label, points, maxPoints, success }: { 
+  icon: React.ReactNode;
+  label: string;
+  points: number;
+  maxPoints: number;
+  success: boolean;
+}) {
+  return (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <span className={cn(
+          "p-1 rounded-md",
+          success ? "text-primary bg-primary/10" : "text-muted-foreground bg-muted"
+        )}>
+          {icon}
+        </span>
+        <span className="text-sm">{label}</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <span className={cn(
+          "font-medium",
+          success ? "text-primary" : "text-muted-foreground"
+        )}>
+          {points}
+        </span>
+        <span className="text-sm text-muted-foreground">/ {maxPoints}</span>
       </div>
     </div>
   );

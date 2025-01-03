@@ -70,6 +70,27 @@ export function CollapsibleRoundSection({
     return acc;
   }, {} as Record<string, { roundName: string; predictions: typeof predictions }>);
 
+  // Sort predictions within each round
+  Object.values(predictionsByRound).forEach(round => {
+    round.predictions.sort((a, b) => {
+      const aFinished = a.game.game_results?.some(result => result.is_final) ?? false;
+      const bFinished = b.game.game_results?.some(result => result.is_final) ?? false;
+      
+      // If one is finished and the other isn't, put unfinished first
+      if (aFinished !== bFinished) {
+        return aFinished ? 1 : -1;
+      }
+      
+      // Sort unfinished games by date ascending (earliest first)
+      // Sort finished games by date descending (latest first)
+      const timeA = new Date(a.game.game_date).getTime();
+      const timeB = new Date(b.game.game_date).getTime();
+      return aFinished 
+        ? timeB - timeA  // For finished games, sort descending (newest first)
+        : timeA - timeB; // For unfinished games, sort ascending (earliest first)
+    });
+  });
+
   return (
     <div className="space-y-8">
       {Object.entries(predictionsByRound).map(([roundId, { roundName, predictions: roundPredictions }]) => (

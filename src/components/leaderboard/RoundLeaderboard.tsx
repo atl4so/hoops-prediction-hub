@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LeaderboardRow } from "./LeaderboardRow";
-import { RoundSelector } from "../dashboard/predictions/RoundSelector";
 import { useState } from "react";
 import {
   Pagination,
@@ -21,25 +20,61 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
-
-const USERS_PER_PAGE = 50;
+import { motion, AnimatePresence } from "framer-motion";
+import { Trophy } from "lucide-react";
+import { RoundSelector } from "@/components/ui/round-selector";
 
 export function RoundLeaderboard() {
   const [selectedRound, setSelectedRound] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const isMobile = window.innerWidth <= 768;
+  const ITEMS_PER_PAGE = 50;
+  const [page, setPage] = useState(1);
+  const startRange = (page - 1) * ITEMS_PER_PAGE;
+  const endRange = startRange + ITEMS_PER_PAGE - 1;
 
-  const { data: rankings, isLoading } = useQuery({
-    queryKey: ["leaderboard", "round", selectedRound, currentPage],
+  const { data: users } = useQuery({
+    queryKey: ["users"],
     queryFn: async () => {
-      if (!selectedRound) return null;
-
-      const startRange = (currentPage - 1) * USERS_PER_PAGE;
-      const endRange = startRange + USERS_PER_PAGE - 1;
-
-      const { data: users } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('id, display_name, avatar_url');
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: rankings, isLoading } = useQuery({
+    queryKey: ["leaderboard", "round", selectedRound, page],
+    queryFn: async () => {
+      if (!selectedRound) return [];
+
+      // Get all predictions for the round to show total games predicted
+      const { data: totalPredictions, error: totalError } = await supabase
+        .from('predictions')
+        .select('user_id, games!inner(round_id)')
+        .eq('games.round_id', selectedRound);
+
+      if (totalError) throw totalError;
+
+      // Get finished predictions to show completed games
+      const { data: finishedPredictions, error: finishedError } = await supabase
+        .from('predictions')
+        .select('user_id, games!inner(is_finished, round_id)')
+        .eq('games.is_finished', true)
+        .eq('games.round_id', selectedRound);
+
+      if (finishedError) throw finishedError;
+
+      // Count predictions per user
+      const totalCounts = totalPredictions?.reduce((acc, { user_id }) => {
+        acc[user_id] = (acc[user_id] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+      const finishedCounts = finishedPredictions?.reduce((acc, { user_id }) => {
+        acc[user_id] = (acc[user_id] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
 
       const { data, error } = await supabase
         .rpc('get_round_rankings', { round_id: selectedRound })
@@ -47,119 +82,93 @@ export function RoundLeaderboard() {
 
       if (error) throw error;
 
-      // Filter out users with no points
-      const usersWithPoints = data.filter(player => player.total_points > 0);
+      // Filter out users with no points and map with user details
+      const usersWithPoints = (data || [])
+        .filter(player => player.total_points > 0)
+        .map(player => {
+          const userDetails = users?.find(u => u.id === player.user_id);
+          return {
+            ...player,
+            display_name: userDetails?.display_name || 'Unknown',
+            avatar_url: userDetails?.avatar_url,
+            total_games: totalCounts?.[player.user_id] || 0,
+            finished_games: finishedCounts?.[player.user_id] || 0
+          };
+        });
 
-      return usersWithPoints.map((player, index) => ({
-        ...player,
-        rank: startRange + index + 1,
-        avatar_url: users.find(u => u.id === player.user_id)?.avatar_url
-      }));
+      return usersWithPoints;
     },
     enabled: !!selectedRound,
   });
 
-  const { data: totalCount } = useQuery({
-    queryKey: ["leaderboard", "round", selectedRound, "count"],
-    queryFn: async () => {
-      if (!selectedRound) return 0;
-
-      const { data, count, error } = await supabase
-        .rpc('get_round_rankings', { round_id: selectedRound });
-
-      if (error) throw error;
-      return data?.length || 0;
-    },
-    enabled: !!selectedRound,
-  });
-
-  const totalPages = Math.ceil((totalCount || 0) / USERS_PER_PAGE);
+  if (!selectedRound) {
+    return (
+      <div className="flex flex-col items-center justify-center space-y-4 py-12">
+        <Trophy className="w-12 h-12 text-primary/20" />
+        <RoundSelector
+          selectedRound={selectedRound}
+          onRoundChange={setSelectedRound}
+          className="w-full max-w-xs"
+        />
+        <p className="text-muted-foreground">Select a round to view rankings</p>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
+      <div className="space-y-2">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} className="h-12 w-full" />
+        ))}
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <RoundSelector selectedRound={selectedRound} onRoundChange={setSelectedRound} />
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="space-y-6"
+    >
+      <div className="flex items-center gap-4">
+        <RoundSelector
+          selectedRound={selectedRound}
+          onRoundChange={setSelectedRound}
+          className="w-full max-w-xs"
+        />
+      </div>
 
-      {selectedRound && (
-        <div className="space-y-4">
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12">Rank</TableHead>
-                  <TableHead>Player</TableHead>
-                  <TableHead className="text-right">Points</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rankings?.map((player) => (
-                  <LeaderboardRow
-                    key={player.user_id}
-                    player={player}
-                    rank={player.rank}
-                    showFollowButton={false}
-                    isRoundLeaderboard={true}
-                  />
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-
-          {totalPages > 1 && (
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious 
-                    onClick={() => currentPage > 1 && setCurrentPage(p => p - 1)}
-                    className={cn(currentPage === 1 && "pointer-events-none opacity-50")}
-                  />
-                </PaginationItem>
-
-                {!isMobile && Array.from({ length: totalPages }, (_, i) => i + 1)
-                  .filter(page => {
-                    const distance = Math.abs(page - currentPage);
-                    return distance === 0 || distance === 1 || page === 1 || page === totalPages;
-                  })
-                  .map((page, index, array) => {
-                    if (index > 0 && array[index - 1] !== page - 1) {
-                      return (
-                        <PaginationItem key={`ellipsis-${page}`}>
-                          <PaginationLink className="pointer-events-none">...</PaginationLink>
-                        </PaginationItem>
-                      );
-                    }
-                    return (
-                      <PaginationItem key={page}>
-                        <PaginationLink
-                          onClick={() => setCurrentPage(page)}
-                          isActive={currentPage === page}
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  })}
-
-                <PaginationItem>
-                  <PaginationNext 
-                    onClick={() => currentPage < totalPages && setCurrentPage(p => p + 1)}
-                    className={cn(currentPage === totalPages && "pointer-events-none opacity-50")}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          )}
-        </div>
-      )}
-    </div>
+      <div className="rounded-md border bg-card">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-14">Rank</TableHead>
+              <TableHead>Player</TableHead>
+              <TableHead className="text-right">Points</TableHead>
+              <TableHead className="text-right">Avg/Game</TableHead>
+              <TableHead className="text-right">Games</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rankings?.map((player, index) => (
+              <LeaderboardRow
+                key={player.user_id}
+                player={player}
+                rank={index + 1}
+                index={index}
+              />
+            ))}
+            {!rankings?.length && (
+              <TableRow>
+                <TableCell colSpan={5} className="h-24 text-center">
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </motion.div>
   );
 }

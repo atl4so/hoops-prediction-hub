@@ -34,20 +34,20 @@ export function PointsBreakdownDialog({
 }: PointsBreakdownDialogProps) {
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="max-w-md">
+      <AlertDialogContent className="max-w-sm">
         <AlertDialogHeader>
-          <AlertDialogTitle>Points Breakdown</AlertDialogTitle>
-          <AlertDialogDescription>
-            <PointsBreakdown
-              prediction={prediction}
-              result={result}
-              points={points}
-              isOwnPrediction={isOwnPrediction}
-            />
-          </AlertDialogDescription>
+          <AlertDialogTitle className="text-center">Points Breakdown</AlertDialogTitle>
         </AlertDialogHeader>
+        <div className="-mt-2">
+          <PointsBreakdown
+            prediction={prediction}
+            result={result}
+            points={points}
+            isOwnPrediction={isOwnPrediction}
+          />
+        </div>
         <AlertDialogFooter>
-          <AlertDialogCancel>Close</AlertDialogCancel>
+          <AlertDialogCancel className="w-full">Close</AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

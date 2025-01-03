@@ -49,8 +49,8 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
         }
 
         // Filter out predictions without games and transform the data
-        return data
-          ?.filter(prediction => prediction.game && prediction.game.game_results)
+        const predictions = data
+          ?.filter(prediction => prediction.game)  
           .map(prediction => ({
             id: prediction.id,
             game: {
@@ -67,6 +67,20 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
               points_earned: prediction.points_earned
             }
           })) || [];
+
+        // Sort predictions by game date and finished status
+        return predictions.sort((a, b) => {
+          const aFinished = a.game.game_results?.some(result => result.is_final) ?? false;
+          const bFinished = b.game.game_results?.some(result => result.is_final) ?? false;
+          
+          // If one is finished and the other isn't, put unfinished first
+          if (aFinished !== bFinished) {
+            return aFinished ? 1 : -1;
+          }
+          
+          // Otherwise sort by game date
+          return new Date(a.game.game_date).getTime() - new Date(b.game.game_date).getTime();
+        });
       } catch (error) {
         console.error("Error in useUserRoundPredictions:", error);
         toast.error("Failed to load predictions");

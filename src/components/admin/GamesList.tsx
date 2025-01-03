@@ -34,12 +34,38 @@ export function GamesList() {
           game_date,
           home_team:teams!games_home_team_id_fkey(id, name, logo_url),
           away_team:teams!games_away_team_id_fkey(id, name, logo_url),
-          round:rounds(id, name)
-        `)
-        .order('game_date', { ascending: true });
+          round:rounds(id, name),
+          game_results(
+            home_score,
+            away_score,
+            is_final
+          )
+        `);
       
       if (error) throw error;
-      return data;
+      
+      // Process games and parse dates
+      const processedGames = data.map(game => ({
+        ...game,
+        parsedDate: new Date(game.game_date),
+        game_results: Array.isArray(game.game_results) 
+          ? game.game_results 
+          : game.game_results 
+            ? [game.game_results] 
+            : []
+      }));
+
+      // Split into finished and unfinished games
+      const unfinishedGames = processedGames
+        .filter(game => !game.game_results?.some(result => result.is_final))
+        .sort((a, b) => a.parsedDate.getTime() - b.parsedDate.getTime());
+
+      const finishedGames = processedGames
+        .filter(game => game.game_results?.some(result => result.is_final))
+        .sort((a, b) => b.parsedDate.getTime() - a.parsedDate.getTime());
+
+      // Combine with unfinished games first
+      return [...unfinishedGames, ...finishedGames];
     },
   });
 

@@ -37,11 +37,27 @@ export function UserPredictionsDialog({
     },
   });
 
-  // Check if this is the current round by comparing game dates with current date
-  const isCurrentRound = predictions?.some(p => new Date(p.game.game_date) > new Date());
-
   const finishedPredictions = predictions?.filter(p => p.game.game_results?.length > 0) || [];
-  const futurePredictions = predictions?.filter(p => !p.game.game_results?.length && new Date(p.game.game_date) > new Date()) || [];
+  
+  console.log('Current time:', new Date().toISOString());
+  console.log('All predictions:', predictions?.map(p => ({
+    gameDate: p.game.game_date,
+    isInFuture: new Date(p.game.game_date) > new Date(),
+    hasResults: p.game.game_results?.length > 0
+  })));
+
+  const now = new Date();
+  const futurePredictions = predictions?.filter(p => {
+    const gameDate = new Date(p.game.game_date);
+    return !p.game.game_results?.length && gameDate > now;
+  }) || [];
+  
+  const upcomingGamesInRound = predictions?.some(p => {
+    const gameDate = new Date(p.game.game_date);
+    return gameDate > now;
+  });
+  
+  const defaultTab = futurePredictions.length > 0 ? "future" : "finished";
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -66,12 +82,24 @@ export function UserPredictionsDialog({
           <RoundSelector selectedRound={selectedRound} onRoundChange={setSelectedRound} />
 
           {selectedRound && (
-            <Tabs defaultValue="finished" className="w-full">
+            <Tabs defaultValue={defaultTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="finished">Finished Games</TabsTrigger>
-                {isCurrentRound && (
-                  <TabsTrigger value="future">Future Predictions</TabsTrigger>
-                )}
+                <TabsTrigger value="finished" className="relative">
+                  <span className="mr-6">Finished Games</span>
+                  {finishedPredictions.length > 0 && (
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
+                      {finishedPredictions.length}
+                    </span>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="future" className="relative">
+                  <span className="mr-6">Upcoming Games</span>
+                  {futurePredictions.length > 0 && (
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
+                      {futurePredictions.length}
+                    </span>
+                  )}
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="finished" className="space-y-4 mt-4">
@@ -87,31 +115,35 @@ export function UserPredictionsDialog({
                   />
                 ))}
                 {finishedPredictions.length === 0 && (
-                  <p className="text-center text-muted-foreground">
-                    No finished predictions for this round
-                  </p>
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p className="text-lg mb-2">No Finished Games</p>
+                    <p className="text-sm">Games will appear here once they are completed</p>
+                  </div>
                 )}
               </TabsContent>
 
-              {isCurrentRound && (
-                <TabsContent value="future" className="space-y-4 mt-4">
-                  {futurePredictions.map((prediction) => (
-                    <UserPredictionCard
-                      key={prediction.id}
-                      game={prediction.game}
-                      prediction={{
-                        prediction_home_score: prediction.prediction.prediction_home_score,
-                        prediction_away_score: prediction.prediction.prediction_away_score
-                      }}
-                    />
-                  ))}
-                  {futurePredictions.length === 0 && (
-                    <p className="text-center text-muted-foreground">
-                      No future predictions for this round
+              <TabsContent value="future" className="space-y-4 mt-4">
+                {futurePredictions.map((prediction) => (
+                  <UserPredictionCard
+                    key={prediction.id}
+                    game={prediction.game}
+                    prediction={{
+                      prediction_home_score: prediction.prediction.prediction_home_score,
+                      prediction_away_score: prediction.prediction.prediction_away_score
+                    }}
+                  />
+                ))}
+                {futurePredictions.length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p className="text-lg mb-2">No Upcoming Games</p>
+                    <p className="text-sm">
+                      {upcomingGamesInRound 
+                        ? "This user hasn't made predictions for upcoming games yet"
+                        : "All games in this round have been completed"}
                     </p>
-                  )}
-                </TabsContent>
-              )}
+                  </div>
+                )}
+              </TabsContent>
             </Tabs>
           )}
         </div>

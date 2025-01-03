@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Trophy, Target } from "lucide-react";
 
 interface RoundPerformanceProps {
   userId: string;
@@ -28,8 +29,8 @@ export function RoundPerformance({ userId }: RoundPerformanceProps) {
     },
   });
 
-  const { data: roundPoints, isLoading: isLoadingRoundPoints } = useQuery({
-    queryKey: ["roundPoints", selectedRound, userId],
+  const { data: roundStats, isLoading: isLoadingRoundStats } = useQuery({
+    queryKey: ["roundStats", selectedRound, userId],
     queryFn: async () => {
       if (!selectedRound) return null;
       
@@ -42,7 +43,14 @@ export function RoundPerformance({ userId }: RoundPerformanceProps) {
       }
 
       const userRanking = rankings?.find(r => r.user_id === userId);
-      return userRanking?.total_points || 0;
+      const rank = rankings?.findIndex(r => r.user_id === userId) + 1 || 0;
+      const totalParticipants = rankings?.length || 0;
+
+      return {
+        points: userRanking?.total_points || 0,
+        rank,
+        totalParticipants
+      };
     },
     enabled: !!selectedRound && !!userId,
   });
@@ -50,7 +58,7 @@ export function RoundPerformance({ userId }: RoundPerformanceProps) {
   return (
     <div className="p-6 bg-accent/5 rounded-lg border">
       <h3 className="text-lg font-semibold mb-4">Round Performance</h3>
-      <div className="flex gap-4 items-center flex-wrap">
+      <div className="space-y-4">
         <Select value={selectedRound} onValueChange={setSelectedRound}>
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Select a round" />
@@ -63,15 +71,38 @@ export function RoundPerformance({ userId }: RoundPerformanceProps) {
             ))}
           </SelectContent>
         </Select>
+
         {selectedRound && (
-          <div className="text-lg animate-fade-in">
-            {isLoadingRoundPoints ? (
-              <span className="text-muted-foreground">Loading...</span>
-            ) : (
-              <>
-                Points: <span className="font-semibold">{roundPoints}</span>
-              </>
-            )}
+          <div className="grid grid-cols-2 gap-4 animate-fade-in">
+            <div className="flex items-center gap-2 bg-background p-4 rounded-lg border">
+              <Target className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-sm text-muted-foreground">Points</p>
+                <p className="text-lg font-semibold">
+                  {isLoadingRoundStats ? (
+                    <span className="text-muted-foreground">Loading...</span>
+                  ) : (
+                    roundStats?.points || 0
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 bg-background p-4 rounded-lg border">
+              <Trophy className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-sm text-muted-foreground">Rank</p>
+                <p className="text-lg font-semibold">
+                  {isLoadingRoundStats ? (
+                    <span className="text-muted-foreground">Loading...</span>
+                  ) : roundStats?.rank ? (
+                    <>{roundStats.rank}<span className="text-sm text-muted-foreground">/{roundStats.totalParticipants}</span></>
+                  ) : (
+                    "-"
+                  )}
+                </p>
+              </div>
+            </div>
           </div>
         )}
       </div>

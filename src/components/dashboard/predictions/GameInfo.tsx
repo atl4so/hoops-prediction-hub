@@ -1,4 +1,5 @@
 import { GameDateTime } from "@/components/games/GameDateTime";
+import { GameCountdown } from "@/components/games/GameCountdown";
 
 interface GameInfoProps {
   game: {
@@ -47,20 +48,8 @@ export function GameInfo({ game, prediction }: GameInfoProps) {
                 <span className="text-xs text-muted-foreground mt-1">Final</span>
               )}
             </div>
-          ) : prediction ? (
-            <div className="flex flex-col items-center">
-              <span className="text-base text-primary">Prediction</span>
-              <span className="text-lg">
-                {prediction.prediction_home_score} - {prediction.prediction_away_score}
-              </span>
-              {prediction.points_earned !== undefined && (
-                <span className="text-sm text-primary mt-1">
-                  Points: {prediction.points_earned}
-                </span>
-              )}
-            </div>
           ) : (
-            <span>vs</span>
+            <GameCountdown gameDate={game.game_date} />
           )}
         </div>
         <div className="flex flex-col items-center">

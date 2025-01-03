@@ -26,7 +26,7 @@ export function RoundManager() {
       const { data, error } = await supabase
         .from('rounds')
         .select('*')
-        .order('start_date', { ascending: true });
+        .order('created_at', { ascending: false });
       
       if (error) throw error;
       return data;

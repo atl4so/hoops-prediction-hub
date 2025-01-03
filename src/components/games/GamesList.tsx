@@ -97,22 +97,53 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
             away_score,
             is_final
           )
-        `)
-        .order("game_date", { ascending: true });
+        `);
 
       if (error) {
         console.error("Error fetching games:", error);
         throw error;
       }
       
-      return data.map(game => ({
+      console.log('Raw data:', data.map(g => ({ 
+        date: g.game_date, 
+        teams: `${g.home_team.name} vs ${g.away_team.name}`,
+        results: g.game_results 
+      })));
+      
+      // Process games and parse dates
+      const processedGames = data.map(game => ({
         ...game,
+        parsedDate: new Date(game.game_date),
         game_results: Array.isArray(game.game_results) 
           ? game.game_results 
           : game.game_results 
             ? [game.game_results] 
             : []
       }));
+
+      console.log('Processed games:', processedGames.map(g => ({
+        original: g.game_date,
+        parsed: g.parsedDate,
+        teams: `${g.home_team.name} vs ${g.away_team.name}`
+      })));
+
+      // Split into finished and unfinished games
+      const unfinishedGames = processedGames
+        .filter(game => !game.game_results?.some(result => result.is_final))
+        .sort((a, b) => a.parsedDate.getTime() - b.parsedDate.getTime());
+
+      console.log('Unfinished games after sort:', unfinishedGames.map(g => ({
+        date: g.game_date,
+        parsed: g.parsedDate,
+        teams: `${g.home_team.name} vs ${g.away_team.name}`
+      })));
+
+      const finishedGames = processedGames
+        .filter(game => game.game_results?.some(result => result.is_final))
+        .sort((a, b) => b.parsedDate.getTime() - a.parsedDate.getTime());
+
+      // Combine with unfinished games first
+      return [...unfinishedGames, ...finishedGames];
     },
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
     gcTime: 1000 * 60 * 10, // Keep unused data for 10 minutes
@@ -124,8 +155,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     
     const now = new Date();
     return games.filter(game => {
-      const gameDate = new Date(game.game_date);
-      const predictionDeadline = subHours(gameDate, 1);
+      const predictionDeadline = subHours(game.parsedDate, 1);
       
       const hasNoFinalResult = !game.game_results?.some(result => result.is_final);
       const isBeforeDeadline = now < predictionDeadline;
