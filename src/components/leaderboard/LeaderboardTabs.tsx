@@ -32,6 +32,15 @@ export function LeaderboardTabs() {
 
   return (
     <Tabs defaultValue="all-time" className="space-y-8">
+      <section className="text-center space-y-4 animate-fade-in">
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary/80 via-primary to-primary/80 text-transparent bg-clip-text animate-gradient">
+          Leaderboard
+        </h1>
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          See who's leading in predictions across all time and by round
+        </p>
+      </section>
+
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <TabsList className="h-12 w-full max-w-[400px] p-1 bg-background/50 backdrop-blur-sm">
           <TabsTrigger 
@@ -53,11 +62,16 @@ export function LeaderboardTabs() {
             </div>
           </TabsTrigger>
         </TabsList>
-        <RoundSelector
-          selectedRound={selectedRound}
-          onRoundChange={setSelectedRound}
-          className="w-full sm:w-[200px]"
-        />
+        {/* Only show round selector for by-round tab */}
+        <Tabs.Content value="by-round" asChild>
+          <div className="w-full sm:w-[200px]">
+            <RoundSelector
+              selectedRound={selectedRound}
+              onRoundChange={setSelectedRound}
+              className="w-full"
+            />
+          </div>
+        </Tabs.Content>
       </div>
 
       <div className="min-h-[400px] animate-fade-in">
