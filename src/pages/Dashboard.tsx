@@ -80,9 +80,54 @@ export default function Dashboard() {
         predictions: []
       };
     }
-    acc[roundId].predictions.push(prediction);
+    acc[roundId].predictions.push({
+      id: prediction.id,
+      game: {
+        id: prediction.game.id,
+        game_date: prediction.game.game_date,
+        round: prediction.game.round,
+        home_team: prediction.game.home_team,
+        away_team: prediction.game.away_team,
+        game_results: prediction.game.game_results
+      },
+      prediction: {
+        prediction_home_score: prediction.prediction_home_score,
+        prediction_away_score: prediction.prediction_away_score,
+        points_earned: prediction.points_earned
+      }
+    });
     return acc;
-  }, {} as Record<string, { roundId: string; roundName: string; predictions: typeof predictions }>) || {};
+  }, {} as Record<string, { roundId: string; roundName: string; predictions: Array<{
+    id: string;
+    game: {
+      id: string;
+      game_date: string;
+      round: {
+        id: string;
+        name: string;
+      };
+      home_team: {
+        id: string;
+        name: string;
+        logo_url: string;
+      };
+      away_team: {
+        id: string;
+        name: string;
+        logo_url: string;
+      };
+      game_results?: Array<{
+        home_score: number;
+        away_score: number;
+        is_final: boolean;
+      }>;
+    };
+    prediction: {
+      prediction_home_score: number;
+      prediction_away_score: number;
+      points_earned?: number;
+    };
+  }> }>) || {};
 
   return (
     <div className="space-y-8">
