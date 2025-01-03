@@ -38,16 +38,9 @@ export function UserPredictionsDialog({
   });
 
   const finishedPredictions = predictions?.filter(p => p.game.game_results?.length > 0) || [];
-  const now = new Date();
-  const futurePredictions = predictions?.filter(p => {
-    const gameDate = new Date(p.game.game_date);
-    return !p.game.game_results?.length && gameDate > now;
-  }) || [];
+  const futurePredictions = predictions?.filter(p => !p.game.game_results?.length) || [];
   
-  const upcomingGamesInRound = predictions?.some(p => {
-    const gameDate = new Date(p.game.game_date);
-    return gameDate > now;
-  });
+  const upcomingGamesInRound = predictions?.some(p => !p.game.game_results?.length);
   
   const defaultTab = futurePredictions.length > 0 ? "future" : "finished";
 
