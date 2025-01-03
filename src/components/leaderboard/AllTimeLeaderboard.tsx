@@ -12,17 +12,27 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LeaderboardRow } from "./LeaderboardRow";
 import { motion } from "framer-motion";
 
-const USERS_PER_PAGE = 50;
-
 export function AllTimeLeaderboard() {
   const { data: rankings, isLoading } = useQuery({
     queryKey: ["leaderboard", "all-time"],
     queryFn: async () => {
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('id, display_name, avatar_url, total_points, points_per_game')
-        .order('total_points', { ascending: false })
-        .limit(USERS_PER_PAGE);
+        .select(`
+          id, 
+          display_name, 
+          avatar_url, 
+          total_points, 
+          points_per_game,
+          total_predictions,
+          predictions:predictions(
+            points_earned,
+            game:games(
+              game_results(is_final)
+            )
+          )
+        `)
+        .order('total_points', { ascending: false });
 
       if (profileError) throw profileError;
       
@@ -31,8 +41,10 @@ export function AllTimeLeaderboard() {
         .map(player => ({
           ...player,
           user_id: player.id,
-          total_games: 0,
-          finished_games: 0
+          finished_games: player.predictions?.filter(p => 
+            p.game?.game_results?.[0]?.is_final && p.points_earned !== null
+          ).length || 0,
+          total_games: player.total_predictions || 0
         }));
     },
   });

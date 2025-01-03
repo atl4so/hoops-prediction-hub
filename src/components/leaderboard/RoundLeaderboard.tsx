@@ -24,10 +24,48 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
       if (!selectedRound) return [];
 
       const { data, error } = await supabase
-        .rpc('get_round_rankings', { round_id: selectedRound });
+        .from('predictions')
+        .select(`
+          user_id,
+          points_earned,
+          user:profiles!predictions_user_id_fkey (
+            id,
+            display_name,
+            avatar_url
+          ),
+          game:games!inner (
+            game_results!inner (
+              is_final
+            )
+          )
+        `)
+        .eq('game.round_id', selectedRound)
+        .eq('game.game_results.is_final', true)
+        .not('points_earned', 'is', null);
 
       if (error) throw error;
-      return data || [];
+
+      // Group and aggregate data by user
+      const userStats = (data || []).reduce((acc, pred) => {
+        const userId = pred.user_id;
+        if (!acc[userId]) {
+          acc[userId] = {
+            user_id: userId,
+            display_name: pred.user.display_name,
+            avatar_url: pred.user.avatar_url,
+            total_points: 0,
+            predictions_count: 0,
+            finished_games: 0
+          };
+        }
+        acc[userId].total_points += pred.points_earned || 0;
+        acc[userId].predictions_count += 1;
+        acc[userId].finished_games += pred.game.game_results[0].is_final ? 1 : 0;
+        return acc;
+      }, {} as Record<string, any>);
+
+      return Object.values(userStats)
+        .sort((a, b) => b.total_points - a.total_points);
     },
     enabled: !!selectedRound,
   });
