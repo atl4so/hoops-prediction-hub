@@ -26,7 +26,6 @@ const styles = StyleSheet.create({
   avatar: {
     width: 40,
     height: 40,
-    borderRadius: '50%',
     marginRight: 10,
   },
   logo: {
@@ -60,11 +59,11 @@ export const PDFHeader = ({ userName, userAvatar, roundName, totalPoints }: PDFH
       src="/og-image.png"
       style={styles.logo}
     />
-    <Text style={styles.title}>Predictions Report</Text>
+    <Text style={styles.title}>euroleague.bet Predictions Report</Text>
     <View style={styles.userInfo}>
       {userAvatar && (
         <Image
-          src={userAvatar}
+          src={userAvatar.replace(/\?.*$/, '')} // Remove query parameters
           style={styles.avatar}
         />
       )}

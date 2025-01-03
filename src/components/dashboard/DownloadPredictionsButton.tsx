@@ -41,12 +41,30 @@ export const DownloadPredictionsButton = ({
 }: DownloadPredictionsButtonProps) => {
   const handleDownload = async () => {
     try {
+      // Clean image URLs by removing query parameters
+      const cleanedPredictions = predictions.map(pred => ({
+        ...pred,
+        game: {
+          ...pred.game,
+          home_team: {
+            ...pred.game.home_team,
+            logo_url: pred.game.home_team.logo_url.replace(/\?.*$/, '')
+          },
+          away_team: {
+            ...pred.game.away_team,
+            logo_url: pred.game.away_team.logo_url.replace(/\?.*$/, '')
+          }
+        }
+      }));
+
+      const cleanedAvatar = userAvatar?.replace(/\?.*$/, '');
+      
       const blob = await pdf(
         <PredictionsPDF
           userName={userName}
-          userAvatar={userAvatar}
+          userAvatar={cleanedAvatar}
           roundName={roundName}
-          predictions={predictions}
+          predictions={cleanedPredictions}
         />
       ).toBlob();
       
@@ -62,7 +80,7 @@ export const DownloadPredictionsButton = ({
       toast.success("Predictions downloaded successfully!");
     } catch (error) {
       console.error('Error generating PDF:', error);
-      toast.error("Failed to download predictions");
+      toast.error("Failed to download predictions. Please try again.");
     }
   };
 

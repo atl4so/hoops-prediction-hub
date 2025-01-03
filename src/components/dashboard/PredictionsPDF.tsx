@@ -13,9 +13,9 @@ const styles = StyleSheet.create({
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%) rotate(-45deg)',
-    opacity: 0.15,
-    fontSize: 60,
-    color: '#000',
+    opacity: 0.3,
+    fontSize: 80,
+    color: '#888',
   },
 });
 
@@ -68,6 +68,8 @@ export const PredictionsPDF = ({ userName, userAvatar, roundName, predictions }:
             prediction={pred.prediction}
           />
         ))}
+
+        <Text style={styles.watermark}>euroleague.bet</Text>
       </Page>
     </Document>
   );

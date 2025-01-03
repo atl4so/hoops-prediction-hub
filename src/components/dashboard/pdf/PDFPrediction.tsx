@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
   teamLogo: {
     width: 30,
     height: 30,
-    objectFit: 'contain',
   },
   teamName: {
     fontSize: 14,
@@ -94,7 +93,7 @@ export const PDFPrediction = ({ game, prediction }: PDFPredictionProps) => {
       <View style={styles.teamsContainer}>
         <View style={{ alignItems: 'center', flex: 1 }}>
           <Image
-            src={game.home_team.logo_url}
+            src={game.home_team.logo_url.replace(/\?.*$/, '')} // Remove query parameters
             style={styles.teamLogo}
           />
           <Text style={styles.teamName}>{game.home_team.name}</Text>
@@ -104,7 +103,7 @@ export const PDFPrediction = ({ game, prediction }: PDFPredictionProps) => {
         
         <View style={{ alignItems: 'center', flex: 1 }}>
           <Image
-            src={game.away_team.logo_url}
+            src={game.away_team.logo_url.replace(/\?.*$/, '')} // Remove query parameters
             style={styles.teamLogo}
           />
           <Text style={styles.teamName}>{game.away_team.name}</Text>
