@@ -1,5 +1,5 @@
 import { Trophy, Target, TrendingUp, ArrowUp, CheckCircle, Crown, Medal } from "lucide-react";
-import { StatCard } from "./StatCard";
+import { StatCard } from "../StatCard";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -124,7 +124,6 @@ export function StatsList({
             value={stat.value}
             description={stat.description}
             highlight={stat.highlight}
-            delay={index}
           />
         ))}
       </div>
