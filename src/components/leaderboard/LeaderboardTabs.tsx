@@ -31,31 +31,41 @@ export function LeaderboardTabs() {
   }, [latestRound, selectedRound]);
 
   return (
-    <Tabs defaultValue="all-time" className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <TabsList className="grid w-full max-w-[400px] grid-cols-2">
-          <TabsTrigger value="all-time" className="flex items-center gap-2">
-            <Trophy className="h-4 w-4" />
-            All Time
+    <Tabs defaultValue="all-time" className="space-y-8">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <TabsList className="h-12 w-full max-w-[400px] p-1 bg-background/50 backdrop-blur-sm">
+          <TabsTrigger 
+            value="all-time" 
+            className="flex-1 h-10 px-8 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
+          >
+            <div className="flex items-center justify-center gap-2">
+              <Trophy className="h-4 w-4" />
+              <span className="font-semibold">All Time</span>
+            </div>
           </TabsTrigger>
-          <TabsTrigger value="by-round" className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            By Round
+          <TabsTrigger 
+            value="by-round"
+            className="flex-1 h-10 px-8 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
+          >
+            <div className="flex items-center justify-center gap-2">
+              <Calendar className="h-4 w-4" />
+              <span className="font-semibold">By Round</span>
+            </div>
           </TabsTrigger>
         </TabsList>
         <RoundSelector
           selectedRound={selectedRound}
           onRoundChange={setSelectedRound}
-          className="w-full max-w-[200px]"
+          className="w-full sm:w-[200px]"
         />
       </div>
 
-      <div className="min-h-[400px]">
-        <TabsContent value="all-time" className="m-0">
+      <div className="min-h-[400px] animate-fade-in">
+        <TabsContent value="all-time" className="m-0 mt-6">
           <AllTimeLeaderboard />
         </TabsContent>
 
-        <TabsContent value="by-round" className="m-0">
+        <TabsContent value="by-round" className="m-0 mt-6">
           <RoundLeaderboard selectedRound={selectedRound} />
         </TabsContent>
       </div>

@@ -91,7 +91,7 @@ export function LeaderboardRow({
               rank === 3 ? "text-amber-600" :
               rank <= 10 ? "text-primary/70" : ""
             )}>
-              #{rank}
+              {rank}
             </span>
           </div>
         </TableCell>
@@ -138,7 +138,7 @@ export function LeaderboardRow({
               </Avatar>
               <div>
                 <h3 className="text-lg font-bold">{player.display_name}</h3>
-                <p className="text-sm text-muted-foreground">Rank #{rank}</p>
+                <p className="text-sm text-muted-foreground">Rank {rank}</p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-6">
