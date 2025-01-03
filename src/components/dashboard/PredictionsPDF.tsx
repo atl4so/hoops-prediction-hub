@@ -1,4 +1,4 @@
-import { Document, Page, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, StyleSheet } from '@react-pdf/renderer';
 import { PDFHeader } from './pdf/PDFHeader';
 import { PDFPrediction } from './pdf/PDFPrediction';
 
