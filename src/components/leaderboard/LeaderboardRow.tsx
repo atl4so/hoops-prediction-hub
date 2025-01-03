@@ -14,11 +14,8 @@ interface LeaderboardRowProps {
     display_name: string;
     total_points: number;
     points_per_game?: number;
-    total_predictions?: number;
-    predictions_count?: number;
+    total_predictions: number;
     avatar_url?: string;
-    finished_games?: number;
-    total_games?: number;
   };
   rank: number;
   isRoundLeaderboard?: boolean;
@@ -123,7 +120,7 @@ export function LeaderboardRow({
 
         <TableCell className="text-right">
           <div className="flex flex-col items-end">
-            <span className="font-medium">{player.finished_games} / {player.total_predictions || player.total_games}</span>
+            <span className="font-medium">{player.total_predictions}</span>
             <span className="text-xs text-muted-foreground">
               predictions
             </span>
@@ -156,13 +153,13 @@ export function LeaderboardRow({
               </div>
               {!isRoundLeaderboard && (
                 <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Points per Game</p>
+                  <p className="text-sm text-muted-foreground">PPG</p>
                   <p className="text-2xl font-bold">{player.points_per_game?.toFixed(1)}</p>
                 </div>
               )}
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">Predictions</p>
-                <p className="text-2xl font-bold">{player.finished_games} / {player.total_predictions || player.total_games}</p>
+                <p className="text-2xl font-bold">{player.total_predictions}</p>
               </div>
             </div>
           </div>
