@@ -32,20 +32,13 @@ export function AllTimeLeaderboard() {
             )
           )
         `)
+        .gt('total_predictions', 0)
+        .gt('total_points', 0)
         .order('total_points', { ascending: false });
 
       if (profileError) throw profileError;
       
-      return (profileData || [])
-        .filter(player => player.total_points > 0)
-        .map(player => ({
-          ...player,
-          user_id: player.id,
-          finished_games: player.predictions?.filter(p => 
-            p.game?.game_results?.[0]?.is_final && p.points_earned !== null
-          ).length || 0,
-          total_games: player.total_predictions || 0
-        }));
+      return profileData || [];
     },
   });
 
@@ -53,7 +46,7 @@ export function AllTimeLeaderboard() {
     return (
       <div className="space-y-2">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-12 w-full" />
+          <Skeleton key={i} className="h-10 sm:h-12 w-full" />
         ))}
       </div>
     );
@@ -63,22 +56,22 @@ export function AllTimeLeaderboard() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="rounded-md border bg-card"
+      className="rounded-md border bg-card overflow-x-auto"
     >
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-14">Rank</TableHead>
-            <TableHead>Player</TableHead>
-            <TableHead className="text-right">Points</TableHead>
-            <TableHead className="text-right">PPG</TableHead>
-            <TableHead className="text-right">Games</TableHead>
+            <TableHead className="w-12 sm:w-14 py-2">Rank</TableHead>
+            <TableHead className="py-2">Player</TableHead>
+            <TableHead className="text-right py-2">Points</TableHead>
+            <TableHead className="text-right py-2">PPG</TableHead>
+            <TableHead className="text-right py-2">Games</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {rankings?.map((player, index) => (
             <LeaderboardRow
-              key={player.user_id}
+              key={player.id}
               player={player}
               rank={index + 1}
               index={index}
@@ -86,7 +79,7 @@ export function AllTimeLeaderboard() {
           ))}
           {!rankings?.length && (
             <TableRow>
-              <TableCell colSpan={5} className="h-24 text-center">
+              <TableCell colSpan={5} className="h-20 sm:h-24 text-center text-sm sm:text-base">
                 No results.
               </TableCell>
             </TableRow>

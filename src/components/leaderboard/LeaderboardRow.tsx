@@ -9,7 +9,6 @@ import { motion } from "framer-motion";
 
 interface LeaderboardRowProps {
   player: {
-    id?: string;
     user_id?: string;
     display_name: string;
     total_points: number;
@@ -36,13 +35,13 @@ export function LeaderboardRow({
   const getRankIcon = (rank: number) => {
     switch (rank) {
       case 1:
-        return <Trophy className="h-5 w-5 text-yellow-500" />;
+        return <Trophy className="h-4 w-4 text-yellow-500" />;
       case 2:
-        return <Medal className="h-5 w-5 text-gray-400" />;
+        return <Medal className="h-4 w-4 text-gray-400" />;
       case 3:
-        return <Medal className="h-5 w-5 text-amber-600" />;
+        return <Medal className="h-4 w-4 text-amber-600" />;
       default:
-        return rank <= 10 ? <Star className="h-5 w-5 text-primary/40" /> : null;
+        return rank <= 10 ? <Star className="h-4 w-4 text-primary/40" /> : null;
     }
   };
 
@@ -79,11 +78,11 @@ export function LeaderboardRow({
         )}
         onClick={handleUserClick}
       >
-        <TableCell className="font-medium w-14">
-          <div className="flex items-center gap-2">
+        <TableCell className="font-medium py-2 px-2 sm:px-4">
+          <div className="flex items-center gap-1 sm:gap-2">
             {getRankIcon(rank)}
             <span className={cn(
-              "font-semibold",
+              "font-semibold text-sm sm:text-base",
               rank === 1 ? "text-yellow-500" :
               rank === 2 ? "text-gray-400" :
               rank === 3 ? "text-amber-600" :
@@ -94,33 +93,33 @@ export function LeaderboardRow({
           </div>
         </TableCell>
 
-        <TableCell>
-          <div className="flex items-center gap-3">
-            <Avatar className="h-8 w-8">
+        <TableCell className="py-2">
+          <div className="flex items-center gap-2">
+            <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
               <AvatarImage src={player.avatar_url} />
               <AvatarFallback>
-                <User className="h-4 w-4" />
+                <User className="h-3 w-3 sm:h-4 sm:w-4" />
               </AvatarFallback>
             </Avatar>
-            <span className="font-medium">{player.display_name}</span>
+            <span className="font-medium text-sm sm:text-base">{player.display_name}</span>
           </div>
         </TableCell>
 
-        <TableCell className="text-right">
-          <span className="font-semibold">{player.total_points}</span>
-          <span className="text-muted-foreground ml-1">pts</span>
+        <TableCell className="text-right py-2 px-2 sm:px-4">
+          <span className="font-semibold text-sm sm:text-base">{player.total_points}</span>
+          <span className="text-muted-foreground text-xs sm:text-sm ml-1">pts</span>
         </TableCell>
 
         {!isRoundLeaderboard && (
-          <TableCell className="text-right">
-            <span className="font-medium">{player.points_per_game?.toFixed(1)}</span>
-            <span className="text-muted-foreground ml-1">PPG</span>
+          <TableCell className="text-right py-2 px-2 sm:px-4">
+            <span className="font-medium text-sm sm:text-base">{player.points_per_game?.toFixed(1)}</span>
+            <span className="text-muted-foreground text-xs sm:text-sm ml-1">PPG</span>
           </TableCell>
         )}
 
-        <TableCell className="text-right">
+        <TableCell className="text-right py-2 px-2 sm:px-4">
           <div className="flex flex-col items-end">
-            <span className="font-medium">{player.total_predictions}</span>
+            <span className="font-medium text-sm sm:text-base">{player.total_predictions}</span>
             <span className="text-xs text-muted-foreground">
               predictions
             </span>
@@ -129,37 +128,37 @@ export function LeaderboardRow({
       </motion.tr>
 
       <Dialog open={showDetails} onOpenChange={setShowDetails}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Player Details</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16">
+              <Avatar className="h-12 w-12 sm:h-16 sm:w-16">
                 <AvatarImage src={player.avatar_url} />
                 <AvatarFallback>
-                  <User className="h-8 w-8" />
+                  <User className="h-6 w-6 sm:h-8 sm:w-8" />
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="text-lg font-semibold">{player.display_name}</h3>
+                <h3 className="text-base sm:text-lg font-semibold">{player.display_name}</h3>
                 <p className="text-sm text-muted-foreground">Rank #{rank}</p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">Total Points</p>
-                <p className="text-2xl font-bold">{player.total_points}</p>
+                <p className="text-xl sm:text-2xl font-bold">{player.total_points}</p>
               </div>
               {!isRoundLeaderboard && (
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">PPG</p>
-                  <p className="text-2xl font-bold">{player.points_per_game?.toFixed(1)}</p>
+                  <p className="text-xl sm:text-2xl font-bold">{player.points_per_game?.toFixed(1)}</p>
                 </div>
               )}
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">Predictions</p>
-                <p className="text-2xl font-bold">{player.total_predictions}</p>
+                <p className="text-xl sm:text-2xl font-bold">{player.total_predictions}</p>
               </div>
             </div>
           </div>

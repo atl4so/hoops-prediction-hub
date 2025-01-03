@@ -34,10 +34,15 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
             avatar_url
           ),
           game:games!inner (
-            round_id
+            round_id,
+            game_results!inner (
+              is_final
+            )
           )
         `)
-        .eq('game.round_id', selectedRound);
+        .eq('game.round_id', selectedRound)
+        .eq('game.game_results.is_final', true)
+        .not('points_earned', 'is', null);
 
       if (error) throw error;
 
@@ -54,9 +59,7 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
           };
         }
         acc[userId].total_predictions += 1;
-        if (pred.points_earned !== null) {
-          acc[userId].total_points += pred.points_earned || 0;
-        }
+        acc[userId].total_points += pred.points_earned || 0;
         return acc;
       }, {} as Record<string, any>);
 
@@ -68,9 +71,9 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
 
   if (!selectedRound) {
     return (
-      <div className="flex flex-col items-center justify-center space-y-4 py-12">
-        <Trophy className="w-12 h-12 text-primary/20" />
-        <p className="text-muted-foreground">Select a round to view rankings</p>
+      <div className="flex flex-col items-center justify-center space-y-4 py-8 sm:py-12">
+        <Trophy className="w-8 h-8 sm:w-12 sm:h-12 text-primary/20" />
+        <p className="text-sm sm:text-base text-muted-foreground">Select a round to view rankings</p>
       </div>
     );
   }
@@ -79,7 +82,7 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
     return (
       <div className="space-y-2">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-12 w-full" />
+          <Skeleton key={i} className="h-10 sm:h-12 w-full" />
         ))}
       </div>
     );
@@ -89,15 +92,15 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="rounded-md border bg-card"
+      className="rounded-md border bg-card overflow-x-auto"
     >
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-14">Rank</TableHead>
-            <TableHead>Player</TableHead>
-            <TableHead className="text-right">Points</TableHead>
-            <TableHead className="text-right">Games</TableHead>
+            <TableHead className="w-12 sm:w-14 py-2">Rank</TableHead>
+            <TableHead className="py-2">Player</TableHead>
+            <TableHead className="text-right py-2">Points</TableHead>
+            <TableHead className="text-right py-2">Games</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -112,7 +115,7 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
           ))}
           {!rankings?.length && (
             <TableRow>
-              <TableCell colSpan={4} className="h-24 text-center">
+              <TableCell colSpan={4} className="h-20 sm:h-24 text-center text-sm sm:text-base">
                 No results.
               </TableCell>
             </TableRow>
