@@ -2,11 +2,33 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AllTimeLeaderboard } from "./AllTimeLeaderboard";
 import { RoundLeaderboard } from "./RoundLeaderboard";
 import { Trophy, Calendar } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { RoundSelector } from "@/components/ui/round-selector";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export function LeaderboardTabs() {
   const [selectedRound, setSelectedRound] = useState("");
+
+  const { data: latestRound } = useQuery({
+    queryKey: ["latest-round"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('rounds')
+        .select('id')
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (error) throw error;
+      return data?.[0]?.id || "";
+    },
+  });
+
+  useEffect(() => {
+    if (latestRound && !selectedRound) {
+      setSelectedRound(latestRound);
+    }
+  }, [latestRound, selectedRound]);
 
   return (
     <Tabs defaultValue="all-time" className="space-y-6">

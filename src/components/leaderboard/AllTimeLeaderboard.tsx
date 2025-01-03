@@ -59,7 +59,7 @@ export function AllTimeLeaderboard() {
             <TableHead className="w-14">Rank</TableHead>
             <TableHead>Player</TableHead>
             <TableHead className="text-right">Points</TableHead>
-            <TableHead className="text-right">Avg/Game</TableHead>
+            <TableHead className="text-right">PPG</TableHead>
             <TableHead className="text-right">Games</TableHead>
           </TableRow>
         </TableHeader>

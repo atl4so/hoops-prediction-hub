@@ -63,7 +63,6 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
             <TableHead className="w-14">Rank</TableHead>
             <TableHead>Player</TableHead>
             <TableHead className="text-right">Points</TableHead>
-            <TableHead className="text-right">Avg/Game</TableHead>
             <TableHead className="text-right">Games</TableHead>
           </TableRow>
         </TableHeader>
@@ -74,11 +73,12 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
               player={player}
               rank={index + 1}
               index={index}
+              isRoundLeaderboard={true}
             />
           ))}
           {!rankings?.length && (
             <TableRow>
-              <TableCell colSpan={5} className="h-24 text-center">
+              <TableCell colSpan={4} className="h-24 text-center">
                 No results.
               </TableCell>
             </TableRow>
