@@ -6,16 +6,24 @@ import { toast } from "sonner";
 
 interface DownloadPredictionsButtonProps {
   userName: string;
+  userAvatar?: string;
   roundName: string;
   predictions: Array<{
     game: {
       game_date: string;
       home_team: {
         name: string;
+        logo_url: string;
       };
       away_team: {
         name: string;
+        logo_url: string;
       };
+      game_results?: Array<{
+        home_score: number;
+        away_score: number;
+        is_final: boolean;
+      }>;
     };
     prediction: {
       prediction_home_score: number;
@@ -27,6 +35,7 @@ interface DownloadPredictionsButtonProps {
 
 export const DownloadPredictionsButton = ({
   userName,
+  userAvatar,
   roundName,
   predictions,
 }: DownloadPredictionsButtonProps) => {
@@ -35,6 +44,7 @@ export const DownloadPredictionsButton = ({
       const blob = await pdf(
         <PredictionsPDF
           userName={userName}
+          userAvatar={userAvatar}
           roundName={roundName}
           predictions={predictions}
         />
