@@ -20,16 +20,30 @@ export default function Predict() {
 
       try {
         const { data: { user }, error } = await supabase.auth.getUser();
-        if (error || !user) {
+        if (error) {
           console.error('Session error:', error);
-          await supabase.auth.signOut();
-          toast.error("Your session has expired. Please sign in again.");
-          navigate('/login');
+          throw error;
         }
+        
+        if (!user) {
+          throw new Error('No user found');
+        }
+
+        // Test the connection
+        const { error: testError } = await supabase
+          .from('rounds')
+          .select('id')
+          .limit(1);
+
+        if (testError) {
+          console.error('Database connection error:', testError);
+          throw testError;
+        }
+
       } catch (error) {
         console.error('Session check error:', error);
         await supabase.auth.signOut();
-        toast.error("Your session has expired. Please sign in again.");
+        toast.error("There was an error with your session. Please sign in again.");
         navigate('/login');
       }
     };
