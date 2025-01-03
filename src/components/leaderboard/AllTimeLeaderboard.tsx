@@ -12,8 +12,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LeaderboardRow } from "./LeaderboardRow";
 import { motion } from "framer-motion";
 import { Info } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function AllTimeLeaderboard() {
+  const isMobile = useIsMobile();
   const { data: rankings, isLoading } = useQuery({
     queryKey: ["leaderboard", "all-time"],
     queryFn: async () => {
@@ -55,16 +57,18 @@ export function AllTimeLeaderboard() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Info className="h-4 w-4" />
-        <p>Tap on a player to view detailed statistics</p>
-      </div>
+      {isMobile && (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Info className="h-4 w-4" />
+          <p>Tap on a player to view detailed statistics</p>
+        </div>
+      )}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         className="rounded-md border bg-card"
       >
-        <div className="w-full overflow-x-auto -mb-[1px]">
+        <div className="w-full overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
