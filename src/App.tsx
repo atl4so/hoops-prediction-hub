@@ -66,8 +66,8 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
       console.log('Auth state changed:', event, !!session);
       setIsAuthenticated(!!session);
 
-      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
-        console.log('User signed out or deleted, clearing data...');
+      if (event === 'SIGNED_OUT') {
+        console.log('User signed out, clearing data...');
         queryClient.clear();
         localStorage.clear();
         sessionStorage.clear();
