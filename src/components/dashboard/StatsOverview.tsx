@@ -31,6 +31,7 @@ export function StatsOverview(props: StatsListProps) {
   return (
     <div className="space-y-6">
       <StatsList {...props} />
+      <RoundPerformance userId={props.userId} />
       <div className="space-y-6">
         <h2 className="text-2xl font-semibold tracking-tight">Your Predictions</h2>
         <div className="rounded-lg border">
@@ -40,7 +41,6 @@ export function StatsOverview(props: StatsListProps) {
           />
         </div>
       </div>
-      <RoundPerformance userId={props.userId} />
     </div>
   );
 }
