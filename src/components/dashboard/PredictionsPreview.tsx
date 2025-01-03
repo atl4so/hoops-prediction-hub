@@ -9,9 +9,11 @@ interface PredictionsPreviewProps {
       game_date: string;
       home_team: {
         name: string;
+        logo_url: string;
       };
       away_team: {
         name: string;
+        logo_url: string;
       };
       game_results?: Array<{
         home_score: number;
