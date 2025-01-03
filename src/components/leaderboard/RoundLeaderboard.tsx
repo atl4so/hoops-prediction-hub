@@ -26,7 +26,12 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
         .rpc('get_round_rankings', { round_id: selectedRound });
 
       if (error) throw error;
-      return data || [];
+      
+      // Map the data to include total_predictions from predictions_count
+      return data?.map(player => ({
+        ...player,
+        total_predictions: player.predictions_count
+      })) || [];
     },
     enabled: !!selectedRound,
   });
