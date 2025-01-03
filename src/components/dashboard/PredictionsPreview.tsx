@@ -41,7 +41,7 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
   const totalPoints = predictions.reduce((sum, pred) => sum + (pred.prediction.points_earned || 0), 0);
 
   return (
-    <Card className="w-[95%] h-[85vh] max-h-[800px] mx-auto bg-[#f8f9fa] overflow-hidden">
+    <Card className="w-full min-h-full bg-[#f8f9fa] overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 bg-white border-b">
         <div className="flex items-center gap-2">
@@ -52,14 +52,14 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
         <div className="flex items-center gap-4">
           <span className="text-gray-600">Round {roundName}</span>
           <div className="flex items-center gap-2">
-            <span className="text-gray-500">Total:</span>
+            <Trophy className="w-4 h-4 text-orange-500" />
             <span className="text-orange-500 font-semibold">{totalPoints} pts</span>
           </div>
         </div>
       </div>
 
       {/* Predictions list */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+      <div className="p-4 space-y-3">
         {predictions.map((pred, index) => {
           const gameDate = new Date(pred.game.game_date);
           const formattedDate = format(gameDate, 'MMM d');
@@ -68,7 +68,7 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
           return (
             <div 
               key={index} 
-              className="bg-white rounded-lg p-4 space-y-3"
+              className="bg-white rounded-lg p-4 space-y-3 shadow-sm"
             >
               <div className="flex justify-between items-center">
                 <span className="text-base font-medium">
