@@ -53,6 +53,8 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
 
       if (event === 'SIGNED_OUT') {
         queryClient.clear();
+        localStorage.clear();
+        sessionStorage.clear();
       } else if (event === 'SIGNED_IN') {
         queryClient.invalidateQueries();
       }
