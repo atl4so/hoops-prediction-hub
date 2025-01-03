@@ -124,6 +124,7 @@ export function StatsList({
             value={stat.value}
             description={stat.description}
             highlight={stat.highlight}
+            delay={index}
           />
         ))}
       </div>

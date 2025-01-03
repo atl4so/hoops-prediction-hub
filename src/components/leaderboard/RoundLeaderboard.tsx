@@ -30,7 +30,11 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
       // Map the data to include total_predictions from predictions_count
       return data?.map(player => ({
         ...player,
-        total_predictions: player.predictions_count
+        total_predictions: player.predictions_count,
+        // Set these to undefined to hide them in round leaderboard
+        winner_predictions_correct: undefined,
+        winner_predictions_total: undefined,
+        winner_percentage: undefined
       })) || [];
     },
     enabled: !!selectedRound,
