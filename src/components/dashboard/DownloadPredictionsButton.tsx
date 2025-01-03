@@ -6,7 +6,6 @@ import { toast } from "sonner";
 
 interface DownloadPredictionsButtonProps {
   userName: string;
-  userAvatar?: string;
   roundName: string;
   predictions: Array<{
     game: {
@@ -35,36 +34,16 @@ interface DownloadPredictionsButtonProps {
 
 export const DownloadPredictionsButton = ({
   userName,
-  userAvatar,
   roundName,
   predictions,
 }: DownloadPredictionsButtonProps) => {
   const handleDownload = async () => {
     try {
-      // Clean image URLs by removing query parameters
-      const cleanedPredictions = predictions.map(pred => ({
-        ...pred,
-        game: {
-          ...pred.game,
-          home_team: {
-            ...pred.game.home_team,
-            logo_url: pred.game.home_team.logo_url.replace(/\?.*$/, '')
-          },
-          away_team: {
-            ...pred.game.away_team,
-            logo_url: pred.game.away_team.logo_url.replace(/\?.*$/, '')
-          }
-        }
-      }));
-
-      const cleanedAvatar = userAvatar?.replace(/\?.*$/, '');
-      
       const blob = await pdf(
         <PredictionsPDF
           userName={userName}
-          userAvatar={cleanedAvatar}
           roundName={roundName}
-          predictions={cleanedPredictions}
+          predictions={predictions}
         />
       ).toBlob();
       
