@@ -17,6 +17,7 @@ import Following from "./pages/Following";
 import Rules from "./pages/Rules";
 import Terms from "./pages/Terms";
 import { supabase } from "./integrations/supabase/client";
+import { toast } from "sonner";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,10 +37,24 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          if (error.message.includes('session_not_found')) {
+            console.log('Session not found, clearing local data...');
+            localStorage.clear();
+            sessionStorage.clear();
+            setIsAuthenticated(false);
+            return;
+          }
+          throw error;
+        }
+        
         setIsAuthenticated(!!session);
       } catch (error) {
         console.error('Session check error:', error);
+        toast.error("Session error. Please try logging in again.");
+        setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
       }
@@ -51,7 +66,8 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
       console.log('Auth state changed:', event, !!session);
       setIsAuthenticated(!!session);
 
-      if (event === 'SIGNED_OUT') {
+      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+        console.log('User signed out or deleted, clearing data...');
         queryClient.clear();
         localStorage.clear();
         sessionStorage.clear();

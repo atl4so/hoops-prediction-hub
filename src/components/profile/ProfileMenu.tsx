@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSession } from "@supabase/auth-helpers-react";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,18 +14,46 @@ import { Button } from "@/components/ui/button";
 import { ProfileSettings } from "./ProfileSettings";
 import { useUserProfile } from "@/components/dashboard/UserProfile";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export function ProfileMenu() {
   const session = useSession();
+  const supabase = useSupabaseClient();
   const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
   const { data: profile, isLoading } = useUserProfile(session?.user?.id || null);
 
   const handleLogout = async () => {
-    navigate("/login");
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        if (error.message.includes('session_not_found')) {
+          // If session is not found, clear local storage and redirect
+          localStorage.clear();
+          sessionStorage.clear();
+          navigate("/login");
+          return;
+        }
+        throw error;
+      }
+      navigate("/login");
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error("Failed to log out. Please try again.");
+      // Force redirect to login on critical errors
+      localStorage.clear();
+      sessionStorage.clear();
+      navigate("/login");
+    }
   };
 
-  if (!session || isLoading) return <Loader2 className="h-4 w-4 animate-spin" />;
+  if (!session) {
+    // If no session, redirect to login
+    navigate("/login");
+    return null;
+  }
+
+  if (isLoading) return <Loader2 className="h-4 w-4 animate-spin" />;
 
   return (
     <>
