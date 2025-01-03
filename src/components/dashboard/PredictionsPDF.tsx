@@ -5,6 +5,16 @@ const styles = StyleSheet.create({
   page: {
     padding: 30,
     fontFamily: 'Helvetica',
+    position: 'relative',
+  },
+  watermark: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%) rotate(-45deg)',
+    fontSize: 60,
+    opacity: 0.06,
+    color: '#000',
   },
   header: {
     marginBottom: 20,
@@ -17,6 +27,7 @@ const styles = StyleSheet.create({
     color: '#FF6B00',
     fontFamily: 'Helvetica-Bold',
     marginBottom: 4,
+    textAlign: 'center',
   },
   userInfo: {
     marginTop: 10,
@@ -26,51 +37,57 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666',
     marginBottom: 4,
+    textAlign: 'center',
   },
   totalPoints: {
-    fontSize: 16,
+    fontSize: 20,
     color: '#000',
     fontFamily: 'Helvetica-Bold',
     marginTop: 8,
+    textAlign: 'center',
   },
   predictionsContainer: {
-    gap: 15,
+    gap: 12,
   },
   prediction: {
-    padding: 10,
+    padding: 8,
     backgroundColor: '#f8f9fa',
     borderRadius: 4,
   },
   gameInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   teams: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#333',
     fontFamily: 'Helvetica-Bold',
+  },
+  gameDate: {
+    fontSize: 9,
+    color: '#666',
   },
   scores: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 20,
+    gap: 16,
   },
   scoreBox: {
     flex: 1,
   },
   scoreLabel: {
-    fontSize: 10,
+    fontSize: 9,
     color: '#666',
     marginBottom: 2,
   },
   scoreValue: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#000',
     fontFamily: 'Helvetica-Bold',
   },
   points: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#FF6B00',
     textAlign: 'right',
     marginTop: 4,
@@ -110,6 +127,8 @@ export const PredictionsPDF = ({ userName, roundName, predictions }: Predictions
   return (
     <Document>
       <Page size="A4" style={styles.page}>
+        <Text style={styles.watermark}>euroleague.bet</Text>
+        
         <View style={styles.header}>
           <Text style={styles.websiteTitle}>euroleague.bet</Text>
           <View style={styles.userInfo}>
@@ -131,19 +150,12 @@ export const PredictionsPDF = ({ userName, roundName, predictions }: Predictions
                 <Text style={styles.teams}>
                   {pred.game.home_team.name} vs {pred.game.away_team.name}
                 </Text>
-                <Text style={{ fontSize: 10, color: '#666' }}>
+                <Text style={styles.gameDate}>
                   {format(new Date(pred.game.game_date), 'PP')}
                 </Text>
               </View>
 
               <View style={styles.scores}>
-                <View style={styles.scoreBox}>
-                  <Text style={styles.scoreLabel}>Your Prediction</Text>
-                  <Text style={styles.scoreValue}>
-                    {pred.prediction.prediction_home_score} - {pred.prediction.prediction_away_score}
-                  </Text>
-                </View>
-
                 {pred.game.game_results?.[0] && (
                   <View style={styles.scoreBox}>
                     <Text style={styles.scoreLabel}>Final Result</Text>
@@ -152,6 +164,13 @@ export const PredictionsPDF = ({ userName, roundName, predictions }: Predictions
                     </Text>
                   </View>
                 )}
+
+                <View style={styles.scoreBox}>
+                  <Text style={styles.scoreLabel}>Your Prediction</Text>
+                  <Text style={styles.scoreValue}>
+                    {pred.prediction.prediction_home_score} - {pred.prediction.prediction_away_score}
+                  </Text>
+                </View>
               </View>
 
               {pred.prediction.points_earned !== undefined && (
