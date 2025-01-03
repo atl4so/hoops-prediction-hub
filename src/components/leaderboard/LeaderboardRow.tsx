@@ -78,11 +78,11 @@ export function LeaderboardRow({
         )}
         onClick={handleUserClick}
       >
-        <TableCell className="font-medium py-2 px-2 sm:px-4">
-          <div className="flex items-center gap-1 sm:gap-2">
+        <TableCell className="font-medium py-2 px-2">
+          <div className="flex items-center gap-1">
             {getRankIcon(rank)}
             <span className={cn(
-              "font-semibold text-sm sm:text-base",
+              "font-semibold text-sm",
               rank === 1 ? "text-yellow-500" :
               rank === 2 ? "text-gray-400" :
               rank === 3 ? "text-amber-600" :
@@ -95,35 +95,28 @@ export function LeaderboardRow({
 
         <TableCell className="py-2">
           <div className="flex items-center gap-2">
-            <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
+            <Avatar className="h-6 w-6">
               <AvatarImage src={player.avatar_url} />
               <AvatarFallback>
-                <User className="h-3 w-3 sm:h-4 sm:w-4" />
+                <User className="h-3 w-3" />
               </AvatarFallback>
             </Avatar>
-            <span className="font-medium text-sm sm:text-base">{player.display_name}</span>
+            <span className="font-medium text-sm">{player.display_name}</span>
           </div>
         </TableCell>
 
-        <TableCell className="text-right py-2 px-2 sm:px-4">
-          <span className="font-semibold text-sm sm:text-base">{player.total_points}</span>
-          <span className="text-muted-foreground text-xs sm:text-sm ml-1">pts</span>
+        <TableCell className="text-right py-2 px-2">
+          <span className="font-semibold text-sm">{player.total_points}</span>
         </TableCell>
 
         {!isRoundLeaderboard && (
-          <TableCell className="text-right py-2 px-2 sm:px-4">
-            <span className="font-medium text-sm sm:text-base">{player.points_per_game?.toFixed(1)}</span>
-            <span className="text-muted-foreground text-xs sm:text-sm ml-1">PPG</span>
+          <TableCell className="text-right py-2 px-2 hidden sm:table-cell">
+            <span className="font-medium text-sm">{player.points_per_game?.toFixed(1)}</span>
           </TableCell>
         )}
 
-        <TableCell className="text-right py-2 px-2 sm:px-4">
-          <div className="flex flex-col items-end">
-            <span className="font-medium text-sm sm:text-base">{player.total_predictions}</span>
-            <span className="text-xs text-muted-foreground">
-              predictions
-            </span>
-          </div>
+        <TableCell className="text-right py-2 px-2">
+          <span className="font-medium text-sm">{player.total_predictions}</span>
         </TableCell>
       </motion.tr>
 
@@ -134,31 +127,31 @@ export function LeaderboardRow({
           </DialogHeader>
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-              <Avatar className="h-12 w-12 sm:h-16 sm:w-16">
+              <Avatar className="h-12 w-12">
                 <AvatarImage src={player.avatar_url} />
                 <AvatarFallback>
-                  <User className="h-6 w-6 sm:h-8 sm:w-8" />
+                  <User className="h-6 w-6" />
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="text-base sm:text-lg font-semibold">{player.display_name}</h3>
+                <h3 className="text-base font-semibold">{player.display_name}</h3>
                 <p className="text-sm text-muted-foreground">Rank #{rank}</p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">Total Points</p>
-                <p className="text-xl sm:text-2xl font-bold">{player.total_points}</p>
+                <p className="text-xl font-bold">{player.total_points}</p>
               </div>
               {!isRoundLeaderboard && (
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">PPG</p>
-                  <p className="text-xl sm:text-2xl font-bold">{player.points_per_game?.toFixed(1)}</p>
+                  <p className="text-xl font-bold">{player.points_per_game?.toFixed(1)}</p>
                 </div>
               )}
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">Predictions</p>
-                <p className="text-xl sm:text-2xl font-bold">{player.total_predictions}</p>
+                <p className="text-xl font-bold">{player.total_predictions}</p>
               </div>
             </div>
           </div>
