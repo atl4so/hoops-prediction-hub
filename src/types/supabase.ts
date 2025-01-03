@@ -1,25 +1,27 @@
+export interface Team {
+  id: string;
+  name: string;
+  logo_url: string;
+}
+
+export interface Round {
+  id: string;
+  name: string;
+}
+
+export interface GameResult {
+  home_score: number;
+  away_score: number;
+  is_final: boolean;
+}
+
 export interface Game {
   id: string;
   game_date: string;
-  round: {
-    id: string;
-    name: string;
-  };
-  home_team: {
-    id: string;
-    name: string;
-    logo_url: string;
-  };
-  away_team: {
-    id: string;
-    name: string;
-    logo_url: string;
-  };
-  game_results?: Array<{
-    home_score: number;
-    away_score: number;
-    is_final: boolean;
-  }>;
+  round: Round;
+  home_team: Team;
+  away_team: Team;
+  game_results?: GameResult[];
 }
 
 export interface UserProfile {
@@ -55,4 +57,14 @@ export interface StatsListProps {
   allTimeRank?: number | null;
   currentRoundRank?: RoundRank;
   userId: string;
+}
+
+export interface UserPrediction {
+  id: string;
+  prediction: {
+    prediction_home_score: number;
+    prediction_away_score: number;
+    points_earned?: number;
+  };
+  game: Game;
 }

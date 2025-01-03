@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import type { UserPrediction } from "@/types/supabase";
 
 export function useUserRoundPredictions(userId: string, selectedRound: string, isOpen: boolean) {
   return useQuery({
@@ -44,46 +44,27 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
 
         if (error) {
           console.error("Error fetching predictions:", error);
-          toast.error("Failed to load predictions");
           throw error;
         }
 
-        // Filter out predictions without games and transform the data
-        const predictions = data
-          ?.filter(prediction => prediction.game)  
-          .map(prediction => ({
-            id: prediction.id,
-            game: {
-              ...prediction.game,
-              game_results: Array.isArray(prediction.game.game_results)
-                ? prediction.game.game_results
-                : prediction.game.game_results
-                  ? [prediction.game.game_results]
-                  : []
-            },
-            prediction: {
-              prediction_home_score: prediction.prediction_home_score,
-              prediction_away_score: prediction.prediction_away_score,
-              points_earned: prediction.points_earned
-            }
-          })) || [];
-
-        // Sort predictions by game date and finished status
-        return predictions.sort((a, b) => {
-          const aFinished = a.game.game_results?.some(result => result.is_final) ?? false;
-          const bFinished = b.game.game_results?.some(result => result.is_final) ?? false;
-          
-          // If one is finished and the other isn't, put unfinished first
-          if (aFinished !== bFinished) {
-            return aFinished ? 1 : -1;
+        return data.map((item): UserPrediction => ({
+          id: item.id,
+          prediction: {
+            prediction_home_score: item.prediction_home_score,
+            prediction_away_score: item.prediction_away_score,
+            points_earned: item.points_earned
+          },
+          game: {
+            ...item.game,
+            game_results: Array.isArray(item.game.game_results)
+              ? item.game.game_results
+              : item.game.game_results
+                ? [item.game.game_results]
+                : []
           }
-          
-          // Otherwise sort by game date
-          return new Date(a.game.game_date).getTime() - new Date(b.game.game_date).getTime();
-        });
+        }));
       } catch (error) {
         console.error("Error in useUserRoundPredictions:", error);
-        toast.error("Failed to load predictions");
         throw error;
       }
     },

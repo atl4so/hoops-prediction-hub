@@ -7,7 +7,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
     storageKey: 'euroleague-auth',
-    storage: window.localStorage,
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
     autoRefreshToken: true,
     detectSessionInUrl: true,
     flowType: 'pkce'
