@@ -55,7 +55,7 @@ export function DashboardPredictions({ predictionsByRound, userName }: Dashboard
         <Accordion type="single" collapsible className="w-full">
           {Object.values(predictionsByRound).map((roundData) => (
             <AccordionItem key={roundData.roundId} value={roundData.roundId}>
-              <AccordionTrigger className="px-4 hover:no-underline hover:bg-accent/50">
+              <AccordionTrigger className="rounded-lg px-4 hover:no-underline data-[state=open]:bg-accent/50 hover:bg-accent/50">
                 <span className="text-sm font-medium">
                   Round {roundData.roundName}
                 </span>
