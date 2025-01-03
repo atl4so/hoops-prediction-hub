@@ -6,6 +6,7 @@ import { EditGameResultDialog } from "./EditGameResultDialog";
 import { Accordion } from "@/components/ui/accordion";
 import { useGameResults } from "@/hooks/useGameResults";
 import { RoundResultsSection } from "./games/RoundResultsSection";
+import type { Game } from "@/types/supabase";
 
 export function GameResultsList() {
   const { toast } = useToast();
