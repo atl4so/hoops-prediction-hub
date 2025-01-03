@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { Trophy, Basketball } from 'lucide-react';
+import { Trophy, Medal } from 'lucide-react';
 
 interface PredictionsPreviewProps {
   userName: string;
@@ -68,7 +68,7 @@ export const PredictionsPreview = ({
           >
             <div className="flex justify-between items-center mb-3">
               <div className="flex items-center gap-2">
-                <Basketball className="h-4 w-4 text-orange-500" />
+                <Medal className="h-4 w-4 text-orange-500" />
                 <span className="font-medium">
                   {pred.game.home_team.name} vs {pred.game.away_team.name}
                 </span>
