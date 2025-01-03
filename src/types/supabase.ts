@@ -39,6 +39,16 @@ export interface Prediction {
   points_earned?: number;
 }
 
+export interface UserPrediction {
+  id: string;
+  prediction: {
+    prediction_home_score: number;
+    prediction_away_score: number;
+    points_earned?: number;
+  };
+  game: Game;
+}
+
 export interface RoundRank {
   rank: number;
   roundId: string;
@@ -57,22 +67,4 @@ export interface StatsListProps {
   allTimeRank?: number | null;
   currentRoundRank?: RoundRank;
   userId: string | null;
-}
-
-export interface UserPrediction {
-  id: string;
-  prediction: {
-    prediction_home_score: number;
-    prediction_away_score: number;
-    points_earned?: number;
-  };
-  game: Game;
-}
-
-export interface GameWithPrediction extends Game {
-  prediction?: {
-    prediction_home_score: number;
-    prediction_away_score: number;
-    points_earned?: number;
-  };
 }

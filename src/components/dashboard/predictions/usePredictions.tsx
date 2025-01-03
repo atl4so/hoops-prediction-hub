@@ -63,7 +63,10 @@ export function usePredictions(followedIds: string[]) {
         game: {
           id: item.game.id,
           game_date: item.game.game_date,
-          round: item.game.round,
+          round: {
+            id: item.game.round.id,
+            name: item.game.round.name
+          },
           home_team: item.game.home_team,
           away_team: item.game.away_team,
           game_results: Array.isArray(item.game.game_results)

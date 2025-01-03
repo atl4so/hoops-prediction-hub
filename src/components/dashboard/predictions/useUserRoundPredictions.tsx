@@ -57,12 +57,12 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
           game: {
             id: item.game.id,
             game_date: item.game.game_date,
-            home_team: item.game.home_team,
-            away_team: item.game.away_team,
             round: {
               id: selectedRound,
               name: item.game.round_id.toString()
             },
+            home_team: item.game.home_team,
+            away_team: item.game.away_team,
             game_results: Array.isArray(item.game.game_results)
               ? item.game.game_results
               : item.game.game_results
