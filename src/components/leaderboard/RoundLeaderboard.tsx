@@ -31,8 +31,7 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
           user:profiles!predictions_user_id_fkey (
             id,
             display_name,
-            avatar_url,
-            total_predictions
+            avatar_url
           ),
           game:games!inner (
             round_id,
@@ -56,7 +55,7 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
             display_name: pred.user.display_name,
             avatar_url: pred.user.avatar_url,
             total_points: 0,
-            total_predictions: pred.user.total_predictions
+            total_predictions: 0
           };
         }
         acc[userId].total_predictions += 1;
