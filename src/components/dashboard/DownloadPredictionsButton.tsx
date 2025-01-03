@@ -45,7 +45,7 @@ export const DownloadPredictionsButton = ({
       document.body.appendChild(tempDiv);
 
       const root = document.createElement("div");
-      root.style.width = "600px";
+      root.style.width = "800px"; // Increased width for better quality
       root.style.backgroundColor = "#f8f9fa";
       tempDiv.appendChild(root);
 
@@ -61,20 +61,22 @@ export const DownloadPredictionsButton = ({
       const reactRoot = createRoot(root);
       await new Promise<void>(resolve => {
         reactRoot.render(previewContent);
-        setTimeout(resolve, 100);
+        setTimeout(resolve, 500); // Increased timeout for better image loading
       });
 
       const canvas = await html2canvas(root, {
-        scale: 2,
+        scale: 2, // Higher scale for better quality
         backgroundColor: "#f8f9fa",
         logging: false,
         useCORS: true,
         allowTaint: true,
+        width: 800, // Match the root width
+        height: 1000, // Adjusted height
       });
 
       const image = canvas.toDataURL("image/png", 1.0);
       const link = document.createElement("a");
-      link.download = `predictions-${roundName.toLowerCase()}.png`;
+      link.download = `predictions-round-${roundName.toLowerCase()}.png`;
       link.href = image;
       link.click();
 
