@@ -42,6 +42,7 @@ export function StatsList({
   const [showAllCards, setShowAllCards] = useState(false);
   const isMobile = useIsMobile();
 
+  // Calculate winner percentage only from games with final results
   const winnerPercentage = winnerPredictionsTotal > 0
     ? Math.round((winnerPredictionsCorrect / winnerPredictionsTotal) * 100)
     : 0;
@@ -72,7 +73,7 @@ export function StatsList({
       icon: CheckCircle,
       label: "Winner Predictions",
       value: `${winnerPercentage}%`,
-      description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} games`,
+      description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} finished games`,
       highlight: true
     },
     {
@@ -80,28 +81,28 @@ export function StatsList({
       label: "Points per Game",
       value: (pointsPerGame || 0).toFixed(1),
       description: "Average points earned per prediction",
-      highlight: false
+      highlight: true
     },
     {
       icon: TrendingUp,
       label: "Total Predictions",
       value: totalPredictions || 0,
       description: "Number of predictions you've made",
-      highlight: false
+      highlight: true
     },
     {
       icon: ArrowUp,
       label: "Highest Game Points",
       value: highestGamePoints || 0,
       description: "Best performance in a single game",
-      highlight: false
+      highlight: true
     },
     {
       icon: ArrowUp,
       label: "Highest Round Points",
       value: highestRoundPoints || 0,
       description: "Best total points in a single round",
-      highlight: false
+      highlight: true
     }
   ];
 
