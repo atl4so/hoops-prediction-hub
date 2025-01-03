@@ -6,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { subHours } from "date-fns";
 import { useSession } from "@supabase/auth-helpers-react";
 import { GameCard } from "./GameCard";
+import type { Game } from "@/types/supabase";
 
 interface GamesListProps {
   isAuthenticated: boolean;
@@ -58,7 +59,6 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     return setupSubscriptions();
   }, [setupSubscriptions]);
 
-  // Query to get user's existing predictions with increased cache time
   const { data: userPredictions } = useQuery({
     queryKey: ["user-predictions", userId],
     queryFn: async () => {
@@ -77,8 +77,8 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
       return data.map(p => p.game_id);
     },
     enabled: !!userId,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    gcTime: 1000 * 60 * 10, // Keep unused data for 10 minutes
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
   });
 
   const { data: games, isLoading } = useQuery({
@@ -104,52 +104,56 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
         throw error;
       }
       
-      console.log('Raw data:', data.map(g => ({ 
-        date: g.game_date, 
-        teams: `${g.home_team.name} vs ${g.away_team.name}`,
-        results: g.game_results 
-      })));
-      
       // Process games and parse dates
-      const processedGames = data.map(game => ({
-        ...game,
+      const processedGames = data.map((game): Game => ({
+        id: game.id,
+        game_date: game.game_date,
         parsedDate: new Date(game.game_date),
-        game_results: Array.isArray(game.game_results) 
-          ? game.game_results 
-          : game.game_results 
-            ? [game.game_results] 
+        home_team: {
+          id: game.home_team.id,
+          name: game.home_team.name,
+          logo_url: game.home_team.logo_url
+        },
+        away_team: {
+          id: game.away_team.id,
+          name: game.away_team.name,
+          logo_url: game.away_team.logo_url
+        },
+        round: {
+          id: game.round.id,
+          name: game.round.name
+        },
+        game_results: Array.isArray(game.game_results)
+          ? game.game_results.map(result => ({
+              home_score: result.home_score,
+              away_score: result.away_score,
+              is_final: result.is_final
+            }))
+          : game.game_results
+            ? [{
+                home_score: game.game_results.home_score,
+                away_score: game.game_results.away_score,
+                is_final: game.game_results.is_final
+              }]
             : []
       }));
-
-      console.log('Processed games:', processedGames.map(g => ({
-        original: g.game_date,
-        parsed: g.parsedDate,
-        teams: `${g.home_team.name} vs ${g.away_team.name}`
-      })));
 
       // Split into finished and unfinished games
       const unfinishedGames = processedGames
         .filter(game => !game.game_results?.some(result => result.is_final))
-        .sort((a, b) => a.parsedDate.getTime() - b.parsedDate.getTime());
-
-      console.log('Unfinished games after sort:', unfinishedGames.map(g => ({
-        date: g.game_date,
-        parsed: g.parsedDate,
-        teams: `${g.home_team.name} vs ${g.away_team.name}`
-      })));
+        .sort((a, b) => new Date(a.game_date).getTime() - new Date(b.game_date).getTime());
 
       const finishedGames = processedGames
         .filter(game => game.game_results?.some(result => result.is_final))
-        .sort((a, b) => b.parsedDate.getTime() - a.parsedDate.getTime());
+        .sort((a, b) => new Date(b.game_date).getTime() - new Date(a.game_date).getTime());
 
       // Combine with unfinished games first
       return [...unfinishedGames, ...finishedGames];
     },
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    gcTime: 1000 * 60 * 10, // Keep unused data for 10 minutes
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
   });
 
-  // Memoize the filtered games to prevent unnecessary recalculations
   const availableGames = useMemo(() => {
     if (!games) return [];
     
@@ -200,4 +204,3 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
       ))}
     </div>
   );
-}

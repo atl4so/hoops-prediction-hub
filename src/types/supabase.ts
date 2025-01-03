@@ -48,23 +48,3 @@ export interface UserPrediction {
   };
   game: Game;
 }
-
-export interface RoundRank {
-  rank: number;
-  roundId: string;
-  roundName: string;
-  isCurrent: boolean;
-}
-
-export interface StatsListProps {
-  totalPoints: number;
-  pointsPerGame: number;
-  totalPredictions: number;
-  highestGamePoints?: number | null;
-  lowestGamePoints?: number | null;
-  highestRoundPoints?: number | null;
-  lowestRoundPoints?: number | null;
-  allTimeRank?: number | null;
-  currentRoundRank?: RoundRank;
-  userId: string | null;
-}
