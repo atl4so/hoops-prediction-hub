@@ -1,5 +1,5 @@
-import { Trophy, Target, TrendingUp, ArrowUp, CheckCircle, Crown, Medal } from "lucide-react";
-import { StatCard } from "../StatCard";
+import { Trophy, Target, TrendingUp, ArrowUp, ArrowDown, Crown, Medal } from "lucide-react";
+import { StatCard } from "./StatCard";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -15,8 +15,6 @@ interface StatsListProps {
   lowestRoundPoints?: number | null;
   allTimeRank?: number | null;
   currentRoundRank?: { rank: number | null; isCurrent: boolean; roundName: string };
-  winnerPredictionsCorrect?: number;
-  winnerPredictionsTotal?: number;
 }
 
 const formatRank = (rank: number | null | undefined) => {
@@ -36,16 +34,9 @@ export function StatsList({
   lowestRoundPoints,
   allTimeRank,
   currentRoundRank,
-  winnerPredictionsCorrect = 0,
-  winnerPredictionsTotal = 0,
 }: StatsListProps) {
   const [showAllCards, setShowAllCards] = useState(false);
   const isMobile = useIsMobile();
-
-  // Calculate winner percentage only from games with final results
-  const winnerPercentage = winnerPredictionsTotal > 0
-    ? Math.round((winnerPredictionsCorrect / winnerPredictionsTotal) * 100)
-    : 0;
 
   const allStats = [
     {
@@ -53,61 +44,53 @@ export function StatsList({
       label: "Total Points",
       value: totalPoints || 0,
       description: "Your cumulative points from all predictions",
-      highlight: true
     },
     {
       icon: Crown,
       label: "All-Time Rank",
       value: formatRank(allTimeRank),
       description: "Your overall ranking among all players",
-      highlight: true
     },
     {
       icon: Medal,
       label: "Latest Round Rank",
       value: formatRank(currentRoundRank?.rank),
       description: `Your position in Round ${currentRoundRank?.roundName} leaderboard`,
-      highlight: true
-    },
-    {
-      icon: CheckCircle,
-      label: "Winner Predictions",
-      value: `${winnerPercentage}%`,
-      description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} finished games`,
-      highlight: true
     },
     {
       icon: Target,
       label: "Points per Game",
       value: (pointsPerGame || 0).toFixed(1),
-      description: "Average points earned per prediction",
-      highlight: true
+      description: "Average points earned per prediction"
     },
     {
       icon: TrendingUp,
       label: "Total Predictions",
       value: totalPredictions || 0,
-      description: "Number of predictions you've made",
-      highlight: true
+      description: "Number of predictions you've made"
     },
     {
       icon: ArrowUp,
       label: "Highest Game Points",
       value: highestGamePoints || 0,
-      description: "Best performance in a single game",
-      highlight: true
+      description: "Best performance in a single game"
     },
     {
       icon: ArrowUp,
       label: "Highest Round Points",
       value: highestRoundPoints || 0,
-      description: "Best total points in a single round",
-      highlight: true
+      description: "Best total points in a single round"
+    },
+    {
+      icon: ArrowDown,
+      label: "Lowest Round Points",
+      value: lowestRoundPoints || 0,
+      description: "Lowest total points in a round"
     }
   ];
 
   const visibleStats = isMobile 
-    ? (showAllCards ? allStats : allStats.slice(0, 3))
+    ? (showAllCards ? allStats : allStats.slice(0, 2))
     : allStats;
 
   return (
@@ -123,12 +106,10 @@ export function StatsList({
             label={stat.label}
             value={stat.value}
             description={stat.description}
-            highlight={stat.highlight}
-            delay={index}
           />
         ))}
       </div>
-      {isMobile && allStats.length > 3 && (
+      {isMobile && allStats.length > 2 && (
         <Button
           variant="outline"
           className="w-full mt-4"

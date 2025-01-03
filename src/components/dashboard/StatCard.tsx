@@ -8,7 +8,6 @@ interface StatCardProps {
   value: string | number;
   description?: string;
   highlight?: boolean;
-  delay?: number;
 }
 
 export function StatCard({ 
@@ -16,8 +15,7 @@ export function StatCard({
   label, 
   value, 
   description,
-  highlight = false,
-  delay = 0
+  highlight = false 
 }: StatCardProps) {
   return (
     <Card className={cn(
