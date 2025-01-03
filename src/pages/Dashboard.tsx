@@ -2,22 +2,16 @@ import { useEffect, useState } from "react";
 import { useSession } from "@supabase/auth-helpers-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { StatsOverview } from "@/components/dashboard/StatsOverview";
-import { CollapsibleRoundSection } from "@/components/dashboard/CollapsibleRoundSection";
 import { useUserProfile } from "@/components/dashboard/UserProfile";
 import { useCurrentRoundRank } from "@/components/dashboard/useCurrentRoundRank";
 import { useUserPredictions } from "@/components/dashboard/useUserPredictions";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { GamesList } from "@/components/games/GamesList";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { DashboardStats } from "@/components/dashboard/sections/DashboardStats";
+import { DashboardPredictions } from "@/components/dashboard/sections/DashboardPredictions";
+import { DashboardGames } from "@/components/dashboard/sections/DashboardGames";
 
 export default function Dashboard() {
   const session = useSession();
@@ -86,26 +80,15 @@ export default function Dashboard() {
         predictions: []
       };
     }
-    acc[roundId].predictions.push({
-      id: prediction.id,
-      game: {
-        ...prediction.game,
-        game_results: prediction.game.game_results || []
-      },
-      prediction: {
-        prediction_home_score: prediction.prediction_home_score,
-        prediction_away_score: prediction.prediction_away_score,
-        points_earned: prediction.points_earned
-      }
-    });
+    acc[roundId].predictions.push(prediction);
     return acc;
-  }, {} as Record<string, { roundId: string; roundName: string; predictions: any[] }>);
+  }, {} as Record<string, { roundId: string; roundName: string; predictions: typeof predictions }>) || {};
 
   return (
     <div className="space-y-8">
       <DashboardHeader />
       
-      <StatsOverview
+      <DashboardStats
         totalPoints={totalPoints}
         pointsPerGame={pointsPerGame}
         totalPredictions={totalPredictions}
@@ -118,37 +101,17 @@ export default function Dashboard() {
         userId={userId}
       />
 
-      <div className="space-y-6">
-        <h2 className="text-2xl font-semibold tracking-tight">Your Predictions</h2>
-        <div className="rounded-lg border">
-          <Accordion type="single" collapsible className="w-full">
-            {predictionsByRound && Object.values(predictionsByRound).map((roundData) => (
-              <AccordionItem key={roundData.roundId} value={roundData.roundId}>
-                <AccordionTrigger className="px-4 hover:no-underline hover:bg-accent/50">
-                  <span className="text-sm font-medium">
-                    Round {roundData.roundName}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="pt-4 px-4">
-                  <CollapsibleRoundSection
-                    roundId={roundData.roundId}
-                    roundName={roundData.roundName}
-                    predictions={roundData.predictions}
-                    userName={userProfileData?.display_name || "User"}
-                  />
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </div>
+      <DashboardPredictions
+        predictionsByRound={predictionsByRound}
+        userName={userProfileData?.display_name || "User"}
+      />
 
       <Separator className="my-8" />
 
-      <div className="space-y-6">
-        <h2 className="text-2xl font-semibold tracking-tight">Available Games</h2>
-        <GamesList isAuthenticated={!!session} userId={userId || undefined} />
-      </div>
+      <DashboardGames
+        isAuthenticated={!!session}
+        userId={userId || undefined}
+      />
     </div>
   );
 }
