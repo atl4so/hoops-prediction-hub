@@ -11,6 +11,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { LeaderboardRow } from "./LeaderboardRow";
 import { motion } from "framer-motion";
+import { Info } from "lucide-react";
 
 export function AllTimeLeaderboard() {
   const { data: rankings, isLoading } = useQuery({
@@ -53,39 +54,47 @@ export function AllTimeLeaderboard() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="rounded-md border bg-card overflow-x-auto"
-    >
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-12 sm:w-14 py-2">Rank</TableHead>
-            <TableHead className="py-2">Player</TableHead>
-            <TableHead className="text-right py-2">Points</TableHead>
-            <TableHead className="text-right py-2">PPG</TableHead>
-            <TableHead className="text-right py-2">Games</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {rankings?.map((player, index) => (
-            <LeaderboardRow
-              key={player.id}
-              player={player}
-              rank={index + 1}
-              index={index}
-            />
-          ))}
-          {!rankings?.length && (
-            <TableRow>
-              <TableCell colSpan={5} className="h-20 sm:h-24 text-center text-sm sm:text-base">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </motion.div>
+    <div className="space-y-4">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Info className="h-4 w-4" />
+        <p>Tap on a player to view detailed statistics</p>
+      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="rounded-md border bg-card"
+      >
+        <div className="w-full overflow-x-auto -mb-[1px]">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[70px] py-2">Rank</TableHead>
+                <TableHead className="py-2">Player</TableHead>
+                <TableHead className="text-right py-2">Points</TableHead>
+                <TableHead className="text-right py-2 hidden sm:table-cell">PPG</TableHead>
+                <TableHead className="text-right py-2">Games</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rankings?.map((player, index) => (
+                <LeaderboardRow
+                  key={player.id}
+                  player={player}
+                  rank={index + 1}
+                  index={index}
+                />
+              ))}
+              {!rankings?.length && (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-20 sm:h-24 text-center text-sm sm:text-base">
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </motion.div>
+    </div>
   );
 }

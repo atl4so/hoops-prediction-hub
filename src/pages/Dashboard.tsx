@@ -66,8 +66,6 @@ export default function Dashboard() {
   const { data: currentRoundRank } = useCurrentRoundRank(userId);
   const { data: predictions, isError: predictionsError } = useUserPredictions(userId);
 
-  console.log('Dashboard predictions:', predictions);
-
   if (profileError || predictionsError) {
     toast.error("Failed to load data");
     return null;
@@ -103,8 +101,6 @@ export default function Dashboard() {
     return acc;
   }, {} as Record<string, { roundId: string; roundName: string; predictions: any[] }>);
 
-  console.log('Grouped predictions by round:', predictionsByRound);
-
   return (
     <div className="space-y-8">
       <DashboardHeader />
@@ -121,13 +117,6 @@ export default function Dashboard() {
         currentRoundRank={currentRoundRank}
         userId={userId}
       />
-
-      <div className="space-y-6">
-        <h2 className="text-2xl font-semibold tracking-tight">Available Games</h2>
-        <GamesList isAuthenticated={!!session} userId={userId || undefined} />
-      </div>
-
-      <Separator className="my-8" />
 
       <div className="space-y-6">
         <h2 className="text-2xl font-semibold tracking-tight">Your Predictions</h2>
@@ -152,6 +141,13 @@ export default function Dashboard() {
             ))}
           </Accordion>
         </div>
+      </div>
+
+      <Separator className="my-8" />
+
+      <div className="space-y-6">
+        <h2 className="text-2xl font-semibold tracking-tight">Available Games</h2>
+        <GamesList isAuthenticated={!!session} userId={userId || undefined} />
       </div>
     </div>
   );
