@@ -118,9 +118,10 @@ const App = () => {
           <Toaster />
           <Sonner
             position="top-center"
-            duration={2000}
+            duration={1500}
             closeButton={false}
             richColors
+            theme="light"
           />
           <BrowserRouter>
             <SessionHandler>
