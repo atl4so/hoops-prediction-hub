@@ -4,7 +4,7 @@ import { LogoUpload } from "@/components/upload/LogoUpload";
 import { toast } from "sonner";
 
 export function DesignAssets() {
-  const [backgroundLogo, setBackgroundLogo] = useState<string | null>(null);
+  const [backgroundLogo, setBackgroundLogo] = useState<string | null>("/logocourt.jpg");
 
   const handleLogoChange = (url: string | null) => {
     setBackgroundLogo(url);
