@@ -1,10 +1,38 @@
 import { CollapsibleRoundSection } from "../CollapsibleRoundSection";
+import { RoundSummaryDialog } from "../predictions/RoundSummaryDialog";
 
 interface DashboardPredictionsProps {
   predictionsByRound: Record<string, {
     roundId: string;
     roundName: string;
-    predictions: Array<any>;
+    predictions: Array<{
+      game: {
+        id: string;
+        game_date: string;
+        round: {
+          id: string;
+          name: string;
+        };
+        home_team: {
+          name: string;
+          logo_url: string;
+        };
+        away_team: {
+          name: string;
+          logo_url: string;
+        };
+        game_results?: Array<{
+          home_score: number;
+          away_score: number;
+          is_final: boolean;
+        }>;
+      };
+      prediction: {
+        prediction_home_score: number;
+        prediction_away_score: number;
+        points_earned?: number;
+      };
+    }>;
   }>;
   userName: string;
 }
@@ -31,6 +59,13 @@ export const DashboardPredictions = ({ predictionsByRound, userName }: Dashboard
           roundName={round.roundName}
           predictions={round.predictions}
           userName={userName}
+          extraContent={
+            <RoundSummaryDialog
+              roundName={round.roundName}
+              userName={userName}
+              predictions={round.predictions}
+            />
+          }
         />
       ))}
     </div>
