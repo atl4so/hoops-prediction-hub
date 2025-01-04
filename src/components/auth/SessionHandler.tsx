@@ -57,8 +57,8 @@ export const SessionHandler = ({ children }: SessionHandlerProps) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, session?.user?.id);
       
-      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
-        console.log('User signed out or deleted, cleaning up...');
+      if (event === 'SIGNED_OUT') {
+        console.log('User signed out, cleaning up...');
         await cleanupSession();
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         console.log('User signed in or token refreshed:', session?.user?.id);
