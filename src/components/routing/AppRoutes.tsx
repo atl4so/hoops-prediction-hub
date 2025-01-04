@@ -18,9 +18,9 @@ export const AppRoutes = () => {
   return (
     <Routes>
       {/* Public routes */}
-      <Route path="/" element={!session ? <Index /> : <Navigate to="/predict" replace />} />
-      <Route path="/login" element={!session ? <Login /> : <Navigate to="/predict" replace />} />
-      <Route path="/register" element={!session ? <RegisterForm /> : <Navigate to="/predict" replace />} />
+      <Route path="/" element={<Index />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<RegisterForm />} />
       <Route path="/terms" element={<Terms />} />
 
       {/* Protected routes */}
