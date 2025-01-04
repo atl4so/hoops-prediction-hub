@@ -70,7 +70,7 @@ const Login = () => {
           duration: 3000,
           className: "bg-[#F97316] text-white",
         });
-        navigate("/predict");
+        navigate("/dashboard");
       }
     } catch (error: any) {
       console.error("Login error:", error);
@@ -89,7 +89,7 @@ const Login = () => {
           </h1>
         </div>
 
-        <Card>
+        <Card className="w-full shadow-lg dark:bg-[#0B1616] dark:border-border/50">
           <CardHeader className="space-y-1 pb-4">
             <CardTitle className="text-xl text-center">Sign In</CardTitle>
             <CardDescription className="text-center">
@@ -148,7 +148,7 @@ const Login = () => {
               </Button>
             </form>
           </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
+          <CardFooter className="flex flex-col space-y-2 pt-0">
             <div className="text-sm text-center text-muted-foreground">
               New to euroleague.bet?{" "}
               <Button 
@@ -159,13 +159,6 @@ const Login = () => {
                 Create account
               </Button>
             </div>
-            <Button 
-              variant="outline" 
-              className="w-full"
-              onClick={() => navigate("/")}
-            >
-              Back to Home
-            </Button>
           </CardFooter>
         </Card>
       </div>

@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { MobileMenu } from "./MobileMenu";
 import { DesktopNav } from "./DesktopNav";
@@ -8,17 +8,16 @@ import { useUserProfile } from "../dashboard/UserProfile";
 
 export function AppHeader() {
   const navigate = useNavigate();
-  const location = useLocation();
   const supabase = useSupabaseClient();
   const user = useUser();
   const { data: profile } = useUserProfile(user?.id || null);
-  const isIndexPage = location.pathname === '/';
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/login');
   };
 
+  // Check if user is admin by email
   const isAdmin = user?.email === 'likasvy@gmail.com';
 
   return (
@@ -32,9 +31,7 @@ export function AppHeader() {
             onLogout={handleLogout}
           />
           <a href="/" className="flex items-center space-x-2">
-            <h1 className="text-lg sm:text-xl font-bold tracking-tight font-display">
-              euroleague.bet
-            </h1>
+            <img src="/basketball-favicon.png" alt="Logo" className="logo" />
           </a>
         </div>
         <DesktopNav 
