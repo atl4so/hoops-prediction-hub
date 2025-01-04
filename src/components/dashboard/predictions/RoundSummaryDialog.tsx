@@ -8,7 +8,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Share2, Download } from "lucide-react";
 import { PredictionsPreview } from "../PredictionsPreview";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import html2canvas from "html2canvas";
 import { toast } from "sonner";
 
@@ -51,10 +50,6 @@ export function RoundSummaryDialog({ roundName, userName, predictions }: RoundSu
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
-        windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight,
-        width: element.scrollWidth,
-        height: element.scrollHeight
       });
 
       canvas.toBlob((blob) => {
@@ -88,8 +83,8 @@ export function RoundSummaryDialog({ roundName, userName, predictions }: RoundSu
           Share Round
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl h-[90vh] p-0">
-        <DialogHeader className="p-6 pb-0">
+      <DialogContent className="max-w-3xl p-4">
+        <DialogHeader className="mb-4">
           <div className="flex items-center justify-between">
             <DialogTitle>Round {roundName} Summary</DialogTitle>
             <Button 
@@ -103,17 +98,13 @@ export function RoundSummaryDialog({ roundName, userName, predictions }: RoundSu
             </Button>
           </div>
         </DialogHeader>
-        <ScrollArea className="h-[calc(90vh-100px)]">
-          <div className="p-6 pt-4">
-            <div id="predictions-preview" className="bg-white rounded-lg overflow-hidden">
-              <PredictionsPreview
-                userName={userName}
-                roundName={roundName}
-                predictions={predictions}
-              />
-            </div>
-          </div>
-        </ScrollArea>
+        <div id="predictions-preview" className="bg-white rounded-lg overflow-hidden">
+          <PredictionsPreview
+            userName={userName}
+            roundName={roundName}
+            predictions={predictions}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );
