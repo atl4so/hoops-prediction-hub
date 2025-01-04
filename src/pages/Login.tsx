@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Lock, Mail } from "lucide-react";
@@ -12,7 +11,6 @@ import { normalizeEmail } from "@/utils/validation";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -66,10 +64,7 @@ const Login = () => {
       }
 
       if (data.user) {
-        toast({
-          title: "Welcome back!",
-          description: "You have successfully logged in.",
-        });
+        console.log("User logged in successfully");
         navigate("/dashboard");
       }
     } catch (error: any) {
