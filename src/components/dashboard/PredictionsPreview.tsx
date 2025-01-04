@@ -2,6 +2,7 @@ import React from 'react';
 import { Card } from "@/components/ui/card";
 import { format } from "date-fns";
 import { Trophy, CheckCircle2, Timer } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface PredictionData {
   game: {
@@ -31,12 +32,14 @@ interface PredictionsPreviewProps {
   userName: string;
   roundName: string;
   predictions: PredictionData[];
+  isDownload?: boolean;
 }
 
 export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
   userName,
   roundName,
-  predictions
+  predictions,
+  isDownload = false
 }) => {
   const totalPoints = predictions.reduce((sum, pred) => sum + (pred.prediction.points_earned || 0), 0);
 
@@ -45,15 +48,33 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between px-8 py-6 bg-white border-b">
         <div className="flex items-center gap-3">
-          <span className="text-2xl font-bold">euroleague.bet</span>
-          <span className="text-gray-500 text-xl">•</span>
-          <span className="text-gray-600 text-xl">@{userName}</span>
+          <span className={cn(
+            "font-bold",
+            isDownload ? "text-3xl" : "text-2xl"
+          )}>euroleague.bet</span>
+          <span className={cn(
+            "text-gray-500",
+            isDownload ? "text-2xl" : "text-xl"
+          )}>•</span>
+          <span className={cn(
+            "text-gray-600",
+            isDownload ? "text-2xl" : "text-xl"
+          )}>@{userName}</span>
         </div>
         <div className="flex items-center gap-6">
-          <span className="text-xl font-medium text-gray-600">Round {roundName}</span>
+          <span className={cn(
+            "font-medium text-gray-600",
+            isDownload ? "text-2xl" : "text-xl"
+          )}>Round {roundName}</span>
           <div className="flex items-center gap-2">
-            <Trophy className="w-6 h-6 text-orange-500" />
-            <span className="text-xl text-orange-500 font-bold">{totalPoints} pts</span>
+            <Trophy className={cn(
+              "text-orange-500",
+              isDownload ? "w-8 h-8" : "w-6 h-6"
+            )} />
+            <span className={cn(
+              "text-orange-500 font-bold",
+              isDownload ? "text-2xl" : "text-xl"
+            )}>{totalPoints} pts</span>
           </div>
         </div>
       </div>
@@ -68,13 +89,22 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
           return (
             <div 
               key={index} 
-              className="bg-white rounded-lg p-5 space-y-4 shadow-sm"
+              className={cn(
+                "bg-white rounded-lg p-5 space-y-4 shadow-sm",
+                isDownload && "p-6"
+              )}
             >
               <div className="flex justify-between items-center">
-                <span className="text-xl font-semibold">
+                <span className={cn(
+                  "font-semibold",
+                  isDownload ? "text-2xl" : "text-xl"
+                )}>
                   {pred.game.home_team.name} vs {pred.game.away_team.name}
                 </span>
-                <span className="text-lg text-gray-500">{formattedDate}</span>
+                <span className={cn(
+                  "text-gray-500",
+                  isDownload ? "text-xl" : "text-lg"
+                )}>{formattedDate}</span>
               </div>
 
               <div className="flex gap-6">
@@ -82,10 +112,19 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
                 {finalResult && (
                   <div className="flex-1 bg-red-50/50 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-3">
-                      <CheckCircle2 className="w-5 h-5 text-green-500" />
-                      <span className="text-lg text-gray-600">Final</span>
+                      <CheckCircle2 className={cn(
+                        "text-green-500",
+                        isDownload ? "w-6 h-6" : "w-5 h-5"
+                      )} />
+                      <span className={cn(
+                        "text-gray-600",
+                        isDownload ? "text-xl" : "text-lg"
+                      )}>Final</span>
                     </div>
-                    <span className="text-2xl font-bold">
+                    <span className={cn(
+                      "font-bold",
+                      isDownload ? "text-3xl" : "text-2xl"
+                    )}>
                       {finalResult.home_score} - {finalResult.away_score}
                     </span>
                   </div>
@@ -94,10 +133,19 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
                 {/* Prediction */}
                 <div className="flex-1 bg-blue-50/50 rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-3">
-                    <Timer className="w-5 h-5 text-blue-500" />
-                    <span className="text-lg text-gray-600">Prediction</span>
+                    <Timer className={cn(
+                      "text-blue-500",
+                      isDownload ? "w-6 h-6" : "w-5 h-5"
+                    )} />
+                    <span className={cn(
+                      "text-gray-600",
+                      isDownload ? "text-xl" : "text-lg"
+                    )}>Prediction</span>
                   </div>
-                  <span className="text-2xl font-bold">
+                  <span className={cn(
+                    "font-bold",
+                    isDownload ? "text-3xl" : "text-2xl"
+                  )}>
                     {pred.prediction.prediction_home_score} - {pred.prediction.prediction_away_score}
                   </span>
                 </div>
@@ -107,8 +155,14 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
               {pred.prediction.points_earned !== undefined && (
                 <div className="flex justify-end">
                   <div className="flex items-center gap-2">
-                    <Trophy className="w-5 h-5 text-orange-500" />
-                    <span className="text-xl text-orange-500 font-bold">
+                    <Trophy className={cn(
+                      "text-orange-500",
+                      isDownload ? "w-6 h-6" : "w-5 h-5"
+                    )} />
+                    <span className={cn(
+                      "text-orange-500 font-bold",
+                      isDownload ? "text-2xl" : "text-xl"
+                    )}>
                       {pred.prediction.points_earned} pts
                     </span>
                   </div>
@@ -121,7 +175,10 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
 
       {/* Footer */}
       <div className="px-8 py-4 bg-white border-t">
-        <div className="flex items-center justify-center text-lg text-gray-500">
+        <div className={cn(
+          "flex items-center justify-center text-gray-500",
+          isDownload ? "text-xl" : "text-lg"
+        )}>
           Join us at euroleague.bet
         </div>
       </div>
