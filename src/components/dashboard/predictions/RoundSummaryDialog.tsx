@@ -6,9 +6,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Share2, X } from "lucide-react";
+import { Share2, X, Download } from "lucide-react";
 import { PredictionsPreview } from "../PredictionsPreview";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import html2canvas from "html2canvas";
+import { toast } from "sonner";
 
 interface RoundSummaryDialogProps {
   roundName: string;
@@ -39,6 +41,43 @@ interface RoundSummaryDialogProps {
 }
 
 export function RoundSummaryDialog({ roundName, userName, predictions }: RoundSummaryDialogProps) {
+  const captureScreenshot = async () => {
+    try {
+      const element = document.getElementById('predictions-preview');
+      if (!element) return;
+
+      const canvas = await html2canvas(element, {
+        scale: 2, // Higher quality
+        useCORS: true, // Handle cross-origin images
+        backgroundColor: '#ffffff',
+        logging: false,
+      });
+
+      // Convert to blob
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          toast.error("Failed to create image");
+          return;
+        }
+
+        // Create download link
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `round-${roundName}-predictions.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        toast.success("Screenshot saved!");
+      }, 'image/png');
+    } catch (error) {
+      console.error('Screenshot error:', error);
+      toast.error("Failed to capture screenshot");
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -49,15 +88,28 @@ export function RoundSummaryDialog({ roundName, userName, predictions }: RoundSu
       </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[90vh] p-0">
         <DialogHeader className="p-6 pb-0">
-          <DialogTitle className="pr-8">Round {roundName} Summary</DialogTitle>
-          <div className="text-sm text-muted-foreground mt-2">
-            <p>P: Prediction score</p>
-            <p>F: Final score</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <DialogTitle className="pr-8">Round {roundName} Summary</DialogTitle>
+              <div className="text-sm text-muted-foreground mt-2">
+                <p>P: Prediction score</p>
+                <p>F: Final score</p>
+              </div>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={captureScreenshot}
+              className="ml-4"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Save as Image
+            </Button>
           </div>
         </DialogHeader>
         <ScrollArea className="max-h-[calc(90vh-100px)]">
           <div className="p-6 pt-4">
-            <div className="bg-white rounded-lg overflow-hidden">
+            <div id="predictions-preview" className="bg-white rounded-lg overflow-hidden">
               <PredictionsPreview
                 userName={userName}
                 roundName={roundName}
