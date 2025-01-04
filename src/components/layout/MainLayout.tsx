@@ -10,7 +10,7 @@ export function MainLayout({ children }: MainLayoutProps) {
     <div className="min-h-screen flex flex-col w-full">
       <div className="fixed inset-0 -z-10 h-full w-full">
         <img 
-          src="/logocourt.jpg" 
+          src="https://nuswsfxmaqyzfmpmbuky.supabase.co/storage/v1/object/public/logos/logocourt.jpg" 
           alt="Background" 
           className="w-full h-full object-cover opacity-20"
         />
