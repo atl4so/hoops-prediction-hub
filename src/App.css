@@ -4,18 +4,6 @@
   padding: 2rem;
 }
 
-body {
-  background-color: #F8F9FA;
-  background-image: 
-    radial-gradient(at 27% 37%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%),
-    radial-gradient(at 97% 21%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%),
-    radial-gradient(at 52% 99%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%),
-    radial-gradient(at 10% 29%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%),
-    radial-gradient(at 97% 96%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%),
-    radial-gradient(at 33% 50%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%),
-    radial-gradient(at 79% 53%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%);
-}
-
 .logo {
   height: 6em;
   padding: 1.5em;
