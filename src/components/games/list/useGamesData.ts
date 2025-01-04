@@ -6,6 +6,8 @@ export function useGamesData() {
   return useQuery({
     queryKey: ["games"],
     queryFn: async () => {
+      console.log('Fetching games data...');
+      
       const { data, error } = await supabase
         .from("games")
         .select(`
@@ -14,12 +16,13 @@ export function useGamesData() {
           home_team:teams!games_home_team_id_fkey(id, name, logo_url),
           away_team:teams!games_away_team_id_fkey(id, name, logo_url),
           round:rounds(id, name),
-          game_results(
+          game_results!game_results_game_id_fkey(
             home_score,
             away_score,
             is_final
           )
-        `);
+        `)
+        .order('game_date', { ascending: true });
 
       if (error) {
         console.error("Error fetching games:", error);
@@ -45,11 +48,7 @@ export function useGamesData() {
           id: game.round[0].id,
           name: game.round[0].name
         },
-        game_results: Array.isArray(game.game_results) ? game.game_results.map(result => ({
-          home_score: result.home_score,
-          away_score: result.away_score,
-          is_final: result.is_final
-        })) : []
+        game_results: game.game_results
       }));
 
       // Split into finished and unfinished games
@@ -64,7 +63,7 @@ export function useGamesData() {
       // Combine with unfinished games first
       return [...unfinishedGames, ...finishedGames];
     },
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
   });
 }
