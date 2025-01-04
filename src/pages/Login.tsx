@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -21,6 +21,10 @@ const Login = () => {
 
     clearSession();
   }, [navigate]);
+
+  const handleCreateAccount = () => {
+    navigate("/register");
+  };
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-8 sm:px-6">
@@ -41,7 +45,7 @@ const Login = () => {
           <CardContent className="flex justify-center">
             <Button 
               className="w-full bg-[#F97316] hover:bg-[#F97316]/90" 
-              onClick={() => navigate("/register")}
+              onClick={handleCreateAccount}
             >
               Create account
             </Button>
