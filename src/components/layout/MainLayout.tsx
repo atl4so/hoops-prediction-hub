@@ -25,25 +25,54 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <div className="min-h-screen flex flex-col w-full relative">
-      <div 
-        style={{ 
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100vh',
-          overflow: 'hidden',
-          pointerEvents: 'none',
-          zIndex: -1,
-          transform: 'translateZ(0)',
-          backfaceVisibility: 'hidden',
-          perspective: 1000,
-          willChange: 'transform',
-          background: 'linear-gradient(180deg, #4ade80 0%, #bbf7d0 100%)',
-        }}
-      />
+      {activeBackground?.url && (
+        <div 
+          style={{ 
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: '100vh',
+            overflow: 'hidden',
+            pointerEvents: 'none',
+            zIndex: -1,
+            transform: 'translateZ(0)',
+            backfaceVisibility: 'hidden',
+            perspective: 1000,
+            willChange: 'transform',
+          }}
+        >
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'black',
+            }}
+          />
+          <img 
+            src={activeBackground.url} 
+            alt="Background" 
+            style={{ 
+              position: 'fixed',
+              top: '-20vh',
+              left: '-20vw',
+              width: '140vw',
+              height: '140vh',
+              objectFit: 'cover',
+              opacity: activeBackground.opacity / 100,
+              pointerEvents: 'none',
+              transform: 'translateZ(0)',
+              backfaceVisibility: 'hidden',
+              willChange: 'transform',
+            }}
+          />
+        </div>
+      )}
       <AppHeader />
       <main className="flex-1 relative">
         <div className="container mx-auto p-6">
