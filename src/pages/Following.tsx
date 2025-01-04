@@ -41,12 +41,12 @@ export default function Following() {
   if (!session) return null;
 
   return (
-    <div className="space-y-8 max-w-3xl mx-auto px-4">
-      <section className="text-center space-y-4 animate-fade-in">
-        <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
+    <div className="space-y-6 sm:space-y-8 max-w-3xl mx-auto px-4 animate-fade-in">
+      <section className="text-center space-y-3 sm:space-y-4">
+        <h1 className="text-2xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
           Following
         </h1>
-        <p className="text-muted-foreground max-w-lg mx-auto">
+        <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
           Keep track of users you follow and compare your predictions with theirs
         </p>
       </section>

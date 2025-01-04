@@ -88,10 +88,10 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
 
   if (isLoading) {
     return (
-      <div className="space-y-4 animate-pulse">
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-24 w-full" />
+      <div className="space-y-3 sm:space-y-4 animate-pulse">
+        <div className="h-20 sm:h-24 w-full bg-muted rounded-lg" />
+        <div className="h-20 sm:h-24 w-full bg-muted rounded-lg" />
+        <div className="h-20 sm:h-24 w-full bg-muted rounded-lg" />
       </div>
     );
   }
@@ -102,7 +102,7 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
 
   if (!followedUsers?.length && searchQuery) {
     return (
-      <div className="text-center text-muted-foreground py-8">
+      <div className="text-center text-muted-foreground py-6 sm:py-8 animate-fade-in">
         No users found matching "{searchQuery}"
       </div>
     );
@@ -111,15 +111,17 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
   return (
     <>
       {isMobile && (
-        <Alert className="mb-6">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            Tap on a username to view their predictions
-          </AlertDescription>
-        </Alert>
+        <div className="mb-4 sm:mb-6 animate-fade-in">
+          <Alert variant="default" className="bg-background/50 backdrop-blur-sm">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription className="text-sm">
+              Tap on a username to view their predictions
+            </AlertDescription>
+          </Alert>
+        </div>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {followedUsers.map((follow) => (
           <FollowedUserCard
             key={follow.following_id}
