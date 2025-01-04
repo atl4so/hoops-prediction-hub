@@ -28,6 +28,6 @@ export const SessionHandler = ({ children }: { children: React.ReactNode }) => {
     return null;
   }
 
-  // Show children if we're on a public route or have a session
+  // Show children once authentication check is complete
   return <>{children}</>;
 };
