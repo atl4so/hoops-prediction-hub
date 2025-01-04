@@ -1,11 +1,23 @@
 import { Link } from "react-router-dom";
-import { useSession } from "@supabase/auth-helpers-react";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { ProfileMenu } from "../profile/ProfileMenu";
 import { MobileMenu } from "./MobileMenu";
 import { ThemeToggle } from "../theme/ThemeToggle";
+import { navigationItems } from "./NavigationItems";
+import { toast } from "sonner";
 
 export function AppHeader() {
   const session = useSession();
+  const supabase = useSupabaseClient();
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error("Error logging out");
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-sm">
@@ -23,7 +35,11 @@ export function AppHeader() {
           {session ? (
             <>
               <ProfileMenu />
-              <MobileMenu />
+              <MobileMenu 
+                menuItems={navigationItems}
+                isAuthenticated={!!session}
+                onLogout={handleLogout}
+              />
             </>
           ) : (
             <div className="flex items-center gap-4">
