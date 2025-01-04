@@ -7,16 +7,16 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica',
   },
   header: {
-    marginBottom: 15,
+    marginBottom: 10,
     borderBottom: 1,
-    paddingBottom: 10,
+    paddingBottom: 8,
     borderColor: '#e2e2e2',
   },
   title: {
-    fontSize: 24,
+    fontSize: 16,
     fontFamily: 'Helvetica-Bold',
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 4,
   },
   watermark: {
     position: 'absolute',
@@ -27,55 +27,63 @@ const styles = StyleSheet.create({
     opacity: 0.1,
   },
   info: {
-    fontSize: 12,
+    fontSize: 10,
     textAlign: 'center',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   points: {
-    fontSize: 18,
+    fontSize: 14,
     fontFamily: 'Helvetica-Bold',
     textAlign: 'center',
-    marginTop: 6,
-    marginBottom: 15,
+    marginTop: 4,
+    marginBottom: 10,
+  },
+  gamesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    justifyContent: 'flex-start',
   },
   game: {
-    marginBottom: 10,
-    padding: 8,
+    width: '31%',
+    padding: 6,
     backgroundColor: '#f8f9fa',
+    borderRadius: 4,
   },
   gameHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 6,
+    marginBottom: 4,
   },
   teams: {
-    fontSize: 11,
+    fontSize: 9,
     fontFamily: 'Helvetica-Bold',
   },
   date: {
-    fontSize: 10,
+    fontSize: 8,
+    color: '#666',
+    marginTop: 2,
   },
   scores: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 20,
+    marginTop: 4,
   },
   scoreBox: {
     flex: 1,
   },
   scoreLabel: {
-    fontSize: 10,
-    marginBottom: 2,
+    fontSize: 8,
+    color: '#666',
+    marginBottom: 1,
   },
   score: {
-    fontSize: 14,
+    fontSize: 10,
     fontFamily: 'Helvetica-Bold',
   },
   earnedPoints: {
-    fontSize: 11,
+    fontSize: 9,
     color: '#FF6B00',
     textAlign: 'right',
-    marginTop: 4,
+    marginTop: 2,
   },
 });
 
@@ -121,41 +129,43 @@ export const PredictionsPDF = ({ userName, roundName, predictions }: Predictions
           <Text style={styles.points}>Total Points: {totalPoints}</Text>
         </View>
 
-        {predictions.map((pred, index) => (
-          <View key={index} style={styles.game}>
-            <View style={styles.gameHeader}>
-              <Text style={styles.teams}>
-                {pred.game.home_team.name} vs {pred.game.away_team.name}
-              </Text>
-              <Text style={styles.date}>
-                {format(new Date(pred.game.game_date), 'PP')}
-              </Text>
-            </View>
-
-            <View style={styles.scores}>
-              {pred.game.game_results?.[0] && (
-                <View style={styles.scoreBox}>
-                  <Text style={styles.scoreLabel}>Final Result</Text>
-                  <Text style={styles.score}>
-                    {pred.game.game_results[0].home_score} - {pred.game.game_results[0].away_score}
-                  </Text>
-                </View>
-              )}
-              <View style={styles.scoreBox}>
-                <Text style={styles.scoreLabel}>Your Prediction</Text>
-                <Text style={styles.score}>
-                  {pred.prediction.prediction_home_score} - {pred.prediction.prediction_away_score}
+        <View style={styles.gamesGrid}>
+          {predictions.map((pred, index) => (
+            <View key={index} style={styles.game}>
+              <View style={styles.gameHeader}>
+                <Text style={styles.teams}>
+                  {pred.game.home_team.name} vs {pred.game.away_team.name}
+                </Text>
+                <Text style={styles.date}>
+                  {format(new Date(pred.game.game_date), 'PP')}
                 </Text>
               </View>
-            </View>
 
-            {pred.prediction.points_earned !== undefined && (
-              <Text style={styles.earnedPoints}>
-                Points earned: {pred.prediction.points_earned}
-              </Text>
-            )}
-          </View>
-        ))}
+              <View style={styles.scores}>
+                {pred.game.game_results?.[0] && (
+                  <View style={styles.scoreBox}>
+                    <Text style={styles.scoreLabel}>Final</Text>
+                    <Text style={styles.score}>
+                      {pred.game.game_results[0].home_score}-{pred.game.game_results[0].away_score}
+                    </Text>
+                  </View>
+                )}
+                <View style={styles.scoreBox}>
+                  <Text style={styles.scoreLabel}>Prediction</Text>
+                  <Text style={styles.score}>
+                    {pred.prediction.prediction_home_score}-{pred.prediction.prediction_away_score}
+                  </Text>
+                </View>
+              </View>
+
+              {pred.prediction.points_earned !== undefined && (
+                <Text style={styles.earnedPoints}>
+                  {pred.prediction.points_earned}p
+                </Text>
+              )}
+            </View>
+          ))}
+        </View>
       </Page>
     </Document>
   );
