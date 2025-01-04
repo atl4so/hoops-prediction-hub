@@ -6,21 +6,20 @@ export function useGamesSubscription() {
   const queryClient = useQueryClient();
 
   const setupSubscriptions = useCallback(() => {
-    console.log('Setting up real-time subscriptions for games and results...');
+    console.log('Setting up real-time subscriptions for games...');
     
     const channel = supabase
-      .channel('games-and-results-updates')
+      .channel('games-predictions-updates')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'game_results'
+          table: 'games'
         },
         () => {
+          console.log('Games table changed, invalidating queries...');
           queryClient.invalidateQueries({ queryKey: ['games'] });
-          queryClient.invalidateQueries({ queryKey: ['predictions'] });
-          queryClient.invalidateQueries({ queryKey: ['profiles'] });
         }
       )
       .on(
@@ -31,11 +30,14 @@ export function useGamesSubscription() {
           table: 'predictions'
         },
         () => {
+          console.log('Predictions table changed, invalidating queries...');
+          queryClient.invalidateQueries({ queryKey: ['games'] });
           queryClient.invalidateQueries({ queryKey: ['predictions'] });
-          queryClient.invalidateQueries({ queryKey: ['profiles'] });
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Subscription status:', status);
+      });
 
     return () => {
       console.log('Cleaning up subscriptions...');

@@ -1,7 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useCallback, useMemo } from 'react';
-import { subHours } from "date-fns";
 import { useSession } from "@supabase/auth-helpers-react";
 import { GameCard } from "./GameCard";
 import { SkeletonList } from "./list/SkeletonList";

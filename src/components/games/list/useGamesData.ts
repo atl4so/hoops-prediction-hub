@@ -6,6 +6,8 @@ export function useGamesData(userId?: string) {
   return useQuery({
     queryKey: ['games', userId],
     queryFn: async () => {
+      console.log('Fetching games for user:', userId);
+      
       const { data: games, error } = await supabase
         .from('games')
         .select(`
@@ -30,7 +32,7 @@ export function useGamesData(userId?: string) {
             away_score,
             is_final
           ),
-          predictions!inner (
+          predictions (
             id,
             user_id
           )
@@ -45,45 +47,36 @@ export function useGamesData(userId?: string) {
       const now = new Date();
       
       // Process and filter games
-      return games.map(game => {
-        const gameDate = new Date(game.game_date);
-        const deadline = subHours(gameDate, 1);
-        
-        // Ensure game_results is always an array
-        const gameResults = Array.isArray(game.game_results) 
-          ? game.game_results 
-          : game.game_results 
-            ? [game.game_results] 
-            : [];
+      return games
+        .map(game => {
+          const gameDate = new Date(game.game_date);
+          const deadline = subHours(gameDate, 1);
+          
+          // Ensure game_results is always an array
+          const gameResults = Array.isArray(game.game_results) 
+            ? game.game_results 
+            : game.game_results 
+              ? [game.game_results] 
+              : [];
 
-        // Check if user has already predicted this game
-        const userPrediction = userId ? game.predictions?.find(p => p.user_id === userId) : null;
-        const notPredictedByUser = !userPrediction;
+          // Check if user has already predicted this game
+          const userPrediction = userId 
+            ? game.predictions?.some(p => p.user_id === userId)
+            : false;
 
-        // Game state checks
-        const isBeforeDeadline = now < deadline;
-        const hasNoFinalResult = !gameResults.some(r => r.is_final);
+          // Game state checks
+          const isBeforeDeadline = now < deadline;
+          const hasNoFinalResult = !gameResults.some(r => r.is_final);
 
-        return {
-          ...game,
-          game_results: gameResults,
-          game_date: game.game_date,
-          home_team: game.home_team,
-          away_team: game.away_team,
-          notPredictedByUser,
-          isBeforeDeadline,
-          hasNoFinalResult
-        };
-      }).filter(game => 
-        // Only return games that:
-        // 1. Haven't been predicted by the user
-        // 2. Are before the deadline
-        // 3. Don't have a final result
-        game.notPredictedByUser && 
-        game.isBeforeDeadline && 
-        game.hasNoFinalResult
-      );
+          return {
+            ...game,
+            game_results: gameResults,
+            shouldShow: !userPrediction && isBeforeDeadline && hasNoFinalResult
+          };
+        })
+        .filter(game => game.shouldShow);
     },
-    enabled: true // Always fetch games
+    refetchInterval: 30000, // Refetch every 30 seconds as backup
+    staleTime: 10000, // Consider data stale after 10 seconds
   });
 }
