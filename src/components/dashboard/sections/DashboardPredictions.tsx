@@ -41,24 +41,15 @@ interface DashboardPredictionsProps {
 }
 
 export const DashboardPredictions = ({ predictionsByRound, userName }: DashboardPredictionsProps) => {
-  // Check if predictionsByRound is empty or undefined
-  if (!predictionsByRound || Object.keys(predictionsByRound).length === 0) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-muted-foreground">No predictions found</p>
-      </div>
-    );
-  }
-
   // Sort rounds by name in descending order (latest first)
-  const rounds = Object.values(predictionsByRound)
-    .filter(round => round && round.roundId && round.roundName) // Filter out any invalid round data
-    .sort((a, b) => parseInt(b.roundName) - parseInt(a.roundName));
+  const rounds = Object.values(predictionsByRound).sort((a, b) => 
+    parseInt(b.roundName) - parseInt(a.roundName)
+  );
 
   if (rounds.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-muted-foreground">No valid predictions found</p>
+        <p className="text-muted-foreground">No predictions found</p>
       </div>
     );
   }
