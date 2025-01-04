@@ -20,7 +20,6 @@ const Login = () => {
     password: "",
   });
 
-  // Clear invalid session on component mount
   useEffect(() => {
     const clearSession = async () => {
       try {
@@ -83,12 +82,6 @@ const Login = () => {
   return (
     <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-b from-background to-background/95 px-4 py-8 sm:px-6">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8 mt-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight leading-relaxed pb-2">
-            euroleague.bet
-          </h1>
-        </div>
-
         <Card className="w-full shadow-lg">
           <CardHeader className="space-y-1 pb-4">
             <CardTitle className="text-xl text-center">Sign In</CardTitle>
