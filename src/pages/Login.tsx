@@ -23,24 +23,17 @@ const Login = () => {
   useEffect(() => {
     const clearSession = async () => {
       try {
-        localStorage.clear();
-        sessionStorage.clear();
-        try {
-          await supabase.auth.signOut({ scope: 'global' });
-        } catch (signOutError) {
-          console.log("Sign out error (expected if no session):", signOutError);
-        }
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
-          await supabase.auth.signOut();
+          navigate("/predict");
         }
       } catch (error) {
-        console.error('Session cleanup error:', error);
+        console.error('Session check error:', error);
       }
     };
 
     clearSession();
-  }, []);
+  }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,12 +58,10 @@ const Login = () => {
       }
 
       if (data.user) {
-        toast("Welcome back!", {
+        toast.success("Welcome back!", {
           description: "You have successfully logged in.",
-          duration: 3000,
-          className: "bg-[#F97316] text-white",
         });
-        navigate("/dashboard");
+        navigate("/predict");
       }
     } catch (error: any) {
       console.error("Login error:", error);
@@ -89,7 +80,7 @@ const Login = () => {
           </h1>
         </div>
 
-        <Card className="w-full shadow-lg dark:bg-[#0B1616] dark:border-border/50">
+        <Card className="w-full shadow-lg">
           <CardHeader className="space-y-1 pb-4">
             <CardTitle className="text-xl text-center">Sign In</CardTitle>
             <CardDescription className="text-center">
