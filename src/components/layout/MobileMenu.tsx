@@ -33,7 +33,7 @@ export function MobileMenu({ menuItems, isAuthenticated, onLogout }: MobileMenuP
           <span className="sr-only">Toggle menu</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-[200px]">
+      <DropdownMenuContent align="start" className="w-[200px] bg-background">
         {menuItems.map((item) => (
           <DropdownMenuItem key={item.title} asChild>
             <Link to={item.href} className="flex items-center gap-2">
