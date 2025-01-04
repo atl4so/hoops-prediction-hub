@@ -52,7 +52,6 @@ export const DashboardPredictions = ({ predictionsByRound, userName }: Dashboard
                   size="sm"
                   className="ml-auto"
                   disabled={loading}
-                  type="button"
                 >
                   <FileDown className="h-4 w-4 mr-2" />
                   {loading ? 'Generating PDF...' : 'Download PDF'}
