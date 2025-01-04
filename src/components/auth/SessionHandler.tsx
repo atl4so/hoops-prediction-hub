@@ -1,76 +1,24 @@
-import { useEffect, useState } from 'react';
-import { supabase } from "@/integrations/supabase/client";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useSessionContext } from "@supabase/auth-helpers-react";
 
-interface SessionHandlerProps {
-  children: React.ReactNode;
-}
-
-export const SessionHandler = ({ children }: SessionHandlerProps) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const queryClient = useQueryClient();
+export const SessionHandler = ({ children }: { children: React.ReactNode }) => {
+  const { session, isLoading } = useSessionContext();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const cleanupSession = async () => {
-      try {
-        queryClient.clear();
-        localStorage.clear();
-        sessionStorage.clear();
-        setIsAuthenticated(false);
-      } catch (error) {
-        console.error('Session cleanup error:', error);
+    const publicRoutes = ['/login', '/register'];
+    const isPublicRoute = publicRoutes.includes(location.pathname);
+
+    if (!isLoading) {
+      if (!session && !isPublicRoute) {
+        navigate('/login');
+      } else if (session && isPublicRoute) {
+        navigate('/predict');
       }
-    };
-
-    const checkSession = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error('Session check error:', error);
-          if (error.message.includes('invalid_credentials')) {
-            toast.error("Invalid login credentials");
-          }
-          await cleanupSession();
-          return;
-        }
-        
-        if (session) {
-          console.log('Valid session found for user:', session.user.id);
-          setIsAuthenticated(true);
-        } else {
-          console.log('No active session found');
-          await cleanupSession();
-        }
-      } catch (error) {
-        console.error('Session check error:', error);
-        await cleanupSession();
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.id);
-      
-      if (event === 'SIGNED_OUT') {
-        console.log('User signed out, cleaning up...');
-        await cleanupSession();
-      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        console.log('User signed in or token refreshed:', session?.user?.id);
-        setIsAuthenticated(true);
-        queryClient.invalidateQueries();
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [queryClient]);
+    }
+  }, [session, isLoading, navigate, location.pathname]);
 
   if (isLoading) {
     return null;
