@@ -38,7 +38,7 @@ const GameCard = ({ prediction }: { prediction: PredictionData }) => {
   const finalResult = prediction.game.game_results?.[0];
   
   return (
-    <div className="bg-gray-50/80 rounded-lg p-4">
+    <div className="bg-gray-50/80 rounded-lg p-3 relative">
       <div className="text-sm font-medium mb-2 text-gray-700 truncate">{gameTitle}</div>
       <div className="flex flex-col gap-1">
         {finalResult && (
@@ -53,8 +53,8 @@ const GameCard = ({ prediction }: { prediction: PredictionData }) => {
         </div>
       </div>
       {prediction.prediction.points_earned !== undefined && (
-        <div className="absolute top-3 right-3">
-          <span className="text-orange-500 font-bold">{prediction.prediction.points_earned}p</span>
+        <div className="absolute top-2 right-2">
+          <span className="text-orange-500 font-bold text-sm">{prediction.prediction.points_earned}p</span>
         </div>
       )}
     </div>
@@ -76,29 +76,29 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
 
   return (
     <div className="bg-white">
-      <div className="p-6">
+      <div className="p-4">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold mb-1">
+        <div className="mb-6">
+          <h1 className="text-xl font-bold mb-1">
             euroleague.bet
           </h1>
           <div className="flex items-baseline gap-2 mb-1">
-            <span className="text-2xl font-bold">Round {roundName}</span>
+            <span className="text-xl font-bold">Round {roundName}</span>
             <span className="text-blue-600">by @{userName}</span>
           </div>
           <p className="text-gray-500 text-sm">{dateRange}</p>
         </div>
 
         {/* Total Score */}
-        <div className="flex items-center justify-between mb-6">
-          <span className="text-xl text-gray-600">Total Score:</span>
-          <span className="text-4xl font-bold text-orange-500">{totalPoints}</span>
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-lg text-gray-600">Total Score:</span>
+          <span className="text-3xl font-bold text-orange-500">{totalPoints}</span>
         </div>
         
         {/* Game Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
           {predictions.map((prediction, index) => (
-            <div key={index} className="relative">
+            <div key={index}>
               <GameCard prediction={prediction} />
             </div>
           ))}
@@ -106,12 +106,12 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="border-t border-gray-100 p-4 bg-gray-50">
-        <div className="flex items-center justify-between">
+      <div className="border-t border-gray-100 p-3 bg-gray-50">
+        <div className="flex items-center justify-between text-sm">
           <span className="text-gray-500">euroleague.bet</span>
           <div className="flex gap-4">
-            <span className="text-sm text-gray-500">F = Final</span>
-            <span className="text-sm text-gray-500">P = Prediction</span>
+            <span className="text-gray-500">F = Final</span>
+            <span className="text-gray-500">P = Prediction</span>
           </div>
         </div>
       </div>
