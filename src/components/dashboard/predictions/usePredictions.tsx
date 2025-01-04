@@ -39,15 +39,14 @@ export function usePredictions(followedIds: string[]) {
               id,
               name
             ),
-            game_results!left (
+            game_results (
               home_score,
               away_score,
               is_final
             )
           )
         `)
-        .in("user_id", followedIds)
-        .order("created_at", { ascending: false });
+        .in("user_id", followedIds);
       
       if (error) {
         console.error("Error fetching predictions:", error);
@@ -56,44 +55,57 @@ export function usePredictions(followedIds: string[]) {
 
       console.log('Raw predictions data:', data);
 
-      return data.map((item): Prediction => ({
-        id: item.id,
-        user: {
-          id: item.user.id,
-          display_name: item.user.display_name,
-          avatar_url: item.user.avatar_url
-        },
-        game: {
-          id: item.game.id,
-          game_date: item.game.game_date,
-          parsedDate: new Date(item.game.game_date),
-          round: {
-            id: item.game.round.id,
-            name: item.game.round.name
+      const mappedPredictions = data.map((item): Prediction => {
+        const prediction = {
+          id: item.id,
+          user: {
+            id: item.user.id,
+            display_name: item.user.display_name,
+            avatar_url: item.user.avatar_url
           },
-          home_team: {
-            id: item.game.home_team.id,
-            name: item.game.home_team.name,
-            logo_url: item.game.home_team.logo_url
+          game: {
+            id: item.game.id,
+            game_date: item.game.game_date,
+            parsedDate: new Date(item.game.game_date),
+            round: {
+              id: item.game.round.id,
+              name: item.game.round.name
+            },
+            home_team: {
+              id: item.game.home_team.id,
+              name: item.game.home_team.name,
+              logo_url: item.game.home_team.logo_url
+            },
+            away_team: {
+              id: item.game.away_team.id,
+              name: item.game.away_team.name,
+              logo_url: item.game.away_team.logo_url
+            },
+            game_results: Array.isArray(item.game.game_results) 
+              ? item.game.game_results 
+              : item.game.game_results 
+                ? [item.game.game_results]
+                : []
           },
-          away_team: {
-            id: item.game.away_team.id,
-            name: item.game.away_team.name,
-            logo_url: item.game.away_team.logo_url
-          },
-          game_results: Array.isArray(item.game.game_results) 
-            ? item.game.game_results 
-            : item.game.game_results 
-              ? [item.game.game_results]
-              : []
-        },
-        prediction_home_score: item.prediction_home_score,
-        prediction_away_score: item.prediction_away_score,
-        points_earned: item.points_earned
-      }));
+          prediction_home_score: item.prediction_home_score,
+          prediction_away_score: item.prediction_away_score,
+          points_earned: item.points_earned
+        };
+
+        console.log(`Prediction for user ${item.user.display_name}:`, {
+          gameDate: prediction.game.game_date,
+          gameResults: prediction.game.game_results,
+          points: prediction.points_earned
+        });
+
+        return prediction;
+      });
+
+      console.log('Total mapped predictions:', mappedPredictions.length);
+      return mappedPredictions;
     },
     enabled: followedIds.length > 0,
-    staleTime: 1000 * 60, // 1 minute
-    refetchInterval: 1000 * 60 * 5 // Refetch every 5 minutes
+    staleTime: 1000 * 30, // 30 seconds
+    refetchInterval: 1000 * 60 // Refetch every minute
   });
 }

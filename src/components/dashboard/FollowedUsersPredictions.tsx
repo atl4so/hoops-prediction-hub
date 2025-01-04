@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 export function FollowedUsersPredictions() {
   const { data: followedIds = [], isError: followError } = useFollowedUsers();
-  const { data: predictions, isLoading, isError, refetch } = usePredictions(followedIds);
+  const { data: predictions = [], isLoading, isError, refetch } = usePredictions(followedIds);
 
   useEffect(() => {
     const channel = supabase
@@ -21,12 +21,26 @@ export function FollowedUsersPredictions() {
           schema: 'public',
           table: 'predictions'
         },
-        () => {
-          console.log('Predictions changed, refetching...');
+        (payload) => {
+          console.log('Predictions changed:', payload);
           refetch();
         }
       )
-      .subscribe();
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'game_results'
+        },
+        (payload) => {
+          console.log('Game results changed:', payload);
+          refetch();
+        }
+      )
+      .subscribe((status) => {
+        console.log('Subscription status:', status);
+      });
 
     return () => {
       supabase.removeChannel(channel);
