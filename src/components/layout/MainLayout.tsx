@@ -7,7 +7,7 @@ interface MainLayoutProps {
 
 export function MainLayout({ children }: MainLayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col w-full relative overflow-hidden">
+    <div className="min-h-screen flex flex-col w-full relative">
       {/* Basketball court pattern overlay */}
       <div className="fixed inset-0 -z-20 basketball-court-pattern" />
       
@@ -29,8 +29,8 @@ export function MainLayout({ children }: MainLayoutProps) {
       
       {/* Content */}
       <AppHeader />
-      <main className="flex-1 relative">
-        <div className="container mx-auto p-6 h-full">
+      <main className="flex-1 relative z-0">
+        <div className="container mx-auto p-6">
           {children}
         </div>
       </main>
