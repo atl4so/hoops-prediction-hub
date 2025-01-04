@@ -3,6 +3,7 @@ import { Download } from "lucide-react";
 import html2canvas from "html2canvas";
 import { toast } from "sonner";
 import { PredictionsPreview } from "./PredictionsPreview";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface DownloadPredictionsButtonProps {
   userName: string;
@@ -37,6 +38,8 @@ export const DownloadPredictionsButton = ({
   roundName,
   predictions,
 }: DownloadPredictionsButtonProps) => {
+  const isMobile = useIsMobile();
+
   const handleDownload = async () => {
     try {
       const tempDiv = document.createElement("div");
@@ -45,7 +48,7 @@ export const DownloadPredictionsButton = ({
       document.body.appendChild(tempDiv);
 
       const root = document.createElement("div");
-      root.style.width = "2000px"; // Increased width for better visibility
+      root.style.width = "2000px";
       root.style.backgroundColor = "#f8f9fa";
       tempDiv.appendChild(root);
 
@@ -61,17 +64,17 @@ export const DownloadPredictionsButton = ({
       const reactRoot = createRoot(root);
       await new Promise<void>(resolve => {
         reactRoot.render(previewContent);
-        setTimeout(resolve, 2000); // Increased timeout for better image loading
+        setTimeout(resolve, 2000);
       });
 
       const canvas = await html2canvas(root, {
-        scale: 2, // Higher scale for better quality
+        scale: 2,
         backgroundColor: "#f8f9fa",
         logging: false,
         useCORS: true,
         allowTaint: true,
-        width: 2000, // Match the root width
-        height: predictions.length * 250 + 300, // Increased height per prediction and padding
+        width: 2000,
+        height: predictions.length * 250 + 300,
       });
 
       const image = canvas.toDataURL("image/png", 1.0);
@@ -91,12 +94,13 @@ export const DownloadPredictionsButton = ({
   return (
     <Button
       variant="outline"
-      size="sm"
+      size={isMobile ? "icon" : "sm"}
       onClick={handleDownload}
-      className="gap-2"
+      className={isMobile ? "w-8 h-8 p-0" : "gap-2"}
+      title="Download Image"
     >
       <Download className="h-4 w-4" />
-      Download Image
+      {!isMobile && "Download Image"}
     </Button>
   );
 };
