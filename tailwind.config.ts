@@ -29,7 +29,7 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "#F97316", // Orange color from the design
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
@@ -42,10 +42,10 @@ export default {
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          foreground: "#64748B", // Slate color for muted text
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
+          DEFAULT: "#FFF7ED", // Light orange background
           foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
@@ -53,7 +53,7 @@ export default {
           foreground: "hsl(var(--popover-foreground))",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
+          DEFAULT: "#FFF7ED", // Light orange background for cards
           foreground: "hsl(var(--card-foreground))",
         },
       },
@@ -61,14 +61,6 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
-      },
-      letterSpacing: {
-        tighter: '-0.05em',
-        tight: '-0.025em',
-        normal: '0',
-        wide: '0.025em',
-        wider: '0.05em',
-        widest: '0.1em',
       },
       keyframes: {
         "accordion-down": {
@@ -88,30 +80,12 @@ export default {
             opacity: "1",
             transform: "translateY(0)"
           }
-        },
-        "scale-in": {
-          "0%": { transform: "scale(0.95)", opacity: "0" },
-          "100%": { transform: "scale(1)", opacity: "1" },
-        },
-        "gradient": {
-          "0%, 100%": {
-            "background-position": "0% 50%"
-          },
-          "50%": {
-            "background-position": "100% 50%"
-          }
         }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.5s ease-out forwards",
-        "scale-in": "scale-in 0.2s ease-out",
-        "gradient": "gradient 3s ease infinite"
-      },
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        "fade-in": "fade-in 0.5s ease-out forwards"
       },
     },
   },

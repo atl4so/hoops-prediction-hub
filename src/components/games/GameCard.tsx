@@ -49,27 +49,25 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
   };
 
   return (
-    <Card className="w-full h-full flex flex-col">
-      <CardContent className="pt-6 px-4 sm:px-6 flex-1 flex flex-col">
+    <Card className="game-card w-full h-full flex flex-col">
+      <CardContent className="p-6 flex-1 flex flex-col">
         <div className="flex flex-col h-full">
-          <div className="space-y-1">
+          <div className="text-center mb-4">
             <GameDateTime date={game.game_date} />
             {isUpcoming && (
-              <CountdownTimer gameDate={game.game_date} />
+              <div className="text-primary text-sm mt-2">
+                <CountdownTimer gameDate={game.game_date} />
+              </div>
             )}
           </div>
           
-          <div className="grid grid-cols-3 gap-2 sm:gap-4 items-center flex-1 mt-4">
+          <div className="grid grid-cols-3 gap-4 items-center flex-1">
             <TeamDisplay
               align="right"
               team={game.home_team}
             />
-            <div className="text-center text-lg font-bold">
-              {gameResult ? (
-                `${gameResult.home_score} - ${gameResult.away_score}`
-              ) : (
-                'vs'
-              )}
+            <div className="text-center text-xl font-bold">
+              vs
             </div>
             <TeamDisplay
               align="left"
@@ -78,7 +76,7 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
           </div>
 
           {prediction && (
-            <div className="mt-4 mb-2">
+            <div className="mt-6">
               <PredictionDisplay
                 homeScore={prediction.prediction_home_score}
                 awayScore={prediction.prediction_away_score}
@@ -89,7 +87,7 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
             </div>
           )}
 
-          <div className="mt-4">
+          <div className="mt-6">
             <PredictionButton
               isAuthenticated={isAuthenticated}
               gameDate={game.game_date}

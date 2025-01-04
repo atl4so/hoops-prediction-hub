@@ -2,7 +2,18 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
+}
+
+body {
+  background-color: #FFF7ED;
+  background-image: 
+    radial-gradient(at 27% 37%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%),
+    radial-gradient(at 97% 21%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%),
+    radial-gradient(at 52% 99%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%),
+    radial-gradient(at 10% 29%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%),
+    radial-gradient(at 97% 96%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%),
+    radial-gradient(at 33% 50%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%),
+    radial-gradient(at 79% 53%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%);
 }
 
 .logo {
@@ -11,32 +22,53 @@
   will-change: filter;
   transition: filter 300ms;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
 
 .card {
   padding: 2em;
+  border-radius: 1rem;
+  background-color: #FFF7ED;
+  border: 1px solid rgba(249, 115, 22, 0.1);
+  transition: all 0.3s ease;
 }
 
-.read-the-docs {
-  color: #888;
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.1), 0 2px 4px -1px rgba(249, 115, 22, 0.06);
+}
+
+.game-card {
+  background-color: #FFF7ED;
+  border: 1px solid rgba(249, 115, 22, 0.1);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.game-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.1), 0 2px 4px -1px rgba(249, 115, 22, 0.06);
+}
+
+.team-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.prediction-button {
+  background-color: #F97316;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.prediction-button:hover {
+  background-color: #EA580C;
+}
+
+.prediction-button:disabled {
+  background-color: #FDA4AF;
+  cursor: not-allowed;
 }
