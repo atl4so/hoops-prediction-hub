@@ -36,29 +36,27 @@ interface PredictionsPreviewProps {
 const GameCard = ({ prediction }: { prediction: PredictionData }) => {
   const gameTitle = `${prediction.game.home_team.name} vs ${prediction.game.away_team.name}`;
   const finalResult = prediction.game.game_results?.[0];
-  const predictionScore = `${prediction.prediction.prediction_home_score}-${prediction.prediction.prediction_away_score}`;
-  const finalScore = finalResult ? `${finalResult.home_score}-${finalResult.away_score}` : '';
   
   return (
-    <div className="bg-blue-50/50 rounded-xl p-4">
-      <div className="text-sm font-medium mb-3 text-gray-700 truncate">{gameTitle}</div>
-      <div className="space-y-2">
+    <div className="bg-gray-50/80 rounded-lg p-4">
+      <div className="text-sm font-medium mb-2 text-gray-700 truncate">{gameTitle}</div>
+      <div className="flex flex-col gap-1">
         {finalResult && (
           <div className="flex items-center gap-2">
             <span className="text-emerald-600 font-medium">F</span>
-            <span className="font-bold text-gray-900">{finalScore}</span>
+            <span className="font-medium text-gray-900">{finalResult.home_score}-{finalResult.away_score}</span>
           </div>
         )}
         <div className="flex items-center gap-2">
           <span className="text-blue-600 font-medium">P</span>
-          <span className="text-gray-600">{predictionScore}</span>
+          <span className="text-gray-600">{prediction.prediction.prediction_home_score}-{prediction.prediction.prediction_away_score}</span>
         </div>
-        {prediction.prediction.points_earned !== undefined && (
-          <div className="absolute top-3 right-3 text-orange-600 font-bold">
-            {prediction.prediction.points_earned}p
-          </div>
-        )}
       </div>
+      {prediction.prediction.points_earned !== undefined && (
+        <div className="absolute top-3 right-3">
+          <span className="text-orange-500 font-bold">{prediction.prediction.points_earned}p</span>
+        </div>
+      )}
     </div>
   );
 };
@@ -73,28 +71,26 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
   const firstGame = predictions[0]?.game;
   const lastGame = predictions[predictions.length - 1]?.game;
   const dateRange = firstGame && lastGame 
-    ? `${format(new Date(firstGame.game_date), 'MMM d')} - ${format(new Date(lastGame.game_date), 'MMM d, yyyy')}`
+    ? `${format(new Date(firstGame.game_date), 'MMM d')}-${format(new Date(lastGame.game_date), 'MMM d, yyyy')}`
     : '';
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="px-4 py-6 space-y-6">
+    <div className="min-h-screen bg-white flex flex-col">
+      <div className="p-6 flex-1">
         {/* Header */}
-        <div className="space-y-1">
-          <div className="space-y-0">
-            <h1 className="text-2xl font-bold text-gray-900">
-              euroleague.bet
-            </h1>
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold">Round {roundName}</span>
-              <span className="text-blue-600">by @{userName}</span>
-            </div>
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold mb-1">
+            euroleague.bet
+          </h1>
+          <div className="flex items-baseline gap-2 mb-1">
+            <span className="text-2xl font-bold">Round {roundName}</span>
+            <span className="text-blue-600">by @{userName}</span>
           </div>
-          <p className="text-gray-500">{dateRange}</p>
+          <p className="text-gray-500 text-sm">{dateRange}</p>
         </div>
 
         {/* Total Score */}
-        <div className="flex items-baseline gap-3">
+        <div className="flex items-center justify-between mb-6">
           <span className="text-xl text-gray-600">Total Score:</span>
           <span className="text-4xl font-bold text-orange-500">{totalPoints}</span>
         </div>
