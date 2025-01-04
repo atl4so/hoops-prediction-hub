@@ -18,16 +18,19 @@ export function MainLayout({ children }: MainLayoutProps) {
         .eq("is_active", true)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching background:", error);
+        throw error;
+      }
       return data as BackgroundSetting;
     },
   });
 
   return (
-    <div className="min-h-screen flex flex-col w-full relative">
+    <div className="min-h-screen flex flex-col w-full relative bg-background">
       {activeBackground?.url && (
         <div 
-          className="fixed inset-0 w-full h-full -z-10 bg-black"
+          className="fixed inset-0 w-full h-full -z-10"
           style={{ 
             position: 'fixed',
             width: '100%',
@@ -35,36 +38,29 @@ export function MainLayout({ children }: MainLayoutProps) {
             overflow: 'hidden',
             touchAction: 'none',
             userSelect: 'none',
-            WebkitTransform: 'translate3d(0,0,0)',
-            backfaceVisibility: 'hidden',
-            transform: 'translate3d(0,0,0)',
-            perspective: 1000,
-            willChange: 'transform',
-            pointerEvents: 'none'
           }}
         >
-          <img 
-            src={activeBackground.url} 
-            alt="Background" 
-            className="w-full h-full object-cover"
-            style={{ 
-              opacity: activeBackground.opacity / 100,
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              touchAction: 'none',
-              userSelect: 'none',
-              pointerEvents: 'none',
-              objectFit: 'cover',
-              WebkitBackfaceVisibility: 'hidden',
-              WebkitTransform: 'translate3d(0,0,0)',
-              transform: 'translate3d(0,0,0)',
-              willChange: 'transform',
-              perspective: 1000
-            }}
-          />
+          <div className="absolute inset-0 bg-black">
+            <img 
+              src={activeBackground.url} 
+              alt="Background" 
+              className="w-full h-full object-cover"
+              style={{ 
+                opacity: activeBackground.opacity / 100,
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                touchAction: 'none',
+                userSelect: 'none',
+                pointerEvents: 'none',
+                objectFit: 'cover',
+              }}
+              loading="eager"
+              crossOrigin="anonymous"
+            />
+          </div>
         </div>
       )}
       <AppHeader />
