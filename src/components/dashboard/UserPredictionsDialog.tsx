@@ -70,7 +70,7 @@ export function UserPredictionsDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl h-[90vh] flex flex-col">
+      <DialogContent className="max-w-2xl h-[90vh] flex flex-col bg-white/95 dark:bg-gray-950/90 backdrop-blur-md border-none">
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-2">
