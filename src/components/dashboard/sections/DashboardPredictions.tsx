@@ -31,8 +31,10 @@ export const DashboardPredictions = ({ predictionsByRound, userName }: Dashboard
       {rounds.map((round) => (
         <CollapsibleRoundSection
           key={round.roundId}
+          roundId={round.roundId}
           roundName={round.roundName}
           predictions={round.predictions}
+          userName={userName}
           extraContent={
             <PDFDownloadLink
               document={

@@ -1,6 +1,7 @@
 import { UserPredictionCard } from "./UserPredictionCard";
 import { DownloadPredictionsButton } from "./DownloadPredictionsButton";
 import { GameCard } from "../games/GameCard";
+import { ReactNode } from "react";
 
 interface Game {
   id: string;
@@ -42,13 +43,15 @@ interface CollapsibleRoundSectionProps {
   }>;
   userName: string;
   showGames?: boolean;
+  extraContent?: ReactNode;
 }
 
 export function CollapsibleRoundSection({
   predictions,
   roundName,
   userName,
-  showGames = false
+  showGames = false,
+  extraContent
 }: CollapsibleRoundSectionProps) {
   if (!predictions?.length) {
     return null;
@@ -99,14 +102,7 @@ export function CollapsibleRoundSection({
           
           {!showGames && (
             <div className="flex justify-end mb-4">
-              <DownloadPredictionsButton
-                userName={userName}
-                roundName={roundName}
-                predictions={roundPredictions.filter(p => p.prediction !== null).map(p => ({
-                  game: p.game,
-                  prediction: p.prediction!
-                }))}
-              />
+              {extraContent}
             </div>
           )}
           
