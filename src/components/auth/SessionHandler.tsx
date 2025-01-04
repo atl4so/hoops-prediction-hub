@@ -37,12 +37,12 @@ export const SessionHandler = ({ children }: SessionHandlerProps) => {
         if (error) {
           console.error('Session check error:', error);
           if (error.message.includes('invalid_credentials')) {
-            toast.error("Invalid login credentials. Please try again.");
+            toast.error("Invalid login credentials");
           } else if (error.message.includes('session_not_found')) {
             console.log('Session not found, cleaning up...');
             await cleanupSession();
           } else {
-            toast.error("Authentication error. Please try logging in again.");
+            toast.error("Authentication error");
           }
           return;
         }
@@ -73,12 +73,10 @@ export const SessionHandler = ({ children }: SessionHandlerProps) => {
         localStorage.clear();
         sessionStorage.clear();
         setIsAuthenticated(false);
-        toast.success("Successfully signed out");
       } else if (event === 'SIGNED_IN') {
         console.log('User signed in:', session?.user?.id);
         setIsAuthenticated(true);
         queryClient.invalidateQueries();
-        toast.success("Successfully signed in");
       } else if (event === 'TOKEN_REFRESHED') {
         console.log('Token refreshed for user:', session?.user?.id);
         setIsAuthenticated(true);
