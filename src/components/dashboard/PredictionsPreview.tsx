@@ -79,10 +79,8 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
     : '';
 
   const containerClasses = cn(
-    "bg-gray-50",
-    isDownload 
-      ? "h-[1200px] w-[600px]" 
-      : "w-full max-w-[600px] mx-auto"
+    "bg-gray-50 w-full mx-auto",
+    isDownload ? "h-[1200px] w-[600px]" : "max-w-[600px]"
   );
 
   const contentClasses = cn(
@@ -93,13 +91,13 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
   return (
     <div className={containerClasses}>
       <div className={contentClasses}>
-        <div className="p-5 flex-1">
+        <div className="p-4 sm:p-5 flex-1">
           {/* Header */}
           <div className="space-y-4 mb-6">
             <div className="space-y-1">
-              <h1 className="text-xl font-bold text-gray-900 flex flex-wrap items-center gap-2">
+              <h1 className="text-xl font-bold text-gray-900">
                 euroleague.bet Round {roundName}
-                <span className="text-blue-600 font-medium text-lg">by {userName}</span>
+                <span className="text-blue-600 font-medium text-lg block mt-1">by {userName}</span>
               </h1>
               <p className="text-gray-500 text-sm">{dateRange}</p>
             </div>
@@ -109,7 +107,7 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
             </div>
           </div>
           
-          {/* Game Grid */}
+          {/* Game Grid - Now a vertical stack */}
           <div className="space-y-3">
             {predictions.map((prediction, index) => (
               <GameCard key={index} prediction={prediction} />
@@ -118,7 +116,7 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
         </div>
         
         {/* Footer */}
-        <div className="bg-gray-50 p-5 border-t border-gray-100">
+        <div className="bg-gray-50 p-4 sm:p-5 border-t border-gray-100">
           <div className="flex flex-col gap-2 items-start text-gray-500 text-sm">
             <span className="font-medium">euroleague.bet</span>
             <div className="flex flex-wrap gap-2">
