@@ -6,7 +6,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Share2 } from "lucide-react";
+import { Share2, X } from "lucide-react";
 import { PredictionsPreview } from "../PredictionsPreview";
 import html2canvas from "html2canvas";
 import { toast } from "sonner";
@@ -127,7 +127,7 @@ export function RoundSummaryDialog({
       </DialogTrigger>
       <DialogContent className="w-full p-2 sm:p-4 max-w-[95vw] sm:max-w-3xl">
         <DialogHeader className="mb-2 sm:mb-4">
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center justify-between gap-4 pr-8">
             <DialogTitle className="text-base sm:text-lg">Round {roundName} Summary</DialogTitle>
             <Button 
               variant="outline" 
