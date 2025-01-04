@@ -74,6 +74,7 @@ export function AppHeader() {
         description: "You have been successfully logged out.",
         duration: 3000,
         className: "cursor-pointer",
+        dismissible: true,
       });
     }
     navigate("/");

@@ -69,6 +69,7 @@ const Login = () => {
           description: "You have successfully logged in.",
           duration: 3000,
           className: "cursor-pointer",
+          dismissible: true,
         });
         navigate("/dashboard");
       }
