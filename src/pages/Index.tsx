@@ -1,8 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { useSession } from "@supabase/auth-helpers-react";
-import { Lock, User } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -24,29 +22,6 @@ const Index = () => {
         <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
           Join the ultimate Euroleague basketball prediction community. Test your knowledge, compete with friends, and climb the leaderboard!
         </p>
-        
-        {!session && (
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-            <Button
-              onClick={() => navigate("/login")}
-              variant="default"
-              size="lg"
-              className="min-w-[120px] bg-[#F97316] hover:bg-[#F97316]/90 font-medium tracking-wide shadow-lg hover:shadow-xl transition-all duration-200"
-            >
-              <User className="w-4 h-4 mr-2" />
-              Login
-            </Button>
-            <Button
-              onClick={() => navigate("/register")}
-              variant="outline"
-              size="lg"
-              className="min-w-[120px] dark:bg-green-800/30 border-2 border-[#F97316]/20 hover:border-[#F97316]/30 hover:bg-[#F97316]/5 font-medium tracking-wide shadow-lg hover:shadow-xl transition-all duration-200"
-            >
-              <Lock className="w-4 h-4 mr-2" />
-              Register
-            </Button>
-          </div>
-        )}
       </div>
 
       <div className="w-full max-w-3xl px-4 py-12 text-center">
