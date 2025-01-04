@@ -52,7 +52,7 @@ export default function Overview() {
   }, [userId, queryClient]);
 
   const { data: userProfileData, isError: profileError } = useUserProfile(userId);
-  const { data: currentRoundRank } = useCurrentRoundRank(userId);
+  const currentRoundRank = useCurrentRoundRank(userId);
 
   if (profileError) {
     toast.error("Failed to load data");

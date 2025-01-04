@@ -18,6 +18,9 @@ export function useCurrentRoundRank(userId?: string) {
           round:rounds (
             id,
             name
+          ),
+          game_results (
+            is_final
           )
         `)
         .eq('round_id', '885518d1-d7c8-4523-9bd7-68e6608f9357')
