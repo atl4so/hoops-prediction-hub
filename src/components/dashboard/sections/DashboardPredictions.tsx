@@ -6,7 +6,7 @@ interface DashboardPredictionsProps {
     roundId: string;
     roundName: string;
     predictions: Array<{
-      id: string;  // Added this to match the expected type
+      id: string;
       game: {
         id: string;
         game_date: string;
@@ -15,10 +15,12 @@ interface DashboardPredictionsProps {
           name: string;
         };
         home_team: {
+          id: string;
           name: string;
           logo_url: string;
         };
         away_team: {
+          id: string;
           name: string;
           logo_url: string;
         };
@@ -39,8 +41,9 @@ interface DashboardPredictionsProps {
 }
 
 export const DashboardPredictions = ({ predictionsByRound, userName }: DashboardPredictionsProps) => {
+  // Sort rounds by name in descending order (latest first)
   const rounds = Object.values(predictionsByRound).sort((a, b) => 
-    b.roundName.localeCompare(a.roundName)
+    parseInt(b.roundName) - parseInt(a.roundName)
   );
 
   if (rounds.length === 0) {
