@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { MobileMenu } from "./MobileMenu";
 import { DesktopNav } from "./DesktopNav";
 import { navigationItems } from "./NavigationItems";
@@ -115,7 +114,6 @@ export function AppHeader() {
 
         <div className="flex items-center gap-4">
           {isAuthenticated && <ProfileMenu />}
-          <ThemeToggle />
         </div>
       </div>
     </header>

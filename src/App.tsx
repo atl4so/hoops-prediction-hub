@@ -8,7 +8,6 @@ import { MainLayout } from "./components/layout/MainLayout";
 import { SessionHandler } from "./components/auth/SessionHandler";
 import { AppRoutes } from "./components/routing/AppRoutes";
 import { supabase } from "./integrations/supabase/client";
-import { ThemeProvider } from "@/components/theme-provider";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,26 +22,24 @@ const queryClient = new QueryClient({
 
 const App = () => {
   return (
-    <ThemeProvider defaultTheme="system" storageKey="euroleague-theme">
-      <SessionContextProvider 
-        supabaseClient={supabase}
-        initialSession={null}
-      >
-        <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <SessionHandler>
-                <MainLayout>
-                  <AppRoutes />
-                </MainLayout>
-              </SessionHandler>
-            </BrowserRouter>
-          </TooltipProvider>
-        </QueryClientProvider>
-      </SessionContextProvider>
-    </ThemeProvider>
+    <SessionContextProvider 
+      supabaseClient={supabase}
+      initialSession={null}
+    >
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <SessionHandler>
+              <MainLayout>
+                <AppRoutes />
+              </MainLayout>
+            </SessionHandler>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </SessionContextProvider>
   );
 };
 
