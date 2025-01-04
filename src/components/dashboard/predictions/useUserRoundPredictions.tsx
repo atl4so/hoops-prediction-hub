@@ -3,9 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface PredictionData {
   id: string;
-  prediction_home_score: number;
-  prediction_away_score: number;
-  points_earned?: number;
   game: {
     id: string;
     game_date: string;
@@ -24,6 +21,11 @@ interface PredictionData {
       is_final?: boolean;
     }>;
   };
+  prediction: {
+    prediction_home_score: number;
+    prediction_away_score: number;
+    points_earned?: number;
+  };
 }
 
 export function useUserRoundPredictions(userId: string, roundId: string, enabled: boolean = true) {
@@ -32,6 +34,16 @@ export function useUserRoundPredictions(userId: string, roundId: string, enabled
     queryFn: async () => {
       console.log('Fetching predictions for user:', userId, 'round:', roundId);
 
+      // First get the games for the round to ensure proper ordering
+      const { data: games } = await supabase
+        .from('games')
+        .select('id')
+        .eq('round_id', roundId)
+        .order('game_date', { ascending: true });
+
+      if (!games) return [];
+
+      // Then get predictions for these games
       const { data, error } = await supabase
         .from('predictions')
         .select(`
@@ -60,7 +72,7 @@ export function useUserRoundPredictions(userId: string, roundId: string, enabled
         `)
         .eq('user_id', userId)
         .eq('game.round_id', roundId)
-        .order('game.game_date', { ascending: true });
+        .in('game_id', games.map(g => g.id));
 
       if (error) {
         console.error('Error fetching predictions:', error);
@@ -87,9 +99,10 @@ export function useUserRoundPredictions(userId: string, roundId: string, enabled
         }
       }));
 
-      console.log('Transformed predictions:', transformedData);
-
-      return transformedData;
+      // Sort by game date after transformation
+      return transformedData.sort((a, b) => 
+        new Date(a.game.game_date).getTime() - new Date(b.game.game_date).getTime()
+      );
     },
     enabled: enabled && !!userId && !!roundId,
     staleTime: 1000 * 60, // 1 minute
