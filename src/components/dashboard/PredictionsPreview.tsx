@@ -36,29 +36,27 @@ interface PredictionsPreviewProps {
 const GameCard = ({ prediction }: { prediction: PredictionData }) => {
   const gameTitle = `${prediction.game.home_team.name} vs ${prediction.game.away_team.name}`;
   const finalResult = prediction.game.game_results?.[0];
+  const predictionScore = `${prediction.prediction.prediction_home_score}-${prediction.prediction.prediction_away_score}`;
+  const finalScore = finalResult ? `${finalResult.home_score}-${finalResult.away_score}` : '';
   
   return (
-    <div className="bg-blue-50 rounded p-2 border border-blue-100 w-full">
-      <div className="text-sm font-medium mb-1 truncate text-gray-700">{gameTitle}</div>
+    <div className="bg-blue-50 rounded p-2 border border-blue-100">
+      <div className="text-xs font-medium mb-1 truncate text-gray-700">{gameTitle}</div>
       <div className="flex justify-between items-center text-sm">
         <div className="space-y-0.5">
           {finalResult && (
             <div className="flex items-center gap-1">
               <span className="text-emerald-600 text-xs font-medium">F</span>
-              <span className="font-bold text-gray-900">
-                {finalResult.home_score}-{finalResult.away_score}
-              </span>
+              <span className="font-bold text-gray-900">{finalScore}</span>
             </div>
           )}
           <div className="flex items-center gap-1">
             <span className="text-blue-600 text-xs font-medium">P</span>
-            <span className="text-gray-600">
-              {prediction.prediction.prediction_home_score}-{prediction.prediction.prediction_away_score}
-            </span>
+            <span className="text-gray-600">{predictionScore}</span>
           </div>
         </div>
         {prediction.prediction.points_earned !== undefined && (
-          <div className="text-orange-600 text-sm font-medium">
+          <div className="text-orange-600 text-xs font-medium">
             {prediction.prediction.points_earned}p
           </div>
         )}
