@@ -29,10 +29,6 @@ export function useGamesData(userId?: string) {
             home_score,
             away_score,
             is_final
-          ),
-          predictions!inner (
-            id,
-            user_id
           )
         `)
         .order('game_date', { ascending: true });
@@ -42,43 +38,33 @@ export function useGamesData(userId?: string) {
         throw error;
       }
 
-      // Filter and process games
+      const now = new Date();
+      
+      // Process and filter games
       return games.map(game => {
         const gameDate = new Date(game.game_date);
         const deadline = subHours(gameDate, 1);
-        const now = new Date();
-
-        // Check if user has already predicted this game
-        const userPrediction = userId ? game.predictions.find(p => p.user_id === userId) : null;
-        const notPredictedByUser = !userPrediction;
-
-        // Game state checks
-        const isBeforeDeadline = now < deadline;
+        
+        // Ensure game_results is always an array
         const gameResults = Array.isArray(game.game_results) 
           ? game.game_results 
           : game.game_results 
             ? [game.game_results] 
             : [];
+
+        // Game state checks
+        const isBeforeDeadline = now < deadline;
         const hasNoFinalResult = !gameResults.some(r => r.is_final);
 
         return {
           ...game,
           game_results: gameResults,
-          parsedDate: gameDate,
-          deadline,
-          notPredictedByUser,
-          isBeforeDeadline,
-          hasNoFinalResult,
-          userPredictions: game.predictions.map(p => p.user_id)
+          game_date: game.game_date,
+          home_team: game.home_team,
+          away_team: game.away_team
         };
-      }).filter(game => {
-        // Only show games that:
-        // 1. Haven't been predicted by the user yet AND
-        // 2. Are before the deadline AND
-        // 3. Don't have a final result
-        return game.notPredictedByUser && game.isBeforeDeadline && game.hasNoFinalResult;
       });
     },
-    enabled: !!userId
+    enabled: true // Always fetch games regardless of userId
   });
 }

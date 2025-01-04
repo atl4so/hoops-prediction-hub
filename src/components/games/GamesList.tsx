@@ -33,7 +33,6 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
         throw error;
       }
 
-      console.log('User predictions:', data);
       return data.map(p => p.game_id);
     },
     enabled: !!userId,
@@ -49,7 +48,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     const now = new Date();
     console.log('Filtering games:', games.length, 'total games');
     
-    const filtered = games.filter(game => {
+    return games.filter(game => {
       const gameDate = new Date(game.game_date);
       const predictionDeadline = subHours(gameDate, 1);
       const notPredictedByUser = !userPredictions?.includes(game.id);
@@ -73,9 +72,6 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
       
       return isBeforeDeadline && notPredictedByUser && hasNoFinalResult;
     });
-    
-    console.log('Available games:', filtered.length);
-    return filtered;
   }, [games, userPredictions]);
 
   if (isLoading) {
