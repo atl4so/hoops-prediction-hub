@@ -39,7 +39,7 @@ export function usePredictions(followedIds: string[]) {
               id,
               name
             ),
-            game_results (
+            game_results!left (
               home_score,
               away_score,
               is_final
@@ -81,9 +81,9 @@ export function usePredictions(followedIds: string[]) {
             name: item.game.away_team.name,
             logo_url: item.game.away_team.logo_url
           },
-          game_results: Array.isArray(item.game.game_results)
-            ? item.game.game_results
-            : item.game.game_results
+          game_results: Array.isArray(item.game.game_results) 
+            ? item.game.game_results 
+            : item.game.game_results 
               ? [item.game.game_results]
               : []
         },
