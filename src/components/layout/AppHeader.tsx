@@ -4,7 +4,6 @@ import { MobileMenu } from "./MobileMenu";
 import { DesktopNav } from "./DesktopNav";
 import { navigationItems } from "./NavigationItems";
 import { ProfileMenu } from "../profile/ProfileMenu";
-import { ThemeToggle } from "../theme/ThemeToggle";
 import { useUserProfile } from "../dashboard/UserProfile";
 
 export function AppHeader() {
@@ -24,12 +23,17 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 max-w-screen-2xl items-center">
-        <MobileMenu 
-          menuItems={navigationItems} 
-          isAuthenticated={!!user}
-          isAdmin={isAdmin}
-          onLogout={handleLogout}
-        />
+        <div className="flex items-center gap-4">
+          <MobileMenu 
+            menuItems={navigationItems} 
+            isAuthenticated={!!user}
+            isAdmin={isAdmin}
+            onLogout={handleLogout}
+          />
+          <a href="/" className="flex items-center space-x-2">
+            <img src="/basketball-favicon.png" alt="Logo" className="logo" />
+          </a>
+        </div>
         <DesktopNav 
           menuItems={navigationItems} 
           isAuthenticated={!!user}
@@ -37,7 +41,6 @@ export function AppHeader() {
         />
         <div className="flex flex-1 items-center justify-end space-x-4">
           <nav className="flex items-center space-x-2">
-            <ThemeToggle />
             <ProfileMenu />
           </nav>
         </div>
