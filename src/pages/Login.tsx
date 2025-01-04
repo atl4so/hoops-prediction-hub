@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Lock, Mail } from "lucide-react";
 import { normalizeEmail } from "@/utils/validation";
+import { toast } from "sonner";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -64,7 +65,11 @@ const Login = () => {
       }
 
       if (data.user) {
-        console.log("User logged in successfully");
+        toast("Welcome back!", {
+          description: "You have successfully logged in.",
+          duration: 1500,
+          className: "cursor-pointer",
+        });
         navigate("/dashboard");
       }
     } catch (error: any) {
