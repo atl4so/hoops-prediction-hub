@@ -72,9 +72,16 @@ export function FollowedUsersPredictions() {
     );
   }
 
+  // Sort predictions to show most recent first and only show predictions for finished games
+  const finishedPredictions = predictions
+    .filter(prediction => 
+      prediction.game.game_results?.some(result => result.is_final)
+    )
+    .sort((a, b) => b.game.parsedDate.getTime() - a.game.parsedDate.getTime());
+
   return (
     <div className="space-y-4">
-      {predictions.map((prediction) => (
+      {finishedPredictions.map((prediction) => (
         <PredictionCard 
           key={`${prediction.user.id}-${prediction.game.id}`}
           prediction={prediction}

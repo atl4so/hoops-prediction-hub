@@ -79,17 +79,9 @@ export function usePredictions(followedIds: string[]) {
             logo_url: item.game.away_team.logo_url
           },
           game_results: Array.isArray(item.game.game_results)
-            ? item.game.game_results.map(result => ({
-                home_score: result.home_score,
-                away_score: result.away_score,
-                is_final: result.is_final
-              }))
+            ? item.game.game_results
             : item.game.game_results
-              ? [{
-                  home_score: item.game.game_results.home_score,
-                  away_score: item.game.game_results.away_score,
-                  is_final: item.game.game_results.is_final
-                }]
+              ? [item.game.game_results]
               : []
         },
         prediction_home_score: item.prediction_home_score,
