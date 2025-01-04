@@ -75,8 +75,8 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
     : '';
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      <div className="p-6 flex-1">
+    <div className="bg-white">
+      <div className="p-6">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold mb-1">
@@ -96,7 +96,7 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
         </div>
         
         {/* Game Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {predictions.map((prediction, index) => (
             <div key={index} className="relative">
               <GameCard prediction={prediction} />
@@ -106,7 +106,7 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="mt-auto border-t border-gray-100 p-4 bg-gray-50">
+      <div className="border-t border-gray-100 p-4 bg-gray-50">
         <div className="flex items-center justify-between">
           <span className="text-gray-500">euroleague.bet</span>
           <div className="flex gap-4">
