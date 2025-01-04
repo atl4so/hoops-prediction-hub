@@ -26,7 +26,16 @@ export function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col w-full">
       {activeBackground?.url && (
-        <div className="fixed inset-0 w-full h-full -z-10 bg-black">
+        <div 
+          className="fixed inset-0 w-full h-full -z-10 bg-black"
+          style={{ 
+            position: 'fixed',
+            overflow: 'hidden',
+            touchAction: 'none',
+            userSelect: 'none',
+            WebkitOverflowScrolling: 'touch'
+          }}
+        >
           <img 
             src={activeBackground.url} 
             alt="Background" 
@@ -36,11 +45,15 @@ export function MainLayout({ children }: MainLayoutProps) {
               position: 'fixed',
               touchAction: 'none',
               userSelect: 'none',
+              pointerEvents: 'none',
               maxWidth: '1920px',
               maxHeight: '1080px',
               margin: '0 auto',
               left: '50%',
-              transform: 'translateX(-50%)'
+              transform: 'translateX(-50%)',
+              WebkitBackfaceVisibility: 'hidden',
+              WebkitTransform: 'translateX(-50%) translateZ(0)',
+              willChange: 'transform'
             }}
           />
         </div>
