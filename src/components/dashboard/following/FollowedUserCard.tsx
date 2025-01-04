@@ -21,43 +21,45 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
   return (
     <Card className="group hover:shadow-md transition-all duration-300 bg-background/50 backdrop-blur-sm border-muted/50 animate-fade-in">
       <CardContent className="p-4 sm:p-6">
-        <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-wrap sm:flex-nowrap">
-          <Avatar 
-            className="h-10 w-10 sm:h-12 sm:w-12 ring-2 ring-primary/10 ring-offset-2 ring-offset-background transition-all duration-300 group-hover:ring-primary/20 shrink-0"
-            onClick={() => onUserClick({
-              id: user.id,
-              display_name: user.display_name
-            })}
-          >
-            {user.avatar_url ? (
-              <AvatarImage src={user.avatar_url} alt={user.display_name} />
-            ) : null}
-            <AvatarFallback>
-              <User className="h-5 w-5 sm:h-6 sm:w-6" />
-            </AvatarFallback>
-          </Avatar>
-          
-          <div className="flex-1 min-w-0 order-3 sm:order-2 w-full sm:w-auto">
-            <p 
-              className="font-semibold break-words cursor-pointer hover:text-primary transition-colors text-sm sm:text-base"
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <Avatar 
+              className="h-12 w-12 sm:h-14 sm:w-14 ring-2 ring-primary/10 ring-offset-2 ring-offset-background transition-all duration-300 group-hover:ring-primary/20 shrink-0"
               onClick={() => onUserClick({
                 id: user.id,
                 display_name: user.display_name
               })}
             >
-              {user.display_name}
-            </p>
-            <div className="flex flex-wrap gap-2 mt-1">
-              <Badge variant="secondary" className="text-xs sm:text-sm">
-                {user.total_points} pts
-              </Badge>
-              <Badge variant="outline" className="text-xs sm:text-sm">
-                {user.points_per_game?.toFixed(1)} PPG
-              </Badge>
+              {user.avatar_url ? (
+                <AvatarImage src={user.avatar_url} alt={user.display_name} />
+              ) : null}
+              <AvatarFallback>
+                <User className="h-6 w-6" />
+              </AvatarFallback>
+            </Avatar>
+            
+            <div className="flex-1 min-w-0">
+              <p 
+                className="font-display font-semibold break-words cursor-pointer hover:text-primary transition-colors text-base sm:text-lg mb-1"
+                onClick={() => onUserClick({
+                  id: user.id,
+                  display_name: user.display_name
+                })}
+              >
+                {user.display_name}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="secondary" className="text-sm">
+                  {user.total_points} pts
+                </Badge>
+                <Badge variant="outline" className="text-sm">
+                  {user.points_per_game?.toFixed(1)} PPG
+                </Badge>
+              </div>
             </div>
           </div>
           
-          <div className="ml-auto order-2 sm:order-3">
+          <div className="sm:ml-auto">
             <FollowButton
               userId={user.id}
               isFollowing={isFollowing}

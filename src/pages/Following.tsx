@@ -41,13 +41,13 @@ export default function Following() {
   if (!session) return null;
 
   return (
-    <div className="space-y-6 sm:space-y-8 max-w-3xl mx-auto px-4 animate-fade-in">
-      <section className="text-center space-y-3 sm:space-y-4">
-        <h1 className="text-2xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
+    <div className="max-w-3xl mx-auto px-4 py-6 sm:py-8 space-y-6 sm:space-y-8 animate-fade-in">
+      <section className="text-center space-y-4">
+        <h1 className="text-3xl sm:text-4xl font-display font-bold tracking-tight bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
           Following
         </h1>
-        <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
-          Keep track of users you follow and compare your predictions with theirs
+        <p className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto">
+          Keep track of users you follow and compare your predictions
         </p>
       </section>
 
@@ -63,6 +63,10 @@ export default function Following() {
       </div>
 
       <FollowingSection searchQuery={searchQuery} />
+
+      <footer className="text-center text-sm text-muted-foreground pt-8 sm:pt-12">
+        © {new Date().getFullYear()} euroleague.bet - All rights reserved
+      </footer>
     </div>
   );
 }
