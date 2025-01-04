@@ -18,19 +18,21 @@ export function AppHeader() {
     navigate('/login');
   };
 
+  const isAdmin = profile?.is_admin || false;
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 max-w-screen-2xl items-center">
         <MobileMenu 
           menuItems={navigationItems} 
           isAuthenticated={!!user}
-          isAdmin={profile?.is_admin}
+          isAdmin={isAdmin}
           onLogout={handleLogout}
         />
         <DesktopNav 
           menuItems={navigationItems} 
           isAuthenticated={!!user}
-          isAdmin={profile?.is_admin}
+          isAdmin={isAdmin}
         />
         <div className="flex flex-1 items-center justify-end space-x-4">
           <nav className="flex items-center space-x-2">
