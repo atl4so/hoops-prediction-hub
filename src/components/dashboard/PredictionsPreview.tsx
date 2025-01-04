@@ -79,46 +79,50 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
     : '';
 
   const containerClasses = cn(
-    "bg-gray-50 w-full mx-auto",
-    isDownload ? "h-[1200px] w-[600px]" : "max-w-[600px]"
+    "min-h-screen w-full bg-gray-50",
+    isDownload ? "h-[1200px] w-[600px]" : "max-w-[600px] mx-auto"
   );
 
   const contentClasses = cn(
-    "h-full w-full bg-gray-50 flex flex-col",
-    !isDownload && "shadow-lg rounded-lg"
+    "flex flex-col h-full w-full",
+    !isDownload && "min-h-screen"
   );
 
   return (
     <div className={containerClasses}>
       <div className={contentClasses}>
-        <div className="p-4 sm:p-5 flex-1">
+        <div className="p-4 flex-1">
           {/* Header */}
           <div className="space-y-4 mb-6">
-            <div className="space-y-1">
-              <h1 className="text-xl font-bold text-gray-900">
+            <div className="space-y-2">
+              <h1 className="text-2xl font-bold text-gray-900">
                 euroleague.bet Round {roundName}
-                <span className="text-blue-600 font-medium text-lg block mt-1">by {userName}</span>
               </h1>
-              <p className="text-gray-500 text-sm">{dateRange}</p>
+              <div className="flex flex-col gap-1">
+                <span className="text-blue-600 font-medium text-lg">by {userName}</span>
+                <p className="text-gray-500 text-sm">{dateRange}</p>
+              </div>
             </div>
-            <div className="flex items-center gap-2 bg-orange-50 p-3 rounded-lg">
-              <span className="text-gray-700">Total Score:</span>
-              <span className="text-2xl font-bold text-orange-500">{totalPoints}</span>
+            <div className="bg-orange-50 p-4 rounded-lg">
+              <div className="flex items-baseline gap-2">
+                <span className="text-gray-700 text-sm">Total Score:</span>
+                <span className="text-3xl font-bold text-orange-500">{totalPoints}</span>
+              </div>
             </div>
           </div>
           
-          {/* Game Grid - Now a vertical stack */}
-          <div className="space-y-3">
+          {/* Game Cards - Vertical Stack */}
+          <div className="space-y-4">
             {predictions.map((prediction, index) => (
               <GameCard key={index} prediction={prediction} />
             ))}
           </div>
         </div>
         
-        {/* Footer */}
-        <div className="bg-gray-50 p-4 sm:p-5 border-t border-gray-100">
-          <div className="flex flex-col gap-2 items-start text-gray-500 text-sm">
-            <span className="font-medium">euroleague.bet</span>
+        {/* Footer - Always at the bottom */}
+        <div className="mt-auto border-t border-gray-100 p-4">
+          <div className="flex flex-col gap-3">
+            <span className="font-medium text-gray-700">euroleague.bet</span>
             <div className="flex flex-wrap gap-2">
               <span className="text-xs bg-gray-100 px-2 py-1 rounded">F = Final</span>
               <span className="text-xs bg-gray-100 px-2 py-1 rounded">P = Prediction</span>
