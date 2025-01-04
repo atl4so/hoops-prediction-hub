@@ -6,6 +6,7 @@ interface DashboardPredictionsProps {
     roundId: string;
     roundName: string;
     predictions: Array<{
+      id: string;  // Added this to match the expected type
       game: {
         id: string;
         game_date: string;
