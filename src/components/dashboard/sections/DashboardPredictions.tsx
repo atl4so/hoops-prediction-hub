@@ -1,8 +1,4 @@
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import { Button } from "@/components/ui/button";
-import { PredictionsPDF } from "../PredictionsPDF";
 import { CollapsibleRoundSection } from "../CollapsibleRoundSection";
-import { FileDown } from "lucide-react";
 
 interface DashboardPredictionsProps {
   predictionsByRound: Record<string, {
@@ -35,30 +31,6 @@ export const DashboardPredictions = ({ predictionsByRound, userName }: Dashboard
           roundName={round.roundName}
           predictions={round.predictions}
           userName={userName}
-          extraContent={
-            <PDFDownloadLink
-              document={
-                <PredictionsPDF
-                  userName={userName}
-                  roundName={round.roundName}
-                  predictions={round.predictions}
-                />
-              }
-              fileName={`predictions-${round.roundName.toLowerCase().replace(/\s+/g, '-')}.pdf`}
-            >
-              {({ loading }) => (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="ml-auto"
-                  disabled={loading}
-                >
-                  <FileDown className="h-4 w-4 mr-2" />
-                  {loading ? 'Generating PDF...' : 'Download PDF'}
-                </Button>
-              )}
-            </PDFDownloadLink>
-          }
         />
       ))}
     </div>
