@@ -3,6 +3,7 @@ import { PointsBreakdownDialog } from "../games/PointsBreakdownDialog";
 import { useState } from "react";
 import { PredictionDisplay } from "../games/PredictionDisplay";
 import { GameInfo } from "./predictions/GameInfo";
+import { cn } from "@/lib/utils";
 
 interface UserPredictionCardProps {
   game: {
@@ -48,9 +49,17 @@ export function UserPredictionCard({
     }
   };
 
+  const getCardClassName = () => {
+    return cn(
+      "game-card glass-card transition-all duration-300",
+      gameResult?.is_final && "game-card-finished",
+      prediction.points_earned !== undefined && "game-card-prediction"
+    );
+  };
+
   return (
     <>
-      <Card className="hover:shadow-md transition-all duration-300 h-full">
+      <Card className={getCardClassName()}>
         <CardContent className="pt-10 px-8 pb-8 h-full">
           <div className="flex flex-col items-center justify-between h-full space-y-8">
             <GameInfo game={game} prediction={prediction} />
