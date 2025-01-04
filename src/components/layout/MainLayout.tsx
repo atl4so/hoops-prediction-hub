@@ -30,6 +30,8 @@ export function MainLayout({ children }: MainLayoutProps) {
           className="fixed inset-0 w-full h-full -z-10 bg-black"
           style={{ 
             position: 'fixed',
+            width: '100%',
+            height: '100%',
             overflow: 'hidden',
             touchAction: 'none',
             userSelect: 'none',
@@ -37,7 +39,8 @@ export function MainLayout({ children }: MainLayoutProps) {
             backfaceVisibility: 'hidden',
             transform: 'translate3d(0,0,0)',
             perspective: 1000,
-            willChange: 'transform'
+            willChange: 'transform',
+            pointerEvents: 'none'
           }}
         >
           <img 
@@ -47,16 +50,17 @@ export function MainLayout({ children }: MainLayoutProps) {
             style={{ 
               opacity: activeBackground.opacity / 100,
               position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
               touchAction: 'none',
               userSelect: 'none',
               pointerEvents: 'none',
-              maxWidth: '1920px',
-              maxHeight: '1080px',
-              margin: '0 auto',
-              left: '50%',
+              objectFit: 'cover',
               WebkitBackfaceVisibility: 'hidden',
-              WebkitTransform: 'translate3d(-50%,0,0)',
-              transform: 'translate3d(-50%,0,0)',
+              WebkitTransform: 'translate3d(0,0,0)',
+              transform: 'translate3d(0,0,0)',
               willChange: 'transform',
               perspective: 1000
             }}
