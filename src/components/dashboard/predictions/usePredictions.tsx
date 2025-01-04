@@ -21,12 +21,13 @@ export function usePredictions(followedIds: string[]) {
         throw countError;
       }
 
-      console.log('Found predictions count by user:', 
-        userPredictions.reduce((acc, pred) => {
-          acc[pred.user_id] = (acc[pred.user_id] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>)
-      );
+      // Log predictions count by user
+      const predictionsByUser = userPredictions.reduce((acc, pred) => {
+        acc[pred.user_id] = (acc[pred.user_id] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+      
+      console.log('Found predictions count by user:', predictionsByUser);
 
       const { data, error } = await supabase
         .from("predictions")
@@ -86,7 +87,10 @@ export function usePredictions(followedIds: string[]) {
           userId: item.user.id,
           gameId: item.game.id,
           roundId: item.game.round.id,
-          hasGameResults: gameResults.length > 0
+          hasGameResults: gameResults.length > 0,
+          gameDate: item.game.game_date,
+          predictionScores: `${item.prediction_home_score}-${item.prediction_away_score}`,
+          pointsEarned: item.points_earned
         });
         
         const prediction = {
