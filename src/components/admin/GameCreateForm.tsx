@@ -93,7 +93,7 @@ export function GameCreateForm() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['games'] });
-      toast({ title: "Success", description: "Game created successfully" });
+      toast.success({ title: "Success", description: "Game created successfully" });
       setSelectedRound("");
       setHomeTeam("");
       setAwayTeam("");
@@ -102,11 +102,7 @@ export function GameCreateForm() {
     },
     onError: (error) => {
       console.error('Error in createGame mutation:', error);
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error({ title: "Error", description: error.message });
     },
   });
 

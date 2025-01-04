@@ -52,10 +52,9 @@ export function PredictionDialog({
     e.preventDefault();
     
     if (!homeScore || !awayScore) {
-      toast({
+      toast.error({
         title: "Error",
         description: "Please enter both scores",
-        variant: "destructive",
       });
       return;
     }
@@ -64,10 +63,9 @@ export function PredictionDialog({
     const awayScoreNum = parseInt(awayScore);
 
     if (isNaN(homeScoreNum) || isNaN(awayScoreNum)) {
-      toast({
+      toast.error({
         title: "Error",
         description: "Scores must be valid numbers",
-        variant: "destructive",
       });
       return;
     }
@@ -84,10 +82,9 @@ export function PredictionDialog({
 
     if (existingPrediction) {
       setIsSubmitting(false);
-      toast({
+      toast.error({
         title: "Error",
         description: "You have already made a prediction for this game",
-        variant: "destructive",
       });
       onOpenChange(false);
       return;
@@ -106,15 +103,14 @@ export function PredictionDialog({
     setIsSubmitting(false);
 
     if (error) {
-      toast({
+      toast.error({
         title: "Error",
         description: "Failed to submit prediction. Please try again.",
-        variant: "destructive",
       });
       return;
     }
 
-    toast({
+    toast.success({
       title: "Success",
       description: "Your prediction has been submitted!",
     });

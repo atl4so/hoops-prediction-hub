@@ -50,14 +50,10 @@ export function TeamsList() {
       setIsAddOpen(false);
       setNewTeamName("");
       setNewLogoUrl("");
-      toast({ title: "Success", description: "Team added successfully" });
+      toast.success({ title: "Success", description: "Team added successfully" });
     },
     onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error({ title: "Error", description: error.message });
     },
   });
 
@@ -76,14 +72,10 @@ export function TeamsList() {
       setEditingTeam(null);
       setNewTeamName("");
       setNewLogoUrl("");
-      toast({ title: "Success", description: "Team updated successfully" });
+      toast.success({ title: "Success", description: "Team updated successfully" });
     },
     onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error({ title: "Error", description: error.message });
     },
   });
 
@@ -98,14 +90,10 @@ export function TeamsList() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teams'] });
-      toast({ title: "Success", description: "Team deleted successfully" });
+      toast.success({ title: "Success", description: "Team deleted successfully" });
     },
     onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error({ title: "Error", description: error.message });
     },
   });
 

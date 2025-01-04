@@ -30,10 +30,9 @@ export function FollowButton({
       } = await supabase.auth.getUser();
 
       if (!user) {
-        toast({
+        toast.error({
           title: "Authentication required",
           description: "Please sign in to follow users",
-          variant: "destructive",
         });
         return;
       }
@@ -56,7 +55,7 @@ export function FollowButton({
           if (error) throw error;
 
           setIsFollowing(false);
-          toast({
+          toast.success({
             title: "Unfollowed",
             description: "You are no longer following this user",
           });
@@ -78,7 +77,7 @@ export function FollowButton({
           if (error) throw error;
 
           setIsFollowing(true);
-          toast({
+          toast.success({
             title: "Following",
             description: "You are now following this user",
           });
@@ -90,10 +89,9 @@ export function FollowButton({
       }
     } catch (error) {
       console.error("Error following/unfollowing:", error);
-      toast({
+      toast.error({
         title: "Error",
         description: "Failed to update follow status",
-        variant: "destructive",
       });
     } finally {
       setLoading(false);

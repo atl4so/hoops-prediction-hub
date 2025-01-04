@@ -28,10 +28,9 @@ const Admin = () => {
         }
 
         if (session.user.email !== 'likasvy@gmail.com') {
-          toast({
+          toast.error({
             title: "Access Denied",
-            description: "You don't have permission to access this page.",
-            variant: "destructive",
+            description: "You don't have permission to access this page."
           });
           navigate('/');
           return;
