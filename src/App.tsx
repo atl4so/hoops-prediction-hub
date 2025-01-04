@@ -35,6 +35,7 @@ const App = () => {
             closeButton={false}
             richColors
             theme="light"
+            className="cursor-pointer"
           />
           <BrowserRouter>
             <SessionHandler>
