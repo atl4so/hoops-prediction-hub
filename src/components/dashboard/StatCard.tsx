@@ -21,7 +21,7 @@ export function StatCard({
     <Card className={cn(
       "group transition-all duration-300 hover:shadow-lg",
       "hover:scale-[1.02] hover:-translate-y-0.5",
-      highlight ? "bg-primary/5 dark:bg-primary/10" : "hover:bg-accent/5"
+      highlight ? "bg-primary/5 dark:bg-primary/10" : ""
     )}>
       <CardContent className="p-4 sm:p-6">
         <div className="flex flex-col items-center text-center space-y-4">
