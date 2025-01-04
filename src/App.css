@@ -17,6 +17,28 @@
   will-change: transform;
 }
 
+/* Base styles to prevent scrolling issues */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  overflow: hidden;
+  background: linear-gradient(180deg, #22c55e 0%, #bbf7d0 100%);
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
+}
+
+/* Ensure content is properly contained */
+.container {
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+  z-index: 1;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -72,26 +94,4 @@
 .prediction-button:disabled {
   background-color: #FDA4AF;
   cursor: not-allowed;
-}
-
-/* Base styles to prevent scrolling issues */
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  overflow: hidden;
-  background-color: #F97316;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: none;
-}
-
-/* Ensure content is properly contained */
-.container {
-  height: 100%;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  position: relative;
-  z-index: 1;
 }
