@@ -82,63 +82,60 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
 
   const containerClasses = cn(
     "bg-gray-50",
-    isDownload ? "h-[1200px] w-[600px]" : "w-full max-w-md mx-auto min-h-screen"
+    isDownload 
+      ? "h-[630px] w-[1200px]" 
+      : "w-full max-w-screen-lg mx-auto overflow-x-hidden"
   );
 
-  const headerClasses = cn(
-    "mb-4",
-    isDownload ? "flex flex-col gap-2" : "flex flex-col gap-2"
+  const wrapperClasses = cn(
+    "bg-gray-50",
+    !isDownload && "scale-[0.6] sm:scale-[0.7] md:scale-[0.8] lg:scale-[0.9] origin-top transform-gpu"
   );
 
-  const gridClasses = cn(
-    "gap-3",
-    isDownload ? "flex flex-col" : "flex flex-col"
-  );
-
-  const mainClasses = cn(
-    "flex-1",
-    isDownload ? "p-6" : "p-4"
+  const contentClasses = cn(
+    "h-[630px] w-[1200px] mx-auto bg-gray-50",
+    !isDownload && "shadow-lg rounded-lg"
   );
 
   return (
     <div className={containerClasses}>
-      <div className="flex flex-col h-full bg-gray-50">
-        <div className={mainClasses}>
-          {/* Header */}
-          <div className={headerClasses}>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-1">
-                euroleague.bet Round {roundName}
-                <span className="text-blue-600 font-medium ml-2 text-xl">by {userName}</span>
-              </h1>
-              <p className="text-gray-500 text-sm">{dateRange}</p>
+      <div className={wrapperClasses}>
+        <div className={contentClasses}>
+          <div className="p-6 flex-1">
+            {/* Header */}
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 mb-1">
+                  euroleague.bet Round {roundName}
+                  <span className="text-blue-600 font-medium ml-2 text-xl">by {userName}</span>
+                </h1>
+                <p className="text-gray-500 text-sm">{dateRange}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-gray-700">Total Score:</span>
+                <span className="text-3xl font-bold text-orange-500">{totalPoints}</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-gray-700">Total Score:</span>
-              <span className="text-3xl font-bold text-orange-500">{totalPoints}</span>
+            
+            {/* Game Grid */}
+            <div className="grid grid-cols-3 gap-3">
+              {predictions.map((prediction, index) => (
+                <GameCard key={index} prediction={prediction} />
+              ))}
             </div>
           </div>
           
-          {/* Game Grid */}
-          <div className={gridClasses}>
-            {predictions.map((prediction, index) => (
-              <GameCard key={index} prediction={prediction} />
-            ))}
-          </div>
-        </div>
-        
-        {/* Footer */}
-        <div className="bg-gray-50 p-4 pt-0">
-          <div className="flex justify-between items-center text-gray-500 text-sm">
-            <span className="font-medium">euroleague.bet</span>
-            <div className="flex items-center gap-2">
-              <span className="text-xs bg-gray-100 px-2 py-1 rounded">F = Final</span>
-              <span className="text-xs bg-gray-100 px-2 py-1 rounded">P = Prediction</span>
+          {/* Footer */}
+          <div className="bg-gray-50 p-4">
+            <div className="flex justify-between items-center text-gray-500 text-sm">
+              <span className="font-medium">euroleague.bet</span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs bg-gray-100 px-2 py-1 rounded">F = Final</span>
+                <span className="text-xs bg-gray-100 px-2 py-1 rounded">P = Prediction</span>
+              </div>
             </div>
           </div>
         </div>
-
-        {isDownload && <div className="bg-gray-50 h-12"></div>}
       </div>
     </div>
   );
