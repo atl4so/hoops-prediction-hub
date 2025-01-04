@@ -83,8 +83,8 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, !!session);
       
-      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
-        console.log('User signed out or deleted, cleaning up...');
+      if (event === 'SIGNED_OUT') {
+        console.log('User signed out, cleaning up...');
         queryClient.clear();
         localStorage.clear();
         sessionStorage.clear();
