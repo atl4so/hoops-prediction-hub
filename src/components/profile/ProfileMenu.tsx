@@ -13,20 +13,28 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ProfileSettings } from "./ProfileSettings";
 import { useUserProfile } from "@/components/dashboard/UserProfile";
-import { Loader2 } from "lucide-react";
+import { Loader2, User } from "lucide-react";
+import { toast } from "sonner";
 
 export function ProfileMenu() {
   const session = useSession();
   const supabase = useSupabaseClient();
   const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
-  const { data: profile, isLoading } = useUserProfile(session?.user?.id || null);
+  const { data: profile, isLoading, error } = useUserProfile(session?.user?.id || null);
 
   useEffect(() => {
     if (!session) {
       navigate("/login");
     }
   }, [session, navigate]);
+
+  useEffect(() => {
+    if (error) {
+      console.error('Profile loading error:', error);
+      toast.error('Failed to load profile data');
+    }
+  }, [error]);
 
   const handleLogout = async () => {
     try {
@@ -45,7 +53,9 @@ export function ProfileMenu() {
     return null;
   }
 
-  if (isLoading) return <Loader2 className="h-4 w-4 animate-spin" />;
+  if (isLoading) {
+    return <Loader2 className="h-4 w-4 animate-spin" />;
+  }
 
   return (
     <>

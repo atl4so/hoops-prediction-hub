@@ -21,6 +21,10 @@ export const SessionHandler = ({ children }: SessionHandlerProps) => {
         localStorage.clear();
         sessionStorage.clear();
         navigate('/login');
+      } else {
+        console.log('Session found:', session.user.id);
+        // Prefetch user data when session exists
+        queryClient.invalidateQueries();
       }
     };
     
