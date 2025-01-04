@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -12,31 +12,8 @@ interface Prediction {
 export function usePredictionState(gameId: string, userId?: string, initialPrediction?: Prediction) {
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [prediction, setPrediction] = useState<Prediction | undefined>(initialPrediction);
   const queryClient = useQueryClient();
-
-  // Query to check existing prediction
-  const { data: existingPrediction } = useQuery({
-    queryKey: ['prediction', gameId, userId],
-    queryFn: async () => {
-      if (!userId) return null;
-      
-      const { data, error } = await supabase
-        .from("predictions")
-        .select("*")
-        .eq("game_id", gameId)
-        .eq("user_id", userId)
-        .maybeSingle();
-
-      if (error) {
-        console.error('Error checking existing prediction:', error);
-        throw error;
-      }
-      return data;
-    },
-    enabled: !!userId && !!gameId,
-  });
-
-  const prediction = existingPrediction || initialPrediction;
 
   const submitPrediction = async (homeScore: number, awayScore: number) => {
     if (!userId || !gameId) return;
@@ -57,8 +34,14 @@ export function usePredictionState(gameId: string, userId?: string, initialPredi
 
       if (error) throw error;
 
+      // Update local state immediately
+      setPrediction({
+        prediction_home_score: homeScore,
+        prediction_away_score: awayScore
+      });
+
       // Update cache for both queries
-      queryClient.setQueryData(['prediction', gameId, userId], data);
+      queryClient.invalidateQueries({ queryKey: ['prediction', gameId, userId] });
       queryClient.invalidateQueries({ queryKey: ['userPredictions'] });
       queryClient.invalidateQueries({ queryKey: ['games'] });
 
