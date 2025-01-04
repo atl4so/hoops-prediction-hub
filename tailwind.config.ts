@@ -112,6 +112,10 @@ export default {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'gradient-primary': 'linear-gradient(to right, #F97316, #FB923C)',
+        'gradient-secondary': 'linear-gradient(to right, #9333EA, #A855F7)',
+        'gradient-accent': 'linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%)',
+        'gradient-card': 'linear-gradient(109.6deg, rgba(223,234,247,1) 11.2%, rgba(244,248,252,1) 91.1%)',
       },
     },
   },
