@@ -21,6 +21,20 @@ export function usePredictionState(gameId: string, userId?: string, initialPredi
     setIsSubmitting(true);
 
     try {
+      // Check if prediction already exists
+      const { data: existingPrediction } = await supabase
+        .from("predictions")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("game_id", gameId)
+        .maybeSingle();
+
+      if (existingPrediction) {
+        toast.error("You have already made a prediction for this game");
+        setShowForm(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from("predictions")
         .insert({
@@ -40,7 +54,7 @@ export function usePredictionState(gameId: string, userId?: string, initialPredi
         prediction_away_score: awayScore
       });
 
-      // Update cache for both queries
+      // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ['prediction', gameId, userId] });
       queryClient.invalidateQueries({ queryKey: ['userPredictions'] });
       queryClient.invalidateQueries({ queryKey: ['games'] });
