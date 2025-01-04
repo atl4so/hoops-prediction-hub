@@ -4,12 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useUserProfile } from "@/components/dashboard/UserProfile";
 import { useCurrentRoundRank } from "@/components/dashboard/useCurrentRoundRank";
-import { useUserPredictions } from "@/components/dashboard/useUserPredictions";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardStats } from "@/components/dashboard/sections/DashboardStats";
-import { DashboardPredictions } from "@/components/dashboard/sections/DashboardPredictions";
 
 export default function Dashboard() {
   const session = useSession();
@@ -56,9 +54,8 @@ export default function Dashboard() {
 
   const { data: userProfileData, isError: profileError } = useUserProfile(userId);
   const { data: currentRoundRank } = useCurrentRoundRank(userId);
-  const { data: predictions, isError: predictionsError } = useUserPredictions(userId);
 
-  if (profileError || predictionsError) {
+  if (profileError) {
     toast.error("Failed to load data");
     return null;
   }
@@ -67,65 +64,6 @@ export default function Dashboard() {
   const totalPoints = userProfileData?.total_points || 0;
   const totalPredictions = userProfileData?.total_predictions || 0;
   const pointsPerGame = userProfileData?.points_per_game || 0;
-
-  // Group predictions by round
-  const predictionsByRound = predictions?.reduce((acc, prediction) => {
-    const roundId = prediction.game.round.id;
-    if (!acc[roundId]) {
-      acc[roundId] = {
-        roundId,
-        roundName: prediction.game.round.name,
-        predictions: []
-      };
-    }
-    acc[roundId].predictions.push({
-      id: prediction.id,
-      game: {
-        id: prediction.game.id,
-        game_date: prediction.game.game_date,
-        round: prediction.game.round,
-        home_team: prediction.game.home_team,
-        away_team: prediction.game.away_team,
-        game_results: prediction.game.game_results
-      },
-      prediction: {
-        prediction_home_score: prediction.prediction_home_score,
-        prediction_away_score: prediction.prediction_away_score,
-        points_earned: prediction.points_earned
-      }
-    });
-    return acc;
-  }, {} as Record<string, { roundId: string; roundName: string; predictions: Array<{
-    id: string;
-    game: {
-      id: string;
-      game_date: string;
-      round: {
-        id: string;
-        name: string;
-      };
-      home_team: {
-        id: string;
-        name: string;
-        logo_url: string;
-      };
-      away_team: {
-        id: string;
-        name: string;
-        logo_url: string;
-      };
-      game_results?: Array<{
-        home_score: number;
-        away_score: number;
-        is_final: boolean;
-      }>;
-    };
-    prediction: {
-      prediction_home_score: number;
-      prediction_away_score: number;
-      points_earned?: number;
-    };
-  }> }>) || {};
 
   return (
     <div className="space-y-8">
@@ -142,11 +80,6 @@ export default function Dashboard() {
         allTimeRank={userProfileData?.allTimeRank}
         currentRoundRank={currentRoundRank}
         userId={userId}
-      />
-
-      <DashboardPredictions
-        predictionsByRound={predictionsByRound}
-        userName={userProfileData?.display_name || "User"}
       />
     </div>
   );

@@ -16,6 +16,7 @@ import Predict from "./pages/Predict";
 import Following from "./pages/Following";
 import Rules from "./pages/Rules";
 import Terms from "./pages/Terms";
+import MyPredictions from "./pages/MyPredictions";
 import { supabase } from "./integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -110,6 +111,7 @@ const App = () => {
                   <Route path="/leaderboard" element={<Leaderboard />} />
                   <Route path="/predict" element={<Predict />} />
                   <Route path="/following" element={<Following />} />
+                  <Route path="/my-predictions" element={<MyPredictions />} />
                   <Route path="/rules" element={<Rules />} />
                   <Route path="/terms" element={<Terms />} />
                   <Route path="*" element={<Navigate to="/" replace />} />
