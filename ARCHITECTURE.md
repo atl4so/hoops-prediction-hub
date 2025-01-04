@@ -11,6 +11,8 @@ euroleague.bet is a web application for managing and predicting Euroleague baske
 - No editing or deleting predictions once submitted
 - Points are calculated automatically when admin sets final result
 - Predictions cannot be made after a game result is posted
+- All user predictions are visible to other users
+- Predictions are ordered by game date for consistency
 
 ### 2. Points Calculation (IMMUTABLE RULES)
 - Winner prediction: 5 points

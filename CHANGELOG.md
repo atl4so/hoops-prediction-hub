@@ -4,6 +4,12 @@ All notable changes to the euroleague.bet project will be documented in this fil
 
 ## [Current Development]
 
+### Recent Updates
+- Fixed predictions display issue in user round predictions
+- Improved query structure for fetching predictions with proper ordering
+- Enhanced data transformation for game results
+- Added better error handling for predictions fetching
+
 ### Core Features
 - Complete predictions system with points calculation
 - Admin dashboard for game management
