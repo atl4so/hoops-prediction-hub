@@ -95,18 +95,20 @@ export function CollapsibleRoundSection({
   });
 
   return (
-    <div className="space-y-8">
+    <div className="min-h-[calc(100vh-12rem)] space-y-8">
       {Object.entries(predictionsByRound).map(([roundId, { roundName, predictions: roundPredictions }]) => (
-        <div key={roundId} className="space-y-4">
-          <h3 className="text-xl font-semibold">Round {roundName}</h3>
+        <div key={roundId} className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-2xl font-semibold tracking-tight">Round {roundName}</h3>
+            
+            {!showGames && (
+              <div className="flex justify-end">
+                {extraContent}
+              </div>
+            )}
+          </div>
           
-          {!showGames && (
-            <div className="flex justify-end mb-4">
-              {extraContent}
-            </div>
-          )}
-          
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-8 md:grid-cols-2">
             {roundPredictions.map((prediction) => (
               showGames ? (
                 <GameCard
