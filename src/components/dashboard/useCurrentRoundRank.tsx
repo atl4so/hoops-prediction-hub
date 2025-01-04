@@ -6,48 +6,57 @@ import type { RoundRank } from "@/types/supabase";
 export function useCurrentRoundRank(userId?: string) {
   const [currentRoundRank, setCurrentRoundRank] = useState<RoundRank | null>(null);
 
-  const { data: finishedGames } = useQuery({
-    queryKey: ["finished-games"],
+  const { data: rounds } = useQuery({
+    queryKey: ["rounds"],
     queryFn: async () => {
-      console.log('Fetching finished games...');
-      
       const { data, error } = await supabase
-        .from('games')
-        .select(`
-          id,
-          round:rounds (
-            id,
-            name
-          ),
-          game_results (
-            is_final
-          )
-        `)
-        .eq('round_id', '885518d1-d7c8-4523-9bd7-68e6608f9357')
-        .limit(1);
-
-      if (error) {
-        console.error('Error fetching finished games:', error);
-        throw error;
-      }
-
+        .from("rounds")
+        .select("*")
+        .order("start_date", { ascending: false });
+      if (error) throw error;
       return data;
     },
     enabled: !!userId,
   });
 
   useEffect(() => {
-    if (finishedGames && finishedGames.length > 0) {
-      const roundData = finishedGames[0].round;
-      
-      setCurrentRoundRank({
-        rank: 0, // This will be calculated elsewhere
-        roundId: roundData.id,
-        roundName: roundData.name,
-        isCurrent: true
-      });
+    async function findLatestRoundWithFinishedGames() {
+      if (!rounds?.length || !userId) return;
+
+      for (const round of rounds) {
+        // Check if the round has any finished games
+        const { data: finishedGames } = await supabase
+          .from('games')
+          .select('id, game_results!inner(is_final)')
+          .eq('round_id', round.id)
+          .eq('game_results.is_final', true)
+          .limit(1);
+
+        if (finishedGames?.length) {
+          // Get rankings for this round
+          const { data: rankings } = await supabase
+            .rpc('get_round_rankings', { round_id: round.id });
+
+          if (rankings?.length) {
+            const userRanking = rankings.find(r => r.user_id === userId);
+            const rank = rankings.findIndex(r => r.user_id === userId) + 1;
+
+            if (rank > 0) {
+              setCurrentRoundRank({
+                rank,
+                roundId: round.id,
+                roundName: round.name,
+                isCurrent: true
+              });
+              break;
+            }
+          }
+        }
+      }
     }
-  }, [finishedGames]);
+
+    findLatestRoundWithFinishedGames();
+  }, [rounds, userId]);
 
   return currentRoundRank;
 }
