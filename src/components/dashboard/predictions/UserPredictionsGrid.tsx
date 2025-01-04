@@ -30,12 +30,15 @@ interface UserPredictionsGridProps {
   }> | undefined;
   isLoading: boolean;
   isOwnPredictions?: boolean;
+  roundId?: string;
+  roundName?: string;
 }
 
 export function UserPredictionsGrid({ 
   predictions, 
   isLoading,
-  isOwnPredictions = false
+  isOwnPredictions = false,
+  roundName
 }: UserPredictionsGridProps) {
   if (isLoading) {
     return (
@@ -52,7 +55,7 @@ export function UserPredictionsGrid({
       <Card>
         <CardContent className="py-8">
           <p className="text-muted-foreground text-center">
-            No predictions found for the selected round.
+            No predictions found for {roundName ? `Round ${roundName}` : 'the selected round'}.
           </p>
         </CardContent>
       </Card>
