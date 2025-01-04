@@ -18,22 +18,22 @@ export const AppRoutes = () => {
   return (
     <Routes>
       {/* Public routes */}
-      <Route path="/" element={session ? <Navigate to="/predict" replace /> : <Index />} />
-      <Route path="/login" element={session ? <Navigate to="/predict" replace /> : <Login />} />
-      <Route path="/register" element={session ? <Navigate to="/predict" replace /> : <RegisterForm />} />
+      <Route path="/" element={!session ? <Index /> : <Navigate to="/predict" />} />
+      <Route path="/login" element={!session ? <Login /> : <Navigate to="/predict" />} />
+      <Route path="/register" element={!session ? <RegisterForm /> : <Navigate to="/predict" />} />
       <Route path="/terms" element={<Terms />} />
 
       {/* Protected routes */}
-      <Route path="/overview" element={session ? <Overview /> : <Navigate to="/login" replace />} />
-      <Route path="/admin" element={session ? <Admin /> : <Navigate to="/login" replace />} />
-      <Route path="/leaderboard" element={session ? <Leaderboard /> : <Navigate to="/login" replace />} />
-      <Route path="/predict" element={session ? <Predict /> : <Navigate to="/login" replace />} />
-      <Route path="/following" element={session ? <Following /> : <Navigate to="/login" replace />} />
-      <Route path="/my-predictions" element={session ? <MyPredictions /> : <Navigate to="/login" replace />} />
-      <Route path="/rules" element={session ? <Rules /> : <Navigate to="/login" replace />} />
+      <Route path="/overview" element={session ? <Overview /> : <Navigate to="/login" />} />
+      <Route path="/admin" element={session ? <Admin /> : <Navigate to="/login" />} />
+      <Route path="/leaderboard" element={session ? <Leaderboard /> : <Navigate to="/login" />} />
+      <Route path="/predict" element={session ? <Predict /> : <Navigate to="/login" />} />
+      <Route path="/following" element={session ? <Following /> : <Navigate to="/login" />} />
+      <Route path="/my-predictions" element={session ? <MyPredictions /> : <Navigate to="/login" />} />
+      <Route path="/rules" element={session ? <Rules /> : <Navigate to="/login" />} />
       
       {/* Fallback route */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 };
