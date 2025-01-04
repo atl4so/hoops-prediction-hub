@@ -16,10 +16,10 @@ export function MainLayout({ children }: MainLayoutProps) {
         .from("background_settings")
         .select("*")
         .eq("is_active", true)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
-      return data as BackgroundSetting;
+      return data as BackgroundSetting | null;
     },
   });
 
