@@ -6,12 +6,13 @@ import { useUserPredictions } from "@/components/dashboard/useUserPredictions";
 import { toast } from "sonner";
 import { useUserProfile } from "@/components/dashboard/UserProfile";
 import { RoundSelector } from "@/components/dashboard/predictions/RoundSelector";
+import { Card } from "@/components/ui/card";
 
 export default function MyPredictions() {
   const session = useSession();
   const navigate = useNavigate();
   const userId = session?.user?.id;
-  const { data: predictions, isError: predictionsError } = useUserPredictions(userId);
+  const { data: predictions, isError: predictionsError, isLoading } = useUserPredictions(userId);
   const { data: profile } = useUserProfile(userId);
   const [selectedRound, setSelectedRound] = useState<string>("");
 
@@ -53,6 +54,29 @@ export default function MyPredictions() {
   const filteredPredictions = selectedRound
     ? { [selectedRound]: predictionsByRound[selectedRound] }
     : predictionsByRound;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        <div className="text-center space-y-3">
+          <h1 className="text-2xl font-bold">Loading predictions...</h1>
+        </div>
+      </div>
+    );
+  }
+
+  if (!predictions || predictions.length === 0) {
+    return (
+      <div className="space-y-8">
+        <section className="text-center space-y-3">
+          <h1 className="text-2xl font-bold">My Predictions</h1>
+          <Card className="p-6">
+            <p className="text-muted-foreground">No predictions found</p>
+          </Card>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-fade-in">
