@@ -65,16 +65,25 @@ export function DashboardPredictions({
       </div>
 
       <div className="space-y-8">
-        {rounds.map(({ roundId, roundName, predictions }) => (
-          <UserPredictionsGrid
-            key={roundId}
-            predictions={predictions}
-            isLoading={false}
-            roundId={roundId}
-            roundName={roundName}
-            isOwnPredictions={true}
-          />
-        ))}
+        {rounds.map(({ roundId, roundName, predictions }) => {
+          // Transform the predictions to match the expected format
+          const formattedPredictions = predictions.map(pred => ({
+            game: pred.game,
+            prediction: pred.prediction
+          }));
+
+          return (
+            <div key={roundId} id={`round-${roundId}`}>
+              <UserPredictionsGrid
+                predictions={formattedPredictions}
+                isLoading={false}
+                roundId={roundId}
+                roundName={roundName}
+                isOwnPredictions={true}
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
