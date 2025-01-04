@@ -12,7 +12,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         <img 
           src="https://i.ibb.co/WHBMDkY/logo4.jpg" 
           alt="Background" 
-          className="w-full h-full object-cover opacity-40"
+          className="w-full h-full object-cover opacity-60"
         />
         <div className="absolute inset-0 bg-[#F1F0FB] bg-opacity-70" />
       </div>
