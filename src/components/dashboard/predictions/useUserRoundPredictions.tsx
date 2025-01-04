@@ -11,6 +11,8 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
           return [];
         }
 
+        console.log('Fetching predictions for user:', userId, 'in round:', selectedRound);
+
         const { data, error } = await supabase
           .from("predictions")
           .select(`
@@ -47,6 +49,8 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
           throw error;
         }
 
+        console.log('Raw predictions data:', data);
+
         return data.map((item): UserPrediction => ({
           id: item.id,
           prediction: {
@@ -72,18 +76,10 @@ export function useUserRoundPredictions(userId: string, selectedRound: string, i
               name: item.game.away_team.name,
               logo_url: item.game.away_team.logo_url
             },
-            game_results: Array.isArray(item.game.game_results)
-              ? item.game.game_results.map(result => ({
-                  home_score: result.home_score,
-                  away_score: result.away_score,
-                  is_final: result.is_final
-                }))
-              : item.game.game_results
-                ? [{
-                    home_score: item.game.game_results.home_score,
-                    away_score: item.game.game_results.away_score,
-                    is_final: item.game.game_results.is_final
-                  }]
+            game_results: Array.isArray(item.game.game_results) 
+              ? item.game.game_results 
+              : item.game.game_results 
+                ? [item.game.game_results]
                 : []
           }
         }));

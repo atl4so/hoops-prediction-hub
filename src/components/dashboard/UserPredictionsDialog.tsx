@@ -23,7 +23,7 @@ export function UserPredictionsDialog({
   userName 
 }: UserPredictionsDialogProps) {
   const [selectedRound, setSelectedRound] = useState("");
-  const { data: predictions } = useUserRoundPredictions(userId, selectedRound, isOpen);
+  const { data: predictions, isLoading } = useUserRoundPredictions(userId, selectedRound, isOpen);
 
   const { data: userProfile } = useQuery({
     queryKey: ["user-profile", userId],
@@ -35,14 +35,38 @@ export function UserPredictionsDialog({
         .single();
       return data;
     },
+    enabled: isOpen,
   });
 
-  const finishedPredictions = predictions?.filter(p => p.game.game_results?.length > 0) || [];
-  const futurePredictions = predictions?.filter(p => !p.game.game_results?.length) || [];
+  console.log('UserPredictionsDialog - predictions:', predictions);
+
+  const finishedPredictions = predictions?.filter(p => {
+    const hasResults = p.game.game_results && p.game.game_results.length > 0;
+    console.log('Checking prediction:', p.id, 'hasResults:', hasResults);
+    return hasResults;
+  }) || [];
+
+  const futurePredictions = predictions?.filter(p => {
+    const hasNoResults = !p.game.game_results || p.game.game_results.length === 0;
+    console.log('Checking future prediction:', p.id, 'hasNoResults:', hasNoResults);
+    return hasNoResults;
+  }) || [];
   
   const upcomingGamesInRound = predictions?.some(p => !p.game.game_results?.length);
   
   const defaultTab = futurePredictions.length > 0 ? "future" : "finished";
+
+  if (isLoading) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-2xl h-[90vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Loading predictions...</DialogTitle>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
