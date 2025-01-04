@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { Game, Prediction } from "@/types/supabase";
 
 interface PredictionsByRound {
   [key: string]: {
@@ -110,7 +109,7 @@ export function useUserPredictions(userId: string | undefined) {
           name: pred.game.away_team.name,
           logo_url: pred.game.away_team.logo_url
         },
-        game_results: pred.game.game_results || []
+        game_results: Array.isArray(pred.game.game_results) ? pred.game.game_results : []
       },
       prediction: {
         prediction_home_score: pred.prediction_home_score,
