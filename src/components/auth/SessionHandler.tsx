@@ -15,15 +15,9 @@ export const SessionHandler = ({ children }: SessionHandlerProps) => {
   useEffect(() => {
     const cleanupSession = async () => {
       try {
+        queryClient.clear();
         localStorage.clear();
         sessionStorage.clear();
-        
-        try {
-          await supabase.auth.signOut({ scope: 'global' });
-        } catch (error) {
-          console.log('Global sign out error (expected if no session):', error);
-        }
-        
         setIsAuthenticated(false);
       } catch (error) {
         console.error('Session cleanup error:', error);
@@ -38,12 +32,8 @@ export const SessionHandler = ({ children }: SessionHandlerProps) => {
           console.error('Session check error:', error);
           if (error.message.includes('invalid_credentials')) {
             toast.error("Invalid login credentials");
-          } else if (error.message.includes('session_not_found')) {
-            console.log('Session not found, cleaning up...');
-            await cleanupSession();
-          } else {
-            toast.error("Authentication error");
           }
+          await cleanupSession();
           return;
         }
         
@@ -52,7 +42,7 @@ export const SessionHandler = ({ children }: SessionHandlerProps) => {
           setIsAuthenticated(true);
         } else {
           console.log('No active session found');
-          setIsAuthenticated(false);
+          await cleanupSession();
         }
       } catch (error) {
         console.error('Session check error:', error);
@@ -67,18 +57,11 @@ export const SessionHandler = ({ children }: SessionHandlerProps) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, session?.user?.id);
       
-      if (event === 'SIGNED_OUT') {
-        console.log('User signed out, cleaning up...');
-        queryClient.clear();
-        localStorage.clear();
-        sessionStorage.clear();
-        setIsAuthenticated(false);
-      } else if (event === 'SIGNED_IN') {
-        console.log('User signed in:', session?.user?.id);
-        setIsAuthenticated(true);
-        queryClient.invalidateQueries();
-      } else if (event === 'TOKEN_REFRESHED') {
-        console.log('Token refreshed for user:', session?.user?.id);
+      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+        console.log('User signed out or deleted, cleaning up...');
+        await cleanupSession();
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        console.log('User signed in or token refreshed:', session?.user?.id);
         setIsAuthenticated(true);
         queryClient.invalidateQueries();
       }

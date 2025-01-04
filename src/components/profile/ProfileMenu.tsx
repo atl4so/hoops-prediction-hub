@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import {
@@ -22,23 +22,19 @@ export function ProfileMenu() {
   const [showSettings, setShowSettings] = useState(false);
   const { data: profile, isLoading } = useUserProfile(session?.user?.id || null);
 
+  useEffect(() => {
+    if (!session) {
+      navigate("/login");
+    }
+  }, [session, navigate]);
+
   const handleLogout = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        if (error.message.includes('session_not_found')) {
-          // If session is not found, clear local storage and redirect
-          localStorage.clear();
-          sessionStorage.clear();
-          navigate("/login");
-          return;
-        }
-        throw error;
-      }
+      await supabase.auth.signOut();
       navigate("/login");
     } catch (error) {
       console.error('Logout error:', error);
-      // Force redirect to login on critical errors
+      // Force cleanup on critical errors
       localStorage.clear();
       sessionStorage.clear();
       navigate("/login");
@@ -46,8 +42,6 @@ export function ProfileMenu() {
   };
 
   if (!session) {
-    // If no session, redirect to login
-    navigate("/login");
     return null;
   }
 
