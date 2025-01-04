@@ -1,119 +1,46 @@
-import { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { MobileMenu } from "./MobileMenu";
-import { DesktopNav } from "./DesktopNav";
-import { navigationItems } from "./NavigationItems";
+import { Link } from "react-router-dom";
+import { useSession } from "@supabase/auth-helpers-react";
 import { ProfileMenu } from "../profile/ProfileMenu";
-import { Settings } from "lucide-react";
-import { toast } from "sonner";
+import { MobileMenu } from "./MobileMenu";
+import { ThemeToggle } from "../theme/ThemeToggle";
 
 export function AppHeader() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [menuItems, setMenuItems] = useState([]);
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    const loadNavItems = async () => {
-      let items = [...navigationItems];
-      if (isAuthenticated) {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user?.email === 'likasvy@gmail.com') {
-          items = [
-            ...items,
-            {
-              title: "Admin",
-              href: "/admin",
-              icon: Settings,
-            },
-          ];
-        }
-      } else {
-        items = [
-          {
-            title: "Home",
-            href: "/",
-            icon: navigationItems[0].icon,
-          },
-          {
-            title: "Leaderboard",
-            href: "/leaderboard",
-            icon: navigationItems[4].icon,
-          },
-          {
-            title: "Rules",
-            href: "/rules",
-            icon: navigationItems[5].icon,
-          },
-        ];
-      }
-      setMenuItems(items);
-    };
-
-    loadNavItems();
-  }, [isAuthenticated]);
-
-  useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsAuthenticated(!!session);
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, []);
-
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('Failed to sign out:', error);
-    } else {
-      toast("Goodbye!", {
-        description: "You have been successfully logged out.",
-        duration: 3000,
-        className: "cursor-pointer",
-        dismissible: true,
-      });
-    }
-    navigate("/");
-  };
-
-  if (location.pathname === "/" && !isAuthenticated) {
-    return null;
-  }
+  const session = useSession();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 max-w-screen-2xl items-center justify-between">
-        <div className="flex items-center gap-4">
-          {isAuthenticated && (
-            <MobileMenu 
-              menuItems={menuItems}
-              isAuthenticated={isAuthenticated}
-              onLogout={handleLogout}
-            />
-          )}
-          
-          <Link 
-            to={isAuthenticated ? "/overview" : "/"} 
-            className="flex items-center space-x-2"
-          >
-            <span className="font-bold">euroleague.bet</span>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-sm">
+      <div className="container flex h-16 items-center justify-between">
+        <div className="flex items-center gap-6">
+          <Link to="/" className="flex items-center space-x-2">
+            <span className="font-display text-xl font-bold tracking-tight">
+              euroleague.bet
+            </span>
           </Link>
-
-          {isAuthenticated && (
-            <DesktopNav 
-              menuItems={menuItems}
-              currentPath={location.pathname}
-              isAuthenticated={isAuthenticated}
-              onLogout={handleLogout}
-            />
-          )}
         </div>
 
         <div className="flex items-center gap-4">
-          {isAuthenticated && <ProfileMenu />}
+          <ThemeToggle />
+          {session ? (
+            <>
+              <ProfileMenu />
+              <MobileMenu />
+            </>
+          ) : (
+            <div className="flex items-center gap-4">
+              <Link
+                to="/login"
+                className="text-sm font-medium hover:text-primary transition-colors"
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="text-sm font-medium bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                Register
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </header>
