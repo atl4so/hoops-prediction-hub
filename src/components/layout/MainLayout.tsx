@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { AppHeader } from "./AppHeader";
+import { Footer } from "./Footer";
 import { supabase } from "@/integrations/supabase/client";
 
 interface BackgroundSettings {
@@ -27,11 +28,12 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col w-full relative">
+    <div className="min-h-screen flex flex-col relative bg-background">
       {activeBackground?.url && (
         <div 
-          className="fixed inset-0 w-full h-full -z-10 bg-black"
+          className="fixed inset-0 w-full h-full -z-10"
           style={{ 
+            backgroundColor: 'black',
             touchAction: 'none', 
             userSelect: 'none',
           }}
@@ -52,9 +54,10 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         </div>
       )}
       <AppHeader />
-      <main className="flex-1 relative z-10">
+      <main className="flex-1 container mx-auto px-4 py-8 relative z-10">
         {children}
       </main>
+      <Footer />
     </div>
   );
 }
