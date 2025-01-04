@@ -9,7 +9,7 @@ export function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col w-full">
       <div className="fixed inset-0 -z-10 h-full w-full bg-background">
-        <div className="absolute inset-0 bg-[#C7E6B8] opacity-70" />
+        <div className="absolute inset-0 bg-[#F1F0FB] opacity-70" />
       </div>
       <AppHeader />
       <main className="flex-1">
