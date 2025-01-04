@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Auth } from "@supabase/auth-ui-react";
+import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
@@ -33,7 +34,7 @@ const Index = () => {
             <Auth
               supabaseClient={supabase}
               appearance={{
-                theme: 'light',
+                theme: ThemeSupa,
                 style: {
                   button: {
                     background: 'rgb(249 115 22)',
@@ -45,7 +46,7 @@ const Index = () => {
                   },
                 },
               }}
-              theme="light"
+              theme="default"
               providers={[]}
             />
           </DropdownMenuContent>
@@ -61,7 +62,7 @@ const Index = () => {
             <Auth
               supabaseClient={supabase}
               appearance={{
-                theme: 'light',
+                theme: ThemeSupa,
                 style: {
                   button: {
                     background: 'rgb(249 115 22)',
@@ -73,7 +74,7 @@ const Index = () => {
                   },
                 },
               }}
-              theme="light"
+              theme="default"
               providers={[]}
               view="sign_up"
             />
