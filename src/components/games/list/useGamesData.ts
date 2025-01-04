@@ -29,6 +29,10 @@ export function useGamesData(userId?: string) {
             home_score,
             away_score,
             is_final
+          ),
+          predictions!inner (
+            id,
+            user_id
           )
         `)
         .order('game_date', { ascending: true });
@@ -52,6 +56,10 @@ export function useGamesData(userId?: string) {
             ? [game.game_results] 
             : [];
 
+        // Check if user has already predicted this game
+        const userPrediction = userId ? game.predictions?.find(p => p.user_id === userId) : null;
+        const notPredictedByUser = !userPrediction;
+
         // Game state checks
         const isBeforeDeadline = now < deadline;
         const hasNoFinalResult = !gameResults.some(r => r.is_final);
@@ -61,10 +69,21 @@ export function useGamesData(userId?: string) {
           game_results: gameResults,
           game_date: game.game_date,
           home_team: game.home_team,
-          away_team: game.away_team
+          away_team: game.away_team,
+          notPredictedByUser,
+          isBeforeDeadline,
+          hasNoFinalResult
         };
-      });
+      }).filter(game => 
+        // Only return games that:
+        // 1. Haven't been predicted by the user
+        // 2. Are before the deadline
+        // 3. Don't have a final result
+        game.notPredictedByUser && 
+        game.isBeforeDeadline && 
+        game.hasNoFinalResult
+      );
     },
-    enabled: true // Always fetch games regardless of userId
+    enabled: true // Always fetch games
   });
 }
