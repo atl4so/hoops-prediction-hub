@@ -1,92 +1,64 @@
-import { RoundSelector } from "@/components/dashboard/predictions/RoundSelector";
-import { UserPredictionsGrid } from "@/components/dashboard/predictions/UserPredictionsGrid";
-import { DownloadPredictionsButton } from "@/components/dashboard/DownloadPredictionsButton";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import { Button } from "@/components/ui/button";
+import { FileDown } from "lucide-react";
+import { PredictionsPDF } from "../PredictionsPDF";
+import { CollapsibleRoundSection } from "../CollapsibleRoundSection";
 
 interface DashboardPredictionsProps {
-  predictionsByRound: Record<
-    string,
-    { 
-      roundId: string; 
-      roundName: string; 
-      predictions: Array<{
-        id: string;
-        game: {
-          id: string;
-          game_date: string;
-          home_team: {
-            name: string;
-            logo_url: string;
-          };
-          away_team: {
-            name: string;
-            logo_url: string;
-          };
-          game_results: Array<{
-            home_score: number;
-            away_score: number;
-            is_final: boolean;
-          }>;
-        };
-        prediction: {
-          prediction_home_score: number;
-          prediction_away_score: number;
-          points_earned?: number;
-        };
-      }>;
-    }
-  >;
+  predictionsByRound: Record<string, {
+    roundId: string;
+    roundName: string;
+    predictions: Array<any>;
+  }>;
   userName: string;
 }
 
-export function DashboardPredictions({
-  predictionsByRound,
-  userName,
-}: DashboardPredictionsProps) {
-  const rounds = Object.values(predictionsByRound);
-  const latestRound = rounds[0]?.roundId || "";
+export const DashboardPredictions = ({ predictionsByRound, userName }: DashboardPredictionsProps) => {
+  const rounds = Object.values(predictionsByRound).sort((a, b) => 
+    b.roundName.localeCompare(a.roundName)
+  );
+
+  if (rounds.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">No predictions found</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <RoundSelector
-          selectedRound={latestRound}
-          onRoundChange={(roundId) => {
-            const element = document.getElementById(`round-${roundId}`);
-            if (element) {
-              element.scrollIntoView({ behavior: "smooth" });
-            }
-          }}
-          className="w-[200px]"
+    <div className="space-y-4">
+      {rounds.map((round) => (
+        <CollapsibleRoundSection
+          key={round.roundId}
+          roundName={round.roundName}
+          predictions={round.predictions}
+          extraContent={
+            <PDFDownloadLink
+              document={
+                <PredictionsPDF
+                  userName={userName}
+                  roundName={round.roundName}
+                  predictions={round.predictions}
+                />
+              }
+              fileName={`predictions-${round.roundName.toLowerCase().replace(/\s+/g, '-')}.pdf`}
+            >
+              {({ loading }) => (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-auto"
+                  disabled={loading}
+                >
+                  <FileDown className="h-4 w-4 mr-2" />
+                  Download PDF
+                </Button>
+              )}
+            </PDFDownloadLink>
+          }
         />
-        <DownloadPredictionsButton
-          userName={userName}
-          roundName={rounds[0]?.roundName || ""}
-          predictions={rounds[0]?.predictions || []}
-        />
-      </div>
-
-      <div className="space-y-8">
-        {rounds.map(({ roundId, roundName, predictions }) => {
-          // Transform the predictions to match the expected format while preserving the id
-          const formattedPredictions = predictions.map(pred => ({
-            id: pred.id,
-            game: pred.game,
-            prediction: pred.prediction
-          }));
-
-          return (
-            <div key={roundId} id={`round-${roundId}`}>
-              <UserPredictionsGrid
-                predictions={formattedPredictions}
-                isLoading={false}
-                roundId={roundId}
-                roundName={roundName}
-                isOwnPredictions={true}
-              />
-            </div>
-          );
-        })}
-      </div>
+      ))}
     </div>
   );
-}
+};
