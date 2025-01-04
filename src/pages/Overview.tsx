@@ -6,10 +6,10 @@ import { useUserProfile } from "@/components/dashboard/UserProfile";
 import { useCurrentRoundRank } from "@/components/dashboard/useCurrentRoundRank";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { OverviewHeader } from "@/components/overview/OverviewHeader";
 import { DashboardStats } from "@/components/dashboard/sections/DashboardStats";
 
-export default function Dashboard() {
+export default function Overview() {
   const session = useSession();
   const navigate = useNavigate();
   const [userId, setUserId] = useState<string | null>(null);
@@ -67,7 +67,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
-      <DashboardHeader />
+      <OverviewHeader />
       
       <DashboardStats
         totalPoints={totalPoints}
