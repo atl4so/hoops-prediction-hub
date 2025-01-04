@@ -10,25 +10,6 @@ export function usePredictions(followedIds: string[]) {
 
       console.log('Fetching predictions for users:', followedIds);
 
-      // First, let's verify the user exists and has predictions
-      const { data: userPredictions, error: countError } = await supabase
-        .from("predictions")
-        .select("id, user_id")
-        .in("user_id", followedIds);
-
-      if (countError) {
-        console.error("Error checking predictions:", countError);
-        throw countError;
-      }
-
-      // Log predictions count by user
-      const predictionsByUser = userPredictions.reduce((acc, pred) => {
-        acc[pred.user_id] = (acc[pred.user_id] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-      
-      console.log('Found predictions count by user:', predictionsByUser);
-
       const { data, error } = await supabase
         .from("predictions")
         .select(`
@@ -65,17 +46,17 @@ export function usePredictions(followedIds: string[]) {
             )
           )
         `)
-        .in("user_id", followedIds);
+        .in("user_id", followedIds)
+        .order('created_at', { ascending: false });
       
       if (error) {
         console.error("Error fetching predictions:", error);
         throw error;
       }
 
-      console.log('Raw predictions data:', JSON.stringify(data, null, 2));
+      console.log('Raw predictions data:', data);
 
       const mappedPredictions = data.map((item): Prediction => {
-        // Ensure game_results is always an array
         const gameResults = Array.isArray(item.game.game_results) 
           ? item.game.game_results 
           : item.game.game_results 
@@ -86,14 +67,13 @@ export function usePredictions(followedIds: string[]) {
           id: item.id,
           userId: item.user.id,
           gameId: item.game.id,
-          roundId: item.game.round.id,
           hasGameResults: gameResults.length > 0,
           gameDate: item.game.game_date,
           predictionScores: `${item.prediction_home_score}-${item.prediction_away_score}`,
           pointsEarned: item.points_earned
         });
         
-        const prediction = {
+        return {
           id: item.id,
           user: {
             id: item.user.id,
@@ -124,8 +104,6 @@ export function usePredictions(followedIds: string[]) {
           prediction_away_score: item.prediction_away_score,
           points_earned: item.points_earned
         };
-
-        return prediction;
       });
 
       console.log('Predictions summary:', mappedPredictions.map(p => ({
@@ -139,6 +117,7 @@ export function usePredictions(followedIds: string[]) {
 
       return mappedPredictions;
     },
+    enabled: followedIds.length > 0,
     staleTime: 1000 * 30, // 30 seconds
     refetchInterval: 1000 * 60 // Refetch every minute
   });
