@@ -54,6 +54,13 @@ export function useGamesData() {
           results: game.game_results
         });
 
+        // Ensure game_results is always an array
+        const gameResults = Array.isArray(game.game_results) 
+          ? game.game_results 
+          : game.game_results 
+            ? [game.game_results] 
+            : [];
+
         return {
           id: game.id,
           game_date: game.game_date,
@@ -61,7 +68,7 @@ export function useGamesData() {
           home_team: game.home_team[0],
           away_team: game.away_team[0],
           round: game.round[0],
-          game_results: game.game_results || []
+          game_results: gameResults
         };
       });
 
