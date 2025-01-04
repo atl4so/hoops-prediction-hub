@@ -58,7 +58,6 @@ export const DownloadPredictionsButton = ({
             userName={userName}
             roundName={roundName}
             predictions={predictions}
-            isDownload={true}
           />
         );
         setTimeout(resolve, 2000);
