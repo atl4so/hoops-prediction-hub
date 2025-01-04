@@ -10,6 +10,11 @@ interface TeamDisplayProps {
 }
 
 export function TeamDisplay({ team, align, className }: TeamDisplayProps) {
+  if (!team || !team.logo_url) {
+    console.error('Missing team data:', team);
+    return null;
+  }
+
   return (
     <div className={cn(
       "flex flex-col items-center gap-2 flex-1",
