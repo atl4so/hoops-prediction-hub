@@ -12,6 +12,8 @@ export function FollowedUsersPredictions() {
   const { data: predictions = [], isLoading, isError, refetch } = usePredictions(followedIds);
 
   useEffect(() => {
+    console.log('Current followed IDs:', followedIds);
+    
     const channel = supabase
       .channel('dashboard-updates')
       .on(
@@ -43,11 +45,14 @@ export function FollowedUsersPredictions() {
       });
 
     return () => {
+      console.log('Cleaning up predictions channel...');
       supabase.removeChannel(channel);
     };
-  }, [refetch]);
+  }, [refetch, followedIds]);
 
   if (isError || followError) {
+    console.error('Error loading predictions:', isError);
+    console.error('Error loading followed users:', followError);
     toast.error("Failed to load predictions");
     return null;
   }
@@ -75,6 +80,7 @@ export function FollowedUsersPredictions() {
   }
 
   if (!predictions?.length) {
+    console.log('No predictions found for followed users:', followedIds);
     return (
       <Card>
         <CardContent className="pt-6">
@@ -90,7 +96,12 @@ export function FollowedUsersPredictions() {
   const sortedPredictions = predictions
     .sort((a, b) => b.game.parsedDate.getTime() - a.game.parsedDate.getTime());
 
-  console.log('Sorted predictions:', sortedPredictions);
+  console.log('Sorted predictions:', sortedPredictions.map(p => ({
+    user: p.user.display_name,
+    gameDate: p.game.game_date,
+    round: p.game.round.name,
+    hasResult: p.game.game_results?.length > 0
+  })));
 
   return (
     <div className="space-y-4">

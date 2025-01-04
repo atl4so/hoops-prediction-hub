@@ -46,7 +46,8 @@ export function usePredictions(followedIds: string[]) {
             )
           )
         `)
-        .in("user_id", followedIds);
+        .in("user_id", followedIds)
+        .order('created_at', { ascending: false });
       
       if (error) {
         console.error("Error fetching predictions:", error);
@@ -56,6 +57,8 @@ export function usePredictions(followedIds: string[]) {
       console.log('Raw predictions data:', data);
 
       const mappedPredictions = data.map((item): Prediction => {
+        console.log(`Processing prediction for user ${item.user.display_name}:`, item);
+        
         const prediction = {
           id: item.id,
           user: {
@@ -92,19 +95,25 @@ export function usePredictions(followedIds: string[]) {
           points_earned: item.points_earned
         };
 
-        console.log(`Prediction for user ${item.user.display_name}:`, {
+        console.log(`Mapped prediction for ${item.user.display_name}:`, {
           gameDate: prediction.game.game_date,
           gameResults: prediction.game.game_results,
-          points: prediction.points_earned
+          points: prediction.points_earned,
+          roundId: prediction.game.round.id,
+          roundName: prediction.game.round.name
         });
 
         return prediction;
       });
 
       console.log('Total mapped predictions:', mappedPredictions.length);
+      console.log('Predictions by user:', mappedPredictions.reduce((acc, pred) => {
+        acc[pred.user.display_name] = (acc[pred.user.display_name] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>));
+
       return mappedPredictions;
     },
-    enabled: followedIds.length > 0,
     staleTime: 1000 * 30, // 30 seconds
     refetchInterval: 1000 * 60 // Refetch every minute
   });
