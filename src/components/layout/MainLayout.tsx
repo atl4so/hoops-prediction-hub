@@ -16,10 +16,10 @@ export function MainLayout({ children }: MainLayoutProps) {
         .from("background_settings")
         .select("*")
         .eq("is_active", true)
-        .maybeSingle();
+        .single();
 
       if (error) throw error;
-      return data as BackgroundSetting | null;
+      return data as BackgroundSetting;
     },
   });
 
@@ -30,7 +30,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           src={activeBackground.url} 
           alt="Background" 
           className="fixed inset-0 w-full h-full object-cover -z-10"
-          style={{ position: 'fixed', touchAction: 'none', userSelect: 'none' }}
+          style={{ position: 'fixed', touchAction: 'none' }}
         />
       )}
       <AppHeader />
