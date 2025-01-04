@@ -74,12 +74,19 @@ export function usePredictions(followedIds: string[]) {
       console.log('Raw predictions data:', JSON.stringify(data, null, 2));
 
       const mappedPredictions = data.map((item): Prediction => {
+        // Ensure game_results is always an array
+        const gameResults = Array.isArray(item.game.game_results) 
+          ? item.game.game_results 
+          : item.game.game_results 
+            ? [item.game.game_results]
+            : [];
+
         console.log(`Processing prediction for user ${item.user.display_name}:`, {
           id: item.id,
           userId: item.user.id,
           gameId: item.game.id,
           roundId: item.game.round.id,
-          hasGameResults: item.game.game_results?.length > 0
+          hasGameResults: gameResults.length > 0
         });
         
         const prediction = {
@@ -107,11 +114,7 @@ export function usePredictions(followedIds: string[]) {
               name: item.game.away_team.name,
               logo_url: item.game.away_team.logo_url
             },
-            game_results: Array.isArray(item.game.game_results) 
-              ? item.game.game_results 
-              : item.game.game_results 
-                ? [item.game.game_results]
-                : []
+            game_results: gameResults
           },
           prediction_home_score: item.prediction_home_score,
           prediction_away_score: item.prediction_away_score,
