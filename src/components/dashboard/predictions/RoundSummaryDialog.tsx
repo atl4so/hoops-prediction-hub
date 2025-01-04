@@ -50,6 +50,14 @@ export function RoundSummaryDialog({ roundName, userName, predictions }: RoundSu
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
+        windowWidth: 1200, // Force desktop layout for consistent screenshots
+        onclone: (clonedDoc) => {
+          const clonedElement = clonedDoc.getElementById('predictions-preview');
+          if (clonedElement) {
+            clonedElement.style.transform = 'none';
+            clonedElement.style.width = '100%';
+          }
+        }
       });
 
       canvas.toBlob((blob) => {
@@ -83,17 +91,17 @@ export function RoundSummaryDialog({ roundName, userName, predictions }: RoundSu
           Share Round
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-3xl p-4">
-        <DialogHeader className="mb-4">
+      <DialogContent className="max-w-3xl p-2 sm:p-4">
+        <DialogHeader className="mb-2 sm:mb-4">
           <div className="flex items-center justify-between">
-            <DialogTitle>Round {roundName} Summary</DialogTitle>
+            <DialogTitle className="text-base sm:text-lg">Round {roundName} Summary</DialogTitle>
             <Button 
               variant="outline" 
               size="sm" 
               onClick={captureScreenshot}
-              className="ml-4"
+              className="ml-2 sm:ml-4"
             >
-              <Download className="h-4 w-4 mr-2" />
+              <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
               Save as Image
             </Button>
           </div>
