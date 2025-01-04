@@ -8,6 +8,8 @@ export function usePredictions(followedIds: string[]) {
     queryFn: async () => {
       if (!followedIds.length) return [];
 
+      console.log('Fetching predictions for users:', followedIds);
+
       const { data, error } = await supabase
         .from("predictions")
         .select(`
@@ -45,13 +47,14 @@ export function usePredictions(followedIds: string[]) {
           )
         `)
         .in("user_id", followedIds)
-        .order("created_at", { ascending: false })
-        .limit(50);
+        .order("created_at", { ascending: false });
       
       if (error) {
         console.error("Error fetching predictions:", error);
         throw error;
       }
+
+      console.log('Raw predictions data:', data);
 
       return data.map((item): Prediction => ({
         id: item.id,
@@ -89,6 +92,8 @@ export function usePredictions(followedIds: string[]) {
         points_earned: item.points_earned
       }));
     },
-    enabled: followedIds.length > 0
+    enabled: followedIds.length > 0,
+    staleTime: 1000 * 60, // 1 minute
+    refetchInterval: 1000 * 60 * 5 // Refetch every 5 minutes
   });
 }
