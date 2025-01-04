@@ -9,11 +9,18 @@ interface MainLayoutProps {
 export function MainLayout({ children }: MainLayoutProps) {
   return (
     <ThemeProvider defaultTheme="light" storageKey="euroleague-theme">
-      <div className="min-h-screen flex flex-col w-full bg-gradient-to-br from-background to-background/95">
-        <div className="absolute inset-0 -z-10 h-full w-full bg-white dark:bg-gray-950 [background:radial-gradient(125%_125%_at_50%_10%,#fff_40%,#63e_100%)] dark:[background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)] opacity-10" />
+      <div className="min-h-screen flex flex-col w-full bg-gradient-to-br from-background to-background/95 relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-0 -left-4 w-72 h-72 bg-orange-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob" />
+          <div className="absolute top-0 -right-4 w-72 h-72 bg-orange-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob animation-delay-2000" />
+          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-orange-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob animation-delay-4000" />
+        </div>
+        
+        {/* Content */}
         <AppHeader />
         <main className="flex-1 overflow-hidden">
-          <div className="container mx-auto p-6 h-full">
+          <div className="container mx-auto p-6 h-full relative">
             {children}
           </div>
         </main>
