@@ -46,6 +46,7 @@ export function BackgroundSettings() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["background-settings"] });
+      queryClient.invalidateQueries({ queryKey: ["active-background"] });
       setNewUrl("");
       toast.success("Background added successfully");
     },
@@ -72,6 +73,7 @@ export function BackgroundSettings() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["background-settings"] });
+      queryClient.invalidateQueries({ queryKey: ["active-background"] });
       toast.success("Background activated successfully");
     },
     onError: (error) => {
@@ -90,6 +92,7 @@ export function BackgroundSettings() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["background-settings"] });
+      queryClient.invalidateQueries({ queryKey: ["active-background"] });
       toast.success("Opacity updated successfully");
     },
     onError: (error) => {

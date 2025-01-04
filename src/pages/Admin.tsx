@@ -8,6 +8,7 @@ import { TeamsList } from "@/components/admin/TeamsList";
 import { GameResults } from "@/components/admin/GameResults";
 import { AdminStats } from "@/components/admin/stats/AdminStats";
 import { BackgroundSettings } from "@/components/admin/BackgroundSettings";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Admin = () => {
   const session = useSession();
@@ -32,14 +33,31 @@ const Admin = () => {
   return (
     <div className="space-y-8">
       <AdminHeader />
-      <div className="grid gap-8">
-        <AdminStats />
-        <BackgroundSettings />
-        <GameManager />
-        <RoundManager />
-        <TeamsList />
-        <GameResults />
-      </div>
+      <AdminStats />
+      <Tabs defaultValue="games" className="space-y-6">
+        <TabsList className="grid grid-cols-5 w-full">
+          <TabsTrigger value="games">Games</TabsTrigger>
+          <TabsTrigger value="rounds">Rounds</TabsTrigger>
+          <TabsTrigger value="teams">Teams</TabsTrigger>
+          <TabsTrigger value="results">Results</TabsTrigger>
+          <TabsTrigger value="background">Background</TabsTrigger>
+        </TabsList>
+        <TabsContent value="games" className="space-y-4">
+          <GameManager />
+        </TabsContent>
+        <TabsContent value="rounds" className="space-y-4">
+          <RoundManager />
+        </TabsContent>
+        <TabsContent value="teams" className="space-y-4">
+          <TeamsList />
+        </TabsContent>
+        <TabsContent value="results" className="space-y-4">
+          <GameResults />
+        </TabsContent>
+        <TabsContent value="background" className="space-y-4">
+          <BackgroundSettings />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
