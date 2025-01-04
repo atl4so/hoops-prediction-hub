@@ -1,33 +1,36 @@
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { AppHeader } from "./AppHeader";
-import { Footer } from "./Footer";
 import { supabase } from "@/integrations/supabase/client";
-import type { BackgroundSetting } from "@/types/supabase";
 
-interface MainLayoutProps {
-  children: React.ReactNode;
+interface BackgroundSettings {
+  url: string;
+  opacity: number;
 }
 
-export function MainLayout({ children }: MainLayoutProps) {
-  const { data: activeBackground } = useQuery({
-    queryKey: ["active-background"],
-    queryFn: async () => {
+export function MainLayout({ children }: { children: React.ReactNode }) {
+  const [activeBackground, setActiveBackground] = useState<BackgroundSettings | null>(null);
+
+  useEffect(() => {
+    const fetchBackground = async () => {
       const { data, error } = await supabase
         .from("background_settings")
         .select("*")
         .eq("is_active", true)
         .maybeSingle();
 
-      if (error) throw error;
-      return data as BackgroundSetting | null;
-    },
-  });
+      if (!error && data) {
+        setActiveBackground(data);
+      }
+    };
+
+    fetchBackground();
+  }, []);
 
   return (
-    <div className="min-h-screen flex flex-col w-full">
+    <div className="min-h-screen flex flex-col w-full relative">
       {activeBackground?.url && (
         <div 
-          className="fixed inset-0 w-full h-full -z-10 overflow-hidden"
+          className="fixed inset-0 w-full h-full -z-10 bg-black"
           style={{ 
             touchAction: 'none', 
             userSelect: 'none',
@@ -36,13 +39,11 @@ export function MainLayout({ children }: MainLayoutProps) {
           <img 
             src={activeBackground.url} 
             alt="Background" 
-            className="w-full h-full object-cover"
+            className="absolute w-full h-full object-cover"
             style={{ 
               opacity: activeBackground.opacity / 100,
               maxWidth: '1920px',
               maxHeight: '1080px',
-              margin: '0 auto',
-              position: 'absolute',
               left: '50%',
               top: '50%',
               transform: 'translate(-50%, -50%)',
@@ -51,12 +52,9 @@ export function MainLayout({ children }: MainLayoutProps) {
         </div>
       )}
       <AppHeader />
-      <main className="flex-1">
-        <div className="container mx-auto p-6">
-          {children}
-        </div>
+      <main className="flex-1 relative z-10">
+        {children}
       </main>
-      <Footer />
     </div>
   );
 }
