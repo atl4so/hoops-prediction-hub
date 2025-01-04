@@ -105,18 +105,18 @@ body {
   }
 
   .game-card {
-    @apply bg-gradient-to-br from-orange-50/80 to-orange-100/40 dark:from-green-800/30 dark:to-green-900/20;
+    @apply bg-gradient-to-br from-orange-100/90 to-orange-200/70 dark:from-green-800/30 dark:to-green-900/20;
   }
 
   .game-card-upcoming {
-    @apply from-orange-50/80 to-orange-100/40 dark:from-green-800/30 dark:to-green-900/20;
+    @apply from-orange-100/90 to-orange-200/70 dark:from-green-800/30 dark:to-green-900/20;
   }
 
   .game-card-finished {
-    @apply from-orange-50/80 to-orange-100/40 dark:from-green-800/30 dark:to-green-900/20;
+    @apply from-orange-100/90 to-orange-200/70 dark:from-green-800/30 dark:to-green-900/20;
   }
 
   .game-card-prediction {
-    @apply from-orange-50/80 to-orange-100/40 dark:from-green-800/30 dark:to-green-900/20;
+    @apply from-orange-100/90 to-orange-200/70 dark:from-green-800/30 dark:to-green-900/20;
   }
 }
