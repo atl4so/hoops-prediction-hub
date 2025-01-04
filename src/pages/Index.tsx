@@ -40,7 +40,7 @@ const Index = () => {
               onClick={() => navigate("/register")}
               variant="outline"
               size="lg"
-              className="min-w-[120px] border-2 border-[#F97316]/20 hover:border-[#F97316]/30 hover:bg-[#F97316]/5 font-medium tracking-wide shadow-lg hover:shadow-xl transition-all duration-200"
+              className="min-w-[120px] dark:bg-green-800/30 border-2 border-[#F97316]/20 hover:border-[#F97316]/30 hover:bg-[#F97316]/5 font-medium tracking-wide shadow-lg hover:shadow-xl transition-all duration-200"
             >
               <Lock className="w-4 h-4 mr-2" />
               Register
@@ -55,7 +55,10 @@ const Index = () => {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
           {['Make Predictions', 'Earn Points', 'Compete & Win'].map((title, index) => (
-            <div key={title} className="space-y-2 p-6 rounded-2xl dark:bg-[#0B1616] dark:border-border/50 border shadow-lg hover:shadow-xl transition-all duration-200">
+            <div 
+              key={title} 
+              className="space-y-2 p-6 rounded-2xl bg-gradient-to-br from-orange-100/90 to-orange-200/70 dark:from-green-800/30 dark:to-green-900/20 border border-white/20 dark:border-white/10 shadow-lg hover:shadow-xl transition-all duration-200"
+            >
               <div className="w-12 h-12 bg-[#F97316] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <span className="text-xl font-bold text-white">{index + 1}</span>
               </div>
