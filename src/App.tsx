@@ -36,16 +36,33 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    const cleanupSession = async () => {
+      try {
+        // Clear any stale data
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        // Force sign out to clear any invalid sessions
+        try {
+          await supabase.auth.signOut({ scope: 'global' });
+        } catch (error) {
+          console.log('Global sign out error (expected if no session):', error);
+        }
+        
+        setIsAuthenticated(false);
+      } catch (error) {
+        console.error('Session cleanup error:', error);
+      }
+    };
+
     const checkSession = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
           if (error.message.includes('session_not_found')) {
-            console.log('Session not found, clearing local data...');
-            localStorage.clear();
-            sessionStorage.clear();
-            setIsAuthenticated(false);
+            console.log('Session not found, cleaning up...');
+            await cleanupSession();
             return;
           }
           throw error;
@@ -55,7 +72,7 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
       } catch (error) {
         console.error('Session check error:', error);
         toast.error("Session error. Please try logging in again.");
-        setIsAuthenticated(false);
+        await cleanupSession();
       } finally {
         setIsLoading(false);
       }
@@ -65,14 +82,15 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, !!session);
-      setIsAuthenticated(!!session);
-
-      if (event === 'SIGNED_OUT') {
-        console.log('User signed out, clearing data...');
+      
+      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+        console.log('User signed out or deleted, cleaning up...');
         queryClient.clear();
         localStorage.clear();
         sessionStorage.clear();
-      } else if (event === 'SIGNED_IN') {
+        setIsAuthenticated(false);
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        setIsAuthenticated(true);
         queryClient.invalidateQueries();
       }
     });
