@@ -30,12 +30,17 @@ const App = () => {
         <TooltipProvider>
           <Toaster />
           <Sonner
+            expand={false}
             position="top-center"
             duration={1500}
             closeButton={false}
             richColors
             theme="light"
-            className="cursor-pointer"
+            style={{ cursor: 'pointer' }}
+            toastOptions={{
+              style: { cursor: 'pointer' },
+              className: 'group cursor-pointer',
+            }}
           />
           <BrowserRouter>
             <SessionHandler>
