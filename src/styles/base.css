@@ -36,13 +36,13 @@
   }
  
   .dark {
-    --background: 20 14.3% 4.1%;
+    --background: 224 10% 10%;
     --foreground: 0 0% 95%;
  
-    --card: 24 9.8% 10%;
+    --card: 224 10% 12%;
     --card-foreground: 0 0% 95%;
  
-    --popover: 0 0% 9%;
+    --popover: 224 10% 12%;
     --popover-foreground: 0 0% 95%;
  
     --primary: 24 95% 53%;
@@ -51,8 +51,8 @@
     --secondary: 267 91% 56%;
     --secondary-foreground: 0 0% 98%;
  
-    --muted: 0 0% 15%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted: 224 10% 15%;
+    --muted-foreground: 240 5% 84.9%;
  
     --accent: 24 95% 53%;
     --accent-foreground: 0 0% 98%;
@@ -80,20 +80,23 @@
                      radial-gradient(at 33% 50%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%),
                      radial-gradient(at 79% 53%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%);
   }
+}
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply text-foreground font-display;
+@layer components {
+  .team-logo-container {
+    @apply relative w-16 h-16 rounded-full;
   }
 
-  .card {
-    @apply bg-gradient-card hover:shadow-lg transition-all duration-300;
+  .team-logo-container::before {
+    content: '';
+    @apply absolute inset-0 rounded-full bg-white/10;
   }
 
-  .btn-primary {
-    @apply bg-gradient-primary hover:opacity-90 transition-opacity;
+  .dark .team-logo-container::before {
+    @apply bg-white;
   }
 
-  .btn-secondary {
-    @apply bg-gradient-secondary hover:opacity-90 transition-opacity;
+  .team-logo {
+    @apply w-full h-full object-contain relative z-10 p-2;
   }
 }

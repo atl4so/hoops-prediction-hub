@@ -62,14 +62,6 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
-      letterSpacing: {
-        tighter: '-0.05em',
-        tight: '-0.025em',
-        normal: '0',
-        wide: '0.025em',
-        wider: '0.05em',
-        widest: '0.1em',
-      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
@@ -89,33 +81,11 @@ export default {
             transform: "translateY(0)"
           }
         },
-        "scale-in": {
-          "0%": { transform: "scale(0.95)", opacity: "0" },
-          "100%": { transform: "scale(1)", opacity: "1" },
-        },
-        "gradient": {
-          "0%, 100%": {
-            "background-position": "0% 50%"
-          },
-          "50%": {
-            "background-position": "100% 50%"
-          }
-        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.5s ease-out forwards",
-        "scale-in": "scale-in 0.2s ease-out",
-        "gradient": "gradient 3s ease infinite"
-      },
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-        'gradient-primary': 'linear-gradient(to right, #F97316, #FB923C)',
-        'gradient-secondary': 'linear-gradient(to right, #9333EA, #A855F7)',
-        'gradient-accent': 'linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%)',
-        'gradient-card': 'linear-gradient(109.6deg, rgba(223,234,247,1) 11.2%, rgba(244,248,252,1) 91.1%)',
       },
     },
   },
