@@ -42,29 +42,29 @@ const GameCard = ({ prediction }: { prediction: PredictionData }) => {
   const finalResult = prediction.game.game_results?.[0];
   
   return (
-    <div className="bg-gray-50/80 rounded-lg p-1 relative min-h-[60px]">
-      <div className="text-[10px] leading-normal font-medium mb-1 text-gray-700 truncate pr-8 min-h-[14px] flex items-center">
+    <div className="bg-gray-50/80 rounded-lg p-1.5 relative min-h-[60px]">
+      <div className="text-[10px] leading-[14px] font-medium mb-1.5 text-gray-700 truncate pr-8">
         {homeTeamName} vs {awayTeamName}
       </div>
-      <div className="flex flex-col gap-0.5">
+      <div className="flex flex-col gap-1">
         {finalResult && (
-          <div className="flex items-center gap-1 min-h-[14px]">
-            <span className="text-emerald-600 font-medium text-[10px] leading-normal">F</span>
-            <span className="font-medium text-gray-900 text-[10px] leading-normal">
+          <div className="flex items-center gap-1">
+            <span className="text-emerald-600 font-medium text-[10px] leading-[14px]">F</span>
+            <span className="font-medium text-gray-900 text-[10px] leading-[14px]">
               {finalResult.home_score}-{finalResult.away_score}
             </span>
           </div>
         )}
-        <div className="flex items-center gap-1 min-h-[14px]">
-          <span className="text-blue-600 font-medium text-[10px] leading-normal">P</span>
-          <span className="text-gray-600 text-[10px] leading-normal">
+        <div className="flex items-center gap-1">
+          <span className="text-blue-600 font-medium text-[10px] leading-[14px]">P</span>
+          <span className="text-gray-600 text-[10px] leading-[14px]">
             {prediction.prediction.prediction_home_score}-{prediction.prediction.prediction_away_score}
           </span>
         </div>
       </div>
       {prediction.prediction.points_earned !== undefined && (
-        <div className="absolute top-1 right-1">
-          <span className="text-orange-500 font-bold text-[10px] leading-normal">
+        <div className="absolute top-1.5 right-1.5">
+          <span className="text-orange-500 font-bold text-[10px] leading-[14px]">
             {prediction.prediction.points_earned}p
           </span>
         </div>
