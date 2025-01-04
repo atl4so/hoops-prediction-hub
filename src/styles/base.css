@@ -80,4 +80,8 @@
                      radial-gradient(at 33% 50%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%),
                      radial-gradient(at 79% 53%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%);
   }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-foreground;
+  }
 }
