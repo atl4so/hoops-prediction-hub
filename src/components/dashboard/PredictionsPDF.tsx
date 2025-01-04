@@ -1,5 +1,14 @@
-import { Document, Page, Text, StyleSheet, View } from '@react-pdf/renderer';
+import { Document, Page, Text, StyleSheet, View, Font } from '@react-pdf/renderer';
 import { format } from 'date-fns';
+
+// Register Helvetica font family
+Font.register({
+  family: 'Helvetica',
+  fonts: [
+    { src: 'https://cdn.jsdelivr.net/npm/@canvas-fonts/helvetica@1.0.4/Helvetica.ttf' },
+    { src: 'https://cdn.jsdelivr.net/npm/@canvas-fonts/helvetica@1.0.4/Helvetica-Bold.ttf', fontWeight: 'bold' }
+  ]
+});
 
 const styles = StyleSheet.create({
   page: {
@@ -8,11 +17,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
-    marginBottom: 30,
+    marginBottom: 20,
   },
   title: {
     fontSize: 24,
-    fontFamily: 'Helvetica-Bold',
+    fontWeight: 'bold',
     marginBottom: 8,
   },
   subtitle: {
@@ -21,65 +30,65 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   date: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#666',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   totalScore: {
-    fontSize: 20,
-    marginBottom: 30,
+    fontSize: 18,
+    marginBottom: 24,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 8,
   },
   totalScoreLabel: {
     color: '#666',
   },
   totalScoreValue: {
     color: '#FF6B00',
-    fontFamily: 'Helvetica-Bold',
+    fontWeight: 'bold',
   },
   gamesRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   gameCard: {
     width: '48%',
-    padding: 15,
+    padding: 12,
     backgroundColor: '#f8f9fa',
-    borderRadius: 8,
+    borderRadius: 4,
   },
   teams: {
-    fontSize: 14,
-    fontFamily: 'Helvetica-Bold',
-    marginBottom: 12,
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginBottom: 8,
     color: '#333',
   },
   scoreContainer: {
-    marginTop: 8,
+    marginTop: 6,
   },
   scoreRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   scoreLabel: {
-    fontSize: 12,
-    width: 20,
+    fontSize: 10,
+    width: 16,
     color: '#666',
-    marginRight: 8,
+    marginRight: 6,
   },
   score: {
-    fontSize: 14,
-    fontFamily: 'Helvetica-Bold',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   points: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#FF6B00',
     textAlign: 'right',
-    marginTop: 8,
-    fontFamily: 'Helvetica-Bold',
+    marginTop: 6,
+    fontWeight: 'bold',
   },
   footer: {
     position: 'absolute',
@@ -89,7 +98,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     color: '#666',
-    fontSize: 12,
+    fontSize: 10,
   },
 });
 
@@ -133,7 +142,7 @@ export const PredictionsPDF = ({ userName, roundName, predictions }: Predictions
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           <Text style={styles.title}>euroleague.bet</Text>
-          <Text style={styles.subtitle}>{roundName} by @{userName}</Text>
+          <Text style={styles.subtitle}>Round {roundName} by @{userName}</Text>
           <Text style={styles.date}>
             {format(new Date(predictions[0]?.game.game_date || new Date()), 'MMM d, yyyy')}
           </Text>
