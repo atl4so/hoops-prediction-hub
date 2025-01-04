@@ -1,62 +1,42 @@
-import { Link } from "react-router-dom";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { ProfileMenu } from "../profile/ProfileMenu";
+import { useNavigate } from "react-router-dom";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { MobileMenu } from "./MobileMenu";
-import { ThemeToggle } from "../theme/ThemeToggle";
+import { DesktopNav } from "./DesktopNav";
 import { navigationItems } from "./NavigationItems";
-import { toast } from "sonner";
+import { ProfileMenu } from "../profile/ProfileMenu";
+import { ThemeToggle } from "../theme/ThemeToggle";
+import { useUserProfile } from "../dashboard/UserProfile";
 
 export function AppHeader() {
-  const session = useSession();
+  const navigate = useNavigate();
   const supabase = useSupabaseClient();
+  const user = useUser();
+  const { data: profile } = useUserProfile(user?.id || null);
 
   const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-    } catch (error) {
-      console.error('Logout error:', error);
-      toast.error("Error logging out");
-    }
+    await supabase.auth.signOut();
+    navigate('/login');
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-sm">
-      <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Link to="/" className="flex items-center space-x-2">
-            <span className="font-display text-xl font-bold tracking-tight">
-              euroleague.bet
-            </span>
-          </Link>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <ThemeToggle />
-          {session ? (
-            <>
-              <ProfileMenu />
-              <MobileMenu 
-                menuItems={navigationItems}
-                isAuthenticated={!!session}
-                onLogout={handleLogout}
-              />
-            </>
-          ) : (
-            <div className="flex items-center gap-4">
-              <Link
-                to="/login"
-                className="text-sm font-medium hover:text-primary transition-colors"
-              >
-                Login
-              </Link>
-              <Link
-                to="/register"
-                className="text-sm font-medium bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
-              >
-                Register
-              </Link>
-            </div>
-          )}
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 max-w-screen-2xl items-center">
+        <MobileMenu 
+          menuItems={navigationItems} 
+          isAuthenticated={!!user}
+          isAdmin={profile?.is_admin}
+          onLogout={handleLogout}
+        />
+        <DesktopNav 
+          menuItems={navigationItems} 
+          isAuthenticated={!!user}
+          isAdmin={profile?.is_admin}
+        />
+        <div className="flex flex-1 items-center justify-end space-x-4">
+          <nav className="flex items-center space-x-2">
+            <ThemeToggle />
+            <ProfileMenu />
+          </nav>
         </div>
       </div>
     </header>
