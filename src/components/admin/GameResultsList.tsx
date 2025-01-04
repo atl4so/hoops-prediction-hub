@@ -43,7 +43,7 @@ export function GameResultsList() {
       }
     },
     onSuccess: () => {
-      toast({ 
+      toast.success({ 
         title: "Success", 
         description: "Game result updated successfully",
       });
@@ -54,10 +54,9 @@ export function GameResultsList() {
     },
     onError: (error: Error) => {
       console.error('Mutation error:', error);
-      toast({
+      toast.error({
         title: "Error",
         description: error.message,
-        variant: "destructive",
       });
     },
   });
