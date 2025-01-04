@@ -108,7 +108,7 @@ export function CollapsibleRoundSection({
             )}
           </div>
           
-          <div className="grid gap-8 md:grid-cols-2">
+          <div className="grid gap-4 md:gap-6 lg:gap-8 md:grid-cols-2 lg:grid-cols-3">
             {roundPredictions.map((prediction) => (
               showGames ? (
                 <GameCard
