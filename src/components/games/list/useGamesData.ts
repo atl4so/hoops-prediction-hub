@@ -53,7 +53,8 @@ export function useGamesData() {
           id: game.round[0].id,
           name: game.round[0].name
         },
-        game_results: game.game_results || []
+        // Ensure game_results is always an array
+        game_results: Array.isArray(game.game_results) ? game.game_results : (game.game_results ? [game.game_results] : [])
       }));
 
       console.log('Processed games:', processedGames);

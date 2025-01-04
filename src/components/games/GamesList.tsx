@@ -59,7 +59,8 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
         isBeforeDeadline,
         hasNoFinalResult,
         deadline: predictionDeadline,
-        gameDate: game.game_date
+        gameDate: game.game_date,
+        results: game.game_results
       });
       
       return isBeforeDeadline && notPredictedByUser && hasNoFinalResult;
