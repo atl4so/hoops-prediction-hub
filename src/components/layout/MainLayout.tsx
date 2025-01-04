@@ -9,11 +9,7 @@ export function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col w-full">
       <div className="fixed inset-0 -z-10 h-full w-full bg-background">
-        <div className="absolute inset-0 [background:radial-gradient(125%_125%_at_50%_10%,#fff_40%,#63e_100%)] opacity-10" />
-        <div 
-          className="absolute inset-0 bg-[url('/basketball-court.png')] bg-repeat opacity-20" 
-          style={{ backgroundSize: '300px 300px' }}
-        />
+        <div className="absolute inset-0 bg-[#F2FCE2] opacity-70" />
       </div>
       <AppHeader />
       <main className="flex-1">
