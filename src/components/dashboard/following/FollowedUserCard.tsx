@@ -23,7 +23,7 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Card className="group hover:shadow-md transition-all duration-300 animate-fade-in bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 dark:border-white/10">
+    <Card className="group hover:shadow-md transition-all duration-300 animate-fade-in">
       <CardContent className="p-5 sm:p-6">
         <div className="space-y-4">
           {/* Main row with avatar, name, and follow button */}
@@ -70,10 +70,10 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
             </CollapsibleTrigger>
             <CollapsibleContent className="pt-2 space-y-3 animate-accordion-down">
               <div className="flex flex-wrap gap-3 justify-center">
-                <Badge variant="secondary" className="text-xs sm:text-sm bg-white/10 dark:bg-white/5">
+                <Badge variant="secondary" className="text-xs sm:text-sm">
                   {user.total_points} pts
                 </Badge>
-                <Badge variant="outline" className="text-xs sm:text-sm border-white/20 dark:border-white/10">
+                <Badge variant="outline" className="text-xs sm:text-sm">
                   {user.points_per_game?.toFixed(1)} PPG
                 </Badge>
               </div>

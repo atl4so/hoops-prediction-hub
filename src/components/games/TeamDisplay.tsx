@@ -22,11 +22,11 @@ export function TeamDisplay({ team, align, className }: TeamDisplayProps) {
       align === "right" && "items-end",
       className
     )}>
-      <div className="team-logo-container">
+      <div className="relative w-16 h-16 rounded-full bg-background/80 p-2 shadow-sm">
         <img 
           src={team.logo_url} 
           alt={`${team.name} logo`}
-          className="team-logo"
+          className="w-full h-full object-contain"
         />
       </div>
       <span className="font-display text-sm font-semibold text-center leading-tight w-full">

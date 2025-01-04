@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { Heart, Loader2 } from "lucide-react";
@@ -19,6 +20,7 @@ export function FollowButton({
 }: FollowButtonProps) {
   const [loading, setLoading] = useState(false);
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
+  const { toast } = useToast();
 
   const handleFollow = async () => {
     try {
@@ -28,7 +30,11 @@ export function FollowButton({
       } = await supabase.auth.getUser();
 
       if (!user) {
-        console.error('Authentication required');
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to follow users",
+          variant: "destructive",
+        });
         return;
       }
 
@@ -48,7 +54,12 @@ export function FollowButton({
             .eq("following_id", userId);
 
           if (error) throw error;
+
           setIsFollowing(false);
+          toast({
+            title: "Unfollowed",
+            description: "You are no longer following this user",
+          });
         }
       } else {
         const { data: existingFollow } = await supabase
@@ -65,7 +76,12 @@ export function FollowButton({
           });
 
           if (error) throw error;
+
           setIsFollowing(true);
+          toast({
+            title: "Following",
+            description: "You are now following this user",
+          });
         }
       }
 
@@ -74,6 +90,11 @@ export function FollowButton({
       }
     } catch (error) {
       console.error("Error following/unfollowing:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update follow status",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }

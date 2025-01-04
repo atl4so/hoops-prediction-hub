@@ -33,13 +33,11 @@ export function GameInfo({ game, prediction }: GameInfoProps) {
       <GameDateTime date={game.game_date} />
       <div className="grid grid-cols-3 gap-2 sm:gap-4 items-center flex-1">
         <div className="flex flex-col items-center">
-          <div className="team-logo-container">
-            <img
-              src={game.home_team.logo_url}
-              alt={game.home_team.name}
-              className="team-logo"
-            />
-          </div>
+          <img
+            src={game.home_team.logo_url}
+            alt={game.home_team.name}
+            className="w-16 h-16 object-contain"
+          />
           <p className="text-sm mt-2 text-center">{game.home_team.name}</p>
         </div>
         <div className="text-xl font-semibold text-center">
@@ -55,13 +53,11 @@ export function GameInfo({ game, prediction }: GameInfoProps) {
           )}
         </div>
         <div className="flex flex-col items-center">
-          <div className="team-logo-container">
-            <img
-              src={game.away_team.logo_url}
-              alt={game.away_team.name}
-              className="team-logo"
-            />
-          </div>
+          <img
+            src={game.away_team.logo_url}
+            alt={game.away_team.name}
+            className="w-16 h-16 object-contain"
+          />
           <p className="text-sm mt-2 text-center">{game.away_team.name}</p>
         </div>
       </div>

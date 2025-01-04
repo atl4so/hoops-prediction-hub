@@ -1,12 +1,8 @@
 # Changelog
 
-## [Current Development]
+All notable changes to the euroleague.bet project will be documented in this file.
 
-### Recent Updates
-- Fixed predictions display issue in user round predictions
-- Improved query structure for fetching predictions with proper ordering
-- Enhanced data transformation for game results
-- Added better error handling for predictions fetching
+## [Current Development]
 
 ### Core Features
 - Complete predictions system with points calculation
@@ -16,10 +12,10 @@
 - Comprehensive statistics tracking
 
 ### Database Structure
-- Teams table with Euroleague teams and logos
-- Rounds table for competition rounds
-- Games table for matches
-- Profiles table for user information
+- Teams table with 18 Euroleague teams and their logos
+- Rounds table for managing competition rounds
+- Games table for managing matches within rounds
+- Profiles table for user information and avatars
 - Predictions table for user predictions
 - Game results table for final scores
 - User follows table for following system
@@ -27,29 +23,76 @@
 
 ### Authentication & Authorization
 - Admin access restricted to likasvy@gmail.com
-- Row Level Security (RLS) policies
+- Row Level Security (RLS) policies implemented
+- Public access for viewing teams, rounds, and games
 - Protected routes for admin functionality
 - Secure file storage for avatars
 
-### Technical Stack
+### Admin Features
+- Teams management with logo display
+- Rounds creation and management
+- Games scheduling within rounds
+- Results management and points calculation
+
+### User Interface
+- Responsive navigation with mobile and desktop views
+- Dynamic navigation items based on user role
+- Protected admin routes
+- Profile management with avatar support
+- Consistent branding and typography
+
+### Technical Details
+
+#### Tech Stack
 - Frontend: React + TypeScript
 - Styling: Tailwind CSS + shadcn/ui
 - Backend: Supabase
 - Authentication: Supabase Auth
-- Database: PostgreSQL
+- Database: PostgreSQL (via Supabase)
 - File Storage: Supabase Storage
 
+#### Database Tables
+
+#### Teams
+- id (UUID)
+- name (TEXT)
+- logo_url (TEXT)
+- timestamps (created_at, updated_at)
+
+#### Rounds
+- id (UUID)
+- name (TEXT)
+- start_date (TIMESTAMP)
+- end_date (TIMESTAMP)
+- timestamps (created_at, updated_at)
+
+#### Games
+- id (UUID)
+- round_id (UUID, FK to rounds)
+- home_team_id (UUID, FK to teams)
+- away_team_id (UUID, FK to teams)
+- game_date (TIMESTAMP)
+- timestamps (created_at, updated_at)
+
+#### Profiles
+- id (UUID, FK to auth.users)
+- email (TEXT)
+- display_name (TEXT)
+- total_points (INTEGER)
+- timestamps (created_at, updated_at)
+
 ### Security
-- RLS policies for all tables
+- RLS policies implemented for all tables
 - Admin-only access for data modification
 - Public read access for necessary data
 - Protected routes with role-based access
 - Secure file storage access control
 
-### Development Guidelines
-1. Document database changes
-2. Add new features to changelog
-3. Maintain admin restrictions
-4. Follow RLS policies
-5. Keep components focused
-6. Ensure responsive design
+## [Development Guidelines]
+1. All database changes must be documented
+2. New features should be added to this changelog
+3. Admin functionality is restricted
+4. All data modifications through RLS policies
+5. User data properly isolated
+6. UI components small and focused
+7. Responsive design maintained

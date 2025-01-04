@@ -9,8 +9,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Trophy, Target } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 
 interface RoundPerformanceProps {
   userId: string;
@@ -83,70 +81,56 @@ export function RoundPerformance({ userId }: RoundPerformanceProps) {
   });
 
   return (
-    <Card className={cn(
-      "game-card",
-      "game-card-prediction",
-      "transition-all duration-300"
-    )}>
-      <CardContent className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Round Performance</h3>
-        <div className="space-y-4">
-          <Select value={selectedRound} onValueChange={setSelectedRound}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Select a round" />
-            </SelectTrigger>
-            <SelectContent>
-              {rounds?.map((round) => (
-                <SelectItem key={round.id} value={round.id}>
-                  Round {round.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+    <div className="p-6 bg-accent/5 rounded-lg border">
+      <h3 className="text-lg font-semibold mb-4">Round Performance</h3>
+      <div className="space-y-4">
+        <Select value={selectedRound} onValueChange={setSelectedRound}>
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="Select a round" />
+          </SelectTrigger>
+          <SelectContent>
+            {rounds?.map((round) => (
+              <SelectItem key={round.id} value={round.id}>
+                Round {round.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-          {selectedRound && (
-            <div className="grid grid-cols-2 gap-4 animate-fade-in">
-              <div className={cn(
-                "game-card",
-                "game-card-prediction",
-                "flex items-center gap-2 p-4 rounded-lg"
-              )}>
-                <Target className="h-5 w-5 text-[#F97316]" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Points</p>
-                  <p className="text-lg font-semibold">
-                    {isLoadingRoundStats ? (
-                      <span className="text-muted-foreground">Loading...</span>
-                    ) : (
-                      roundStats?.points || 0
-                    )}
-                  </p>
-                </div>
-              </div>
-
-              <div className={cn(
-                "game-card",
-                "game-card-prediction",
-                "flex items-center gap-2 p-4 rounded-lg"
-              )}>
-                <Trophy className="h-5 w-5 text-[#F97316]" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Rank</p>
-                  <p className="text-lg font-semibold">
-                    {isLoadingRoundStats ? (
-                      <span className="text-muted-foreground">Loading...</span>
-                    ) : roundStats?.rank ? (
-                      <>{roundStats.rank}<span className="text-sm text-muted-foreground">/{roundStats.totalParticipants}</span></>
-                    ) : (
-                      "-"
-                    )}
-                  </p>
-                </div>
+        {selectedRound && (
+          <div className="grid grid-cols-2 gap-4 animate-fade-in">
+            <div className="flex items-center gap-2 bg-background p-4 rounded-lg border">
+              <Target className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-sm text-muted-foreground">Points</p>
+                <p className="text-lg font-semibold">
+                  {isLoadingRoundStats ? (
+                    <span className="text-muted-foreground">Loading...</span>
+                  ) : (
+                    roundStats?.points || 0
+                  )}
+                </p>
               </div>
             </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+
+            <div className="flex items-center gap-2 bg-background p-4 rounded-lg border">
+              <Trophy className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-sm text-muted-foreground">Rank</p>
+                <p className="text-lg font-semibold">
+                  {isLoadingRoundStats ? (
+                    <span className="text-muted-foreground">Loading...</span>
+                  ) : roundStats?.rank ? (
+                    <>{roundStats.rank}<span className="text-sm text-muted-foreground">/{roundStats.totalParticipants}</span></>
+                  ) : (
+                    "-"
+                  )}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

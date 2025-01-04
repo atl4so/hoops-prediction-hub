@@ -20,13 +20,10 @@ export function GameCountdown({ gameDate }: GameCountdownProps) {
       const now = new Date().getTime();
       const difference = gameTime - now;
 
-      // 7 days in milliseconds
-      const totalDuration = 7 * 24 * 60 * 60 * 1000;
-      
-      // Calculate progress as inverse of remaining time percentage
-      // This way, the bar fills up as we get closer to the game
-      const remainingPercentage = Math.min(100, Math.max(0, (difference / totalDuration) * 100));
-      const progress = 100 - remainingPercentage;
+      // 24 hours in milliseconds
+      const totalDuration = 24 * 60 * 60 * 1000;
+      const elapsed = totalDuration - difference;
+      const progress = Math.min(100, Math.max(0, (elapsed / totalDuration) * 100));
 
       if (difference > 0) {
         const days = Math.floor(difference / (1000 * 60 * 60 * 24));
@@ -55,11 +52,7 @@ export function GameCountdown({ gameDate }: GameCountdownProps) {
   return (
     <div className="flex flex-col items-center gap-1">
       <p className="text-xs text-muted-foreground">Time to game</p>
-      <Progress 
-        value={timeLeft.progress} 
-        className="h-2 w-24 bg-secondary/30" 
-        indicatorClassName="bg-primary transition-all duration-500"
-      />
+      <Progress value={timeLeft.progress} className="h-2 w-24" />
       <p className="text-xs text-muted-foreground">
         {formatTimeDisplay()}
       </p>

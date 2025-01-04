@@ -4,100 +4,84 @@
  
 @layer base {
   :root {
-    --background: 24 33% 97%;
-    --foreground: 240 10% 3.9%;
+    --background: 0 0% 98%;  /* Light gray background */
+    --foreground: 0 0% 0%;   /* Pure black for headings */
     
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;      /* Pure white for cards */
+    --card-foreground: 0 0% 0%;
  
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover-foreground: 0 0% 0%;
  
-    --primary: 24 95% 53%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 24 95% 53%;  /* Keep premium orange as primary */
+    --primary-foreground: 210 40% 98%;
  
-    --secondary: 24 95% 53%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11%;
  
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
  
     --accent: 24 95% 53%;
-    --accent-foreground: 240 5.9% 10%;
+    --accent-foreground: 222 47% 11%;
  
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
     --ring: 24 95% 53%;
  
     --radius: 0.75rem;
   }
-}
-
-* {
-  @apply border-border;
-}
-
-body {
-  @apply bg-background text-foreground min-h-screen;
-}
-
-@layer components {
-  .team-logo-container {
-    @apply relative w-16 h-16 rounded-full bg-white/10 overflow-hidden;
-  }
-
-  .team-logo-container::before {
-    content: '';
-    @apply absolute inset-0 rounded-full bg-white/80;
-  }
-
-  .team-logo {
-    @apply w-full h-full object-contain relative z-10 p-2;
-  }
-
-  .glass-card {
-    @apply bg-white/60 backdrop-blur-md border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300;
-  }
-
-  .glass-input {
-    @apply bg-white/70 backdrop-blur-sm border-white/30;
-  }
-
-  .glass-button {
-    @apply hover:bg-white/20 transition-colors duration-200;
-  }
-
-  .game-card {
-    @apply bg-gradient-to-br from-orange-100/90 to-orange-200/70 backdrop-blur-md border border-white/20;
-  }
-
-  .game-card-upcoming {
-    @apply from-orange-100/90 to-orange-200/70;
-  }
-
-  .game-card-finished {
-    @apply from-orange-100/90 to-orange-200/70;
-  }
-
-  .game-card-prediction {
-    @apply from-orange-100/90 to-orange-200/70;
+ 
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 0 0% 100%;   /* Pure white for headings in dark mode */
+ 
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+ 
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --primary: 24 95% 53%;
+    --primary-foreground: 222 47% 11%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+ 
+    --accent: 24 95% 53%;
+    --accent-foreground: 210 40% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 24 95% 53%;
   }
 }
 
-/* Logo styles */
-.logo {
-  @apply h-8 md:h-10 w-auto transition-all duration-300;
-}
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    background-image: radial-gradient(at 27% 37%, hsla(24, 95%, 53%, 0.04) 0px, transparent 0%),
+                     radial-gradient(at 97% 21%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%),
+                     radial-gradient(at 52% 99%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%),
+                     radial-gradient(at 10% 29%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%),
+                     radial-gradient(at 97% 96%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%),
+                     radial-gradient(at 33% 50%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%),
+                     radial-gradient(at 79% 53%, hsla(24, 95%, 53%, 0.04) 0px, transparent 50%);
+  }
 
-.logo:hover {
-  @apply opacity-80;
-}
-
-@media (max-width: 768px) {
-  .logo {
-    @apply h-8 w-auto;
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-foreground;
   }
 }

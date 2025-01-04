@@ -1,13 +1,12 @@
 import { Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useState } from "react";
 
 interface NavigationItem {
   title: string;
@@ -18,72 +17,35 @@ interface NavigationItem {
 interface MobileMenuProps {
   menuItems: NavigationItem[];
   isAuthenticated: boolean;
-  isAdmin?: boolean;
   onLogout: () => void;
 }
 
-export function MobileMenu({ menuItems, isAuthenticated, isAdmin, onLogout }: MobileMenuProps) {
-  const [open, setOpen] = useState(false);
-
+export function MobileMenu({ menuItems, isAuthenticated, onLogout }: MobileMenuProps) {
   if (!isAuthenticated) {
     return null;
   }
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="md:hidden">
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle menu</span>
         </Button>
-      </SheetTrigger>
-      <SheetContent 
-        side="left" 
-        className="w-[240px] p-0"
-        onPointerDownOutside={() => setOpen(false)}
-        onEscapeKeyDown={() => setOpen(false)}
-      >
-        <ScrollArea className="h-full py-6">
-          <div className="space-y-1 px-2">
-            {menuItems.map((item) => (
-              <Button
-                key={item.title}
-                variant="ghost"
-                className="w-full justify-start gap-2"
-                asChild
-                onClick={() => setOpen(false)}
-              >
-                <Link to={item.href}>
-                  <item.icon className="h-4 w-4" />
-                  {item.title}
-                </Link>
-              </Button>
-            ))}
-            {isAdmin && (
-              <Button
-                variant="ghost"
-                className="w-full justify-start gap-2"
-                asChild
-                onClick={() => setOpen(false)}
-              >
-                <Link to="/admin">
-                  <span>Admin</span>
-                </Link>
-              </Button>
-            )}
-            <Button
-              variant="ghost"
-              className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50"
-              onClick={() => {
-                setOpen(false);
-                onLogout();
-              }}
-            >
-              Logout
-            </Button>
-          </div>
-        </ScrollArea>
-      </SheetContent>
-    </Sheet>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-[200px]">
+        {menuItems.map((item) => (
+          <DropdownMenuItem key={item.title} asChild>
+            <Link to={item.href} className="flex items-center gap-2">
+              <item.icon className="h-4 w-4" />
+              {item.title}
+            </Link>
+          </DropdownMenuItem>
+        ))}
+        <DropdownMenuItem onClick={onLogout} className="text-red-500">
+          Logout
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

@@ -11,59 +11,37 @@ import {
 import { LeaderboardRow } from "./LeaderboardRow";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
-import { toast } from "sonner";
 
 interface RoundLeaderboardProps {
   selectedRound: string;
 }
 
 export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
-  const { data: rankings, isLoading, isError, error } = useQuery({
+  const { data: rankings, isLoading } = useQuery({
     queryKey: ["roundRankings", selectedRound],
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .rpc('get_round_rankings', {
-            round_id: selectedRound
-          });
+      const { data, error } = await supabase
+        .rpc('get_round_rankings', {
+          round_id: selectedRound
+        });
 
-        if (error) {
-          console.error('Error fetching round rankings:', error);
-          throw error;
-        }
+      if (error) throw error;
 
-        // Fetch avatar URLs for all users
-        const userIds = data.map((player: any) => player.user_id);
-        const { data: profiles, error: profilesError } = await supabase
-          .from('profiles')
-          .select('id, avatar_url')
-          .in('id', userIds);
+      // Fetch avatar URLs for all users
+      const userIds = data.map((player: any) => player.user_id);
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, avatar_url')
+        .in('id', userIds);
 
-        if (profilesError) {
-          console.error('Error fetching profiles:', profilesError);
-          throw profilesError;
-        }
-
-        // Merge avatar URLs with rankings data
-        return data.map((player: any) => ({
-          ...player,
-          avatar_url: profiles?.find((p: any) => p.id === player.user_id)?.avatar_url
-        }));
-      } catch (err) {
-        console.error('Error in rankings query:', err);
-        throw err;
-      }
+      // Merge avatar URLs with rankings data
+      return data.map((player: any) => ({
+        ...player,
+        avatar_url: profiles?.find((p: any) => p.id === player.user_id)?.avatar_url
+      }));
     },
-    enabled: !!selectedRound,
-    retry: 3,
-    retryDelay: 1000,
-    gcTime: 1000 * 60 * 5
+    enabled: !!selectedRound
   });
-
-  // Handle error state with toast
-  if (isError) {
-    toast.error("Failed to load rankings. Please try again later.");
-  }
 
   if (!selectedRound) {
     return (
@@ -81,16 +59,6 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
             <Skeleton key={i} className="w-full h-16" />
           ))}
         </div>
-      </Card>
-    );
-  }
-
-  if (isError) {
-    return (
-      <Card className="w-full p-8 text-center">
-        <p className="text-muted-foreground">
-          Unable to load rankings. Please try again later.
-        </p>
       </Card>
     );
   }

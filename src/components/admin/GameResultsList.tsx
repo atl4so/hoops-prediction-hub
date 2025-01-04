@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { EditGameResultDialog } from "./EditGameResultDialog";
 import { Accordion } from "@/components/ui/accordion";
 import { useGameResults } from "@/hooks/useGameResults";
 import { RoundResultsSection } from "./games/RoundResultsSection";
+import type { Game } from "@/types/supabase";
 
 export function GameResultsList() {
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   const [editingResult, setEditingResult] = useState<any>(null);
   const [homeScore, setHomeScore] = useState("");
@@ -40,6 +43,10 @@ export function GameResultsList() {
       }
     },
     onSuccess: () => {
+      toast({ 
+        title: "Success", 
+        description: "Game result updated successfully",
+      });
       queryClient.invalidateQueries({ queryKey: ['game-results'] });
       setEditingResult(null);
       setHomeScore("");
@@ -47,6 +54,11 @@ export function GameResultsList() {
     },
     onError: (error: Error) => {
       console.error('Mutation error:', error);
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     },
   });
 

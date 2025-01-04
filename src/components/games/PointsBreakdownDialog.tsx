@@ -34,7 +34,7 @@ export function PointsBreakdownDialog({
 }: PointsBreakdownDialogProps) {
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="max-w-sm bg-white/95 dark:bg-gray-950/90 backdrop-blur-md border-none">
+      <AlertDialogContent className="max-w-sm">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-center">Points Breakdown</AlertDialogTitle>
         </AlertDialogHeader>

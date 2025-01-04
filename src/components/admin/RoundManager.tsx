@@ -1,19 +1,24 @@
 import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { RoundDialog } from "./rounds/RoundDialog";
-import { RoundList } from "./rounds/RoundList";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { CalendarIcon, Pencil, Trash } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export function RoundManager() {
+  const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [editingRound, setEditingRound] = useState<any>(null);
   const [name, setName] = useState("");
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
-  const [deletingId, setDeletingId] = useState<string>();
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editingRound, setEditingRound] = useState<any>(null);
 
   const { data: rounds, isLoading } = useQuery({
     queryKey: ['rounds'],
@@ -21,7 +26,7 @@ export function RoundManager() {
       const { data, error } = await supabase
         .from('rounds')
         .select('*')
-        .order('start_date', { ascending: true });
+        .order('created_at', { ascending: false });
       
       if (error) throw error;
       return data;
@@ -31,53 +36,66 @@ export function RoundManager() {
   const createRound = useMutation({
     mutationFn: async () => {
       if (!startDate || !endDate || !name) {
-        console.error("Please fill in all fields");
-        return;
+        throw new Error("Please fill in all fields");
       }
 
       const { error } = await supabase
         .from('rounds')
-        .insert({
-          name,
-          start_date: startDate.toISOString(),
-          end_date: endDate.toISOString(),
-        });
+        .insert([
+          {
+            name,
+            start_date: startDate.toISOString(),
+            end_date: endDate.toISOString(),
+          },
+        ]);
 
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rounds'] });
-      setIsCreateOpen(false);
+      toast({ title: "Success", description: "Round created successfully" });
       setName("");
       setStartDate(undefined);
       setEndDate(undefined);
     },
     onError: (error) => {
-      console.error("Error creating round:", error);
-    }
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   const updateRound = useMutation({
     mutationFn: async () => {
       if (!startDate || !endDate || !name || !editingRound) {
-        console.error("Please fill in all fields");
-        return;
+        throw new Error("Please fill in all fields");
       }
 
-      const { error } = await supabase
+      console.log('Attempting to update round:', editingRound.id);
+      
+      const { data, error } = await supabase
         .from('rounds')
         .update({
           name,
           start_date: startDate.toISOString(),
           end_date: endDate.toISOString(),
-          updated_at: new Date().toISOString(),
         })
-        .eq('id', editingRound.id);
+        .eq('id', editingRound.id)
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating round:', error);
+        throw error;
+      }
+      
+      console.log('Successfully updated round:', data);
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rounds'] });
+      toast({ title: "Success", description: "Round updated successfully" });
       setIsEditOpen(false);
       setEditingRound(null);
       setName("");
@@ -85,28 +103,45 @@ export function RoundManager() {
       setEndDate(undefined);
     },
     onError: (error) => {
-      console.error("Error updating round:", error);
-    }
+      console.error('Update round error:', error);
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   const deleteRound = useMutation({
-    mutationFn: async (id: string) => {
-      setDeletingId(id);
-      const { error } = await supabase
+    mutationFn: async (roundId: string) => {
+      console.log('Attempting to delete round:', roundId);
+      
+      const { data, error } = await supabase
         .from('rounds')
         .delete()
-        .eq('id', id);
-
-      if (error) throw error;
+        .eq('id', roundId)
+        .select();
+      
+      if (error) {
+        console.error('Error deleting round:', error);
+        throw error;
+      }
+      
+      console.log('Successfully deleted round:', data);
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rounds'] });
-      setDeletingId(undefined);
+      toast({ title: "Success", description: "Round and associated games deleted successfully" });
     },
     onError: (error) => {
-      console.error("Error deleting round:", error);
-      setDeletingId(undefined);
-    }
+      console.error('Delete round error:', error);
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   const handleEdit = (round: any) => {
@@ -120,50 +155,156 @@ export function RoundManager() {
   if (isLoading) return <div>Loading...</div>;
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold">Rounds</h2>
-        <Button onClick={() => setIsCreateOpen(true)}>
-          Create Round
-        </Button>
+    <div className="space-y-6">
+      <div className="grid gap-4">
+        <div className="grid gap-2">
+          <Input
+            placeholder="Round Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <div className="grid grid-cols-2 gap-4">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "justify-start text-left font-normal",
+                    !startDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {startDate ? format(startDate, "PPP") : "Start Date"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={startDate}
+                  onSelect={setStartDate}
+                />
+              </PopoverContent>
+            </Popover>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "justify-start text-left font-normal",
+                    !endDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {endDate ? format(endDate, "PPP") : "End Date"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={endDate}
+                  onSelect={setEndDate}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+        <Button onClick={() => createRound.mutate()}>Create Round</Button>
       </div>
 
-      <RoundList
-        rounds={rounds || []}
-        onEdit={handleEdit}
-        onDelete={(id) => deleteRound.mutate(id)}
-        isDeletingId={deletingId}
-      />
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Round</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Input
+              placeholder="Round Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <div className="grid grid-cols-2 gap-4">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "justify-start text-left font-normal",
+                      !startDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {startDate ? format(startDate, "PPP") : "Start Date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={setStartDate}
+                  />
+                </PopoverContent>
+              </Popover>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "justify-start text-left font-normal",
+                      !endDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {endDate ? format(endDate, "PPP") : "End Date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={endDate}
+                    onSelect={setEndDate}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <Button onClick={() => updateRound.mutate()}>Update Round</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
-      <RoundDialog
-        isOpen={isCreateOpen}
-        onOpenChange={setIsCreateOpen}
-        title="Create Round"
-        name={name}
-        startDate={startDate}
-        endDate={endDate}
-        onNameChange={setName}
-        onStartDateChange={setStartDate}
-        onEndDateChange={setEndDate}
-        onSubmit={() => createRound.mutate()}
-        isSubmitting={createRound.isPending}
-        submitLabel="Create"
-      />
-
-      <RoundDialog
-        isOpen={isEditOpen}
-        onOpenChange={setIsEditOpen}
-        title="Edit Round"
-        name={name}
-        startDate={startDate}
-        endDate={endDate}
-        onNameChange={setName}
-        onStartDateChange={setStartDate}
-        onEndDateChange={setEndDate}
-        onSubmit={() => updateRound.mutate()}
-        isSubmitting={updateRound.isPending}
-        submitLabel="Update"
-      />
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium">Existing Rounds</h3>
+        <div className="grid gap-4">
+          {rounds?.map((round) => (
+            <div
+              key={round.id}
+              className="flex items-center justify-between p-4 border rounded-lg"
+            >
+              <div>
+                <h4 className="font-medium">{round.name}</h4>
+                <p className="text-sm text-muted-foreground">
+                  {format(new Date(round.start_date), "PPP")} - {format(new Date(round.end_date), "PPP")}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleEdit(round)}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => deleteRound.mutate(round.id)}
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
