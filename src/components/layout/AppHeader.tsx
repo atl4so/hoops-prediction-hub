@@ -5,7 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MobileMenu } from "./MobileMenu";
 import { DesktopNav } from "./DesktopNav";
-import { getNavigationItems } from "./NavigationItems";
+import { navigationItems } from "./NavigationItems";
 import { ProfileMenu } from "../profile/ProfileMenu";
 
 export function AppHeader() {
@@ -17,7 +17,40 @@ export function AppHeader() {
 
   useEffect(() => {
     const loadNavItems = async () => {
-      const items = await getNavigationItems(isAuthenticated);
+      // If authenticated, show all items. For admin, add admin route
+      let items = [...navigationItems];
+      if (isAuthenticated) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.email === 'likasvy@gmail.com') {
+          items = [
+            ...items,
+            {
+              title: "Admin",
+              href: "/admin",
+              icon: () => <span className="h-4 w-4">⚙️</span>,
+            },
+          ];
+        }
+      } else {
+        // For non-authenticated users, only show public routes
+        items = [
+          {
+            title: "Home",
+            href: "/",
+            icon: navigationItems[0].icon, // Use Overview icon for home
+          },
+          {
+            title: "Leaderboard",
+            href: "/leaderboard",
+            icon: navigationItems[4].icon,
+          },
+          {
+            title: "Rules",
+            href: "/rules",
+            icon: navigationItems[5].icon,
+          },
+        ];
+      }
       setMenuItems(items);
     };
 
@@ -69,7 +102,7 @@ export function AppHeader() {
           )}
           
           <Link 
-            to={isAuthenticated ? "/dashboard" : "/"} 
+            to={isAuthenticated ? "/overview" : "/"} 
             className="flex items-center space-x-2"
           >
             <span className="font-bold">euroleague.bet</span>
