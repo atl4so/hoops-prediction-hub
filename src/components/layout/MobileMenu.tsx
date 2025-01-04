@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useState } from "react";
 
 interface NavigationItem {
   title: string;
@@ -22,19 +23,26 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ menuItems, isAuthenticated, isAdmin, onLogout }: MobileMenuProps) {
+  const [open, setOpen] = useState(false);
+
   if (!isAuthenticated) {
     return null;
   }
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="md:hidden">
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[240px] p-0">
+      <SheetContent 
+        side="left" 
+        className="w-[240px] p-0"
+        onPointerDownOutside={() => setOpen(false)}
+        onEscapeKeyDown={() => setOpen(false)}
+      >
         <ScrollArea className="h-full py-6">
           <div className="space-y-1 px-2">
             {menuItems.map((item) => (
@@ -43,6 +51,7 @@ export function MobileMenu({ menuItems, isAuthenticated, isAdmin, onLogout }: Mo
                 variant="ghost"
                 className="w-full justify-start gap-2"
                 asChild
+                onClick={() => setOpen(false)}
               >
                 <Link to={item.href}>
                   <item.icon className="h-4 w-4" />
@@ -55,6 +64,7 @@ export function MobileMenu({ menuItems, isAuthenticated, isAdmin, onLogout }: Mo
                 variant="ghost"
                 className="w-full justify-start gap-2"
                 asChild
+                onClick={() => setOpen(false)}
               >
                 <Link to="/admin">
                   <span>Admin</span>
@@ -64,7 +74,10 @@ export function MobileMenu({ menuItems, isAuthenticated, isAdmin, onLogout }: Mo
             <Button
               variant="ghost"
               className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50"
-              onClick={onLogout}
+              onClick={() => {
+                setOpen(false);
+                onLogout();
+              }}
             >
               Logout
             </Button>
