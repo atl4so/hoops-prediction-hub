@@ -43,28 +43,28 @@ const GameCard = ({ prediction }: { prediction: PredictionData }) => {
   
   return (
     <div className="bg-gray-50/80 rounded-lg p-1 relative min-h-[60px]">
-      <div className="text-[10px] font-medium mb-1 text-gray-700 truncate pr-8">
+      <div className="text-[10px] leading-normal font-medium mb-1 text-gray-700 truncate pr-8 min-h-[14px] flex items-center">
         {homeTeamName} vs {awayTeamName}
       </div>
       <div className="flex flex-col gap-0.5">
         {finalResult && (
-          <div className="flex items-center gap-1">
-            <span className="text-emerald-600 font-medium text-[10px]">F</span>
-            <span className="font-medium text-gray-900 text-[10px]">
+          <div className="flex items-center gap-1 min-h-[14px]">
+            <span className="text-emerald-600 font-medium text-[10px] leading-normal">F</span>
+            <span className="font-medium text-gray-900 text-[10px] leading-normal">
               {finalResult.home_score}-{finalResult.away_score}
             </span>
           </div>
         )}
-        <div className="flex items-center gap-1">
-          <span className="text-blue-600 font-medium text-[10px]">P</span>
-          <span className="text-gray-600 text-[10px]">
+        <div className="flex items-center gap-1 min-h-[14px]">
+          <span className="text-blue-600 font-medium text-[10px] leading-normal">P</span>
+          <span className="text-gray-600 text-[10px] leading-normal">
             {prediction.prediction.prediction_home_score}-{prediction.prediction.prediction_away_score}
           </span>
         </div>
       </div>
       {prediction.prediction.points_earned !== undefined && (
         <div className="absolute top-1 right-1">
-          <span className="text-orange-500 font-bold text-[10px]">
+          <span className="text-orange-500 font-bold text-[10px] leading-normal">
             {prediction.prediction.points_earned}p
           </span>
         </div>
