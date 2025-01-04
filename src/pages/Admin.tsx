@@ -7,7 +7,7 @@ import { RoundManager } from "@/components/admin/RoundManager";
 import { GameManager } from "@/components/admin/GameManager";
 import { TeamsList } from "@/components/admin/TeamsList";
 import { GameResults } from "@/components/admin/GameResults";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { AdminStats } from "@/components/admin/stats/AdminStats";
 
