@@ -38,7 +38,6 @@ export function UserPredictionCard({
   const [showPointsBreakdown, setShowPointsBreakdown] = useState(false);
   const gameResult = game.game_results?.[0];
 
-  // If no prediction data, don't render the card
   if (!prediction) {
     return null;
   }
@@ -52,10 +51,10 @@ export function UserPredictionCard({
   return (
     <>
       <Card className="hover:shadow-md transition-all duration-300">
-        <CardContent className="pt-6">
-          <div className="flex flex-col items-center">
+        <CardContent className="pt-8 px-6">
+          <div className="flex flex-col items-center space-y-6">
             <GameInfo game={game} prediction={prediction} />
-            <div className="mt-4 mb-2">
+            <div className="mt-6 mb-4 w-full">
               <PredictionDisplay
                 homeScore={prediction.prediction_home_score}
                 awayScore={prediction.prediction_away_score}
