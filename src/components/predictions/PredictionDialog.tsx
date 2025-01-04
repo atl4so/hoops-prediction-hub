@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
@@ -42,7 +41,6 @@ export function PredictionDialog({
   const [homeScore, setHomeScore] = useState("");
   const [awayScore, setAwayScore] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
 
   if (!homeTeam || !awayTeam) {
     return null;
@@ -52,10 +50,6 @@ export function PredictionDialog({
     e.preventDefault();
     
     if (!homeScore || !awayScore) {
-      toast.error({
-        title: "Error",
-        description: "Please enter both scores",
-      });
       return;
     }
 
@@ -63,58 +57,43 @@ export function PredictionDialog({
     const awayScoreNum = parseInt(awayScore);
 
     if (isNaN(homeScoreNum) || isNaN(awayScoreNum)) {
-      toast.error({
-        title: "Error",
-        description: "Scores must be valid numbers",
-      });
       return;
     }
 
     setIsSubmitting(true);
 
-    // First, check if a prediction already exists
-    const { data: existingPrediction } = await supabase
-      .from("predictions")
-      .select("id")
-      .eq("user_id", userId)
-      .eq("game_id", gameId)
-      .maybeSingle();
+    try {
+      // Check for existing prediction
+      const { data: existingPrediction } = await supabase
+        .from("predictions")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("game_id", gameId)
+        .maybeSingle();
 
-    if (existingPrediction) {
-      setIsSubmitting(false);
-      toast.error({
-        title: "Error",
-        description: "You have already made a prediction for this game",
-      });
+      if (existingPrediction) {
+        setIsSubmitting(false);
+        onOpenChange(false);
+        return;
+      }
+
+      // Create new prediction
+      const { error } = await supabase
+        .from("predictions")
+        .insert({
+          user_id: userId,
+          game_id: gameId,
+          prediction_home_score: homeScoreNum,
+          prediction_away_score: awayScoreNum,
+        });
+
+      if (error) throw error;
       onOpenChange(false);
-      return;
+    } catch (error) {
+      console.error('Error submitting prediction:', error);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // If no existing prediction, create a new one
-    const { error } = await supabase
-      .from("predictions")
-      .insert({
-        user_id: userId,
-        game_id: gameId,
-        prediction_home_score: homeScoreNum,
-        prediction_away_score: awayScoreNum,
-      });
-
-    setIsSubmitting(false);
-
-    if (error) {
-      toast.error({
-        title: "Error",
-        description: "Failed to submit prediction. Please try again.",
-      });
-      return;
-    }
-
-    toast.success({
-      title: "Success",
-      description: "Your prediction has been submitted!",
-    });
-    onOpenChange(false);
   };
 
   return (

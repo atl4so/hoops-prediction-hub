@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import {
   Select,
@@ -18,7 +17,6 @@ import { CalendarIcon, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 export function GameCreateForm() {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedRound, setSelectedRound] = useState<string>("");
   const [homeTeam, setHomeTeam] = useState<string>("");
@@ -93,7 +91,6 @@ export function GameCreateForm() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['games'] });
-      toast.success({ title: "Success", description: "Game created successfully" });
       setSelectedRound("");
       setHomeTeam("");
       setAwayTeam("");
@@ -102,7 +99,6 @@ export function GameCreateForm() {
     },
     onError: (error) => {
       console.error('Error in createGame mutation:', error);
-      toast.error({ title: "Error", description: error.message });
     },
   });
 

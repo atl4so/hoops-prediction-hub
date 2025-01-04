@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { GameListSkeleton } from "./games/GameListSkeleton";
 import { EditGameDialog } from "./games/EditGameDialog";
@@ -16,7 +15,6 @@ import {
 } from "@/components/ui/accordion";
 
 export function GamesList() {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedGames, setSelectedGames] = useState<string[]>([]);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -95,14 +93,9 @@ export function GamesList() {
       setEditingGame(null);
       setGameDate(undefined);
       setGameTime("20:00");
-      toast({ title: "Success", description: "Game updated successfully" });
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      console.error('Update error:', error);
     },
   });
 
@@ -199,4 +192,3 @@ export function GamesList() {
     </div>
   );
 }
-
