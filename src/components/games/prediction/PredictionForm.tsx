@@ -61,14 +61,12 @@ export function PredictionForm({
           type="button" 
           variant="outline" 
           onClick={onCancel}
-          className="dark:bg-green-900/30 dark:hover:bg-green-800/40 dark:border-green-500/20"
         >
           Cancel
         </Button>
         <Button 
           type="submit"
           disabled={isSubmitting}
-          className="bg-primary hover:bg-primary/90 dark:bg-green-500 dark:hover:bg-green-400"
         >
           Submit
         </Button>
