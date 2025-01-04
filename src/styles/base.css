@@ -105,7 +105,7 @@ body {
   }
 
   .game-card {
-    @apply bg-gradient-to-br from-orange-100/90 to-orange-200/70 dark:from-green-800/30 dark:to-green-900/20;
+    @apply bg-gradient-to-br from-orange-100/90 to-orange-200/70 dark:from-green-800/30 dark:to-green-900/20 backdrop-blur-md;
   }
 
   .game-card-upcoming {
@@ -118,5 +118,28 @@ body {
 
   .game-card-prediction {
     @apply from-orange-100/90 to-orange-200/70 dark:from-green-800/30 dark:to-green-900/20;
+  }
+
+  /* Selector and input styles */
+  .select-trigger {
+    @apply bg-white/70 dark:bg-white/5 border-white/30 dark:border-white/10;
+  }
+
+  .select-content {
+    @apply bg-white/95 dark:bg-gray-950/90 backdrop-blur-md border-white/20 dark:border-white/10;
+  }
+
+  /* Dialog and modal styles */
+  .dialog-content {
+    @apply bg-white/95 dark:bg-gray-950/90 backdrop-blur-md border-white/20 dark:border-white/10;
+  }
+
+  /* Button styles */
+  .button-primary {
+    @apply bg-gradient-to-br from-orange-500 to-orange-600 dark:from-green-800 dark:to-green-900 text-white;
+  }
+
+  .button-secondary {
+    @apply bg-white/10 dark:bg-white/5 backdrop-blur-sm border border-white/20 dark:border-white/10;
   }
 }
