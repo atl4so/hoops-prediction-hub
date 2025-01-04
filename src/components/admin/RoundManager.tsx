@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { format } from "date-fns";
+import { format, isValid } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -34,7 +34,8 @@ export function RoundManager() {
   const createRound = useMutation({
     mutationFn: async () => {
       if (!startDate || !endDate || !name) {
-        throw new Error("Please fill in all fields");
+        console.error("Please fill in all fields");
+        return;
       }
 
       const { error } = await supabase
@@ -55,12 +56,16 @@ export function RoundManager() {
       setStartDate(undefined);
       setEndDate(undefined);
     },
+    onError: (error) => {
+      console.error("Error creating round:", error);
+    }
   });
 
   const updateRound = useMutation({
     mutationFn: async () => {
       if (!startDate || !endDate || !name || !editingRound) {
-        throw new Error("Please fill in all fields");
+        console.error("Please fill in all fields");
+        return;
       }
 
       const { error } = await supabase
@@ -82,6 +87,9 @@ export function RoundManager() {
       setStartDate(undefined);
       setEndDate(undefined);
     },
+    onError: (error) => {
+      console.error("Error updating round:", error);
+    }
   });
 
   const deleteRound = useMutation({
@@ -96,6 +104,9 @@ export function RoundManager() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rounds'] });
     },
+    onError: (error) => {
+      console.error("Error deleting round:", error);
+    }
   });
 
   const handleEdit = (round: any) => {
@@ -104,6 +115,11 @@ export function RoundManager() {
     setStartDate(new Date(round.start_date));
     setEndDate(new Date(round.end_date));
     setIsEditOpen(true);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return isValid(date) ? format(date, "PPP") : "Invalid date";
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -236,7 +252,7 @@ export function RoundManager() {
               <div>
                 <h4 className="font-medium">{round.name}</h4>
                 <p className="text-sm text-muted-foreground">
-                  {format(new Date(round.start_date), "PPP")} - {format(new Date(round.end_date), "PPP")}
+                  {formatDate(round.start_date)} - {formatDate(round.end_date)}
                 </p>
               </div>
               <div className="flex gap-2">
