@@ -40,7 +40,7 @@ const Index = () => {
               onClick={() => navigate("/register")}
               variant="outline"
               size="lg"
-              className="min-w-[120px] dark:bg-green-800/30 border-2 border-[#F97316]/20 hover:border-[#F97316]/30 hover:bg-[#F97316]/5 font-medium tracking-wide shadow-lg hover:shadow-xl transition-all duration-200"
+              className="min-w-[120px] border-2 border-[#F97316]/20 hover:border-[#F97316]/30 hover:bg-[#F97316]/5 font-medium tracking-wide shadow-lg hover:shadow-xl transition-all duration-200"
             >
               <Lock className="w-4 h-4 mr-2" />
               Register

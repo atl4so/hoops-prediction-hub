@@ -32,11 +32,9 @@ export function AppHeader() {
             onLogout={handleLogout}
           />
           <a href="/" className="flex items-center space-x-2">
-            {isIndexPage ? (
-              <img src="/predict-follow-compete.png" alt="Logo" className="h-8" />
-            ) : (
-              <img src="/basketball-favicon.png" alt="Logo" className="h-8" />
-            )}
+            <h1 className="text-lg sm:text-xl font-bold tracking-tight font-display">
+              euroleague.bet
+            </h1>
           </a>
         </div>
         <DesktopNav 
