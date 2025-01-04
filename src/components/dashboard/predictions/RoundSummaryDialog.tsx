@@ -52,31 +52,45 @@ export function RoundSummaryDialog({
         return;
       }
 
-      toast.loading("Capturing screenshot...");
-
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
+        allowTaint: true,
+        foreignObjectRendering: true,
       });
 
-      canvas.toBlob((blob) => {
+      // Convert to blob
+      canvas.toBlob(async (blob) => {
         if (!blob) {
           toast.error("Failed to create image");
           return;
         }
 
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `round-${roundName}-predictions.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        
-        toast.success("Screenshot saved!");
+        try {
+          // Try to use the Share API if available
+          if (navigator.share) {
+            const file = new File([blob], `round-${roundName}-predictions.png`, { type: 'image/png' });
+            await navigator.share({
+              files: [file],
+            });
+          } else {
+            // Fallback to download if Share API is not available
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `round-${roundName}-predictions.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+          }
+          toast.success("Screenshot captured!");
+        } catch (error) {
+          console.error('Share error:', error);
+          toast.error("Failed to share screenshot");
+        }
       }, 'image/png', 1.0);
     } catch (error) {
       console.error('Screenshot error:', error);
