@@ -38,7 +38,7 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
   const cleanupSession = async () => {
     try {
       console.log('Cleaning up session...');
-      await supabase.auth.signOut({ scope: 'global' });
+      await supabase.auth.signOut();
       localStorage.clear();
       sessionStorage.clear();
       queryClient.clear();
@@ -90,8 +90,8 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, !!session);
       
-      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
-        console.log('User signed out or deleted, cleaning up...');
+      if (event === 'SIGNED_OUT') {
+        console.log('User signed out, cleaning up...');
         await cleanupSession();
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         setIsAuthenticated(true);
