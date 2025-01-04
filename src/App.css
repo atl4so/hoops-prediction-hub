@@ -25,7 +25,7 @@ html, body {
   height: 100%;
   position: fixed;
   overflow: hidden;
-  background: linear-gradient(180deg, #22c55e 0%, #bbf7d0 100%);
+  background: linear-gradient(180deg, #16a34a 0%, #86efac 100%);
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: none;
 }
@@ -49,19 +49,22 @@ html, body {
 .card {
   padding: 2em;
   border-radius: 1rem;
-  background-color: #FFF7ED;
-  border: 1px solid rgba(249, 115, 22, 0.1);
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
 }
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.1), 0 2px 4px -1px rgba(249, 115, 22, 0.06);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .game-card {
-  background-color: #FFF7ED;
-  border: 1px solid rgba(249, 115, 22, 0.1);
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 1rem;
   padding: 1.5rem;
   transition: all 0.3s ease;
@@ -69,7 +72,8 @@ html, body {
 
 .game-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.1), 0 2px 4px -1px rgba(249, 115, 22, 0.06);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .team-logo {
@@ -79,19 +83,21 @@ html, body {
 }
 
 .prediction-button {
-  background-color: #F97316;
+  background-color: rgba(249, 115, 22, 0.9);
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   font-weight: 600;
   transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
 }
 
 .prediction-button:hover {
-  background-color: #EA580C;
+  background-color: rgba(234, 88, 12, 0.95);
+  transform: translateY(-1px);
 }
 
 .prediction-button:disabled {
-  background-color: #FDA4AF;
+  background-color: rgba(253, 164, 175, 0.7);
   cursor: not-allowed;
 }
