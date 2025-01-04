@@ -40,7 +40,7 @@ const GameCard = ({ prediction }: { prediction: PredictionData }) => {
   const gameTitle = `${prediction.game.home_team.name} vs ${prediction.game.away_team.name}`;
   
   return (
-    <div className="bg-blue-50 rounded p-2 border border-blue-100">
+    <div className="bg-blue-50 rounded p-2 border border-blue-100 w-full">
       <div className="text-sm font-medium mb-1 truncate text-gray-700">{gameTitle}</div>
       <div className="flex justify-between items-center text-sm">
         <div className="space-y-0.5">
@@ -82,12 +82,32 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
     ? `${format(new Date(firstGame.game_date), 'MMM d')} - ${format(new Date(lastGame.game_date), 'MMM d')}`
     : '';
 
+  const containerClasses = cn(
+    "bg-gray-50",
+    isDownload ? "h-[630px] w-[1200px]" : "w-full max-w-md mx-auto min-h-screen"
+  );
+
+  const headerClasses = cn(
+    "mb-4",
+    isDownload ? "flex justify-between items-center" : "flex flex-col gap-2"
+  );
+
+  const gridClasses = cn(
+    "gap-3",
+    isDownload ? "grid grid-cols-3" : "flex flex-col"
+  );
+
+  const mainClasses = cn(
+    "flex-1",
+    isDownload ? "p-6" : "p-4"
+  );
+
   return (
-    <div className="h-[630px] w-[1200px] bg-gray-50">
+    <div className={containerClasses}>
       <div className="flex flex-col h-full bg-gray-50">
-        <div className="p-6 flex-1">
+        <div className={mainClasses}>
           {/* Header */}
-          <div className="flex justify-between items-center mb-4">
+          <div className={headerClasses}>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 mb-1">
                 euroleague.bet Round {roundName}
@@ -102,7 +122,7 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
           </div>
           
           {/* Game Grid */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className={gridClasses}>
             {predictions.map((prediction, index) => (
               <GameCard key={index} prediction={prediction} />
             ))}
@@ -110,7 +130,7 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
         </div>
         
         {/* Footer */}
-        <div className="bg-gray-50 p-6 pt-0">
+        <div className="bg-gray-50 p-4 pt-0">
           <div className="flex justify-between items-center text-gray-500 text-sm">
             <span className="font-medium">euroleague.bet</span>
             <div className="flex items-center gap-2">
@@ -120,8 +140,7 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
           </div>
         </div>
 
-        {/* Extra space to ensure background extends fully */}
-        <div className="bg-gray-50 h-24"></div>
+        {isDownload && <div className="bg-gray-50 h-24"></div>}
       </div>
     </div>
   );
