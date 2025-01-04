@@ -4,7 +4,7 @@
  
 @layer base {
   :root {
-    --background: 0 0% 98%;
+    --background: 24 33% 97%;
     --foreground: 240 10% 3.9%;
     
     --card: 0 0% 100%;
@@ -69,6 +69,7 @@
 * {
   @apply border-border;
 }
+
 body {
   @apply bg-background text-foreground;
 }
@@ -104,7 +105,7 @@ body {
   }
 
   .game-card {
-    @apply bg-gradient-to-br from-white/80 to-white/40 dark:from-green-950/40 dark:to-green-900/20;
+    @apply bg-gradient-to-br from-orange-50/80 to-orange-100/40 dark:from-green-800/30 dark:to-green-900/20;
   }
 
   .game-card-upcoming {

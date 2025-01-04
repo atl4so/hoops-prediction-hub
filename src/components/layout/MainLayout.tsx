@@ -8,8 +8,8 @@ interface MainLayoutProps {
 export function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col w-full">
-      {/* Simple background */}
-      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-orange-50/30 to-orange-100/20 dark:from-green-950/30 dark:to-green-900/20" />
+      {/* Simple gradient background for both light and dark modes */}
+      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-orange-50 via-orange-50/80 to-orange-100/60 dark:from-green-950 dark:via-green-950/80 dark:to-green-900/60" />
       
       {/* Content */}
       <AppHeader />
