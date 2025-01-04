@@ -32,11 +32,11 @@ export function LeaderboardTabs() {
 
   return (
     <Tabs defaultValue="all-time" className="space-y-8">
-      <section className="text-center space-y-4 animate-fade-in">
-        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
+      <section className="text-center space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
           Leaderboard
         </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-muted-foreground">
           See who's leading in predictions across all time and by round
         </p>
       </section>
