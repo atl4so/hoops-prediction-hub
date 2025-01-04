@@ -9,7 +9,7 @@ import { MainLayout } from "./components/layout/MainLayout";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import { RegisterForm } from "./components/auth/RegisterForm";
-import Dashboard from "./pages/Dashboard";
+import Overview from "./pages/Overview";
 import Admin from "./pages/Admin";
 import Leaderboard from "./pages/Leaderboard";
 import Predict from "./pages/Predict";
@@ -106,7 +106,7 @@ const App = () => {
                   <Route path="/" element={<Index />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<RegisterForm />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/overview" element={<Overview />} />
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
                   <Route path="/predict" element={<Predict />} />
