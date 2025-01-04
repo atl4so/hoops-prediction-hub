@@ -6,6 +6,7 @@ import { PredictionDisplay } from "./PredictionDisplay";
 import { PointsBreakdownDialog } from "./PointsBreakdownDialog";
 import { CountdownTimer } from "./CountdownTimer";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface GameCardProps {
   game: {
@@ -41,6 +42,16 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
 
   const gameResult = game.game_results?.[0];
   const isUpcoming = !gameResult && new Date(game.game_date) > new Date();
+  const hasPrediction = !!prediction;
+
+  const getCardClassName = () => {
+    return cn(
+      "game-card glass-card h-full transition-all duration-300",
+      isUpcoming && "game-card-upcoming",
+      gameResult?.is_final && "game-card-finished",
+      hasPrediction && "game-card-prediction"
+    );
+  };
 
   const handlePointsClick = () => {
     if (gameResult && prediction?.points_earned !== undefined) {
@@ -49,7 +60,7 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
   };
 
   return (
-    <Card className="w-full h-full flex flex-col">
+    <Card className={getCardClassName()}>
       <CardContent className="pt-6 px-4 sm:px-6 flex-1 flex flex-col">
         <div className="flex flex-col h-full">
           <div className="space-y-1">
