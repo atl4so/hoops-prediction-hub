@@ -35,28 +35,31 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const cleanupSession = async () => {
-    try {
-      console.log('Cleaning up session...');
-      await supabase.auth.signOut();
-      localStorage.clear();
-      sessionStorage.clear();
-      queryClient.clear();
-      setIsAuthenticated(false);
-    } catch (error) {
-      console.error('Session cleanup error:', error);
-    }
-  };
-
   useEffect(() => {
+    const cleanupSession = async () => {
+      try {
+        console.log('Cleaning up session...');
+        localStorage.clear();
+        sessionStorage.clear();
+        queryClient.clear();
+        setIsAuthenticated(false);
+      } catch (error) {
+        console.error('Session cleanup error:', error);
+      }
+    };
+
     const checkSession = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
           console.error('Session check error:', error);
-          await cleanupSession();
-          return;
+          if (error.message.includes('refresh_token_not_found') || 
+              error.message.includes('session_not_found')) {
+            await cleanupSession();
+            return;
+          }
+          throw error;
         }
 
         if (!session) {
