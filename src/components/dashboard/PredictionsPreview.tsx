@@ -34,10 +34,8 @@ interface PredictionsPreviewProps {
 }
 
 const GameCard = ({ prediction }: { prediction: PredictionData }) => {
-  const gameDate = new Date(prediction.game.game_date);
-  const formattedDate = format(gameDate, 'MMM d');
-  const finalResult = prediction.game.game_results?.[0];
   const gameTitle = `${prediction.game.home_team.name} vs ${prediction.game.away_team.name}`;
+  const finalResult = prediction.game.game_results?.[0];
   
   return (
     <div className="bg-blue-50 rounded p-2 border border-blue-100 w-full">
@@ -84,17 +82,17 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
 
   const containerClasses = cn(
     "bg-gray-50",
-    isDownload ? "h-[630px] w-[1200px]" : "w-full max-w-md mx-auto min-h-screen"
+    isDownload ? "h-[1200px] w-[600px]" : "w-full max-w-md mx-auto min-h-screen"
   );
 
   const headerClasses = cn(
     "mb-4",
-    isDownload ? "flex justify-between items-center" : "flex flex-col gap-2"
+    isDownload ? "flex flex-col gap-2" : "flex flex-col gap-2"
   );
 
   const gridClasses = cn(
     "gap-3",
-    isDownload ? "grid grid-cols-3" : "flex flex-col"
+    isDownload ? "flex flex-col" : "flex flex-col"
   );
 
   const mainClasses = cn(
@@ -140,7 +138,7 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
           </div>
         </div>
 
-        {isDownload && <div className="bg-gray-50 h-24"></div>}
+        {isDownload && <div className="bg-gray-50 h-12"></div>}
       </div>
     </div>
   );
