@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { ProfileSettings } from "./ProfileSettings";
 import { useUserProfile } from "@/components/dashboard/UserProfile";
 import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
 
 export function ProfileMenu() {
   const session = useSession();
@@ -39,7 +38,6 @@ export function ProfileMenu() {
       navigate("/login");
     } catch (error) {
       console.error('Logout error:', error);
-      toast.error("Failed to log out. Please try again.");
       // Force redirect to login on critical errors
       localStorage.clear();
       sessionStorage.clear();
