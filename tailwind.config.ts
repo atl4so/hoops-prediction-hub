@@ -1,7 +1,6 @@
 import type { Config } from "tailwindcss";
 
 export default {
-  darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -29,7 +28,7 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#F97316", // Orange color from the design
+          DEFAULT: "#F97316",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
@@ -42,10 +41,10 @@ export default {
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
-          foreground: "#64748B", // Slate color for muted text
+          foreground: "#64748B",
         },
         accent: {
-          DEFAULT: "#FFF7ED", // Light orange background
+          DEFAULT: "#FFF7ED",
           foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
@@ -53,7 +52,7 @@ export default {
           foreground: "hsl(var(--popover-foreground))",
         },
         card: {
-          DEFAULT: "#FFF7ED", // Light orange background for cards
+          DEFAULT: "#FFF7ED",
           foreground: "hsl(var(--card-foreground))",
         },
       },
