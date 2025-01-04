@@ -17,17 +17,15 @@ export const SessionHandler = ({ children }: { children: React.ReactNode }) => {
         navigate('/predict');
       }
       // If user is not authenticated and tries to access protected routes, redirect to login
-      else if (!session && !isPublicRoute) {
+      else if (!session && !isPublicRoute && location.pathname !== '/') {
         navigate('/login');
       }
     }
   }, [session, isLoading, navigate, location.pathname]);
 
-  // Show nothing while checking authentication
   if (isLoading) {
     return null;
   }
 
-  // Show children once authentication check is complete
   return <>{children}</>;
 };

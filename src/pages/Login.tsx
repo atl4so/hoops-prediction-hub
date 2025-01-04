@@ -19,7 +19,6 @@ const Login = () => {
     password: "",
   });
 
-  // Clear invalid session on component mount
   useEffect(() => {
     const clearSession = async () => {
       try {
