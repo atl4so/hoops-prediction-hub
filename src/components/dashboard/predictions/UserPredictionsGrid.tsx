@@ -41,8 +41,18 @@ export function UserPredictionsGrid({
       {predictions.map((prediction) => (
         <UserPredictionCard
           key={prediction.id}
-          game={prediction.game}
-          prediction={prediction.prediction}
+          game={{
+            id: prediction.game.id,
+            game_date: prediction.game.game_date,
+            home_team: prediction.game.home_team,
+            away_team: prediction.game.away_team,
+            game_results: prediction.game.game_results
+          }}
+          prediction={{
+            prediction_home_score: prediction.prediction_home_score,
+            prediction_away_score: prediction.prediction_away_score,
+            points_earned: prediction.points_earned
+          }}
           isOwnPrediction={isOwnPredictions}
         />
       ))}
