@@ -17,18 +17,16 @@ export function TeamDisplay({ team, align, className }: TeamDisplayProps) {
 
   return (
     <div className={cn(
-      "flex flex-col items-center gap-4",
+      "flex flex-col items-center gap-3",
       align === "left" && "items-start",
       align === "right" && "items-end",
       className
     )}>
-      <div className="relative w-16 h-16 rounded-full bg-white p-2 shadow-sm">
-        <img 
-          src={team.logo_url} 
-          alt={`${team.name} logo`}
-          className="w-full h-full object-contain"
-        />
-      </div>
+      <img 
+        src={team.logo_url} 
+        alt={`${team.name} logo`}
+        className="w-16 h-16 object-contain"
+      />
       <span className="font-display text-sm font-semibold text-center leading-tight w-full">
         {team.name}
       </span>

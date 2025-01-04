@@ -51,10 +51,10 @@ export function UserPredictionCard({
   return (
     <>
       <Card className="hover:shadow-md transition-all duration-300 h-full">
-        <CardContent className="pt-10 px-8 pb-8 h-full">
-          <div className="flex flex-col items-center justify-between h-full space-y-8">
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col h-full space-y-4">
             <GameInfo game={game} prediction={prediction} />
-            <div className="w-full">
+            <div className="w-full mt-auto pt-2">
               <PredictionDisplay
                 homeScore={prediction.prediction_home_score}
                 awayScore={prediction.prediction_away_score}
