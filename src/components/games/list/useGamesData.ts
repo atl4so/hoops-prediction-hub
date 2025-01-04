@@ -16,7 +16,7 @@ export function useGamesData() {
           home_team:teams!games_home_team_id_fkey(id, name, logo_url),
           away_team:teams!games_away_team_id_fkey(id, name, logo_url),
           round:rounds(id, name),
-          game_results!game_results_game_id_fkey(
+          game_results(
             home_score,
             away_score,
             is_final
@@ -53,20 +53,11 @@ export function useGamesData() {
           id: game.round[0].id,
           name: game.round[0].name
         },
-        game_results: Array.isArray(game.game_results) ? game.game_results : []
+        game_results: game.game_results || []
       }));
 
-      // Split into finished and unfinished games
-      const unfinishedGames = processedGames
-        .filter(game => !game.game_results?.some(result => result.is_final))
-        .sort((a, b) => a.parsedDate.getTime() - b.parsedDate.getTime());
-
-      const finishedGames = processedGames
-        .filter(game => game.game_results?.some(result => result.is_final))
-        .sort((a, b) => b.parsedDate.getTime() - a.parsedDate.getTime());
-
-      // Combine with unfinished games first
-      return [...unfinishedGames, ...finishedGames];
+      console.log('Processed games:', processedGames);
+      return processedGames;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 10, // 10 minutes

@@ -46,14 +46,27 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     if (!games) return [];
     
     const now = new Date();
-    return games.filter(game => {
+    console.log('Filtering games:', games.length, 'total games');
+    
+    const filtered = games.filter(game => {
       const predictionDeadline = subHours(new Date(game.game_date), 1);
       const notPredictedByUser = !userPredictions?.includes(game.id);
       const isBeforeDeadline = now < predictionDeadline;
       const hasNoFinalResult = !game.game_results?.some(result => result.is_final);
       
+      console.log('Game:', game.id, {
+        notPredictedByUser,
+        isBeforeDeadline,
+        hasNoFinalResult,
+        deadline: predictionDeadline,
+        gameDate: game.game_date
+      });
+      
       return isBeforeDeadline && notPredictedByUser && hasNoFinalResult;
     });
+    
+    console.log('Available games:', filtered.length);
+    return filtered;
   }, [games, userPredictions]);
 
   if (isLoading) {
