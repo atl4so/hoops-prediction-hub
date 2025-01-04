@@ -1,61 +1,43 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { AppHeader } from "./AppHeader";
 import { Footer } from "./Footer";
 import { supabase } from "@/integrations/supabase/client";
+import type { BackgroundSetting } from "@/types/supabase";
 
-interface BackgroundSettings {
-  url: string;
-  opacity: number;
+interface MainLayoutProps {
+  children: React.ReactNode;
 }
 
-export function MainLayout({ children }: { children: React.ReactNode }) {
-  const [activeBackground, setActiveBackground] = useState<BackgroundSettings | null>(null);
-
-  useEffect(() => {
-    const fetchBackground = async () => {
+export function MainLayout({ children }: MainLayoutProps) {
+  const { data: activeBackground } = useQuery({
+    queryKey: ["active-background"],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from("background_settings")
         .select("*")
         .eq("is_active", true)
         .maybeSingle();
 
-      if (!error && data) {
-        setActiveBackground(data);
-      }
-    };
-
-    fetchBackground();
-  }, []);
+      if (error) throw error;
+      return data as BackgroundSetting | null;
+    },
+  });
 
   return (
-    <div className="min-h-screen flex flex-col relative bg-background">
+    <div className="min-h-screen flex flex-col w-full">
       {activeBackground?.url && (
-        <div 
-          className="fixed inset-0 w-full h-full -z-10"
-          style={{ 
-            backgroundColor: 'black',
-            touchAction: 'none', 
-            userSelect: 'none',
-          }}
-        >
-          <img 
-            src={activeBackground.url} 
-            alt="Background" 
-            className="absolute w-full h-full object-cover"
-            style={{ 
-              opacity: activeBackground.opacity / 100,
-              maxWidth: '1920px',
-              maxHeight: '1080px',
-              left: '50%',
-              top: '50%',
-              transform: 'translate(-50%, -50%)',
-            }}
-          />
-        </div>
+        <img 
+          src={activeBackground.url} 
+          alt="Background" 
+          className="fixed inset-0 w-full h-full object-cover -z-10"
+          style={{ position: 'fixed', touchAction: 'none', userSelect: 'none' }}
+        />
       )}
       <AppHeader />
-      <main className="flex-1 container mx-auto px-4 py-8 relative z-10">
-        {children}
+      <main className="flex-1">
+        <div className="container mx-auto p-6">
+          {children}
+        </div>
       </main>
       <Footer />
     </div>
