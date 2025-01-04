@@ -35,9 +35,6 @@ const App = () => {
             closeButton={false}
             richColors
             theme="light"
-            onToastClick={(toast) => {
-              toast.dismiss();
-            }}
           />
           <BrowserRouter>
             <SessionHandler>
