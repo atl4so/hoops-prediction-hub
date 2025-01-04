@@ -67,7 +67,7 @@ const Login = () => {
       if (data.user) {
         toast("Welcome back!", {
           description: "You have successfully logged in.",
-          duration: 1500,
+          duration: 3000,
           className: "cursor-pointer",
         });
         navigate("/dashboard");

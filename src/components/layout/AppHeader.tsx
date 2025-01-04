@@ -7,6 +7,7 @@ import { DesktopNav } from "./DesktopNav";
 import { navigationItems } from "./NavigationItems";
 import { ProfileMenu } from "../profile/ProfileMenu";
 import { Settings } from "lucide-react";
+import { toast } from "sonner";
 
 export function AppHeader() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -68,6 +69,12 @@ export function AppHeader() {
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.error('Failed to sign out:', error);
+    } else {
+      toast("Goodbye!", {
+        description: "You have been successfully logged out.",
+        duration: 3000,
+        className: "cursor-pointer",
+      });
     }
     navigate("/");
   };
