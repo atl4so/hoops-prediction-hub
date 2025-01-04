@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import type { RoundRank } from "@/types/supabase";
 
 export function useCurrentRoundRank(userId?: string) {
-  const [currentRoundRank, setCurrentRoundRank] = useState<RoundRank | undefined>();
+  const [currentRoundRank, setCurrentRoundRank] = useState<RoundRank | null>(null);
 
   const { data: finishedGames } = useQuery({
     queryKey: ["finished-games"],
