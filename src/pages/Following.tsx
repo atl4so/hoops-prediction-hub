@@ -43,7 +43,7 @@ export default function Following() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 sm:py-10 space-y-8 sm:space-y-10 animate-fade-in">
       <section className="text-center space-y-4 sm:space-y-5">
-        <h1 className="text-3xl sm:text-4xl font-display font-bold tracking-tight bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
+        <h1 className="text-3xl sm:text-4xl font-display font-bold tracking-tight text-foreground">
           Following
         </h1>
         <p className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto">
