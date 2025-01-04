@@ -55,6 +55,25 @@ export function BackgroundSettings() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("background_settings")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["background-settings"] });
+      queryClient.invalidateQueries({ queryKey: ["active-background"] });
+      toast.success("Background deleted successfully");
+    },
+    onError: (error) => {
+      toast.error("Failed to delete background: " + error.message);
+    },
+  });
+
   const activateMutation = useMutation({
     mutationFn: async (background: BackgroundSetting) => {
       // First, set all backgrounds to inactive
@@ -173,14 +192,23 @@ export function BackgroundSettings() {
                       step={1}
                     />
                   </div>
-                  <Button
-                    variant={background.is_active ? "secondary" : "outline"}
-                    onClick={() => activateMutation.mutate(background)}
-                    disabled={background.is_active}
-                    className="w-full"
-                  >
-                    {background.is_active ? "Active" : "Set as Active"}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={background.is_active ? "secondary" : "outline"}
+                      onClick={() => activateMutation.mutate(background)}
+                      disabled={background.is_active}
+                      className="flex-1"
+                    >
+                      {background.is_active ? "Active" : "Set as Active"}
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={() => deleteMutation.mutate(background.id)}
+                      className="flex-shrink-0"
+                    >
+                      Delete
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
