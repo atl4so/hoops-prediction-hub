@@ -50,7 +50,7 @@ export function DashboardPredictions({ predictionsByRound, userName }: Dashboard
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold tracking-tight">Your Predictions</h2>
+      <h2 className="text-2xl font-semibold tracking-tight">My Predictions</h2>
       <div className="rounded-lg border">
         <Accordion type="single" collapsible className="w-full">
           {Object.values(predictionsByRound).map((roundData) => (
