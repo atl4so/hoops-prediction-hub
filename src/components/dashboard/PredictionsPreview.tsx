@@ -59,7 +59,7 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
           <span className={cn(
             "text-gray-600",
             isDownload ? "text-xl" : "text-lg"
-          )}>@{userName}</span>
+          )}>{userName}</span>
         </div>
         <div className="flex items-center gap-3">
           <span className={cn(

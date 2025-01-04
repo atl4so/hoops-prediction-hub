@@ -4,12 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { DashboardPredictions } from "@/components/dashboard/sections/DashboardPredictions";
 import { useUserPredictions } from "@/components/dashboard/useUserPredictions";
 import { toast } from "sonner";
+import { useUserProfile } from "@/components/dashboard/UserProfile";
 
 export default function MyPredictions() {
   const session = useSession();
   const navigate = useNavigate();
   const userId = session?.user?.id;
   const { data: predictions, isError: predictionsError } = useUserPredictions(userId);
+  const { data: profile } = useUserProfile(userId);
 
   useEffect(() => {
     if (!session) {
@@ -65,7 +67,7 @@ export default function MyPredictions() {
 
       <DashboardPredictions
         predictionsByRound={predictionsByRound}
-        userName={session?.user?.email?.split('@')[0] || "User"}
+        userName={profile?.display_name || "User"}
       />
     </div>
   );
