@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Lock, Mail } from "lucide-react";
 import { normalizeEmail } from "@/utils/validation";
@@ -80,72 +79,71 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-b from-background to-background/95 px-4 py-8 sm:px-6">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-8 sm:px-6">
       <div className="w-full max-w-md">
-        <Card className="w-full shadow-lg">
-          <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-xl text-center">Sign In</CardTitle>
-            <CardDescription className="text-center">
+        <div className="space-y-6">
+          <div className="space-y-2 text-center">
+            <h1 className="text-3xl font-bold">Sign In</h1>
+            <p className="text-muted-foreground">
               Enter your credentials to access your account
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {error && (
-              <Alert variant="destructive" className="mb-4">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={(e) => {
-                      setError(null);
-                      setFormData({ ...formData, email: e.target.value });
-                    }}
-                    required
-                    className="pl-10"
-                  />
-                </div>
+            </p>
+          </div>
+
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={(e) => {
+                    setError(null);
+                    setFormData({ ...formData, email: e.target.value });
+                  }}
+                  required
+                  className="pl-10"
+                />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Enter your password"
-                    value={formData.password}
-                    onChange={(e) => {
-                      setError(null);
-                      setFormData({ ...formData, password: e.target.value });
-                    }}
-                    required
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Signing in..." : "Sign in"}
-              </Button>
-            </form>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-2 pt-0">
-            <div className="text-sm text-center text-muted-foreground">
-              New to euroleague.bet?{" "}
-              <Button variant="link" className="p-0 h-auto" onClick={() => navigate("/register")}>
-                Create account
-              </Button>
             </div>
-          </CardFooter>
-        </Card>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={(e) => {
+                    setError(null);
+                    setFormData({ ...formData, password: e.target.value });
+                  }}
+                  required
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Signing in..." : "Sign in"}
+            </Button>
+          </form>
+
+          <div className="text-sm text-center text-muted-foreground">
+            New to euroleague.bet?{" "}
+            <Button variant="link" className="p-0 h-auto" onClick={() => navigate("/register")}>
+              Create account
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
