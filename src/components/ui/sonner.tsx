@@ -18,12 +18,15 @@ const Toaster = ({ ...props }: ToasterProps) => {
           description: "group-[.toast]:text-muted-foreground",
           actionButton: "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
           cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
-          closeButton: "!hidden",
-        },
-        style: {
-          cursor: 'pointer',
+          closeButton: "hidden",
         },
       }}
+      expand={false}
+      position="top-center"
+      duration={1500}
+      closeButton={false}
+      richColors
+      style={{ cursor: 'pointer' }}
       {...props}
     />
   )

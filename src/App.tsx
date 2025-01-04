@@ -29,19 +29,7 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
-          <Sonner
-            expand={false}
-            position="top-center"
-            duration={1500}
-            closeButton={false}
-            richColors
-            theme="light"
-            style={{ cursor: 'pointer' }}
-            toastOptions={{
-              style: { cursor: 'pointer' },
-              className: 'group cursor-pointer',
-            }}
-          />
+          <Sonner />
           <BrowserRouter>
             <SessionHandler>
               <MainLayout>
