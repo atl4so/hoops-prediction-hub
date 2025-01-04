@@ -11,12 +11,10 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Pencil, Trash, Plus } from "lucide-react";
 
 export function TeamsList() {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -50,10 +48,6 @@ export function TeamsList() {
       setIsAddOpen(false);
       setNewTeamName("");
       setNewLogoUrl("");
-      toast.success({ title: "Success", description: "Team added successfully" });
-    },
-    onError: (error) => {
-      toast.error({ title: "Error", description: error.message });
     },
   });
 
@@ -72,10 +66,6 @@ export function TeamsList() {
       setEditingTeam(null);
       setNewTeamName("");
       setNewLogoUrl("");
-      toast.success({ title: "Success", description: "Team updated successfully" });
-    },
-    onError: (error) => {
-      toast.error({ title: "Error", description: error.message });
     },
   });
 
@@ -90,10 +80,6 @@ export function TeamsList() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teams'] });
-      toast.success({ title: "Success", description: "Team deleted successfully" });
-    },
-    onError: (error) => {
-      toast.error({ title: "Error", description: error.message });
     },
   });
 

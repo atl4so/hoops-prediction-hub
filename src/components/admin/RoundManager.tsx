@@ -3,7 +3,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -12,7 +11,6 @@ import { CalendarIcon, Pencil, Trash } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export function RoundManager() {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
   const [startDate, setStartDate] = useState<Date>();
@@ -53,17 +51,9 @@ export function RoundManager() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rounds'] });
-      toast({ title: "Success", description: "Round created successfully" });
       setName("");
       setStartDate(undefined);
       setEndDate(undefined);
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
     },
   });
 
@@ -73,74 +63,38 @@ export function RoundManager() {
         throw new Error("Please fill in all fields");
       }
 
-      console.log('Attempting to update round:', editingRound.id);
-      
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('rounds')
         .update({
           name,
           start_date: startDate.toISOString(),
           end_date: endDate.toISOString(),
         })
-        .eq('id', editingRound.id)
-        .select();
+        .eq('id', editingRound.id);
 
-      if (error) {
-        console.error('Error updating round:', error);
-        throw error;
-      }
-      
-      console.log('Successfully updated round:', data);
-      return data;
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rounds'] });
-      toast({ title: "Success", description: "Round updated successfully" });
       setIsEditOpen(false);
       setEditingRound(null);
       setName("");
       setStartDate(undefined);
       setEndDate(undefined);
     },
-    onError: (error) => {
-      console.error('Update round error:', error);
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
   });
 
   const deleteRound = useMutation({
     mutationFn: async (roundId: string) => {
-      console.log('Attempting to delete round:', roundId);
-      
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('rounds')
         .delete()
-        .eq('id', roundId)
-        .select();
+        .eq('id', roundId);
       
-      if (error) {
-        console.error('Error deleting round:', error);
-        throw error;
-      }
-      
-      console.log('Successfully deleted round:', data);
-      return data;
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rounds'] });
-      toast({ title: "Success", description: "Round and associated games deleted successfully" });
-    },
-    onError: (error) => {
-      console.error('Delete round error:', error);
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
     },
   });
 
