@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 interface SessionHandlerProps {
@@ -8,61 +9,25 @@ interface SessionHandlerProps {
 }
 
 export const SessionHandler = ({ children }: SessionHandlerProps) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const cleanupSession = async () => {
-      try {
-        queryClient.clear();
-        localStorage.clear();
-        sessionStorage.clear();
-        setIsAuthenticated(false);
-      } catch (error) {
-        console.error('Session cleanup error:', error);
-      }
-    };
-
-    const checkSession = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error('Session check error:', error);
-          if (error.message.includes('invalid_credentials')) {
-            toast.error("Invalid login credentials");
-          }
-          await cleanupSession();
-          return;
-        }
-        
-        if (session) {
-          console.log('Valid session found for user:', session.user.id);
-          setIsAuthenticated(true);
-        } else {
-          console.log('No active session found');
-          await cleanupSession();
-        }
-      } catch (error) {
-        console.error('Session check error:', error);
-        await cleanupSession();
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkSession();
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, session?.user?.id);
       
       if (event === 'SIGNED_OUT') {
         console.log('User signed out, cleaning up...');
-        await cleanupSession();
-      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        console.log('User signed in or token refreshed:', session?.user?.id);
-        setIsAuthenticated(true);
+        queryClient.clear();
+        localStorage.clear();
+        sessionStorage.clear();
+        navigate('/login');
+      } else if (event === 'SIGNED_IN') {
+        console.log('User signed in:', session?.user?.id);
+        queryClient.invalidateQueries();
+        navigate('/predict');
+      } else if (event === 'USER_UPDATED') {
+        console.log('User updated:', session?.user?.id);
         queryClient.invalidateQueries();
       }
     });
@@ -70,11 +35,7 @@ export const SessionHandler = ({ children }: SessionHandlerProps) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [queryClient]);
-
-  if (isLoading) {
-    return null;
-  }
+  }, [queryClient, navigate]);
 
   return <>{children}</>;
 };
