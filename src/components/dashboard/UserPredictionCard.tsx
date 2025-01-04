@@ -52,6 +52,7 @@ export function UserPredictionCard({
   const getCardClassName = () => {
     return cn(
       "game-card glass-card transition-all duration-300",
+      !gameResult && "game-card-upcoming",
       gameResult?.is_final && "game-card-finished",
       prediction.points_earned !== undefined && "game-card-prediction"
     );
@@ -60,7 +61,7 @@ export function UserPredictionCard({
   return (
     <>
       <Card className={getCardClassName()}>
-        <CardContent className="pt-10 px-8 pb-8 h-full">
+        <CardContent className="pt-6 px-4 sm:px-6 flex-1 flex flex-col">
           <div className="flex flex-col items-center justify-between h-full space-y-8">
             <GameInfo game={game} prediction={prediction} />
             <div className="w-full">

@@ -50,6 +50,7 @@ export function PredictionCard({ prediction }: PredictionCardProps) {
   const getCardClassName = () => {
     return cn(
       "game-card glass-card transition-all duration-300",
+      !gameResult && "game-card-upcoming",
       gameResult?.is_final && "game-card-finished",
       prediction.points_earned !== undefined && "game-card-prediction"
     );
