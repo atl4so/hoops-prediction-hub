@@ -34,30 +34,57 @@ const Admin = () => {
     <div className="space-y-8">
       <AdminHeader />
       <AdminStats />
-      <Tabs defaultValue="games" className="space-y-6">
-        <TabsList className="grid grid-cols-5 w-full">
-          <TabsTrigger value="games">Games</TabsTrigger>
-          <TabsTrigger value="rounds">Rounds</TabsTrigger>
-          <TabsTrigger value="teams">Teams</TabsTrigger>
-          <TabsTrigger value="results">Results</TabsTrigger>
-          <TabsTrigger value="background">Background</TabsTrigger>
-        </TabsList>
-        <TabsContent value="games" className="space-y-4">
-          <GameManager />
-        </TabsContent>
-        <TabsContent value="rounds" className="space-y-4">
-          <RoundManager />
-        </TabsContent>
-        <TabsContent value="teams" className="space-y-4">
-          <TeamsList />
-        </TabsContent>
-        <TabsContent value="results" className="space-y-4">
-          <GameResults />
-        </TabsContent>
-        <TabsContent value="background" className="space-y-4">
-          <BackgroundSettings />
-        </TabsContent>
-      </Tabs>
+      <div className="card p-6">
+        <Tabs defaultValue="games" className="space-y-6">
+          <TabsList className="grid grid-cols-5 w-full bg-accent">
+            <TabsTrigger 
+              value="games"
+              className="data-[state=active]:bg-primary data-[state=active]:text-white"
+            >
+              Games
+            </TabsTrigger>
+            <TabsTrigger 
+              value="rounds"
+              className="data-[state=active]:bg-primary data-[state=active]:text-white"
+            >
+              Rounds
+            </TabsTrigger>
+            <TabsTrigger 
+              value="teams"
+              className="data-[state=active]:bg-primary data-[state=active]:text-white"
+            >
+              Teams
+            </TabsTrigger>
+            <TabsTrigger 
+              value="results"
+              className="data-[state=active]:bg-primary data-[state=active]:text-white"
+            >
+              Results
+            </TabsTrigger>
+            <TabsTrigger 
+              value="background"
+              className="data-[state=active]:bg-primary data-[state=active]:text-white"
+            >
+              Background
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="games" className="space-y-4">
+            <GameManager />
+          </TabsContent>
+          <TabsContent value="rounds" className="space-y-4">
+            <RoundManager />
+          </TabsContent>
+          <TabsContent value="teams" className="space-y-4">
+            <TeamsList />
+          </TabsContent>
+          <TabsContent value="results" className="space-y-4">
+            <GameResults />
+          </TabsContent>
+          <TabsContent value="background" className="space-y-4">
+            <BackgroundSettings />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };
