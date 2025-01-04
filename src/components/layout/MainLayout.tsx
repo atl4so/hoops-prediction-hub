@@ -24,7 +24,7 @@ export function MainLayout({ children }: MainLayoutProps) {
   });
 
   return (
-    <div className="min-h-screen flex flex-col w-full">
+    <div className="min-h-screen flex flex-col w-full relative">
       {activeBackground?.url && (
         <div 
           className="fixed inset-0 w-full h-full -z-10 bg-black"
@@ -33,7 +33,12 @@ export function MainLayout({ children }: MainLayoutProps) {
             overflow: 'hidden',
             touchAction: 'none',
             userSelect: 'none',
-            WebkitOverflowScrolling: 'touch'
+            WebkitOverflowScrolling: 'none',
+            WebkitTransform: 'translate3d(0,0,0)',
+            backfaceVisibility: 'hidden',
+            transform: 'translate3d(0,0,0)',
+            perspective: 1000,
+            willChange: 'transform'
           }}
         >
           <img 
@@ -50,16 +55,17 @@ export function MainLayout({ children }: MainLayoutProps) {
               maxHeight: '1080px',
               margin: '0 auto',
               left: '50%',
-              transform: 'translateX(-50%)',
               WebkitBackfaceVisibility: 'hidden',
-              WebkitTransform: 'translateX(-50%) translateZ(0)',
-              willChange: 'transform'
+              WebkitTransform: 'translate3d(-50%,0,0)',
+              transform: 'translate3d(-50%,0,0)',
+              willChange: 'transform',
+              perspective: 1000
             }}
           />
         </div>
       )}
       <AppHeader />
-      <main className="flex-1">
+      <main className="flex-1 relative">
         <div className="container mx-auto p-6">
           {children}
         </div>
