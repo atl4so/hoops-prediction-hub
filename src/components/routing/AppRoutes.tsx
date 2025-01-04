@@ -1,4 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useSession } from "@supabase/auth-helpers-react";
+
+// Pages
 import Index from "@/pages/Index";
 import Login from "@/pages/Login";
 import { RegisterForm } from "@/components/auth/RegisterForm";
@@ -7,10 +10,9 @@ import Admin from "@/pages/Admin";
 import Leaderboard from "@/pages/Leaderboard";
 import Predict from "@/pages/Predict";
 import Following from "@/pages/Following";
+import MyPredictions from "@/pages/MyPredictions";
 import Rules from "@/pages/Rules";
 import Terms from "@/pages/Terms";
-import MyPredictions from "@/pages/MyPredictions";
-import { useSession } from "@supabase/auth-helpers-react";
 
 export const AppRoutes = () => {
   const session = useSession();
@@ -18,7 +20,7 @@ export const AppRoutes = () => {
   return (
     <Routes>
       {/* Public routes */}
-      <Route path="/" element={!session ? <Index /> : <Navigate to="/predict" />} />
+      <Route path="/" element={<Index />} />
       <Route path="/login" element={!session ? <Login /> : <Navigate to="/predict" />} />
       <Route path="/register" element={!session ? <RegisterForm /> : <Navigate to="/predict" />} />
       <Route path="/terms" element={<Terms />} />

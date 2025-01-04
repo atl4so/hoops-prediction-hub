@@ -80,6 +80,14 @@ const Login = () => {
     }
   };
 
+  const handleCreateAccount = () => {
+    navigate("/register");
+  };
+
+  const handleBackToHome = () => {
+    navigate("/");
+  };
+
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-8 sm:px-6">
       <div className="w-full max-w-md">
@@ -154,7 +162,7 @@ const Login = () => {
               <Button 
                 variant="link" 
                 className="p-0 h-auto text-[#F97316] hover:text-[#F97316]/90" 
-                onClick={() => navigate("/register")}
+                onClick={handleCreateAccount}
               >
                 Create account
               </Button>
@@ -162,7 +170,7 @@ const Login = () => {
             <Button 
               variant="outline" 
               className="w-full"
-              onClick={() => navigate("/")}
+              onClick={handleBackToHome}
             >
               Back to Home
             </Button>
