@@ -54,10 +54,16 @@ export function useGamesData(userId?: string) {
 
         // Game state checks
         const isBeforeDeadline = now < deadline;
-        const hasNoFinalResult = !game.game_results?.some(r => r.is_final);
+        const gameResults = Array.isArray(game.game_results) 
+          ? game.game_results 
+          : game.game_results 
+            ? [game.game_results] 
+            : [];
+        const hasNoFinalResult = !gameResults.some(r => r.is_final);
 
         return {
           ...game,
+          game_results: gameResults,
           parsedDate: gameDate,
           deadline,
           notPredictedByUser,

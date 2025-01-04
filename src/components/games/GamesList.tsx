@@ -41,7 +41,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     gcTime: 1000 * 60 * 10,
   });
 
-  const { data: games, isLoading } = useGamesData();
+  const { data: games, isLoading } = useGamesData(userId);
 
   const availableGames = useMemo(() => {
     if (!games) return [];
@@ -54,7 +54,12 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
       const predictionDeadline = subHours(gameDate, 1);
       const notPredictedByUser = !userPredictions?.includes(game.id);
       const isBeforeDeadline = now < predictionDeadline;
-      const hasNoFinalResult = !game.game_results?.some(result => result.is_final);
+      const gameResults = Array.isArray(game.game_results) 
+        ? game.game_results 
+        : game.game_results 
+          ? [game.game_results] 
+          : [];
+      const hasNoFinalResult = !gameResults.some(result => result.is_final);
       
       console.log('Game:', game.id, {
         notPredictedByUser,
@@ -62,7 +67,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
         hasNoFinalResult,
         deadline: predictionDeadline,
         gameDate: game.game_date,
-        results: game.game_results,
+        results: gameResults,
         userPredictions
       });
       
