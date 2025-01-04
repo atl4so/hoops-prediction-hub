@@ -88,6 +88,25 @@
   .game-card-prediction {
     @apply from-orange-50/80 to-orange-100/40 dark:from-orange-500/10 dark:to-transparent;
   }
+
+  .basketball-court-pattern {
+    background-image: 
+      linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+    transform: perspective(1000px) rotateX(60deg);
+    opacity: 0.2;
+  }
+
+  .animated-line {
+    @apply absolute w-full h-[2px] bg-gradient-to-r from-transparent via-orange-400/30 to-transparent;
+    animation: line-move 8s linear infinite;
+  }
+
+  .animated-line-reverse {
+    @apply absolute w-full h-[2px] bg-gradient-to-r from-transparent via-orange-300/20 to-transparent;
+    animation: line-move-reverse 12s linear infinite;
+  }
 }
 
 @layer utilities {
@@ -116,5 +135,23 @@
   }
   75% {
     transform: translate(75px, -75px) scale(1.2);
+  }
+}
+
+@keyframes line-move {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+@keyframes line-move-reverse {
+  0% {
+    transform: translateY(100vh);
+  }
+  100% {
+    transform: translateY(-100%);
   }
 }
