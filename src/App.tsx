@@ -35,6 +35,7 @@ const App = () => {
             closeButton={false}
             richColors
             theme="light"
+            dismissible
           />
           <BrowserRouter>
             <SessionHandler>
