@@ -95,7 +95,7 @@ export function PredictionButton({
     <div className="space-y-2">
       <Button 
         onClick={handleClick}
-        className="w-full shadow-sm transition-all duration-300"
+        className="w-full shadow-sm transition-all duration-300 bg-primary hover:bg-primary/90 dark:bg-green-500 dark:hover:bg-green-400"
         disabled={!isPredictionAllowed() || !!prediction}
       >
         {getButtonText()}
