@@ -43,8 +43,8 @@ const GameCard = ({ prediction }: { prediction: PredictionData }) => {
   const finalResult = prediction.game.game_results?.[0];
   
   return (
-    <div className="bg-gray-50/80 rounded-lg p-1 relative min-h-[70px]">
-      <div className="text-[10px] font-medium mb-1 text-gray-700 truncate pr-4">
+    <div className="bg-gray-50/80 rounded-lg p-1 relative min-h-[60px]">
+      <div className="text-[10px] font-medium mb-1 text-gray-700 truncate pr-8">
         {homeTeamName} vs {awayTeamName}
       </div>
       <div className="flex flex-col gap-0.5">
@@ -88,29 +88,29 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
     : '';
 
   const containerClasses = cn(
-    "bg-white rounded-lg shadow-sm",
-    isDownload ? "w-[1200px]" : "w-full"
+    "bg-white rounded-lg shadow-sm w-full",
+    isDownload ? "w-[100vw] max-w-[1200px]" : "w-full"
   );
 
   return (
     <div className={containerClasses}>
       <div className="p-2">
         {/* Header */}
-        <div className="mb-2">
-          <h1 className="text-sm font-bold mb-0.5">
+        <div className="mb-1.5">
+          <h1 className="text-xs font-bold mb-0.5">
             euroleague.bet
           </h1>
           <div className="flex items-baseline gap-2 mb-0.5">
-            <span className="text-sm font-bold">Round {roundName}</span>
-            <span className="text-blue-600 text-xs">by @{userName}</span>
+            <span className="text-xs font-bold">Round {roundName}</span>
+            <span className="text-blue-600 text-[10px]">by @{userName}</span>
           </div>
           <p className="text-[10px] text-gray-500">{dateRange}</p>
         </div>
 
         {/* Total Score */}
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs text-gray-600">Total Score:</span>
-          <span className="text-lg font-bold text-orange-500">{totalPoints}</span>
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-[10px] text-gray-600">Total Score:</span>
+          <span className="text-base font-bold text-orange-500">{totalPoints}</span>
         </div>
         
         {/* Game Grid */}
@@ -124,7 +124,7 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="border-t border-gray-100 p-1.5 bg-gray-50">
+      <div className="border-t border-gray-100 p-1 bg-gray-50">
         <div className="flex items-center justify-between text-[10px]">
           <span className="text-gray-500">euroleague.bet</span>
           <div className="flex gap-2">
