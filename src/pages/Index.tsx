@@ -31,7 +31,7 @@ const Index = () => {
               onClick={() => navigate("/login")}
               variant="default"
               size="lg"
-              className="min-w-[120px] bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 dark:from-primary dark:to-primary/80 dark:hover:from-primary/90 dark:hover:to-primary/70 font-medium tracking-wide shadow-lg hover:shadow-xl transition-all duration-200"
+              className="min-w-[120px] bg-[#F97316] hover:bg-[#F97316]/90 font-medium tracking-wide shadow-lg hover:shadow-xl transition-all duration-200"
             >
               <User className="w-4 h-4 mr-2" />
               Login
@@ -40,7 +40,7 @@ const Index = () => {
               onClick={() => navigate("/register")}
               variant="outline"
               size="lg"
-              className="min-w-[120px] border-2 border-primary/20 hover:border-primary/30 hover:bg-primary/5 dark:hover:bg-primary/10 font-medium tracking-wide shadow-lg hover:shadow-xl transition-all duration-200"
+              className="min-w-[120px] border-2 border-[#F97316]/20 hover:border-[#F97316]/30 hover:bg-[#F97316]/5 font-medium tracking-wide shadow-lg hover:shadow-xl transition-all duration-200"
             >
               <Lock className="w-4 h-4 mr-2" />
               Register
@@ -54,28 +54,28 @@ const Index = () => {
           How It Works
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-          <div className="space-y-2 p-6 rounded-2xl bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 border border-primary/10 hover:border-primary/20">
-            <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 dark:from-primary dark:to-primary/90 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <span className="text-xl font-bold text-white dark:text-white">1</span>
+          <div className="space-y-2 p-6 rounded-2xl bg-[#222222] text-white backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 border border-white/10">
+            <div className="w-12 h-12 bg-[#F97316] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <span className="text-xl font-bold text-white">1</span>
             </div>
-            <h3 className="font-semibold text-foreground">Make Predictions</h3>
-            <p className="text-sm text-muted-foreground">Predict scores for upcoming Euroleague games</p>
+            <h3 className="font-semibold">Make Predictions</h3>
+            <p className="text-sm text-gray-300">Predict scores for upcoming Euroleague games</p>
           </div>
           
-          <div className="space-y-2 p-6 rounded-2xl bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 border border-primary/10 hover:border-primary/20">
-            <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 dark:from-primary dark:to-primary/90 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <span className="text-xl font-bold text-white dark:text-white">2</span>
+          <div className="space-y-2 p-6 rounded-2xl bg-[#222222] text-white backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 border border-white/10">
+            <div className="w-12 h-12 bg-[#F97316] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <span className="text-xl font-bold text-white">2</span>
             </div>
-            <h3 className="font-semibold text-foreground">Earn Points</h3>
-            <p className="text-sm text-muted-foreground">Get points based on prediction accuracy</p>
+            <h3 className="font-semibold">Earn Points</h3>
+            <p className="text-sm text-gray-300">Get points based on prediction accuracy</p>
           </div>
           
-          <div className="space-y-2 p-6 rounded-2xl bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 border border-primary/10 hover:border-primary/20">
-            <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 dark:from-primary dark:to-primary/90 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <span className="text-xl font-bold text-white dark:text-white">3</span>
+          <div className="space-y-2 p-6 rounded-2xl bg-[#222222] text-white backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 border border-white/10">
+            <div className="w-12 h-12 bg-[#F97316] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <span className="text-xl font-bold text-white">3</span>
             </div>
-            <h3 className="font-semibold text-foreground">Compete & Win</h3>
-            <p className="text-sm text-muted-foreground">Rise through the rankings and compete with friends</p>
+            <h3 className="font-semibold">Compete & Win</h3>
+            <p className="text-sm text-gray-300">Rise through the rankings and compete with friends</p>
           </div>
         </div>
       </div>

@@ -68,8 +68,7 @@ const Login = () => {
         toast("Welcome back!", {
           description: "You have successfully logged in.",
           duration: 3000,
-          className: "cursor-pointer",
-          dismissible: true,
+          className: "bg-[#F97316] text-white",
         });
         navigate("/dashboard");
       }
@@ -82,32 +81,32 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-b from-background to-background/95 px-4 py-8 sm:px-6">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-8 sm:px-6">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8 mt-8">
+        <div className="text-center mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight leading-relaxed pb-2">
             euroleague.bet
           </h1>
         </div>
 
-        <Card className="w-full shadow-lg">
+        <Card className="w-full shadow-lg bg-[#222222] text-white border-white/10">
           <CardHeader className="space-y-1 pb-4">
             <CardTitle className="text-xl text-center">Sign In</CardTitle>
-            <CardDescription className="text-center">
+            <CardDescription className="text-center text-gray-300">
               Enter your credentials to access your account
             </CardDescription>
           </CardHeader>
           <CardContent>
             {error && (
-              <Alert variant="destructive" className="mb-4">
+              <Alert variant="destructive" className="mb-4 bg-red-500/10 text-red-400 border-red-500/20">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-gray-200">Email</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                   <Input
                     id="email"
                     type="email"
@@ -118,14 +117,14 @@ const Login = () => {
                       setFormData({ ...formData, email: e.target.value });
                     }}
                     required
-                    className="pl-10"
+                    className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-400"
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" className="text-gray-200">Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Lock className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                   <Input
                     id="password"
                     type="password"
@@ -136,19 +135,27 @@ const Login = () => {
                       setFormData({ ...formData, password: e.target.value });
                     }}
                     required
-                    className="pl-10"
+                    className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-400"
                   />
                 </div>
               </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button 
+                type="submit" 
+                className="w-full bg-[#F97316] hover:bg-[#F97316]/90" 
+                disabled={isLoading}
+              >
                 {isLoading ? "Signing in..." : "Sign in"}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex flex-col space-y-2 pt-0">
-            <div className="text-sm text-center text-muted-foreground">
+            <div className="text-sm text-center text-gray-300">
               New to euroleague.bet?{" "}
-              <Button variant="link" className="p-0 h-auto" onClick={() => navigate("/register")}>
+              <Button 
+                variant="link" 
+                className="p-0 h-auto text-[#F97316] hover:text-[#F97316]/90" 
+                onClick={() => navigate("/register")}
+              >
                 Create account
               </Button>
             </div>
