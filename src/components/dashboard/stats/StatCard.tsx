@@ -20,10 +20,9 @@ export function StatCard({
   return (
     <Card 
       className={cn(
-        "group transition-all duration-300 hover:shadow-lg",
+        "group transition-all duration-300",
         "hover:scale-[1.02] hover:-translate-y-0.5",
-        "dark:bg-[#0B1616] dark:border-border/50",
-        "opacity-0" // Start invisible for animation
+        "animate-in"
       )}
       style={{
         animationDelay: `${delay * 0.1}s`,
