@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Lock, Mail } from "lucide-react";
 import { normalizeEmail } from "@/utils/validation";
 
@@ -79,22 +80,20 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-8 sm:px-6">
-      <div className="w-full max-w-md">
-        <div className="space-y-6">
-          <div className="space-y-2 text-center">
-            <h1 className="text-3xl font-bold">Sign In</h1>
-            <p className="text-muted-foreground">
-              Enter your credentials to access your account
-            </p>
-          </div>
-
+    <div className="flex flex-col min-h-[80vh] items-center justify-center px-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl text-center">Sign In</CardTitle>
+          <CardDescription className="text-center">
+            Enter your credentials to access your account
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
           {error && (
-            <Alert variant="destructive">
+            <Alert variant="destructive" className="mb-4">
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -136,15 +135,23 @@ const Login = () => {
               {isLoading ? "Signing in..." : "Sign in"}
             </Button>
           </form>
-
+        </CardContent>
+        <CardFooter className="flex flex-col space-y-4">
           <div className="text-sm text-center text-muted-foreground">
             New to euroleague.bet?{" "}
             <Button variant="link" className="p-0 h-auto" onClick={() => navigate("/register")}>
               Create account
             </Button>
           </div>
-        </div>
-      </div>
+          <Button 
+            variant="outline" 
+            className="w-full"
+            onClick={() => navigate("/")}
+          >
+            Back to Home
+          </Button>
+        </CardFooter>
+      </Card>
     </div>
   );
 };
