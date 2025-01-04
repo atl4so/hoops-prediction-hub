@@ -38,17 +38,10 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const cleanupSession = async () => {
       try {
-        // Clear any stale data
+        console.log('Cleaning up session...');
         localStorage.clear();
         sessionStorage.clear();
-        
-        // Force sign out to clear any invalid sessions
-        try {
-          await supabase.auth.signOut({ scope: 'global' });
-        } catch (error) {
-          console.log('Global sign out error (expected if no session):', error);
-        }
-        
+        queryClient.clear();
         setIsAuthenticated(false);
       } catch (error) {
         console.error('Session cleanup error:', error);
@@ -60,17 +53,34 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
-          if (error.message.includes('session_not_found')) {
-            console.log('Session not found, cleaning up...');
+          console.error('Session check error:', error);
+          if (error.message.includes('refresh_token_not_found') || 
+              error.message.includes('session_not_found')) {
             await cleanupSession();
             return;
           }
           throw error;
         }
+
+        if (!session) {
+          console.log('No session found');
+          await cleanupSession();
+          return;
+        }
+
+        // Verify the session is still valid
+        const { data: { user }, error: refreshError } = await supabase.auth.getUser();
         
-        setIsAuthenticated(!!session);
+        if (refreshError || !user) {
+          console.error('User verification failed:', refreshError);
+          await cleanupSession();
+          return;
+        }
+
+        setIsAuthenticated(true);
+        console.log('Session verified for user:', user.id);
       } catch (error) {
-        console.error('Session check error:', error);
+        console.error('Session verification error:', error);
         toast.error("Session error. Please try logging in again.");
         await cleanupSession();
       } finally {
@@ -83,15 +93,19 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, !!session);
       
-      if (event === 'SIGNED_OUT') {
-        console.log('User signed out, cleaning up...');
-        queryClient.clear();
-        localStorage.clear();
-        sessionStorage.clear();
-        setIsAuthenticated(false);
+      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+        console.log('User signed out or deleted, cleaning up...');
+        await cleanupSession();
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         setIsAuthenticated(true);
         queryClient.invalidateQueries();
+      } else if (event === 'INITIAL_SESSION') {
+        if (session) {
+          setIsAuthenticated(true);
+          queryClient.invalidateQueries();
+        } else {
+          await cleanupSession();
+        }
       }
     });
 
