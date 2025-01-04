@@ -48,12 +48,10 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     const now = new Date();
     return games.filter(game => {
       const predictionDeadline = subHours(game.parsedDate, 1);
-      
-      const hasNoFinalResult = !game.game_results?.some(result => result.is_final);
-      const isBeforeDeadline = now < predictionDeadline;
       const notPredictedByUser = !userPredictions?.includes(game.id);
+      const isBeforeDeadline = now < predictionDeadline;
       
-      return hasNoFinalResult && isBeforeDeadline && notPredictedByUser;
+      return isBeforeDeadline && notPredictedByUser;
     });
   }, [games, userPredictions]);
 
