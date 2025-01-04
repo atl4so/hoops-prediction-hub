@@ -45,37 +45,33 @@ export const DownloadPredictionsButton = ({
       const tempDiv = document.createElement("div");
       tempDiv.style.position = "absolute";
       tempDiv.style.left = "-9999px";
+      tempDiv.style.width = "1200px";
+      tempDiv.style.backgroundColor = "#ffffff";
       document.body.appendChild(tempDiv);
 
-      const root = document.createElement("div");
-      root.style.width = "1200px";
-      root.style.backgroundColor = "#f8f9fa";
-      tempDiv.appendChild(root);
-
-      const previewContent = (
-        <PredictionsPreview
-          userName={userName}
-          roundName={roundName}
-          predictions={predictions}
-          isDownload={true}
-        />
-      );
-
       const { createRoot } = await import('react-dom/client');
-      const reactRoot = createRoot(root);
+      const reactRoot = createRoot(tempDiv);
+      
       await new Promise<void>(resolve => {
-        reactRoot.render(previewContent);
+        reactRoot.render(
+          <PredictionsPreview
+            userName={userName}
+            roundName={roundName}
+            predictions={predictions}
+            isDownload={true}
+          />
+        );
         setTimeout(resolve, 2000);
       });
 
-      const canvas = await html2canvas(root, {
+      const canvas = await html2canvas(tempDiv, {
         scale: 2,
-        backgroundColor: "#f8f9fa",
+        backgroundColor: "#ffffff",
         logging: false,
         useCORS: true,
         allowTaint: true,
         width: 1200,
-        height: 630,
+        height: tempDiv.offsetHeight,
       });
 
       const image = canvas.toDataURL("image/png", 1.0);
