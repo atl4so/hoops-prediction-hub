@@ -1,6 +1,31 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+interface PredictionData {
+  id: string;
+  prediction_home_score: number;
+  prediction_away_score: number;
+  points_earned?: number;
+  game: {
+    id: string;
+    game_date: string;
+    round_id: string;
+    home_team: {
+      name: string;
+      logo_url: string;
+    };
+    away_team: {
+      name: string;
+      logo_url: string;
+    };
+    game_results?: Array<{
+      home_score: number;
+      away_score: number;
+      is_final?: boolean;
+    }>;
+  };
+}
+
 export function useUserRoundPredictions(userId: string, roundId: string, enabled: boolean = true) {
   return useQuery({
     queryKey: ["user-round-predictions", userId, roundId],
@@ -11,11 +36,9 @@ export function useUserRoundPredictions(userId: string, roundId: string, enabled
         .from('predictions')
         .select(`
           id,
-          prediction: (
-            prediction_home_score,
-            prediction_away_score,
-            points_earned
-          ),
+          prediction_home_score,
+          prediction_away_score,
+          points_earned,
           game:games!inner (
             id,
             game_date,
@@ -47,7 +70,7 @@ export function useUserRoundPredictions(userId: string, roundId: string, enabled
       console.log('Raw predictions data:', data);
 
       // Transform the data to match the expected format
-      const transformedData = data.map(item => ({
+      const transformedData = (data as PredictionData[]).map(item => ({
         id: item.id,
         game: {
           ...item.game,
@@ -58,9 +81,9 @@ export function useUserRoundPredictions(userId: string, roundId: string, enabled
               : []
         },
         prediction: {
-          prediction_home_score: item.prediction.prediction_home_score,
-          prediction_away_score: item.prediction.prediction_away_score,
-          points_earned: item.prediction.points_earned
+          prediction_home_score: item.prediction_home_score,
+          prediction_away_score: item.prediction_away_score,
+          points_earned: item.points_earned
         }
       }));
 
