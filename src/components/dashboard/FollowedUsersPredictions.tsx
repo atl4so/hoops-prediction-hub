@@ -12,7 +12,7 @@ export function FollowedUsersPredictions() {
   const { data: predictions = [], isLoading, isError, refetch } = usePredictions(followedIds);
 
   useEffect(() => {
-    console.log('Current followed IDs:', followedIds);
+    console.log('Setting up subscriptions with followed IDs:', followedIds);
     
     const channel = supabase
       .channel('dashboard-updates')

@@ -10,6 +10,24 @@ export function usePredictions(followedIds: string[]) {
 
       console.log('Fetching predictions for users:', followedIds);
 
+      // First, let's verify the user exists and has predictions
+      const { data: userPredictions, error: countError } = await supabase
+        .from("predictions")
+        .select("id, user_id")
+        .in("user_id", followedIds);
+
+      if (countError) {
+        console.error("Error checking predictions:", countError);
+        throw countError;
+      }
+
+      console.log('Found predictions count by user:', 
+        userPredictions.reduce((acc, pred) => {
+          acc[pred.user_id] = (acc[pred.user_id] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>)
+      );
+
       const { data, error } = await supabase
         .from("predictions")
         .select(`
@@ -46,18 +64,23 @@ export function usePredictions(followedIds: string[]) {
             )
           )
         `)
-        .in("user_id", followedIds)
-        .order('created_at', { ascending: false });
+        .in("user_id", followedIds);
       
       if (error) {
         console.error("Error fetching predictions:", error);
         throw error;
       }
 
-      console.log('Raw predictions data:', data);
+      console.log('Raw predictions data:', JSON.stringify(data, null, 2));
 
       const mappedPredictions = data.map((item): Prediction => {
-        console.log(`Processing prediction for user ${item.user.display_name}:`, item);
+        console.log(`Processing prediction for user ${item.user.display_name}:`, {
+          id: item.id,
+          userId: item.user.id,
+          gameId: item.game.id,
+          roundId: item.game.round.id,
+          hasGameResults: item.game.game_results?.length > 0
+        });
         
         const prediction = {
           id: item.id,
@@ -95,22 +118,17 @@ export function usePredictions(followedIds: string[]) {
           points_earned: item.points_earned
         };
 
-        console.log(`Mapped prediction for ${item.user.display_name}:`, {
-          gameDate: prediction.game.game_date,
-          gameResults: prediction.game.game_results,
-          points: prediction.points_earned,
-          roundId: prediction.game.round.id,
-          roundName: prediction.game.round.name
-        });
-
         return prediction;
       });
 
-      console.log('Total mapped predictions:', mappedPredictions.length);
-      console.log('Predictions by user:', mappedPredictions.reduce((acc, pred) => {
-        acc[pred.user.display_name] = (acc[pred.user.display_name] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>));
+      console.log('Predictions summary:', mappedPredictions.map(p => ({
+        userId: p.user.id,
+        userName: p.user.display_name,
+        gameDate: p.game.game_date,
+        roundName: p.game.round.name,
+        hasResults: p.game.game_results?.length > 0,
+        points: p.points_earned
+      })));
 
       return mappedPredictions;
     },
