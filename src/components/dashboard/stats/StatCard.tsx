@@ -20,9 +20,9 @@ export function StatCard({
   return (
     <Card 
       className={cn(
+        "game-card glass-card",
         "group transition-all duration-300",
-        "hover:scale-[1.02] hover:-translate-y-0.5",
-        "animate-in"
+        "hover:scale-[1.02] hover:-translate-y-0.5"
       )}
       style={{
         animationDelay: `${delay * 0.1}s`,
