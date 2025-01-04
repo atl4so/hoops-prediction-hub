@@ -32,7 +32,6 @@ export function MainLayout({ children }: MainLayoutProps) {
           className="w-full h-full object-cover"
           style={{ opacity: activeBackground ? activeBackground.opacity / 100 : 0.6 }}
         />
-        <div className="absolute inset-0 bg-[#F1F0FB] bg-opacity-70" />
       </div>
       <AppHeader />
       <main className="flex-1">
