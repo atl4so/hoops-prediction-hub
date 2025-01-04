@@ -13,9 +13,20 @@ export function useGamesData() {
         .select(`
           id,
           game_date,
-          home_team:teams!games_home_team_id_fkey(id, name, logo_url),
-          away_team:teams!games_away_team_id_fkey(id, name, logo_url),
-          round:rounds(id, name),
+          home_team:teams!games_home_team_id_fkey(
+            id, 
+            name, 
+            logo_url
+          ),
+          away_team:teams!games_away_team_id_fkey(
+            id, 
+            name, 
+            logo_url
+          ),
+          round:rounds(
+            id,
+            name
+          ),
           game_results(
             home_score,
             away_score,
@@ -35,27 +46,33 @@ export function useGamesData() {
       }
       
       // Process games and parse dates
-      const processedGames = data.map((game): Game => ({
-        id: game.id,
-        game_date: game.game_date,
-        parsedDate: new Date(game.game_date),
-        home_team: {
-          id: game.home_team[0].id,
-          name: game.home_team[0].name,
-          logo_url: game.home_team[0].logo_url
-        },
-        away_team: {
-          id: game.away_team[0].id,
-          name: game.away_team[0].name,
-          logo_url: game.away_team[0].logo_url
-        },
-        round: {
-          id: game.round[0].id,
-          name: game.round[0].name
-        },
-        // Ensure game_results is always an array
-        game_results: Array.isArray(game.game_results) ? game.game_results : (game.game_results ? [game.game_results] : [])
-      }));
+      const processedGames = data.map((game): Game => {
+        console.log('Processing game:', game.id, {
+          date: game.game_date,
+          results: game.game_results
+        });
+
+        return {
+          id: game.id,
+          game_date: game.game_date,
+          parsedDate: new Date(game.game_date),
+          home_team: {
+            id: game.home_team[0].id,
+            name: game.home_team[0].name,
+            logo_url: game.home_team[0].logo_url
+          },
+          away_team: {
+            id: game.away_team[0].id,
+            name: game.away_team[0].name,
+            logo_url: game.away_team[0].logo_url
+          },
+          round: {
+            id: game.round[0].id,
+            name: game.round[0].name
+          },
+          game_results: Array.isArray(game.game_results) ? game.game_results : []
+        };
+      });
 
       console.log('Processed games:', processedGames);
       return processedGames;
