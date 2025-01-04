@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { toast } from "sonner";
 import { Mail, Lock, User } from "lucide-react";
 import { normalizeEmail } from "@/utils/validation";
 
@@ -71,10 +70,6 @@ export function RegisterForm() {
           setError("Failed to create user profile. Please try again.");
           return;
         }
-
-        toast.success("Account created successfully!", {
-          description: "Please check your email to confirm your account.",
-        });
         
         navigate("/login");
       }

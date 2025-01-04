@@ -13,7 +13,6 @@ import MyPredictions from "@/pages/MyPredictions";
 export const AppRoutes = () => {
   return (
     <Routes>
-      {/* Make login the default route */}
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<RegisterForm />} />
