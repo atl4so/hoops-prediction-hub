@@ -33,7 +33,7 @@ export function LeaderboardTabs() {
   return (
     <Tabs defaultValue="all-time" className="space-y-8">
       <section className="text-center space-y-4 animate-fade-in">
-        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-black dark:text-black">
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
           Leaderboard
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">

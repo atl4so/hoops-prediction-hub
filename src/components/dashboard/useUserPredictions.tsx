@@ -1,128 +1,131 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Database } from "@/integrations/supabase/types";
+import { useEffect, useRef } from "react";
+import { toast } from "sonner";
 
-interface PredictionsByRound {
-  [key: string]: {
-    roundId: string;
-    roundName: string;
-    predictions: Array<{
-      id: string;
-      game: {
-        id: string;
-        game_date: string;
-        home_team: {
-          name: string;
-          logo_url: string;
-        };
-        away_team: {
-          name: string;
-          logo_url: string;
-        };
-        game_results: Array<{
-          home_score: number;
-          away_score: number;
-          is_final: boolean;
-        }>;
-      };
-      prediction: {
-        prediction_home_score: number;
-        prediction_away_score: number;
-        points_earned?: number;
-      };
-    }>;
-  };
-}
+export function useUserPredictions(userId: string | null) {
+  const session = useSession();
+  const supabase = useSupabaseClient<Database>();
+  const queryClient = useQueryClient();
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
-export function useUserPredictions(userId: string | undefined) {
-  const { data: predictions, isLoading } = useQuery({
-    queryKey: ["predictions", userId],
+  useEffect(() => {
+    if (!userId) return;
+
+    const setupChannel = () => {
+      // Clean up existing channel if any
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+      }
+
+      console.log('Setting up predictions channel...');
+      const channel = supabase
+        .channel(`predictions-${userId}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'predictions',
+            filter: `user_id=eq.${userId}`
+          },
+          (payload) => {
+            console.log('Predictions changed:', payload);
+            queryClient.invalidateQueries({ queryKey: ['userPredictions', userId] });
+          }
+        )
+        .subscribe((status) => {
+          console.log('Predictions subscription status:', status);
+        });
+
+      channelRef.current = channel;
+      return channel;
+    };
+
+    const channel = setupChannel();
+
+    return () => {
+      console.log('Cleaning up predictions channel...');
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
+  }, [userId, queryClient, supabase]);
+
+  return useQuery({
+    queryKey: ['userPredictions', userId],
     queryFn: async () => {
-      if (!userId) return [];
+      console.log('Fetching predictions for user:', userId);
+      if (!userId) return null;
 
-      const { data, error } = await supabase
-        .from("predictions")
-        .select(`
-          id,
-          prediction_home_score,
-          prediction_away_score,
-          points_earned,
-          game:games (
+      try {
+        const { data, error } = await supabase
+          .from('predictions')
+          .select(`
             id,
-            game_date,
-            round:rounds (
+            prediction_home_score,
+            prediction_away_score,
+            points_earned,
+            game:games (
               id,
-              name
-            ),
-            home_team:teams!games_home_team_id_fkey (
-              id,
-              name,
-              logo_url
-            ),
-            away_team:teams!games_away_team_id_fkey (
-              id,
-              name,
-              logo_url
-            ),
-            game_results (
-              home_score,
-              away_score,
-              is_final
+              game_date,
+              round_id,
+              round:rounds (
+                id,
+                name
+              ),
+              home_team:teams!games_home_team_id_fkey (
+                id,
+                name,
+                logo_url
+              ),
+              away_team:teams!games_away_team_id_fkey (
+                id,
+                name,
+                logo_url
+              ),
+              game_results (
+                home_score,
+                away_score,
+                is_final
+              )
             )
-          )
-        `)
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
+          `)
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error("Error fetching predictions:", error);
-        return [];
+        if (error) {
+          console.error('Error fetching predictions:', error);
+          throw error;
+        }
+
+        const transformedData = data.map(prediction => ({
+          ...prediction,
+          game: {
+            ...prediction.game,
+            game_results: Array.isArray(prediction.game.game_results) 
+              ? prediction.game.game_results 
+              : prediction.game.game_results 
+                ? [prediction.game.game_results]
+                : []
+          }
+        }));
+
+        return transformedData;
+      } catch (error) {
+        console.error('Error in predictions query:', error);
+        toast.error("Failed to load predictions", {
+          id: 'predictions-error'
+        });
+        throw error;
       }
-
-      return data;
     },
-    enabled: !!userId,
+    enabled: !!userId && !!session,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes instead of 1
+    gcTime: 1000 * 60 * 10, // Keep unused data for 10 minutes
+    refetchOnWindowFocus: false, // Disable automatic refetch on window focus
+    refetchOnMount: true,
+    retry: 2
   });
-
-  // Transform predictions into grouped format
-  const predictionsByRound = predictions?.reduce((acc: PredictionsByRound, pred) => {
-    const roundId = pred.game.round.id;
-    const roundName = pred.game.round.name;
-    
-    if (!acc[roundId]) {
-      acc[roundId] = {
-        roundId,
-        roundName,
-        predictions: []
-      };
-    }
-    
-    acc[roundId].predictions.push({
-      id: pred.id,
-      game: {
-        id: pred.game.id,
-        game_date: pred.game.game_date,
-        home_team: {
-          name: pred.game.home_team.name,
-          logo_url: pred.game.home_team.logo_url
-        },
-        away_team: {
-          name: pred.game.away_team.name,
-          logo_url: pred.game.away_team.logo_url
-        },
-        game_results: Array.isArray(pred.game.game_results) ? pred.game.game_results : []
-      },
-      prediction: {
-        prediction_home_score: pred.prediction_home_score,
-        prediction_away_score: pred.prediction_away_score,
-        points_earned: pred.points_earned
-      }
-    });
-    
-    return acc;
-  }, {});
-
-  return {
-    predictionsByRound: predictionsByRound || {},
-    isLoading
-  };
 }

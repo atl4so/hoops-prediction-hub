@@ -1,27 +1,72 @@
+import { useEffect } from "react";
+import { useSession } from "@supabase/auth-helpers-react";
+import { useNavigate } from "react-router-dom";
 import { DashboardPredictions } from "@/components/dashboard/sections/DashboardPredictions";
 import { useUserPredictions } from "@/components/dashboard/useUserPredictions";
-import { useSessionContext } from "@supabase/auth-helpers-react";
+import { toast } from "sonner";
 
 export default function MyPredictions() {
-  const { session } = useSessionContext();
-  const { predictionsByRound } = useUserPredictions(session?.user?.id);
+  const session = useSession();
+  const navigate = useNavigate();
+  const userId = session?.user?.id;
+  const { data: predictions, isError: predictionsError } = useUserPredictions(userId);
+
+  useEffect(() => {
+    if (!session) {
+      navigate("/login");
+      return;
+    }
+  }, [session, navigate]);
+
+  if (predictionsError) {
+    toast.error("Failed to load predictions");
+    return null;
+  }
+
+  // Group predictions by round
+  const predictionsByRound = predictions?.reduce((acc, prediction) => {
+    const roundId = prediction.game.round.id;
+    if (!acc[roundId]) {
+      acc[roundId] = {
+        roundId,
+        roundName: prediction.game.round.name,
+        predictions: []
+      };
+    }
+    acc[roundId].predictions.push({
+      id: prediction.id,
+      game: {
+        id: prediction.game.id,
+        game_date: prediction.game.game_date,
+        round: prediction.game.round,
+        home_team: prediction.game.home_team,
+        away_team: prediction.game.away_team,
+        game_results: prediction.game.game_results
+      },
+      prediction: {
+        prediction_home_score: prediction.prediction_home_score,
+        prediction_away_score: prediction.prediction_away_score,
+        points_earned: prediction.points_earned
+      }
+    });
+    return acc;
+  }, {} as Record<string, { roundId: string; roundName: string; predictions: Array<any> }>) || {};
 
   return (
-    <div className="container max-w-5xl mx-auto py-6 px-4 sm:px-6 lg:px-8 animate-fade-in">
-      <section className="text-center space-y-4 mb-8">
-        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-black dark:text-black">
+    <div className="space-y-8 animate-fade-in">
+      <section className="text-center space-y-3 sm:space-y-4">
+        <h1 className="text-2xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
           My Predictions
         </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
           Track your predictions and their outcomes
         </p>
       </section>
-      {session?.user && (
-        <DashboardPredictions
-          predictionsByRound={predictionsByRound}
-          userName={session.user.email || ""}
-        />
-      )}
+
+      <DashboardPredictions
+        predictionsByRound={predictionsByRound}
+        userName={session?.user?.email?.split('@')[0] || "User"}
+      />
     </div>
   );
 }
