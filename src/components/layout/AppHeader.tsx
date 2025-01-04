@@ -18,7 +18,8 @@ export function AppHeader() {
     navigate('/login');
   };
 
-  const isAdmin = profile?.is_admin || false;
+  // Check if user is admin by email
+  const isAdmin = user?.email === 'likasvy@gmail.com';
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
