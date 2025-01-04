@@ -57,15 +57,13 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
     enabled: !!selectedRound,
     retry: 3,
     retryDelay: 1000,
-    meta: {
-      errorMessage: "Failed to load rankings. Please try again later."
-    },
-    onSettled: (data, error) => {
-      if (error) {
-        toast.error("Failed to load rankings. Please try again later.");
-      }
-    }
+    gcTime: 1000 * 60 * 5
   });
+
+  // Handle error state with toast
+  if (isError) {
+    toast.error("Failed to load rankings. Please try again later.");
+  }
 
   if (!selectedRound) {
     return (
