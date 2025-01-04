@@ -41,8 +41,8 @@ export default function Following() {
   if (!session) return null;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 sm:py-8 space-y-6 sm:space-y-8 animate-fade-in">
-      <section className="text-center space-y-4">
+    <div className="max-w-3xl mx-auto px-4 py-8 sm:py-10 space-y-8 sm:space-y-10 animate-fade-in">
+      <section className="text-center space-y-4 sm:space-y-5">
         <h1 className="text-3xl sm:text-4xl font-display font-bold tracking-tight bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
           Following
         </h1>
