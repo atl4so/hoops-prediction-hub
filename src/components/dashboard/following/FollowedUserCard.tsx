@@ -21,9 +21,9 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
   return (
     <Card className="group hover:shadow-md transition-all duration-300 bg-background/50 backdrop-blur-sm border-muted/50 animate-fade-in">
       <CardContent className="p-4 sm:p-6">
-        <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-wrap sm:flex-nowrap">
           <Avatar 
-            className="h-10 w-10 sm:h-12 sm:w-12 ring-2 ring-primary/10 ring-offset-2 ring-offset-background transition-all duration-300 group-hover:ring-primary/20"
+            className="h-10 w-10 sm:h-12 sm:w-12 ring-2 ring-primary/10 ring-offset-2 ring-offset-background transition-all duration-300 group-hover:ring-primary/20 shrink-0"
             onClick={() => onUserClick({
               id: user.id,
               display_name: user.display_name
@@ -37,9 +37,9 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
             </AvatarFallback>
           </Avatar>
           
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 order-3 sm:order-2 w-full sm:w-auto">
             <p 
-              className="font-semibold truncate cursor-pointer hover:text-primary transition-colors text-sm sm:text-base"
+              className="font-semibold break-words cursor-pointer hover:text-primary transition-colors text-sm sm:text-base"
               onClick={() => onUserClick({
                 id: user.id,
                 display_name: user.display_name
@@ -57,11 +57,13 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
             </div>
           </div>
           
-          <FollowButton
-            userId={user.id}
-            isFollowing={isFollowing}
-            onFollowChange={onFollowChange}
-          />
+          <div className="ml-auto order-2 sm:order-3">
+            <FollowButton
+              userId={user.id}
+              isFollowing={isFollowing}
+              onFollowChange={onFollowChange}
+            />
+          </div>
         </div>
       </CardContent>
     </Card>
