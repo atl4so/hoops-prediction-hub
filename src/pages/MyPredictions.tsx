@@ -53,10 +53,12 @@ export default function MyPredictions() {
   }, {} as Record<string, { roundId: string; roundName: string; predictions: Array<any> }>) || {};
 
   return (
-    <div className="space-y-8">
-      <section className="text-center space-y-4">
-        <h1 className="text-4xl font-bold tracking-tight">My Predictions</h1>
-        <p className="text-muted-foreground">
+    <div className="space-y-8 animate-fade-in">
+      <section className="text-center space-y-3 sm:space-y-4">
+        <h1 className="text-2xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
+          My Predictions
+        </h1>
+        <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
           Track your predictions and their outcomes
         </p>
       </section>

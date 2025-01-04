@@ -2,8 +2,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Terms() {
   return (
-    <div className="container max-w-4xl mx-auto space-y-8 py-8">
-      <h1 className="text-4xl font-bold text-center mb-8">Terms & Conditions</h1>
+    <div className="container max-w-4xl mx-auto space-y-8 py-8 animate-fade-in">
+      <section className="text-center space-y-3 sm:space-y-4">
+        <h1 className="text-2xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
+          Terms & Conditions
+        </h1>
+        <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
+          Important information about using euroleague.bet
+        </p>
+      </section>
       
       <Card>
         <CardHeader>

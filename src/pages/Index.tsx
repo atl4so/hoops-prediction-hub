@@ -15,10 +15,10 @@ const Index = () => {
   }, [session, navigate]);
 
   return (
-    <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-8 relative overflow-hidden px-4 sm:px-6">
+    <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-8 relative overflow-hidden px-4 sm:px-6 animate-fade-in">
       <div className="text-center space-y-6 max-w-3xl mx-auto z-10">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-relaxed mb-4 font-display mt-8">
-          <div className="py-4 text-black dark:text-white">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-relaxed mb-4 font-display mt-8">
+          <div className="py-4 bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
             euroleague.bet
           </div>
         </h1>
