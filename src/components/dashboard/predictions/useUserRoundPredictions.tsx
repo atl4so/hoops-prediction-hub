@@ -70,7 +70,7 @@ export function useUserRoundPredictions(userId: string, roundId: string, enabled
       console.log('Raw predictions data:', data);
 
       // Transform the data to match the expected format
-      const transformedData = (data as PredictionData[]).map(item => ({
+      const transformedData = (data || []).map(item => ({
         id: item.id,
         game: {
           ...item.game,
