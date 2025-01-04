@@ -48,8 +48,7 @@ export const DownloadPredictionsButton = ({
       document.body.appendChild(tempDiv);
 
       const root = document.createElement("div");
-      // Adjusted width for better mobile display
-      root.style.width = isMobile ? "1200px" : "2000px";
+      root.style.width = "1200px";
       root.style.backgroundColor = "#f8f9fa";
       tempDiv.appendChild(root);
 
@@ -75,8 +74,8 @@ export const DownloadPredictionsButton = ({
         logging: false,
         useCORS: true,
         allowTaint: true,
-        width: isMobile ? 1200 : 2000,
-        height: predictions.length * (isMobile ? 200 : 250) + 300,
+        width: 1200,
+        height: 630,
       });
 
       const image = canvas.toDataURL("image/png", 1.0);
