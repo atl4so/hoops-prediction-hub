@@ -27,15 +27,15 @@ export function MainLayout({ children }: MainLayoutProps) {
     <div className="min-h-screen flex flex-col w-full relative">
       {activeBackground?.url && (
         <div 
-          className="fixed inset-0 w-full h-full -z-10"
           style={{ 
             position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+            top: '-10vh', // Extend beyond viewport
+            left: '-10vw', // Extend beyond viewport
+            right: '-10vw', // Extend beyond viewport
+            bottom: '-10vh', // Extend beyond viewport
             overflow: 'hidden',
             pointerEvents: 'none',
+            zIndex: -1,
           }}
         >
           <div
@@ -52,11 +52,11 @@ export function MainLayout({ children }: MainLayoutProps) {
             src={activeBackground.url} 
             alt="Background" 
             style={{ 
-              position: 'fixed',
+              position: 'absolute',
               top: '50%',
               left: '50%',
-              width: '100%',
-              height: '100%',
+              width: '120vw', // Larger than viewport
+              height: '120vh', // Larger than viewport
               transform: 'translate(-50%, -50%)',
               objectFit: 'cover',
               opacity: activeBackground.opacity / 100,
