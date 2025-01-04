@@ -58,7 +58,7 @@ export default function Predict() {
   return (
     <div className="space-y-8 animate-fade-in">
       <section className="text-center space-y-3 sm:space-y-4">
-        <h1 className="text-2xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
+        <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-foreground">
           Make Predictions
         </h1>
         <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">

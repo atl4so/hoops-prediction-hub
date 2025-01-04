@@ -17,10 +17,8 @@ const Index = () => {
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-8 relative overflow-hidden px-4 sm:px-6 animate-fade-in">
       <div className="text-center space-y-6 max-w-3xl mx-auto z-10">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-relaxed mb-4 font-display mt-8">
-          <div className="py-4 bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
-            euroleague.bet
-          </div>
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-relaxed mb-4 font-display text-foreground">
+          euroleague.bet
         </h1>
 
         <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
@@ -52,7 +50,7 @@ const Index = () => {
       </div>
 
       <div className="w-full max-w-3xl px-4 py-12 text-center">
-        <h2 className="text-2xl font-bold mb-6 text-black dark:text-white">
+        <h2 className="text-2xl font-bold mb-6 text-foreground">
           How It Works
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
@@ -60,7 +58,7 @@ const Index = () => {
             <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 dark:from-primary dark:to-primary/90 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
               <span className="text-xl font-bold text-white dark:text-white">1</span>
             </div>
-            <h3 className="font-semibold">Make Predictions</h3>
+            <h3 className="font-semibold text-foreground">Make Predictions</h3>
             <p className="text-sm text-muted-foreground">Predict scores for upcoming Euroleague games</p>
           </div>
           
@@ -68,7 +66,7 @@ const Index = () => {
             <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 dark:from-primary dark:to-primary/90 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
               <span className="text-xl font-bold text-white dark:text-white">2</span>
             </div>
-            <h3 className="font-semibold">Earn Points</h3>
+            <h3 className="font-semibold text-foreground">Earn Points</h3>
             <p className="text-sm text-muted-foreground">Get points based on prediction accuracy</p>
           </div>
           
@@ -76,7 +74,7 @@ const Index = () => {
             <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 dark:from-primary dark:to-primary/90 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
               <span className="text-xl font-bold text-white dark:text-white">3</span>
             </div>
-            <h3 className="font-semibold">Compete & Win</h3>
+            <h3 className="font-semibold text-foreground">Compete & Win</h3>
             <p className="text-sm text-muted-foreground">Rise through the rankings and compete with friends</p>
           </div>
         </div>
