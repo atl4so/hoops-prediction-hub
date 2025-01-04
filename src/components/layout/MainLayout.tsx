@@ -29,13 +29,19 @@ export function MainLayout({ children }: MainLayoutProps) {
         <div 
           style={{ 
             position: 'fixed',
-            top: '-10vh', // Extend beyond viewport
-            left: '-10vw', // Extend beyond viewport
-            right: '-10vw', // Extend beyond viewport
-            bottom: '-10vh', // Extend beyond viewport
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: '100vh',
             overflow: 'hidden',
             pointerEvents: 'none',
             zIndex: -1,
+            transform: 'translateZ(0)',
+            backfaceVisibility: 'hidden',
+            perspective: 1000,
+            willChange: 'transform',
           }}
         >
           <div
@@ -52,15 +58,17 @@ export function MainLayout({ children }: MainLayoutProps) {
             src={activeBackground.url} 
             alt="Background" 
             style={{ 
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              width: '120vw', // Larger than viewport
-              height: '120vh', // Larger than viewport
-              transform: 'translate(-50%, -50%)',
+              position: 'fixed',
+              top: '-20vh',
+              left: '-20vw',
+              width: '140vw',
+              height: '140vh',
               objectFit: 'cover',
               opacity: activeBackground.opacity / 100,
               pointerEvents: 'none',
+              transform: 'translateZ(0)',
+              backfaceVisibility: 'hidden',
+              willChange: 'transform',
             }}
           />
         </div>
