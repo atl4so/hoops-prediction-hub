@@ -36,13 +36,13 @@
   }
  
   .dark {
-    --background: 150 30% 6%;
+    --background: 150 30% 3%;
     --foreground: 150 10% 97%;
  
-    --card: 150 30% 8%;
+    --card: 150 30% 4%;
     --card-foreground: 150 10% 97%;
  
-    --popover: 150 30% 8%;
+    --popover: 150 30% 4%;
     --popover-foreground: 150 10% 97%;
  
     --primary: 24 90% 50%;
@@ -60,8 +60,8 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 150 10% 97%;
  
-    --border: 150 30% 20%;
-    --input: 150 30% 20%;
+    --border: 150 30% 10%;
+    --input: 150 30% 10%;
     --ring: 24 90% 50%;
   }
 }
@@ -71,7 +71,7 @@
 }
 
 body {
-  @apply bg-background text-foreground;
+  @apply bg-background text-foreground min-h-screen;
 }
 
 @layer components {
@@ -93,45 +93,45 @@ body {
   }
 
   .glass-card {
-    @apply bg-white/60 dark:bg-white/5 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg hover:shadow-xl transition-all duration-300;
+    @apply bg-white/60 dark:bg-green-950/20 backdrop-blur-md border border-white/20 dark:border-white/5 shadow-lg hover:shadow-xl transition-all duration-300;
   }
 
   .glass-input {
-    @apply bg-white/70 dark:bg-white/10 backdrop-blur-sm border-white/30 dark:border-white/20;
+    @apply bg-white/70 dark:bg-green-950/20 backdrop-blur-sm border-white/30 dark:border-white/10;
   }
 
   .glass-button {
-    @apply hover:bg-white/20 dark:hover:bg-white/10 transition-colors duration-200;
+    @apply hover:bg-white/20 dark:hover:bg-white/5 transition-colors duration-200;
   }
 
   .game-card {
-    @apply bg-gradient-to-br from-orange-100/90 to-orange-200/70 dark:from-green-800/30 dark:to-green-900/20 backdrop-blur-md;
+    @apply bg-gradient-to-br from-orange-100/90 to-orange-200/70 dark:from-green-950/30 dark:to-green-950/20 backdrop-blur-md border border-white/20 dark:border-white/5;
   }
 
   .game-card-upcoming {
-    @apply from-orange-100/90 to-orange-200/70 dark:from-green-800/30 dark:to-green-900/20;
+    @apply from-orange-100/90 to-orange-200/70 dark:from-green-950/30 dark:to-green-950/20;
   }
 
   .game-card-finished {
-    @apply from-orange-100/90 to-orange-200/70 dark:from-green-800/30 dark:to-green-900/20;
+    @apply from-orange-100/90 to-orange-200/70 dark:from-green-950/30 dark:to-green-950/20;
   }
 
   .game-card-prediction {
-    @apply from-orange-100/90 to-orange-200/70 dark:from-green-800/30 dark:to-green-900/20;
+    @apply from-orange-100/90 to-orange-200/70 dark:from-green-950/30 dark:to-green-950/20;
   }
 
   /* Selector and input styles */
   .select-trigger {
-    @apply bg-white/70 dark:bg-white/5 border-white/30 dark:border-white/10;
+    @apply bg-white/70 dark:bg-green-950/20 border-white/30 dark:border-white/10;
   }
 
   .select-content {
-    @apply bg-white/95 dark:bg-gray-950/90 backdrop-blur-md border-white/20 dark:border-white/10;
+    @apply bg-white/95 dark:bg-green-950/90 backdrop-blur-md border-white/20 dark:border-white/10;
   }
 
   /* Dialog and modal styles */
   .dialog-content {
-    @apply bg-white/95 dark:bg-gray-950/90 backdrop-blur-md border-white/20 dark:border-white/10;
+    @apply bg-white/95 dark:bg-green-950/90 backdrop-blur-md border-white/20 dark:border-white/10;
   }
 
   /* Button styles */
@@ -140,6 +140,11 @@ body {
   }
 
   .button-secondary {
-    @apply bg-white/10 dark:bg-white/5 backdrop-blur-sm border border-white/20 dark:border-white/10;
+    @apply bg-white/10 dark:bg-green-950/20 backdrop-blur-sm border border-white/20 dark:border-white/10;
+  }
+
+  /* Auth form styles */
+  .auth-form {
+    @apply bg-white/95 dark:bg-green-950/20 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-lg p-6;
   }
 }
