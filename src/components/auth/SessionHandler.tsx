@@ -8,18 +8,8 @@ export const SessionHandler = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
 
   useEffect(() => {
-    const publicRoutes = ['/login', '/register'];
-    const isPublicRoute = publicRoutes.includes(location.pathname);
-
-    if (!isLoading) {
-      // If user is authenticated and tries to access auth routes, redirect to predict
-      if (session && isPublicRoute) {
-        navigate('/predict');
-      }
-      // If user is not authenticated and tries to access protected routes, redirect to login
-      else if (!session && !isPublicRoute && location.pathname !== '/') {
-        navigate('/login');
-      }
+    if (!isLoading && !session && location.pathname !== '/') {
+      navigate('/');
     }
   }, [session, isLoading, navigate, location.pathname]);
 
