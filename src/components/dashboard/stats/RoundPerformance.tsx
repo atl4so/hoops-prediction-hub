@@ -83,7 +83,12 @@ export function RoundPerformance({ userId }: RoundPerformanceProps) {
   });
 
   return (
-    <Card className="game-card glass-card">
+    <Card className={cn(
+      "bg-gradient-to-br from-white/80 to-white/40 dark:from-green-950/40 dark:to-green-900/20",
+      "border border-white/20 dark:border-white/10",
+      "backdrop-blur-md shadow-lg hover:shadow-xl",
+      "transition-all duration-300"
+    )}>
       <CardContent className="p-6">
         <h3 className="text-lg font-semibold mb-4">Round Performance</h3>
         <div className="space-y-4">
@@ -103,8 +108,10 @@ export function RoundPerformance({ userId }: RoundPerformanceProps) {
           {selectedRound && (
             <div className="grid grid-cols-2 gap-4 animate-fade-in">
               <div className={cn(
-                "flex items-center gap-2 p-4 rounded-lg",
-                "game-card glass-card"
+                "bg-gradient-to-br from-white/80 to-white/40 dark:from-green-950/40 dark:to-green-900/20",
+                "border border-white/20 dark:border-white/10",
+                "backdrop-blur-md shadow-lg",
+                "flex items-center gap-2 p-4 rounded-lg"
               )}>
                 <Target className="h-5 w-5 text-[#F97316]" />
                 <div>
@@ -120,8 +127,10 @@ export function RoundPerformance({ userId }: RoundPerformanceProps) {
               </div>
 
               <div className={cn(
-                "flex items-center gap-2 p-4 rounded-lg",
-                "game-card glass-card"
+                "bg-gradient-to-br from-white/80 to-white/40 dark:from-green-950/40 dark:to-green-900/20",
+                "border border-white/20 dark:border-white/10",
+                "backdrop-blur-md shadow-lg",
+                "flex items-center gap-2 p-4 rounded-lg"
               )}>
                 <Trophy className="h-5 w-5 text-[#F97316]" />
                 <div>

@@ -20,7 +20,9 @@ export function StatCard({
   return (
     <Card 
       className={cn(
-        "game-card glass-card",
+        "bg-gradient-to-br from-white/80 to-white/40 dark:from-green-950/40 dark:to-green-900/20",
+        "border border-white/20 dark:border-white/10",
+        "backdrop-blur-md shadow-lg hover:shadow-xl",
         "group transition-all duration-300",
         "hover:scale-[1.02] hover:-translate-y-0.5"
       )}
