@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { format } from "date-fns";
+import { format, isValid } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -152,6 +152,11 @@ export function RoundManager() {
     setIsEditOpen(true);
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return isValid(date) ? format(date, "PPP") : "Invalid date";
+  };
+
   if (isLoading) return <div>Loading...</div>;
 
   return (
@@ -282,7 +287,7 @@ export function RoundManager() {
               <div>
                 <h4 className="font-medium">{round.name}</h4>
                 <p className="text-sm text-muted-foreground">
-                  {format(new Date(round.start_date), "PPP")} - {format(new Date(round.end_date), "PPP")}
+                  {formatDate(round.start_date)} - {formatDate(round.end_date)}
                 </p>
               </div>
               <div className="flex gap-2">
