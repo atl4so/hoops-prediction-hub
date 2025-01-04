@@ -7,6 +7,7 @@ import { MobileMenu } from "./MobileMenu";
 import { DesktopNav } from "./DesktopNav";
 import { navigationItems } from "./NavigationItems";
 import { ProfileMenu } from "../profile/ProfileMenu";
+import { Settings } from "lucide-react";
 
 export function AppHeader() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -27,7 +28,7 @@ export function AppHeader() {
             {
               title: "Admin",
               href: "/admin",
-              icon: () => <span className="h-4 w-4">⚙️</span>,
+              icon: Settings,
             },
           ];
         }
