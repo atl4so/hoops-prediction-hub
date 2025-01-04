@@ -21,15 +21,13 @@ export function StatCard({
     <Card className={cn(
       "group transition-all duration-300 hover:shadow-lg",
       "hover:scale-[1.02] hover:-translate-y-0.5",
-      highlight ? "bg-primary/5 dark:bg-primary/10" : ""
+      "bg-card dark:bg-[#0B1616]"
     )}>
       <CardContent className="p-4 sm:p-6">
         <div className="flex flex-col items-center text-center space-y-4">
           <div className={cn(
             "rounded-xl p-3 sm:p-4 transition-colors duration-300",
-            highlight 
-              ? "bg-primary text-primary-foreground group-hover:bg-primary/90" 
-              : "bg-muted group-hover:bg-muted/80"
+            "bg-[#F97316] text-primary-foreground"
           )}>
             <Icon className="h-6 w-6 sm:h-8 sm:w-8" />
           </div>

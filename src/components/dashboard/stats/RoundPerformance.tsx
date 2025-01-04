@@ -83,7 +83,7 @@ export function RoundPerformance({ userId }: RoundPerformanceProps) {
   });
 
   return (
-    <Card className="bg-card">
+    <Card className="bg-card dark:bg-[#0B1616]">
       <CardContent className="p-6">
         <h3 className="text-lg font-semibold mb-4">Round Performance</h3>
         <div className="space-y-4">
@@ -104,9 +104,9 @@ export function RoundPerformance({ userId }: RoundPerformanceProps) {
             <div className="grid grid-cols-2 gap-4 animate-fade-in">
               <div className={cn(
                 "flex items-center gap-2 p-4 rounded-lg",
-                "bg-card/50 dark:bg-card/50 border"
+                "bg-card/50 dark:bg-[#0B1616] border border-border/50"
               )}>
-                <Target className="h-5 w-5 text-primary" />
+                <Target className="h-5 w-5 text-[#F97316]" />
                 <div>
                   <p className="text-sm text-muted-foreground">Points</p>
                   <p className="text-lg font-semibold">
@@ -121,9 +121,9 @@ export function RoundPerformance({ userId }: RoundPerformanceProps) {
 
               <div className={cn(
                 "flex items-center gap-2 p-4 rounded-lg",
-                "bg-card/50 dark:bg-card/50 border"
+                "bg-card/50 dark:bg-[#0B1616] border border-border/50"
               )}>
-                <Trophy className="h-5 w-5 text-primary" />
+                <Trophy className="h-5 w-5 text-[#F97316]" />
                 <div>
                   <p className="text-sm text-muted-foreground">Rank</p>
                   <p className="text-lg font-semibold">
