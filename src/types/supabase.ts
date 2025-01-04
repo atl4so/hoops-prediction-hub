@@ -76,3 +76,10 @@ export interface UserPrediction {
   };
   game: Game;
 }
+
+export interface BackgroundSetting {
+  id: string;
+  url: string;
+  opacity: number;
+  is_active: boolean;
+}

@@ -7,7 +7,7 @@ import { RoundManager } from "@/components/admin/RoundManager";
 import { TeamsList } from "@/components/admin/TeamsList";
 import { GameResults } from "@/components/admin/GameResults";
 import { AdminStats } from "@/components/admin/stats/AdminStats";
-import { DesignAssets } from "@/components/admin/DesignAssets";
+import { BackgroundSettings } from "@/components/admin/BackgroundSettings";
 
 const Admin = () => {
   const session = useSession();
@@ -34,7 +34,7 @@ const Admin = () => {
       <AdminHeader />
       <div className="grid gap-8">
         <AdminStats />
-        <DesignAssets />
+        <BackgroundSettings />
         <GameManager />
         <RoundManager />
         <TeamsList />

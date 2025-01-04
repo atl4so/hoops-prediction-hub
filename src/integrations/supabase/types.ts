@@ -9,6 +9,33 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      background_settings: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean | null
+          opacity: number
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          opacity?: number
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          opacity?: number
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       game_results: {
         Row: {
           away_score: number
