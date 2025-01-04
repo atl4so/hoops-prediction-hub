@@ -5,7 +5,7 @@ import { DashboardPredictions } from "@/components/dashboard/sections/DashboardP
 import { useUserPredictions } from "@/components/dashboard/useUserPredictions";
 import { toast } from "sonner";
 import { useUserProfile } from "@/components/dashboard/UserProfile";
-import { RoundSelector } from "@/components/dashboard/predictions/RoundSelector";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 
 export default function MyPredictions() {
@@ -50,6 +50,10 @@ export default function MyPredictions() {
     return acc;
   }, {} as Record<string, { roundId: string; roundName: string; predictions: Array<any> }>) || {};
 
+  // Get unique rounds for the selector
+  const rounds = Object.values(predictionsByRound)
+    .sort((a, b) => parseInt(b.roundName) - parseInt(a.roundName));
+
   // Filter predictions by selected round
   const filteredPredictions = selectedRound
     ? { [selectedRound]: predictionsByRound[selectedRound] }
@@ -90,11 +94,19 @@ export default function MyPredictions() {
       </section>
 
       <div className="w-[240px] mx-auto">
-        <RoundSelector
-          selectedRound={selectedRound}
-          onRoundChange={setSelectedRound}
-          className="w-full"
-        />
+        <Select value={selectedRound} onValueChange={setSelectedRound}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a round" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">All Rounds</SelectItem>
+            {rounds.map((round) => (
+              <SelectItem key={round.roundId} value={round.roundId}>
+                Round {round.roundName}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <DashboardPredictions

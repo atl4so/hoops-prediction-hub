@@ -47,8 +47,12 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
     
     const now = new Date();
     return games.filter(game => {
-      const predictionDeadline = subHours(game.parsedDate, 1);
+      const predictionDeadline = subHours(new Date(game.game_date), 1);
       
+      // Show games that:
+      // 1. Don't have a final result yet
+      // 2. Are before the prediction deadline
+      // 3. Haven't been predicted by the user yet
       const hasNoFinalResult = !game.game_results?.some(result => result.is_final);
       const isBeforeDeadline = now < predictionDeadline;
       const notPredictedByUser = !userPredictions?.includes(game.id);
