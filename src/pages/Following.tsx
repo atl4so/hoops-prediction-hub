@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FollowingSection } from "@/components/dashboard/FollowingSection";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { Search } from "lucide-react";
 
 export default function Following() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -40,21 +41,24 @@ export default function Following() {
   if (!session) return null;
 
   return (
-    <div className="space-y-8">
-      <section className="text-center space-y-4">
-        <h1 className="text-4xl font-bold tracking-tight">Following</h1>
-        <p className="text-muted-foreground">
-          Keep track of users you follow and their predictions
+    <div className="space-y-8 max-w-3xl mx-auto px-4">
+      <section className="text-center space-y-4 animate-fade-in">
+        <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
+          Following
+        </h1>
+        <p className="text-muted-foreground max-w-lg mx-auto">
+          Keep track of users you follow and compare your predictions with theirs
         </p>
       </section>
 
-      <div className="max-w-sm mx-auto mb-8">
+      <div className="relative max-w-sm mx-auto">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           type="search"
           placeholder="Search users by name..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full"
+          className="pl-9 w-full bg-background/50 backdrop-blur-sm"
         />
       </div>
 

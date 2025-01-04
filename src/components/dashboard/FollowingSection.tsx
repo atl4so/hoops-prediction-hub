@@ -7,10 +7,10 @@ interface FollowingSectionProps {
 
 export function FollowingSection({ searchQuery }: FollowingSectionProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div className="flex items-center gap-2">
-        <Users className="h-6 w-6 text-primary" />
-        <h2 className="text-2xl font-semibold tracking-tight">Following</h2>
+        <Users className="h-5 w-5 text-primary" />
+        <h2 className="text-xl font-semibold tracking-tight">Users You Follow</h2>
       </div>
       <FollowedUsersList searchQuery={searchQuery} />
     </div>

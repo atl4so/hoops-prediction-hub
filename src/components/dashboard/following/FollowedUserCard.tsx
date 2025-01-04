@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FollowButton } from "@/components/users/FollowButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface FollowedUserCardProps {
   user: {
@@ -18,21 +19,21 @@ interface FollowedUserCardProps {
 
 export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowing }: FollowedUserCardProps) {
   return (
-    <Card>
+    <Card className="group hover:shadow-md transition-all duration-300 bg-background/50 backdrop-blur-sm border-muted/50">
       <CardContent className="pt-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-8 w-8">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 flex-1 min-w-0">
+            <Avatar className="h-12 w-12 ring-2 ring-primary/10 ring-offset-2 ring-offset-background transition-all duration-300 group-hover:ring-primary/20">
               {user.avatar_url ? (
                 <AvatarImage src={user.avatar_url} alt={user.display_name} />
               ) : null}
               <AvatarFallback>
-                <User className="h-4 w-4" />
+                <User className="h-6 w-6" />
               </AvatarFallback>
             </Avatar>
-            <div className="space-y-1">
+            <div className="space-y-1 flex-1 min-w-0">
               <p 
-                className="font-semibold cursor-pointer hover:text-primary transition-colors"
+                className="font-semibold truncate cursor-pointer hover:text-primary transition-colors"
                 onClick={() => onUserClick({
                   id: user.id,
                   display_name: user.display_name
@@ -40,13 +41,13 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
               >
                 {user.display_name}
               </p>
-              <div className="text-sm text-muted-foreground space-y-0.5">
-                <p className="flex items-center gap-1">
-                  Total Points: <span className="font-medium text-foreground">{user.total_points}</span>
-                </p>
-                <p className="flex items-center gap-1">
-                  PPG: <span className="font-medium text-foreground">{user.points_per_game?.toFixed(1)}</span>
-                </p>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="secondary" className="font-medium">
+                  {user.total_points} pts
+                </Badge>
+                <Badge variant="outline" className="font-medium">
+                  {user.points_per_game?.toFixed(1)} PPG
+                </Badge>
               </div>
             </div>
           </div>
