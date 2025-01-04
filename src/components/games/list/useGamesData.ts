@@ -48,7 +48,7 @@ export function useGamesData() {
           id: game.round[0].id,
           name: game.round[0].name
         },
-        game_results: game.game_results
+        game_results: game.game_results ? [game.game_results].flat() : []
       }));
 
       // Split into finished and unfinished games
