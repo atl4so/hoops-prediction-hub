@@ -8,7 +8,23 @@ interface PredictionsByRound {
     roundName: string;
     predictions: Array<{
       id: string;
-      game: Game;
+      game: {
+        id: string;
+        game_date: string;
+        home_team: {
+          name: string;
+          logo_url: string;
+        };
+        away_team: {
+          name: string;
+          logo_url: string;
+        };
+        game_results: Array<{
+          home_score: number;
+          away_score: number;
+          is_final: boolean;
+        }>;
+      };
       prediction: {
         prediction_home_score: number;
         prediction_away_score: number;
@@ -83,7 +99,19 @@ export function useUserPredictions(userId: string | undefined) {
     
     acc[roundId].predictions.push({
       id: pred.id,
-      game: pred.game,
+      game: {
+        id: pred.game.id,
+        game_date: pred.game.game_date,
+        home_team: {
+          name: pred.game.home_team.name,
+          logo_url: pred.game.home_team.logo_url
+        },
+        away_team: {
+          name: pred.game.away_team.name,
+          logo_url: pred.game.away_team.logo_url
+        },
+        game_results: pred.game.game_results || []
+      },
       prediction: {
         prediction_home_score: pred.prediction_home_score,
         prediction_away_score: pred.prediction_away_score,
