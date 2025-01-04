@@ -1,76 +1,50 @@
-import { CollapsibleRoundSection } from "@/components/dashboard/CollapsibleRoundSection";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { RoundSelector } from "@/components/dashboard/predictions/RoundSelector";
+import { UserPredictionsGrid } from "@/components/dashboard/predictions/UserPredictionsGrid";
+import { DownloadPredictionsButton } from "@/components/dashboard/DownloadPredictionsButton";
 
 interface DashboardPredictionsProps {
-  predictionsByRound: Record<string, {
-    roundId: string;
-    roundName: string;
-    predictions: Array<{
-      id: string;
-      game: {
-        id: string;
-        game_date: string;
-        round: {
-          id: string;
-          name: string;
-        };
-        home_team: {
-          id: string;
-          name: string;
-          logo_url: string;
-        };
-        away_team: {
-          id: string;
-          name: string;
-          logo_url: string;
-        };
-        game_results?: Array<{
-          home_score: number;
-          away_score: number;
-          is_final: boolean;
-        }>;
-      };
-      prediction: {
-        prediction_home_score: number;
-        prediction_away_score: number;
-        points_earned?: number;
-      } | null;
-    }>;
-  }>;
+  predictionsByRound: Record<
+    string,
+    { roundId: string; roundName: string; predictions: Array<any> }
+  >;
   userName: string;
 }
 
-export function DashboardPredictions({ predictionsByRound, userName }: DashboardPredictionsProps) {
-  if (!predictionsByRound) return null;
+export function DashboardPredictions({
+  predictionsByRound,
+  userName,
+}: DashboardPredictionsProps) {
+  const rounds = Object.values(predictionsByRound);
+  const latestRound = rounds[0]?.roundId || "";
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold tracking-tight">My Predictions</h2>
-      <div className="rounded-lg border">
-        <Accordion type="single" collapsible className="w-full">
-          {Object.values(predictionsByRound).map((roundData) => (
-            <AccordionItem key={roundData.roundId} value={roundData.roundId}>
-              <AccordionTrigger className="rounded-lg px-4 hover:no-underline data-[state=open]:bg-accent/50 hover:bg-accent/50">
-                <span className="text-sm font-medium">
-                  Round {roundData.roundName}
-                </span>
-              </AccordionTrigger>
-              <AccordionContent className="pt-4 px-4">
-                <CollapsibleRoundSection
-                  roundId={roundData.roundId}
-                  roundName={roundData.roundName}
-                  predictions={roundData.predictions}
-                  userName={userName}
-                />
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+      <div className="flex items-center justify-between">
+        <RoundSelector
+          selectedRound={latestRound}
+          onRoundChange={(roundId) => {
+            const element = document.getElementById(`round-${roundId}`);
+            if (element) {
+              element.scrollIntoView({ behavior: "smooth" });
+            }
+          }}
+          className="w-[200px]"
+        />
+        <DownloadPredictionsButton
+          predictions={predictionsByRound}
+          userName={userName}
+        />
+      </div>
+
+      <div className="space-y-8">
+        {rounds.map(({ roundId, roundName, predictions }) => (
+          <UserPredictionsGrid
+            key={roundId}
+            roundId={roundId}
+            roundName={roundName}
+            predictions={predictions}
+          />
+        ))}
       </div>
     </div>
   );
