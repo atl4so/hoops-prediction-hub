@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MobileMenu } from "./MobileMenu";
 import { DesktopNav } from "./DesktopNav";
@@ -13,7 +12,6 @@ export function AppHeader() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [menuItems, setMenuItems] = useState([]);
   const navigate = useNavigate();
-  const { toast } = useToast();
   const location = useLocation();
 
   useEffect(() => {
@@ -69,18 +67,9 @@ export function AppHeader() {
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to sign out. Please try again.",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Signed out",
-        description: "You have been successfully signed out.",
-      });
-      navigate("/");
+      console.error('Failed to sign out:', error);
     }
+    navigate("/");
   };
 
   if (location.pathname === "/" && !isAuthenticated) {

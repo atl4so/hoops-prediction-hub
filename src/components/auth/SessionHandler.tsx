@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 
 interface SessionHandlerProps {
   children: React.ReactNode;
@@ -46,7 +45,6 @@ export const SessionHandler = ({ children }: SessionHandlerProps) => {
         setIsAuthenticated(!!session);
       } catch (error) {
         console.error('Session check error:', error);
-        toast.error("Session error. Please try logging in again.");
         await cleanupSession();
       } finally {
         setIsLoading(false);
