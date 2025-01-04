@@ -46,8 +46,8 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
   return (
     <Card className="w-full min-h-full bg-[#f8f9fa] overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-white border-b">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between px-3 py-2 bg-white border-b">
+        <div className="flex items-center gap-1">
           <span className={cn(
             "font-bold",
             isDownload ? "text-2xl" : "text-xl"
@@ -61,7 +61,7 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
             isDownload ? "text-xl" : "text-lg"
           )}>@{userName}</span>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <span className={cn(
             "font-medium text-gray-600",
             isDownload ? "text-xl" : "text-lg"
@@ -80,7 +80,7 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
       </div>
 
       {/* Predictions list */}
-      <div className="p-3 space-y-2">
+      <div className="p-2 space-y-1.5">
         {predictions.map((pred, index) => {
           const gameDate = new Date(pred.game.game_date);
           const formattedDate = format(gameDate, 'MMM d');
@@ -90,24 +90,24 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
             <div 
               key={index} 
               className={cn(
-                "bg-white rounded-lg p-3 space-y-2 shadow-sm",
-                isDownload && "p-4"
+                "bg-white rounded-lg p-2 space-y-1.5 shadow-sm",
+                isDownload && "p-3"
               )}
             >
               <div className="flex justify-between items-center">
                 <span className={cn(
                   "font-semibold",
-                  isDownload ? "text-xl" : "text-base"
+                  isDownload ? "text-2xl" : "text-lg"
                 )}>
                   {pred.game.home_team.name} vs {pred.game.away_team.name}
                 </span>
                 <span className={cn(
                   "text-gray-500",
-                  isDownload ? "text-lg" : "text-sm"
+                  isDownload ? "text-xl" : "text-base"
                 )}>{formattedDate}</span>
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex gap-2">
                 {/* Final Result */}
                 {finalResult && (
                   <div className="flex-1 bg-red-50/50 rounded-lg p-2">
@@ -118,12 +118,12 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
                       )} />
                       <span className={cn(
                         "text-gray-600",
-                        isDownload ? "text-lg" : "text-sm"
+                        isDownload ? "text-xl" : "text-base"
                       )}>Final</span>
                     </div>
                     <span className={cn(
                       "font-bold",
-                      isDownload ? "text-2xl" : "text-xl"
+                      isDownload ? "text-3xl" : "text-2xl"
                     )}>
                       {finalResult.home_score} - {finalResult.away_score}
                     </span>
@@ -139,12 +139,12 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
                     )} />
                     <span className={cn(
                       "text-gray-600",
-                      isDownload ? "text-lg" : "text-sm"
+                      isDownload ? "text-xl" : "text-base"
                     )}>Prediction</span>
                   </div>
                   <span className={cn(
                     "font-bold",
-                    isDownload ? "text-2xl" : "text-xl"
+                    isDownload ? "text-3xl" : "text-2xl"
                   )}>
                     {pred.prediction.prediction_home_score} - {pred.prediction.prediction_away_score}
                   </span>
@@ -161,7 +161,7 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
                     )} />
                     <span className={cn(
                       "text-orange-500 font-bold",
-                      isDownload ? "text-xl" : "text-lg"
+                      isDownload ? "text-2xl" : "text-xl"
                     )}>
                       {pred.prediction.points_earned} pts
                     </span>
@@ -174,7 +174,7 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="px-4 py-2 bg-white border-t">
+      <div className="px-3 py-1.5 bg-white border-t">
         <div className={cn(
           "flex items-center justify-center text-gray-500",
           isDownload ? "text-lg" : "text-base"
