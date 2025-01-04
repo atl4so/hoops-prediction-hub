@@ -122,10 +122,10 @@
   }
 
   .game-card-finished {
-    @apply from-blue-50/80 to-blue-100/40 dark:from-blue-500/10 dark:to-transparent;
+    @apply from-orange-50/80 to-orange-100/40 dark:from-orange-500/10 dark:to-transparent;
   }
 
   .game-card-prediction {
-    @apply from-green-50/80 to-green-100/40 dark:from-green-500/10 dark:to-transparent;
+    @apply from-orange-50/80 to-orange-100/40 dark:from-orange-500/10 dark:to-transparent;
   }
 }
