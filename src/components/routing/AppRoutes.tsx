@@ -4,7 +4,7 @@ import { useSession } from "@supabase/auth-helpers-react";
 // Pages
 import Index from "@/pages/Index";
 import Login from "@/pages/Login";
-import { RegisterForm } from "@/components/auth/RegisterForm";
+import Register from "@/pages/Register";
 import Overview from "@/pages/Overview";
 import Admin from "@/pages/Admin";
 import Leaderboard from "@/pages/Leaderboard";
@@ -22,7 +22,7 @@ export const AppRoutes = () => {
       {/* Public routes */}
       <Route path="/" element={<Index />} />
       <Route path="/login" element={!session ? <Login /> : <Navigate to="/predict" />} />
-      <Route path="/register" element={!session ? <RegisterForm /> : <Navigate to="/predict" />} />
+      <Route path="/register" element={!session ? <Register /> : <Navigate to="/predict" />} />
       <Route path="/terms" element={<Terms />} />
 
       {/* Protected routes */}
