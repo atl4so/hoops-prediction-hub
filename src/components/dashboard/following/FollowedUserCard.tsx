@@ -23,7 +23,7 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Card className="group hover:shadow-md transition-all duration-300 bg-background/50 backdrop-blur-sm border-muted/50 animate-fade-in">
+    <Card className="group hover:shadow-md transition-all duration-300 animate-fade-in">
       <CardContent className="p-5 sm:p-6">
         <div className="space-y-4">
           {/* Main row with avatar, name, and follow button */}
