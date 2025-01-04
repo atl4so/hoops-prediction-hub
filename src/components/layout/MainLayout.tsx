@@ -33,7 +33,6 @@ export function MainLayout({ children }: MainLayoutProps) {
             overflow: 'hidden',
             touchAction: 'none',
             userSelect: 'none',
-            WebkitOverflowScrolling: 'none',
             WebkitTransform: 'translate3d(0,0,0)',
             backfaceVisibility: 'hidden',
             transform: 'translate3d(0,0,0)',
