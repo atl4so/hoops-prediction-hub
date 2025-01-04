@@ -40,23 +40,23 @@ const GameCard = ({ prediction }: { prediction: PredictionData }) => {
   const finalScore = finalResult ? `${finalResult.home_score}-${finalResult.away_score}` : '';
   
   return (
-    <div className="bg-blue-50 rounded p-2 border border-blue-100">
-      <div className="text-xs font-medium mb-1 truncate text-gray-700">{gameTitle}</div>
-      <div className="flex justify-between items-center text-sm">
-        <div className="space-y-0.5">
+    <div className="bg-blue-50 rounded-lg p-4 border border-blue-100 w-full">
+      <div className="text-sm font-medium mb-2 text-gray-700">{gameTitle}</div>
+      <div className="flex justify-between items-center">
+        <div className="space-y-1">
           {finalResult && (
-            <div className="flex items-center gap-1">
-              <span className="text-emerald-600 text-xs font-medium">F</span>
-              <span className="font-bold text-gray-900">{finalScore}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-emerald-600 text-sm font-medium">F</span>
+              <span className="font-bold text-gray-900 text-base">{finalScore}</span>
             </div>
           )}
-          <div className="flex items-center gap-1">
-            <span className="text-blue-600 text-xs font-medium">P</span>
-            <span className="text-gray-600">{predictionScore}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-blue-600 text-sm font-medium">P</span>
+            <span className="text-gray-600 text-base">{predictionScore}</span>
           </div>
         </div>
         {prediction.prediction.points_earned !== undefined && (
-          <div className="text-orange-600 text-xs font-medium">
+          <div className="text-orange-600 text-sm font-bold">
             {prediction.prediction.points_earned}p
           </div>
         )}
@@ -81,56 +81,49 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
   const containerClasses = cn(
     "bg-gray-50",
     isDownload 
-      ? "h-[630px] w-[1200px]" 
-      : "w-full max-w-screen-lg mx-auto overflow-x-hidden"
-  );
-
-  const wrapperClasses = cn(
-    "bg-gray-50",
-    !isDownload && "scale-[0.6] sm:scale-[0.7] md:scale-[0.8] lg:scale-[0.9] origin-top transform-gpu"
+      ? "h-[1200px] w-[600px]" 
+      : "w-full max-w-[600px] mx-auto"
   );
 
   const contentClasses = cn(
-    "h-[630px] w-[1200px] mx-auto bg-gray-50",
+    "h-full w-full bg-gray-50 flex flex-col",
     !isDownload && "shadow-lg rounded-lg"
   );
 
   return (
     <div className={containerClasses}>
-      <div className={wrapperClasses}>
-        <div className={contentClasses}>
-          <div className="p-6 flex-1">
-            {/* Header */}
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-1">
-                  euroleague.bet Round {roundName}
-                  <span className="text-blue-600 font-medium ml-2 text-xl">by {userName}</span>
-                </h1>
-                <p className="text-gray-500 text-sm">{dateRange}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-gray-700">Total Score:</span>
-                <span className="text-3xl font-bold text-orange-500">{totalPoints}</span>
-              </div>
+      <div className={contentClasses}>
+        <div className="p-5 flex-1">
+          {/* Header */}
+          <div className="space-y-4 mb-6">
+            <div className="space-y-1">
+              <h1 className="text-xl font-bold text-gray-900 flex flex-wrap items-center gap-2">
+                euroleague.bet Round {roundName}
+                <span className="text-blue-600 font-medium text-lg">by {userName}</span>
+              </h1>
+              <p className="text-gray-500 text-sm">{dateRange}</p>
             </div>
-            
-            {/* Game Grid */}
-            <div className="grid grid-cols-3 gap-3">
-              {predictions.map((prediction, index) => (
-                <GameCard key={index} prediction={prediction} />
-              ))}
+            <div className="flex items-center gap-2 bg-orange-50 p-3 rounded-lg">
+              <span className="text-gray-700">Total Score:</span>
+              <span className="text-2xl font-bold text-orange-500">{totalPoints}</span>
             </div>
           </div>
           
-          {/* Footer */}
-          <div className="bg-gray-50 p-4">
-            <div className="flex justify-between items-center text-gray-500 text-sm">
-              <span className="font-medium">euroleague.bet</span>
-              <div className="flex items-center gap-2">
-                <span className="text-xs bg-gray-100 px-2 py-1 rounded">F = Final</span>
-                <span className="text-xs bg-gray-100 px-2 py-1 rounded">P = Prediction</span>
-              </div>
+          {/* Game Grid */}
+          <div className="space-y-3">
+            {predictions.map((prediction, index) => (
+              <GameCard key={index} prediction={prediction} />
+            ))}
+          </div>
+        </div>
+        
+        {/* Footer */}
+        <div className="bg-gray-50 p-5 border-t border-gray-100">
+          <div className="flex flex-col gap-2 items-start text-gray-500 text-sm">
+            <span className="font-medium">euroleague.bet</span>
+            <div className="flex flex-wrap gap-2">
+              <span className="text-xs bg-gray-100 px-2 py-1 rounded">F = Final</span>
+              <span className="text-xs bg-gray-100 px-2 py-1 rounded">P = Prediction</span>
             </div>
           </div>
         </div>
