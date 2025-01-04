@@ -10,8 +10,8 @@ import { Button } from "@/components/ui/button";
 
 interface NavigationItem {
   title: string;
+  href: string;
   icon: React.ComponentType<{ className?: string }>;
-  path: string;
 }
 
 interface MobileMenuProps {
@@ -36,7 +36,7 @@ export function MobileMenu({ menuItems, isAuthenticated, onLogout }: MobileMenuP
       <DropdownMenuContent align="start" className="w-[200px]">
         {menuItems.map((item) => (
           <DropdownMenuItem key={item.title} asChild>
-            <Link to={item.path} className="flex items-center gap-2">
+            <Link to={item.href} className="flex items-center gap-2">
               <item.icon className="h-4 w-4" />
               {item.title}
             </Link>

@@ -18,7 +18,6 @@ export function AppHeader() {
 
   useEffect(() => {
     const loadNavItems = async () => {
-      // If authenticated, show all items. For admin, add admin route
       let items = [...navigationItems];
       if (isAuthenticated) {
         const { data: { user } } = await supabase.auth.getUser();
@@ -33,12 +32,11 @@ export function AppHeader() {
           ];
         }
       } else {
-        // For non-authenticated users, only show public routes
         items = [
           {
             title: "Home",
             href: "/",
-            icon: navigationItems[0].icon, // Use Overview icon for home
+            icon: navigationItems[0].icon,
           },
           {
             title: "Leaderboard",
@@ -85,7 +83,6 @@ export function AppHeader() {
     }
   };
 
-  // Hide header on index page for non-authenticated users
   if (location.pathname === "/" && !isAuthenticated) {
     return null;
   }
