@@ -41,12 +41,25 @@ interface DashboardPredictionsProps {
 }
 
 export const DashboardPredictions = ({ predictionsByRound, userName }: DashboardPredictionsProps) => {
-  // Sort rounds by name in descending order (latest first)
-  const rounds = Object.values(predictionsByRound || {}).sort((a, b) => 
-    parseInt(b.roundName) - parseInt(a.roundName)
-  );
+  if (!predictionsByRound) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">No predictions found</p>
+      </div>
+    );
+  }
 
-  if (!rounds.length) {
+  // Convert predictionsByRound to array and filter out invalid entries
+  const rounds = Object.entries(predictionsByRound)
+    .map(([key, value]) => ({
+      roundId: value?.roundId || key,
+      roundName: value?.roundName || '',
+      predictions: value?.predictions || []
+    }))
+    .filter(round => round.predictions.length > 0)
+    .sort((a, b) => parseInt(b.roundName) - parseInt(a.roundName));
+
+  if (rounds.length === 0) {
     return (
       <div className="text-center py-8">
         <p className="text-muted-foreground">No predictions found</p>
