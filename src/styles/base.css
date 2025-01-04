@@ -84,12 +84,12 @@
 
 @layer components {
   .team-logo-container {
-    @apply relative w-16 h-16 rounded-full;
+    @apply relative w-16 h-16 rounded-full bg-white/10 overflow-hidden;
   }
 
   .team-logo-container::before {
     content: '';
-    @apply absolute inset-0 rounded-full bg-white/10;
+    @apply absolute inset-0 rounded-full bg-white/80;
   }
 
   .dark .team-logo-container::before {
