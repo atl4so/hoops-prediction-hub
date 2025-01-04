@@ -30,6 +30,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           src={activeBackground.url} 
           alt="Background" 
           className="fixed inset-0 w-full h-full object-cover -z-10"
+          style={{ position: 'fixed', touchAction: 'none' }}
         />
       )}
       <AppHeader />
