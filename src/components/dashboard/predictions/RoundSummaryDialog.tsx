@@ -49,6 +49,10 @@ export function RoundSummaryDialog({ roundName, userName, predictions }: RoundSu
       <DialogContent className="max-w-4xl">
         <DialogHeader>
           <DialogTitle>Round {roundName} Summary</DialogTitle>
+          <div className="text-sm text-muted-foreground mt-2">
+            <p>P: Prediction score</p>
+            <p>F: Final score</p>
+          </div>
         </DialogHeader>
         <div className="mt-4 bg-white rounded-lg overflow-hidden">
           <PredictionsPreview

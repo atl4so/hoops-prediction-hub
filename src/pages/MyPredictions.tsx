@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "@supabase/auth-helpers-react";
 import { useNavigate } from "react-router-dom";
 import { DashboardPredictions } from "@/components/dashboard/sections/DashboardPredictions";
 import { useUserPredictions } from "@/components/dashboard/useUserPredictions";
 import { toast } from "sonner";
 import { useUserProfile } from "@/components/dashboard/UserProfile";
+import { RoundSelector } from "@/components/dashboard/predictions/RoundSelector";
 
 export default function MyPredictions() {
   const session = useSession();
@@ -12,6 +13,7 @@ export default function MyPredictions() {
   const userId = session?.user?.id;
   const { data: predictions, isError: predictionsError } = useUserPredictions(userId);
   const { data: profile } = useUserProfile(userId);
+  const [selectedRound, setSelectedRound] = useState<string>("");
 
   useEffect(() => {
     if (!session) {
@@ -37,14 +39,7 @@ export default function MyPredictions() {
     }
     acc[roundId].predictions.push({
       id: prediction.id,
-      game: {
-        id: prediction.game.id,
-        game_date: prediction.game.game_date,
-        round: prediction.game.round,
-        home_team: prediction.game.home_team,
-        away_team: prediction.game.away_team,
-        game_results: prediction.game.game_results
-      },
+      game: prediction.game,
       prediction: {
         prediction_home_score: prediction.prediction_home_score,
         prediction_away_score: prediction.prediction_away_score,
@@ -53,6 +48,11 @@ export default function MyPredictions() {
     });
     return acc;
   }, {} as Record<string, { roundId: string; roundName: string; predictions: Array<any> }>) || {};
+
+  // Filter predictions by selected round
+  const filteredPredictions = selectedRound
+    ? { [selectedRound]: predictionsByRound[selectedRound] }
+    : predictionsByRound;
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -65,8 +65,16 @@ export default function MyPredictions() {
         </p>
       </section>
 
+      <div className="w-[240px] mx-auto">
+        <RoundSelector
+          selectedRound={selectedRound}
+          onRoundChange={setSelectedRound}
+          className="w-full"
+        />
+      </div>
+
       <DashboardPredictions
-        predictionsByRound={predictionsByRound}
+        predictionsByRound={filteredPredictions}
         userName={profile?.display_name || "User"}
       />
     </div>
