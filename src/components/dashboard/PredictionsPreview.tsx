@@ -33,7 +33,7 @@ interface PredictionsPreviewProps {
 }
 
 const truncateTeamName = (name: string) => {
-  return name.length > 5 ? name.substring(0, 5) + '.' : name;
+  return name.length > 8 ? name.substring(0, 8) + '.' : name;
 };
 
 const GameCard = ({ prediction }: { prediction: PredictionData }) => {
