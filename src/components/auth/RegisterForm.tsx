@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "sonner";
+import { Mail, Lock, User } from "lucide-react";
 import { normalizeEmail } from "@/utils/validation";
-import { useRegistrationValidation } from "@/hooks/useRegistrationValidation";
 
 export function RegisterForm() {
   const navigate = useNavigate();
@@ -19,36 +20,21 @@ export function RegisterForm() {
     displayName: "",
   });
 
-  const { 
-    validateRegistrationEmail, 
-    validateDisplayName 
-  } = useRegistrationValidation();
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
 
     try {
-      // First, try to sign out any existing session
-      try {
-        await supabase.auth.signOut();
-      } catch (signOutError) {
-        console.log("Sign out error (expected if no session):", signOutError);
-      }
+      // First, check if display name is taken
+      const { data: existingUser } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("display_name", formData.displayName.trim())
+        .single();
 
-      // Validate display name first since it's mandatory
-      const displayNameError = await validateDisplayName(formData.displayName);
-      if (displayNameError) {
-        setError(displayNameError);
-        setIsLoading(false);
-        return;
-      }
-
-      // Then validate email
-      const emailError = await validateRegistrationEmail(formData.email);
-      if (emailError) {
-        setError(emailError);
+      if (existingUser) {
+        setError("This display name is already taken");
         setIsLoading(false);
         return;
       }
@@ -82,13 +68,15 @@ export function RegisterForm() {
 
         if (profileError) {
           console.error("Profile creation error:", profileError);
-          // If profile creation fails, delete the auth user
-          await supabase.auth.admin.deleteUser(signUpData.user.id);
           setError("Failed to create user profile. Please try again.");
           return;
         }
 
-        navigate("/");
+        toast.success("Account created successfully!", {
+          description: "Please check your email to confirm your account.",
+        });
+        
+        navigate("/login");
       }
     } catch (error: any) {
       console.error("Unexpected error:", error);
@@ -99,84 +87,101 @@ export function RegisterForm() {
   };
 
   return (
-    <div className="flex flex-col min-h-[80vh] items-center justify-center px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">Create an Account</CardTitle>
-          <CardDescription className="text-center">
-            Enter your details to register
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {error && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="displayName">Display Name</Label>
-              <Input
-                id="displayName"
-                type="text"
-                placeholder="Choose a display name"
-                value={formData.displayName}
-                onChange={(e) => {
-                  setError(null);
-                  setFormData({ ...formData, displayName: e.target.value });
-                }}
-                required
-              />
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-8 sm:px-6">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight leading-relaxed pb-2 font-display">
+            euroleague.bet
+          </h1>
+        </div>
+
+        <Card className="w-full shadow-lg">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl text-center">Create an Account</CardTitle>
+            <CardDescription className="text-center">
+              Enter your details to register
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {error && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="displayName">Display Name</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="displayName"
+                    type="text"
+                    placeholder="Choose a display name"
+                    value={formData.displayName}
+                    onChange={(e) => {
+                      setError(null);
+                      setFormData({ ...formData, displayName: e.target.value });
+                    }}
+                    className="pl-10"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={formData.email}
+                    onChange={(e) => {
+                      setError(null);
+                      setFormData({ ...formData, email: e.target.value });
+                    }}
+                    className="pl-10"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Create a password"
+                    value={formData.password}
+                    onChange={(e) => {
+                      setError(null);
+                      setFormData({ ...formData, password: e.target.value });
+                    }}
+                    className="pl-10"
+                    required
+                  />
+                </div>
+              </div>
+              <Button type="submit" className="w-full bg-[#F97316] hover:bg-[#F97316]/90" disabled={isLoading}>
+                {isLoading ? "Creating account..." : "Register"}
+              </Button>
+            </form>
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-4">
+            <div className="text-sm text-center text-muted-foreground">
+              Already have an account?{" "}
+              <Button 
+                variant="link" 
+                className="p-0 text-[#F97316] hover:text-[#F97316]/90"
+                onClick={() => navigate("/login")}
+              >
+                Sign in here
+              </Button>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={(e) => {
-                  setError(null);
-                  setFormData({ ...formData, email: e.target.value });
-                }}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Create a password"
-                value={formData.password}
-                onChange={(e) => {
-                  setError(null);
-                  setFormData({ ...formData, password: e.target.value });
-                }}
-                required
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Creating account..." : "Register"}
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="flex flex-col space-y-4">
-          <div className="text-sm text-center text-muted-foreground">
-            Already have an account?{" "}
-            <Button variant="link" className="p-0" onClick={() => navigate("/login")}>
-              Sign in here
-            </Button>
-          </div>
-          <Button 
-            variant="outline" 
-            className="w-full"
-            onClick={() => navigate("/")}
-          >
-            Back to Home
-          </Button>
-        </CardFooter>
-      </Card>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 }
