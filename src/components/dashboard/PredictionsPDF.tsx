@@ -3,67 +3,94 @@ import { format } from 'date-fns';
 
 const styles = StyleSheet.create({
   page: {
-    padding: 20,
+    padding: 30,
     fontFamily: 'Helvetica',
+    backgroundColor: '#fff',
   },
   header: {
-    marginBottom: 20,
-    borderBottom: 1,
-    paddingBottom: 10,
-    borderColor: '#e2e2e2',
+    marginBottom: 30,
   },
   title: {
-    fontSize: 16,
+    fontSize: 24,
     fontFamily: 'Helvetica-Bold',
-    textAlign: 'center',
-    marginBottom: 6,
+    marginBottom: 8,
   },
-  info: {
-    fontSize: 12,
-    textAlign: 'center',
-    marginBottom: 3,
+  subtitle: {
+    fontSize: 18,
     color: '#666',
+    marginBottom: 4,
+  },
+  date: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 20,
+  },
+  totalScore: {
+    fontSize: 20,
+    marginBottom: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  totalScoreLabel: {
+    color: '#666',
+  },
+  totalScoreValue: {
+    color: '#FF6B00',
+    fontFamily: 'Helvetica-Bold',
   },
   gamesRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 15,
+    marginBottom: 20,
   },
   gameCard: {
     width: '48%',
-    padding: 10,
+    padding: 15,
     backgroundColor: '#f8f9fa',
-    borderRadius: 4,
+    borderRadius: 8,
   },
   teams: {
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: 'Helvetica-Bold',
-    marginBottom: 4,
+    marginBottom: 12,
+    color: '#333',
   },
-  date: {
-    fontSize: 10,
-    color: '#666',
-    marginBottom: 6,
+  scoreContainer: {
+    marginTop: 8,
   },
   scoreRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 4,
+    alignItems: 'center',
+    marginBottom: 8,
   },
   scoreLabel: {
-    fontSize: 10,
+    fontSize: 12,
+    width: 20,
     color: '#666',
+    marginRight: 8,
   },
   score: {
-    fontSize: 11,
+    fontSize: 14,
     fontFamily: 'Helvetica-Bold',
   },
   points: {
-    fontSize: 11,
+    fontSize: 14,
     color: '#FF6B00',
     textAlign: 'right',
-    marginTop: 4,
-  }
+    marginTop: 8,
+    fontFamily: 'Helvetica-Bold',
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 30,
+    left: 30,
+    right: 30,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    color: '#666',
+    fontSize: 12,
+  },
 });
 
 interface PredictionsPDFProps {
@@ -105,11 +132,15 @@ export const PredictionsPDF = ({ userName, roundName, predictions }: Predictions
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Text style={styles.title}>euroleague.bet - Round Predictions</Text>
-          <Text style={styles.info}>User: {userName}</Text>
-          <Text style={styles.info}>Round: {roundName}</Text>
-          <Text style={styles.info}>Total Points: {totalPoints}</Text>
-          <Text style={styles.info}>Generated: {format(new Date(), 'PP')}</Text>
+          <Text style={styles.title}>euroleague.bet</Text>
+          <Text style={styles.subtitle}>{roundName} by @{userName}</Text>
+          <Text style={styles.date}>
+            {format(new Date(predictions[0]?.game.game_date || new Date()), 'MMM d, yyyy')}
+          </Text>
+          <View style={styles.totalScore}>
+            <Text style={styles.totalScoreLabel}>Total Score:</Text>
+            <Text style={styles.totalScoreValue}>{totalPoints}</Text>
+          </View>
         </View>
 
         {predictionPairs.map((pair, pairIndex) => (
@@ -119,35 +150,39 @@ export const PredictionsPDF = ({ userName, roundName, predictions }: Predictions
                 <Text style={styles.teams}>
                   {pred.game.home_team.name} vs {pred.game.away_team.name}
                 </Text>
-                <Text style={styles.date}>
-                  {format(new Date(pred.game.game_date), 'PP')}
-                </Text>
 
-                <View style={styles.scoreRow}>
-                  <Text style={styles.scoreLabel}>Prediction:</Text>
-                  <Text style={styles.score}>
-                    {pred.prediction.prediction_home_score}-{pred.prediction.prediction_away_score}
-                  </Text>
-                </View>
-
-                {pred.game.game_results?.[0] && (
+                <View style={styles.scoreContainer}>
+                  {pred.game.game_results?.[0] && (
+                    <View style={styles.scoreRow}>
+                      <Text style={styles.scoreLabel}>F</Text>
+                      <Text style={styles.score}>
+                        {pred.game.game_results[0].home_score}-{pred.game.game_results[0].away_score}
+                      </Text>
+                    </View>
+                  )}
+                  
                   <View style={styles.scoreRow}>
-                    <Text style={styles.scoreLabel}>Final Score:</Text>
+                    <Text style={styles.scoreLabel}>P</Text>
                     <Text style={styles.score}>
-                      {pred.game.game_results[0].home_score}-{pred.game.game_results[0].away_score}
+                      {pred.prediction.prediction_home_score}-{pred.prediction.prediction_away_score}
                     </Text>
                   </View>
-                )}
+                </View>
 
                 {pred.prediction.points_earned !== undefined && (
                   <Text style={styles.points}>
-                    Points: {pred.prediction.points_earned}
+                    {pred.prediction.points_earned}p
                   </Text>
                 )}
               </View>
             ))}
           </View>
         ))}
+
+        <View style={styles.footer}>
+          <Text>euroleague.bet</Text>
+          <Text>F = Final     P = Prediction</Text>
+        </View>
       </Page>
     </Document>
   );
