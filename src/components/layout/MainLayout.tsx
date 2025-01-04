@@ -26,12 +26,29 @@ export function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col w-full">
       {activeBackground?.url && (
-        <img 
-          src={activeBackground.url} 
-          alt="Background" 
-          className="fixed inset-0 w-full h-full object-cover -z-10"
-          style={{ position: 'fixed', touchAction: 'none', userSelect: 'none' }}
-        />
+        <div 
+          className="fixed inset-0 w-full h-full -z-10 overflow-hidden"
+          style={{ 
+            touchAction: 'none', 
+            userSelect: 'none',
+          }}
+        >
+          <img 
+            src={activeBackground.url} 
+            alt="Background" 
+            className="w-full h-full object-cover"
+            style={{ 
+              opacity: activeBackground.opacity / 100,
+              maxWidth: '1920px',
+              maxHeight: '1080px',
+              margin: '0 auto',
+              position: 'absolute',
+              left: '50%',
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+            }}
+          />
+        </div>
       )}
       <AppHeader />
       <main className="flex-1">
