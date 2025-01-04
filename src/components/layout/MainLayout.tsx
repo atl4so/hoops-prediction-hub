@@ -25,14 +25,13 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <div className="min-h-screen flex flex-col w-full">
-      <div className="fixed inset-0 -z-10 h-full w-full">
+      {activeBackground?.url && (
         <img 
-          src={activeBackground?.url || "https://i.ibb.co/WHBMDkY/logo4.jpg"} 
+          src={activeBackground.url} 
           alt="Background" 
-          className="w-full h-full object-cover"
-          style={{ opacity: activeBackground ? activeBackground.opacity / 100 : 0.6 }}
+          className="fixed inset-0 w-full h-full object-cover -z-10"
         />
-      </div>
+      )}
       <AppHeader />
       <main className="flex-1">
         <div className="container mx-auto p-6">
