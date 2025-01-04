@@ -39,19 +39,26 @@ interface RoundSummaryDialogProps {
   }>;
 }
 
-export function RoundSummaryDialog({ roundName, userName, predictions }: RoundSummaryDialogProps) {
+export function RoundSummaryDialog({ 
+  roundName, 
+  userName, 
+  predictions 
+}: RoundSummaryDialogProps) {
   const captureScreenshot = async () => {
     try {
       const element = document.getElementById('predictions-preview');
-      if (!element) return;
+      if (!element) {
+        toast.error("Could not find predictions preview");
+        return;
+      }
+
+      toast.loading("Capturing screenshot...");
 
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
-        width: element.offsetWidth,
-        height: element.offsetHeight,
       });
 
       canvas.toBlob((blob) => {
@@ -70,7 +77,7 @@ export function RoundSummaryDialog({ roundName, userName, predictions }: RoundSu
         URL.revokeObjectURL(url);
         
         toast.success("Screenshot saved!");
-      }, 'image/png');
+      }, 'image/png', 1.0);
     } catch (error) {
       console.error('Screenshot error:', error);
       toast.error("Failed to capture screenshot");
@@ -91,11 +98,11 @@ export function RoundSummaryDialog({ roundName, userName, predictions }: RoundSu
             <DialogTitle className="text-base sm:text-lg">Round {roundName} Summary</DialogTitle>
             <Button 
               variant="outline" 
-              size="sm" 
+              size="sm"
               onClick={captureScreenshot}
               className="shrink-0"
             >
-              <Share2 className="h-3 w-3 sm:h-4 sm:w-4" />
+              <Share2 className="h-4 w-4" />
             </Button>
           </div>
         </DialogHeader>

@@ -30,7 +30,6 @@ interface PredictionsPreviewProps {
   userName: string;
   roundName: string;
   predictions: PredictionData[];
-  isDownload?: boolean;
 }
 
 const truncateTeamName = (name: string) => {
@@ -78,7 +77,6 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
   userName,
   roundName,
   predictions,
-  isDownload = false
 }) => {
   const totalPoints = predictions.reduce((sum, pred) => sum + (pred.prediction.points_earned || 0), 0);
   const firstGame = predictions[0]?.game;
@@ -87,13 +85,8 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
     ? `${format(new Date(firstGame.game_date), 'MMM d')}-${format(new Date(lastGame.game_date), 'MMM d, yyyy')}`
     : '';
 
-  const containerClasses = cn(
-    "bg-white rounded-lg shadow-sm w-full",
-    isDownload ? "w-[100vw] max-w-[1200px]" : "w-full"
-  );
-
   return (
-    <div className={containerClasses}>
+    <div className="bg-white w-full">
       <div className="p-2">
         {/* Header */}
         <div className="mb-1.5">
