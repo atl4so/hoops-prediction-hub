@@ -59,15 +59,17 @@ export function DashboardPredictions({
           className="w-[200px]"
         />
         <DownloadPredictionsButton
-          predictions={predictionsByRound}
           userName={userName}
+          roundName={rounds[0]?.roundName || ""}
+          predictions={rounds[0]?.predictions || []}
         />
       </div>
 
       <div className="space-y-8">
         {rounds.map(({ roundId, roundName, predictions }) => {
-          // Transform the predictions to match the expected format
+          // Transform the predictions to match the expected format while preserving the id
           const formattedPredictions = predictions.map(pred => ({
+            id: pred.id,
             game: pred.game,
             prediction: pred.prediction
           }));
