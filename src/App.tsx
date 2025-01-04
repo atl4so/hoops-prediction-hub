@@ -121,7 +121,6 @@ const App = () => {
             duration={2000}
             closeButton={false}
             richColors
-            dismissible
           />
           <BrowserRouter>
             <SessionHandler>
