@@ -28,6 +28,11 @@ export function useGamesData() {
         console.error("Error fetching games:", error);
         throw error;
       }
+
+      if (!data) {
+        console.log("No games found");
+        return [];
+      }
       
       // Process games and parse dates
       const processedGames = data.map((game): Game => ({
@@ -48,7 +53,7 @@ export function useGamesData() {
           id: game.round[0].id,
           name: game.round[0].name
         },
-        game_results: game.game_results ? [game.game_results].flat() : []
+        game_results: Array.isArray(game.game_results) ? game.game_results : []
       }));
 
       // Split into finished and unfinished games
