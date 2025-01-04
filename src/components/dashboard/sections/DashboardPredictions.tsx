@@ -4,7 +4,6 @@ import { FileDown } from "lucide-react";
 import { PredictionsPDF } from "../PredictionsPDF";
 import { CollapsibleRoundSection } from "../CollapsibleRoundSection";
 import { ReactElement } from "react";
-import { BlobProvider } from '@react-pdf/renderer';
 
 interface DashboardPredictionsProps {
   predictionsByRound: Record<string, {
@@ -38,7 +37,7 @@ export const DashboardPredictions = ({ predictionsByRound, userName }: Dashboard
           predictions={round.predictions}
           userName={userName}
           extraContent={
-            <BlobProvider
+            <PDFDownloadLink
               document={
                 <PredictionsPDF
                   userName={userName}
@@ -46,22 +45,20 @@ export const DashboardPredictions = ({ predictionsByRound, userName }: Dashboard
                   predictions={round.predictions}
                 />
               }
+              fileName={`predictions-${round.roundName.toLowerCase().replace(/\s+/g, '-')}.pdf`}
             >
-              {({ url, loading }) => (
+              {({ loading }) => (
                 <Button
                   variant="outline"
                   size="sm"
                   className="ml-auto"
                   disabled={loading}
-                  asChild
                 >
-                  <a href={url || '#'} download={`predictions-${round.roundName.toLowerCase().replace(/\s+/g, '-')}.pdf`}>
-                    <FileDown className="h-4 w-4 mr-2" />
-                    Download PDF
-                  </a>
+                  <FileDown className="h-4 w-4 mr-2" />
+                  {loading ? 'Generating PDF...' : 'Download PDF'}
                 </Button>
               )}
-            </BlobProvider>
+            </PDFDownloadLink>
           }
         />
       ))}
