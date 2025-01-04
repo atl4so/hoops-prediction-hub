@@ -27,7 +27,7 @@ export function useGamesData() {
             id,
             name
           ),
-          game_results(
+          game_results (
             home_score,
             away_score,
             is_final
@@ -39,6 +39,8 @@ export function useGamesData() {
         console.error("Error fetching games:", error);
         throw error;
       }
+
+      console.log('Raw games data:', data);
 
       if (!data) {
         console.log("No games found");
@@ -56,25 +58,14 @@ export function useGamesData() {
           id: game.id,
           game_date: game.game_date,
           parsedDate: new Date(game.game_date),
-          home_team: {
-            id: game.home_team[0].id,
-            name: game.home_team[0].name,
-            logo_url: game.home_team[0].logo_url
-          },
-          away_team: {
-            id: game.away_team[0].id,
-            name: game.away_team[0].name,
-            logo_url: game.away_team[0].logo_url
-          },
-          round: {
-            id: game.round[0].id,
-            name: game.round[0].name
-          },
-          game_results: Array.isArray(game.game_results) ? game.game_results : []
+          home_team: game.home_team[0],
+          away_team: game.away_team[0],
+          round: game.round[0],
+          game_results: game.game_results || []
         };
       });
 
-      console.log('Processed games:', processedGames);
+      console.log('Processed games:', processedGames.length, 'games');
       return processedGames;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes

@@ -33,6 +33,7 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
         throw error;
       }
 
+      console.log('User predictions:', data);
       return data.map(p => p.game_id);
     },
     enabled: !!userId,
