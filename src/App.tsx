@@ -23,7 +23,7 @@ const queryClient = new QueryClient({
 
 const App = () => {
   return (
-    <ThemeProvider defaultTheme="light" storageKey="euroleague-theme">
+    <ThemeProvider defaultTheme="system" storageKey="euroleague-theme">
       <SessionContextProvider 
         supabaseClient={supabase}
         initialSession={null}
