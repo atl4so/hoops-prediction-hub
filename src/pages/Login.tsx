@@ -84,29 +84,29 @@ const Login = () => {
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-8 sm:px-6">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight leading-relaxed pb-2">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight leading-relaxed pb-2 font-display">
             euroleague.bet
           </h1>
         </div>
 
-        <Card className="w-full shadow-lg bg-white border-gray-100">
+        <Card className="w-full shadow-lg dark:bg-[#0B1616] dark:border-border/50">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-xl text-center text-gray-900">Sign In</CardTitle>
-            <CardDescription className="text-center text-gray-500">
+            <CardTitle className="text-xl text-center">Sign In</CardTitle>
+            <CardDescription className="text-center">
               Enter your credentials to access your account
             </CardDescription>
           </CardHeader>
           <CardContent>
             {error && (
-              <Alert variant="destructive" className="mb-4 bg-red-50 text-red-600 border-red-200">
+              <Alert variant="destructive" className="mb-4">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-700">Email</Label>
+                <Label htmlFor="email">Email</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                  <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="email"
                     type="email"
@@ -117,14 +117,14 @@ const Login = () => {
                       setFormData({ ...formData, email: e.target.value });
                     }}
                     required
-                    className="pl-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400"
+                    className="pl-10"
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-700">Password</Label>
+                <Label htmlFor="password">Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                  <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="password"
                     type="password"
@@ -135,7 +135,7 @@ const Login = () => {
                       setFormData({ ...formData, password: e.target.value });
                     }}
                     required
-                    className="pl-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400"
+                    className="pl-10"
                   />
                 </div>
               </div>
@@ -149,7 +149,7 @@ const Login = () => {
             </form>
           </CardContent>
           <CardFooter className="flex flex-col space-y-2 pt-0">
-            <div className="text-sm text-center text-gray-600">
+            <div className="text-sm text-center text-muted-foreground">
               New to euroleague.bet?{" "}
               <Button 
                 variant="link" 

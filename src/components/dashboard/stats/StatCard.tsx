@@ -20,9 +20,9 @@ export function StatCard({
   return (
     <Card 
       className={cn(
-        "group transition-all duration-300 hover:shadow-lg border-2",
+        "group transition-all duration-300 hover:shadow-lg",
         "hover:scale-[1.02] hover:-translate-y-0.5",
-        "bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20",
+        "dark:bg-[#0B1616] dark:border-border/50",
         "opacity-0" // Start invisible for animation
       )}
       style={{
@@ -34,8 +34,7 @@ export function StatCard({
         <div className="flex flex-col items-center text-center space-y-4">
           <div className={cn(
             "rounded-xl p-3 sm:p-4 transition-colors duration-300",
-            "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground",
-            "group-hover:from-primary/90 group-hover:to-primary/70"
+            "bg-[#F97316] text-primary-foreground"
           )}>
             <Icon className="h-6 w-6 sm:h-8 sm:w-8" />
           </div>

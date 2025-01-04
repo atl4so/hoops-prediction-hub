@@ -54,29 +54,19 @@ const Index = () => {
           How It Works
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-          <div className="space-y-2 p-6 rounded-2xl bg-white text-gray-800 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-100">
-            <div className="w-12 h-12 bg-[#F97316] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <span className="text-xl font-bold text-white">1</span>
+          {['Make Predictions', 'Earn Points', 'Compete & Win'].map((title, index) => (
+            <div key={title} className="space-y-2 p-6 rounded-2xl dark:bg-[#0B1616] dark:border-border/50 border shadow-lg hover:shadow-xl transition-all duration-200">
+              <div className="w-12 h-12 bg-[#F97316] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <span className="text-xl font-bold text-white">{index + 1}</span>
+              </div>
+              <h3 className="font-semibold">{title}</h3>
+              <p className="text-sm text-muted-foreground">
+                {index === 0 && "Predict scores for upcoming Euroleague games"}
+                {index === 1 && "Get points based on prediction accuracy"}
+                {index === 2 && "Rise through the rankings and compete with friends"}
+              </p>
             </div>
-            <h3 className="font-semibold">Make Predictions</h3>
-            <p className="text-sm text-gray-600">Predict scores for upcoming Euroleague games</p>
-          </div>
-          
-          <div className="space-y-2 p-6 rounded-2xl bg-white text-gray-800 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-100">
-            <div className="w-12 h-12 bg-[#F97316] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <span className="text-xl font-bold text-white">2</span>
-            </div>
-            <h3 className="font-semibold">Earn Points</h3>
-            <p className="text-sm text-gray-600">Get points based on prediction accuracy</p>
-          </div>
-          
-          <div className="space-y-2 p-6 rounded-2xl bg-white text-gray-800 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-100">
-            <div className="w-12 h-12 bg-[#F97316] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <span className="text-xl font-bold text-white">3</span>
-            </div>
-            <h3 className="font-semibold">Compete & Win</h3>
-            <p className="text-sm text-gray-600">Rise through the rankings and compete with friends</p>
-          </div>
+          ))}
         </div>
       </div>
     </div>
