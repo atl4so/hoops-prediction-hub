@@ -27,42 +27,40 @@ export function MainLayout({ children }: MainLayoutProps) {
     <div className="min-h-screen flex flex-col w-full relative">
       {activeBackground?.url && (
         <div 
-          className="fixed inset-0 w-full h-full -z-10 bg-black"
+          className="fixed inset-0 w-full h-full -z-10"
           style={{ 
             position: 'fixed',
-            width: '100%',
-            height: '100%',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
             overflow: 'hidden',
-            touchAction: 'none',
-            userSelect: 'none',
-            WebkitTransform: 'translate3d(0,0,0)',
-            backfaceVisibility: 'hidden',
-            transform: 'translate3d(0,0,0)',
-            perspective: 1000,
-            willChange: 'transform',
-            pointerEvents: 'none'
+            pointerEvents: 'none',
           }}
         >
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'black',
+            }}
+          />
           <img 
             src={activeBackground.url} 
             alt="Background" 
-            className="w-full h-full object-cover"
             style={{ 
-              opacity: activeBackground.opacity / 100,
               position: 'fixed',
-              top: 0,
-              left: 0,
+              top: '50%',
+              left: '50%',
               width: '100%',
               height: '100%',
-              touchAction: 'none',
-              userSelect: 'none',
-              pointerEvents: 'none',
+              transform: 'translate(-50%, -50%)',
               objectFit: 'cover',
-              WebkitBackfaceVisibility: 'hidden',
-              WebkitTransform: 'translate3d(0,0,0)',
-              transform: 'translate3d(0,0,0)',
-              willChange: 'transform',
-              perspective: 1000
+              opacity: activeBackground.opacity / 100,
+              pointerEvents: 'none',
             }}
           />
         </div>
