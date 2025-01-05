@@ -40,9 +40,31 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
 
     const checkSession = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabase.auth.getSession();
         
+        if (error) {
+          console.error('Session check error:', error);
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+          }
+          return;
+        }
+
         if (!session) {
+          console.log('No session found');
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+          }
+          return;
+        }
+
+        // Verify the session is still valid
+        const { data: { user }, error: refreshError } = await supabase.auth.getUser();
+        
+        if (refreshError || !user) {
+          console.error('User verification failed:', refreshError);
           if (mounted) {
             setIsAuthenticated(false);
             setIsLoading(false);
@@ -54,8 +76,9 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
           setIsAuthenticated(true);
           setIsLoading(false);
         }
+        console.log('Session verified for user:', user.id);
       } catch (error) {
-        console.error('Session check error:', error);
+        console.error('Session verification error:', error);
         if (mounted) {
           setIsAuthenticated(false);
           setIsLoading(false);
@@ -65,7 +88,7 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
 
     checkSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
       
       console.log('Auth state changed:', event, session?.user?.id);
@@ -73,9 +96,13 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
       if (event === 'SIGNED_OUT') {
         setIsAuthenticated(false);
         queryClient.clear();
+        await supabase.auth.signOut(); // Ensure complete sign out
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        setIsAuthenticated(true);
-        queryClient.invalidateQueries();
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (!error && user) {
+          setIsAuthenticated(true);
+          queryClient.invalidateQueries();
+        }
       }
     });
 
