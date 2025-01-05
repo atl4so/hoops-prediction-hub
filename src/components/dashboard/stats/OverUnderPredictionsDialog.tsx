@@ -1,20 +1,21 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Check, X } from "lucide-react";
 import { RoundSelector } from "../predictions/RoundSelector";
 import { useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { InfoIcon } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { THRESHOLDS } from "./constants";
+import { EmptyPredictionState } from "./EmptyPredictionState";
+import { ThresholdTabsContent } from "./ThresholdTabsContent";
+import type { PredictionData } from "./types";
 
 interface OverUnderPredictionsDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   userId: string;
 }
-
-const THRESHOLDS = [145, 155, 165, 175, 185, 195];
 
 export function OverUnderPredictionsDialog({
   isOpen,
@@ -61,38 +62,10 @@ export function OverUnderPredictionsDialog({
         throw error;
       }
 
-      return data.filter(pred => pred.game.game_results.is_final);
+      return data.filter(pred => pred.game.game_results.is_final) as PredictionData[];
     },
     enabled: isOpen && !!selectedRound,
   });
-
-  const getPredictionStats = (threshold: number) => {
-    if (!predictions) return { correct: 0, total: 0, predictions: [] };
-
-    const thresholdPredictions = predictions.map(prediction => {
-      const predictedTotal = prediction.prediction_home_score + prediction.prediction_away_score;
-      const actualTotal = prediction.game.game_results.home_score + prediction.game.game_results.away_score;
-
-      return {
-        ...prediction,
-        predictedTotal,
-        actualTotal,
-        isOver: predictedTotal > threshold,
-        wasOver: actualTotal > threshold,
-        isCorrect: (predictedTotal > threshold && actualTotal > threshold) || 
-                  (predictedTotal < threshold && actualTotal < threshold)
-      };
-    });
-
-    const correct = thresholdPredictions.filter(p => p.isCorrect).length;
-    
-    return {
-      correct,
-      total: thresholdPredictions.length,
-      percentage: Math.round((correct / thresholdPredictions.length) * 100),
-      predictions: thresholdPredictions
-    };
-  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -126,7 +99,7 @@ export function OverUnderPredictionsDialog({
             </div>
           ) : predictions && predictions.length > 0 ? (
             <Tabs value={selectedThreshold} onValueChange={setSelectedThreshold}>
-              <TabsList className="grid grid-cols-6 w-full">
+              <TabsList className="grid grid-cols-8 w-full">
                 {THRESHOLDS.map((threshold) => (
                   <TabsTrigger 
                     key={threshold} 
@@ -138,61 +111,16 @@ export function OverUnderPredictionsDialog({
                 ))}
               </TabsList>
 
-              {THRESHOLDS.map((threshold) => {
-                const stats = getPredictionStats(threshold);
-                return (
-                  <TabsContent key={threshold} value={threshold.toString()}>
-                    <div className="mb-4 p-4 bg-muted rounded-lg">
-                      <p className="text-lg font-semibold">
-                        Threshold: {threshold} points
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Accuracy: {stats.percentage}% ({stats.correct} correct out of {stats.total} predictions)
-                      </p>
-                    </div>
-                    <div className="space-y-2 max-h-[400px] overflow-y-auto">
-                      {stats.predictions.map((prediction) => (
-                        <div 
-                          key={prediction.id} 
-                          className={`flex items-center justify-between p-3 rounded-lg border ${
-                            prediction.isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
-                          }`}
-                        >
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium">
-                                {prediction.game.home_team.name} vs {prediction.game.away_team.name}
-                              </span>
-                              {prediction.isCorrect ? (
-                                <Check className="h-4 w-4 text-green-600" />
-                              ) : (
-                                <X className="h-4 w-4 text-red-600" />
-                              )}
-                            </div>
-                            <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
-                              <p>Your prediction: {prediction.prediction_home_score} - {prediction.prediction_away_score} (Total: {prediction.predictedTotal})</p>
-                              <p>Final score: {prediction.game.game_results.home_score} - {prediction.game.game_results.away_score} (Total: {prediction.actualTotal})</p>
-                              <p className="font-medium">
-                                {prediction.isOver ? 'Predicted Over' : 'Predicted Under'} • 
-                                {prediction.wasOver ? ' Was Over' : ' Was Under'}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </TabsContent>
-                );
-              })}
+              {THRESHOLDS.map((threshold) => (
+                <ThresholdTabsContent 
+                  key={threshold}
+                  threshold={threshold}
+                  predictions={predictions}
+                />
+              ))}
             </Tabs>
-          ) : selectedRound ? (
-            <div className="text-center py-6 text-muted-foreground">
-              No completed predictions found for this round
-            </div>
           ) : (
-            <div className="text-center py-6 text-muted-foreground">
-              Select a round to view predictions
-            </div>
+            <EmptyPredictionState selectedRound={selectedRound} />
           )}
         </div>
       </DialogContent>
