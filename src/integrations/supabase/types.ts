@@ -445,6 +445,7 @@ export type Database = {
           margin_15plus_losses: number
           home_games: number
           away_games: number
+          percentage_favoring_team: number
         }[]
       }
       get_team_result_distribution: {
