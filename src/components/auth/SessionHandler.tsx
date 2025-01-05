@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { QueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { clearAuthSession } from '@/utils/auth';
+import { clearAuthSession, verifySession } from '@/utils/auth';
 import { toast } from "sonner";
-import type { AuthError } from '@supabase/supabase-js';
+import type { AuthError, AuthChangeEvent } from '@supabase/supabase-js';
 
 interface SessionHandlerProps {
   children: React.ReactNode;
@@ -37,42 +37,17 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
       }
     };
 
-    const verifySession = async () => {
-      try {
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (userError) throw userError;
-        return !!user;
-      } catch (error) {
-        console.error('Session verification error:', error);
-        return false;
-      }
-    };
-
     const checkSession = async () => {
       try {
         console.log('Checking session...');
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const session = await verifySession();
         
-        if (error) {
-          console.error('Session error:', error);
-          await handleSessionError(error);
-          return;
-        }
-
         if (!session) {
-          console.log('No session found');
+          console.log('No valid session found');
           if (mounted) {
             setIsAuthenticated(false);
             setIsLoading(false);
           }
-          return;
-        }
-
-        // Additional verification step
-        const isValid = await verifySession();
-        if (!isValid) {
-          console.error('Session verification failed');
-          await handleSessionError();
           return;
         }
 
@@ -87,41 +62,42 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
       }
     };
 
-    const setupAuthListener = async () => {
-      const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
-        if (!mounted) return;
+    const handleAuthChange = async (event: AuthChangeEvent, session: any) => {
+      if (!mounted) return;
+      
+      console.log('Auth state changed:', event, session?.user?.id);
+      
+      switch (event) {
+        case 'SIGNED_OUT':
+          setIsAuthenticated(false);
+          setIsLoading(false);
+          queryClient.clear();
+          break;
         
-        console.log('Auth state changed:', event, session?.user?.id);
-        
-        switch (event) {
-          case 'SIGNED_OUT':
-            setIsAuthenticated(false);
-            setIsLoading(false);
-            queryClient.clear();
-            break;
-          
-          case 'SIGNED_IN':
-          case 'TOKEN_REFRESHED':
-            if (session) {
-              const isValid = await verifySession();
-              if (isValid) {
-                setIsAuthenticated(true);
-                setIsLoading(false);
-                queryClient.invalidateQueries();
-              } else {
-                await handleSessionError();
-              }
+        case 'SIGNED_IN':
+        case 'TOKEN_REFRESHED':
+          if (session) {
+            const validSession = await verifySession();
+            if (validSession) {
+              setIsAuthenticated(true);
+              setIsLoading(false);
+              queryClient.invalidateQueries();
             } else {
               await handleSessionError();
             }
-            break;
-          
-          default:
-            // Handle other events if needed
-            break;
-        }
-      });
-      
+          } else {
+            await handleSessionError();
+          }
+          break;
+        
+        default:
+          // Handle other events if needed
+          break;
+      }
+    };
+
+    const setupAuthListener = () => {
+      const { data } = supabase.auth.onAuthStateChange(handleAuthChange);
       authListener = data;
     };
 

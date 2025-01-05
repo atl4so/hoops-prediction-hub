@@ -2,9 +2,9 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const clearAuthSession = async () => {
   try {
-    // First try to sign out normally
+    // First try to sign out with local scope to avoid the body stream error
     const { error: signOutError } = await supabase.auth.signOut({
-      scope: 'local' // Use local scope to avoid the body stream error
+      scope: 'local'
     });
     
     if (signOutError) {
