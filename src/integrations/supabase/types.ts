@@ -415,6 +415,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      recalculate_over_under_predictions: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       update_profile_stats: {
         Args: {
           user_id_arg: string
