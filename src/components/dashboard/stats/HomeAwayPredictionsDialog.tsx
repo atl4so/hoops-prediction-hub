@@ -1,10 +1,13 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Check, X, Home, Plane } from "lucide-react";
+import { Home, Plane } from "lucide-react";
 import { RoundSelector } from "../predictions/RoundSelector";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PredictionsList } from "./home-away/PredictionsList";
+import { StatsOverview } from "./home-away/StatsOverview";
+import { DialogLayout, DialogContent as ScrollContent } from "@/components/shared/DialogLayout";
 
 interface HomeAwayPredictionsDialogProps {
   isOpen: boolean;
@@ -54,7 +57,7 @@ export function HomeAwayPredictionsDialog({
         throw error;
       }
 
-      return data.filter(pred => pred.game.game_results.is_final);
+      return data.filter(pred => pred.game.game_results[0].is_final);
     },
     enabled: isOpen && !!selectedRound,
   });
@@ -64,7 +67,7 @@ export function HomeAwayPredictionsDialog({
 
     const results = predictions.reduce((acc, pred) => {
       const isPredictedHomeWin = pred.prediction_home_score > pred.prediction_away_score;
-      const isActualHomeWin = pred.game.game_results.home_score > pred.game.game_results.away_score;
+      const isActualHomeWin = pred.game.game_results[0].home_score > pred.game.game_results[0].away_score;
       
       if (type === 'home' && isPredictedHomeWin) {
         acc.total++;
@@ -83,123 +86,71 @@ export function HomeAwayPredictionsDialog({
     };
   };
 
-  const getPredictionResult = (prediction: any) => {
-    const isPredictedHomeWin = prediction.prediction_home_score > prediction.prediction_away_score;
-    const isActualHomeWin = prediction.game.game_results.home_score > prediction.game.game_results.away_score;
-    const isDraw = prediction.game.game_results.home_score === prediction.game.game_results.away_score;
-
-    return {
-      prediction: isPredictedHomeWin ? "Home Win" : "Away Win",
-      actual: isDraw ? "Draw" : (isActualHomeWin ? "Home Win" : "Away Win"),
-      isCorrect: isDraw 
-        ? prediction.prediction_home_score === prediction.prediction_away_score
-        : isPredictedHomeWin === isActualHomeWin
-    };
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] max-h-[90vh] flex flex-col">
-        <DialogHeader className="space-y-2">
-          <DialogTitle>Home/Away Winner Predictions</DialogTitle>
-          <DialogDescription>
-            View your home and away winner predictions by round
-          </DialogDescription>
-        </DialogHeader>
-        
-        <div className="space-y-4 flex-1 overflow-y-auto">
-          <RoundSelector 
-            selectedRound={selectedRound} 
-            onRoundChange={setSelectedRound}
-            className="w-full"
-          />
+      <DialogContent className="sm:max-w-[425px] p-0 gap-0">
+        <DialogLayout>
+          <div className="p-6 pb-0">
+            <DialogHeader className="space-y-2">
+              <DialogTitle>Home/Away Winner Predictions</DialogTitle>
+              <DialogDescription>
+                View your home and away winner predictions by round
+              </DialogDescription>
+            </DialogHeader>
+          </div>
 
-          {isLoading ? (
-            <div className="text-center py-4 text-muted-foreground">
-              Loading predictions...
-            </div>
-          ) : predictions && predictions.length > 0 ? (
-            <Tabs defaultValue="home" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="home" className="px-2 py-1">
-                  <span className="flex items-center gap-1.5">
-                    <Home className="h-3 w-3" />
-                    <span className="text-sm">Home</span>
-                  </span>
-                </TabsTrigger>
-                <TabsTrigger value="away" className="px-2 py-1">
-                  <span className="flex items-center gap-1.5">
-                    <Plane className="h-3 w-3" />
-                    <span className="text-sm">Away</span>
-                  </span>
-                </TabsTrigger>
-              </TabsList>
+          <ScrollContent className="px-6">
+            <RoundSelector 
+              selectedRound={selectedRound} 
+              onRoundChange={setSelectedRound}
+              className="w-full"
+            />
 
-              {['home', 'away'].map((type) => {
-                const stats = getStats(type as 'home' | 'away');
-                const Icon = type === 'home' ? Home : Plane;
-                
-                return (
+            {isLoading ? (
+              <div className="text-center py-4 text-muted-foreground">
+                Loading predictions...
+              </div>
+            ) : predictions && predictions.length > 0 ? (
+              <Tabs defaultValue="home" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 h-9">
+                  <TabsTrigger value="home" className="px-2 py-1.5">
+                    <span className="flex items-center gap-1.5">
+                      <Home className="h-3 w-3" />
+                      <span className="text-xs">Home</span>
+                    </span>
+                  </TabsTrigger>
+                  <TabsTrigger value="away" className="px-2 py-1.5">
+                    <span className="flex items-center gap-1.5">
+                      <Plane className="h-3 w-3" />
+                      <span className="text-xs">Away</span>
+                    </span>
+                  </TabsTrigger>
+                </TabsList>
+
+                {['home', 'away'].map((type) => (
                   <TabsContent key={type} value={type} className="space-y-3 mt-3">
-                    <div className="text-center space-y-1 p-3 bg-muted/10 rounded-lg">
-                      <div className="flex items-center justify-center gap-2">
-                        <Icon className="h-4 w-4" />
-                        <p className="text-xl font-bold">{stats.percentage}%</p>
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        Correctly predicted {stats.correct} {type} wins out of {stats.total}
-                      </p>
-                    </div>
-                    <div className="space-y-2">
-                      {predictions.map((prediction) => {
-                        const isPredictedHomeWin = prediction.prediction_home_score > prediction.prediction_away_score;
-                        const isRelevantPrediction = type === 'home' ? isPredictedHomeWin : !isPredictedHomeWin;
-                        
-                        if (!isRelevantPrediction) return null;
-
-                        const result = getPredictionResult(prediction);
-
-                        return (
-                          <div 
-                            key={prediction.id} 
-                            className={`flex items-center justify-between p-2 rounded-lg border ${
-                              result.isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
-                            }`}
-                          >
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs font-medium">
-                                  {prediction.game.home_team.name} vs {prediction.game.away_team.name}
-                                </span>
-                                {result.isCorrect ? (
-                                  <Check className="h-3 w-3 text-green-600" />
-                                ) : (
-                                  <X className="h-3 w-3 text-red-600" />
-                                )}
-                              </div>
-                              <div className="text-[10px] text-muted-foreground mt-0.5">
-                                <p>Your prediction: {result.prediction}</p>
-                                <p>Final result: {result.actual}</p>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                    <StatsOverview 
+                      stats={getStats(type as 'home' | 'away')}
+                      type={type as 'home' | 'away'}
+                    />
+                    <PredictionsList 
+                      predictions={predictions}
+                      type={type as 'home' | 'away'}
+                    />
                   </TabsContent>
-                );
-              })}
-            </Tabs>
-          ) : selectedRound ? (
-            <div className="text-center py-6 text-muted-foreground">
-              <p className="text-sm">No completed predictions found for this round</p>
-            </div>
-          ) : (
-            <div className="text-center py-6 text-muted-foreground">
-              <p className="text-sm">Select a round to view predictions</p>
-            </div>
-          )}
-        </div>
+                ))}
+              </Tabs>
+            ) : selectedRound ? (
+              <div className="text-center py-6 text-muted-foreground">
+                <p className="text-sm">No completed predictions found for this round</p>
+              </div>
+            ) : (
+              <div className="text-center py-6 text-muted-foreground">
+                <p className="text-sm">Select a round to view predictions</p>
+              </div>
+            )}
+          </ScrollContent>
+        </DialogLayout>
       </DialogContent>
     </Dialog>
   );
