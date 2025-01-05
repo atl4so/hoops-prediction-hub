@@ -43,7 +43,7 @@ export default function Overview() {
   }
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="container max-w-5xl mx-auto py-8 animate-fade-in">
       <PageHeader title="Overview">
         <p className="text-muted-foreground">Track your performance and statistics</p>
       </PageHeader>

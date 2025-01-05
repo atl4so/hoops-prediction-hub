@@ -1,16 +1,15 @@
-import { useEffect } from "react";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { GamesList } from "@/components/games/GamesList";
+import { useSession } from "@supabase/auth-helpers-react";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { GamesList } from "@/components/games/GamesList";
 import { PageHeader } from "@/components/shared/PageHeader";
 
 export default function Predict() {
   const session = useSession();
   const navigate = useNavigate();
-  const supabase = useSupabaseClient();
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -20,6 +19,7 @@ export default function Predict() {
           navigate("/login");
           return;
         }
+        setUserId(session.user.id);
       } catch (error) {
         console.error('Session check error:', error);
         toast.error("Session error. Please try logging in again.");
@@ -28,29 +28,14 @@ export default function Predict() {
     };
 
     checkSession();
-  }, [navigate, supabase.auth]);
-
-  if (!session) {
-    return null;
-  }
+  }, [navigate]);
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      <PageHeader title="Make Predictions">
-        <p className="text-muted-foreground">Predict the outcomes of upcoming Euroleague games</p>
+    <div className="container max-w-5xl mx-auto py-8 animate-fade-in">
+      <PageHeader title="Predict">
+        <p className="text-muted-foreground">Make your predictions for upcoming games</p>
       </PageHeader>
-
-      <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>
-          Important: Predictions close 1 hour before each game starts. Make sure to submit your predictions on time!
-        </AlertDescription>
-      </Alert>
-
-      <GamesList 
-        isAuthenticated={!!session} 
-        userId={session.user.id}
-      />
+      <GamesList userId={userId} />
     </div>
   );
 }
