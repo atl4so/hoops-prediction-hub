@@ -58,9 +58,12 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
         size: file.size
       });
 
+      // Create a new File object with the correct MIME type
+      const newFile = new File([file], fileName, { type: file.type });
+
       const { error: uploadError, data } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file, {
+        .upload(fileName, newFile, {
           contentType: file.type,
           upsert: true
         });
