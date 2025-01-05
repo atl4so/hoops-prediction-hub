@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Check, X } from "lucide-react";
@@ -49,15 +49,19 @@ export function WinnerPredictionsDialog({
   });
 
   const getPredictionResult = (prediction: any) => {
+    // Ensure game_results exists and has data
+    if (!prediction.game?.game_results?.length) return null;
+
     const predictionWinner = prediction.prediction_home_score > prediction.prediction_away_score 
       ? 'home' 
       : prediction.prediction_home_score < prediction.prediction_away_score 
         ? 'away' 
         : 'draw';
 
-    const actualWinner = prediction.game.game_results[0]?.home_score > prediction.game.game_results[0]?.away_score 
+    const gameResult = prediction.game.game_results[0];
+    const actualWinner = gameResult.home_score > gameResult.away_score 
       ? 'home' 
-      : prediction.game.game_results[0]?.home_score < prediction.game.game_results[0]?.away_score 
+      : gameResult.home_score < gameResult.away_score 
         ? 'away' 
         : 'draw';
 
@@ -69,32 +73,38 @@ export function WinnerPredictionsDialog({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Recent Winner Predictions</DialogTitle>
+          <DialogDescription>
+            Your last 5 game predictions and their outcomes
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
-          {recentPredictions?.map((prediction) => (
-            <div 
-              key={prediction.id} 
-              className="flex items-center justify-between p-4 rounded-lg border bg-card text-card-foreground shadow-sm"
-            >
-              <div className="flex-1">
-                <p className="text-sm font-medium">
-                  {prediction.game.home_team.name} vs {prediction.game.away_team.name}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {prediction.prediction_home_score} - {prediction.prediction_away_score}
-                </p>
-              </div>
-              {prediction.game.game_results[0] && (
-                <div className="ml-4">
-                  {getPredictionResult(prediction) ? (
-                    <Check className="h-5 w-5 text-green-500" />
-                  ) : (
-                    <X className="h-5 w-5 text-red-500" />
-                  )}
+          {recentPredictions?.map((prediction) => {
+            const result = getPredictionResult(prediction);
+            return (
+              <div 
+                key={prediction.id} 
+                className="flex items-center justify-between p-4 rounded-lg border bg-card text-card-foreground shadow-sm"
+              >
+                <div className="flex-1">
+                  <p className="text-sm font-medium">
+                    {prediction.game.home_team.name} vs {prediction.game.away_team.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {prediction.prediction_home_score} - {prediction.prediction_away_score}
+                  </p>
                 </div>
-              )}
-            </div>
-          ))}
+                {result !== null && (
+                  <div className="ml-4">
+                    {result ? (
+                      <Check className="h-5 w-5 text-green-500" />
+                    ) : (
+                      <X className="h-5 w-5 text-red-500" />
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </DialogContent>
     </Dialog>

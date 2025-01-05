@@ -36,11 +36,17 @@ export function RoundSelector({ selectedRound, onRoundChange, className }: Round
       return data;
     },
     retry: 3,
-    onError: (error) => {
+    meta: {
+      errorMessage: "Failed to load rounds. Please try again later."
+    }
+  });
+
+  useEffect(() => {
+    if (error) {
       console.error('Failed to fetch rounds:', error);
       toast.error("Failed to load rounds. Please try again later.");
     }
-  });
+  }, [error]);
 
   // Set the latest round as default when rounds are loaded
   useEffect(() => {
