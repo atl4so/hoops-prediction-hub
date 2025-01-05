@@ -9,9 +9,7 @@ interface StatsListProps {
   pointsPerGame: number;
   totalPredictions: number;
   highestGamePoints?: number | null;
-  lowestGamePoints?: number | null;
   highestRoundPoints?: number | null;
-  lowestRoundPoints?: number | null;
   allTimeRank?: number | null;
   currentRoundRank?: { rank: number | null; isCurrent: boolean; roundName: string };
   winnerPredictionsCorrect?: number;
@@ -37,9 +35,7 @@ export function StatsList({
   pointsPerGame,
   totalPredictions,
   highestGamePoints,
-  lowestGamePoints,
   highestRoundPoints,
-  lowestRoundPoints,
   allTimeRank,
   currentRoundRank,
   winnerPredictionsCorrect = 0,
@@ -130,18 +126,6 @@ export function StatsList({
       label: "Best Round",
       value: highestRoundPoints || 0,
       description: "Best performance in a single round"
-    },
-    {
-      icon: ArrowUp,
-      label: "Lowest Game",
-      value: lowestGamePoints || 0,
-      description: "Lowest performance in a single game"
-    },
-    {
-      icon: ArrowUp,
-      label: "Lowest Round",
-      value: lowestRoundPoints || 0,
-      description: "Lowest performance in a single round"
     }
   ];
 
