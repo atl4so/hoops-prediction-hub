@@ -69,13 +69,13 @@ export function OverUnderPredictionsDialog({
 
     const predictedTotal = prediction.prediction_home_score + prediction.prediction_away_score;
     const actualTotal = gameResult.home_score + gameResult.away_score;
-    const threshold = 150;
 
-    const predictedOverUnder = predictedTotal >= threshold ? 'over' : 'under';
-    const actualOverUnder = actualTotal >= threshold ? 'over' : 'under';
+    const predictedOverUnder = predictedTotal > actualTotal ? 'over' : 'under';
+    const actualOverUnder = 'actual'; // This is just a placeholder since we compare directly
 
     return {
-      isCorrect: predictedOverUnder === actualOverUnder,
+      isCorrect: (predictedTotal > actualTotal && actualTotal < predictedTotal) || 
+                 (predictedTotal < actualTotal && actualTotal > predictedTotal),
       predicted: {
         total: predictedTotal,
         home: prediction.prediction_home_score,
@@ -96,13 +96,14 @@ export function OverUnderPredictionsDialog({
           <DialogTitle>Over/Under Predictions by Round</DialogTitle>
           <DialogDescription className="space-y-2">
             <p>
-              For each game, predict whether the total combined score will be over or under 150 points.
+              For each game, predict whether the total combined score will be higher or lower than the actual final total score.
             </p>
-            <Alert variant="warning" className="mt-2">
+            <Alert className="mt-2">
               <InfoIcon className="h-4 w-4" />
               <AlertDescription>
-                Important: If you predict exactly 150 points total, it will be marked as incorrect. 
-                Your prediction must be clearly over (≥151) or under (≤149) points.
+                Important: If you predict exactly the same total score as the final result, 
+                it will be marked as incorrect. Your prediction must be clearly over or under 
+                the actual final score.
               </AlertDescription>
             </Alert>
           </DialogDescription>
