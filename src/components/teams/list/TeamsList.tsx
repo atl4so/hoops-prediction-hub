@@ -13,17 +13,21 @@ interface TeamsListProps {
 
 export function TeamsList({ teams, isLoading, onTeamClick, sortBy }: TeamsListProps) {
   const { data: teamStats } = useQuery({
-    queryKey: ["team-stats"],
+    queryKey: ["team-stats", teams.map(t => t.id)],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .rpc('get_team_prediction_stats', { team_id_param: team.id });
+      const statsPromises = teams.map(async (team) => {
+        const { data, error } = await supabase
+          .rpc('get_team_prediction_stats', { team_id_param: team.id });
+          
+        if (error) {
+          console.error('Error fetching team stats:', error);
+          throw error;
+        }
         
-      if (error) {
-        console.error('Error fetching team stats:', error);
-        throw error;
-      }
-      
-      return { teamId: team.id, ...data[0] };
+        return { teamId: team.id, ...data[0] };
+      });
+
+      return Promise.all(statsPromises);
     },
     enabled: teams.length > 0,
   });
