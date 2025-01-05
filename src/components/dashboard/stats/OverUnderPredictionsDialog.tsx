@@ -10,7 +10,6 @@ import { THRESHOLDS } from "./constants";
 import { EmptyPredictionState } from "./EmptyPredictionState";
 import { ThresholdTabsContent } from "./ThresholdTabsContent";
 import type { PredictionData } from "./types";
-import { DialogLayout, DialogContent as ScrollContent } from "@/components/shared/DialogLayout";
 
 interface OverUnderPredictionsDialogProps {
   isOpen: boolean;
@@ -63,6 +62,7 @@ export function OverUnderPredictionsDialog({
         throw error;
       }
 
+      // Filter out predictions without final results and ensure game_results is an array
       return data
         .filter(pred => pred.game.game_results[0]?.is_final)
         .map(pred => ({
@@ -80,64 +80,60 @@ export function OverUnderPredictionsDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] p-0 gap-0">
-        <DialogLayout>
-          <div className="p-6 pb-0">
-            <DialogHeader>
-              <DialogTitle>Over/Under Predictions by Threshold</DialogTitle>
-              <DialogDescription className="space-y-2">
-                <p>
-                  Select different thresholds to see your prediction accuracy for games above or below that total score.
-                </p>
-                <Alert variant="destructive" className="mt-2">
-                  <InfoIcon className="h-4 w-4" />
-                  <AlertDescription>
-                    Important: For each threshold, your prediction must be clearly over or under. 
-                    Predicting exactly the threshold value will be marked as incorrect.
-                  </AlertDescription>
-                </Alert>
-              </DialogDescription>
-            </DialogHeader>
-          </div>
-          
-          <ScrollContent className="px-6">
-            <RoundSelector 
-              selectedRound={selectedRound} 
-              onRoundChange={setSelectedRound}
-              className="w-full"
-            />
+      <DialogContent className="sm:max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle>Over/Under Predictions by Threshold</DialogTitle>
+          <DialogDescription className="space-y-2">
+            <p>
+              Select different thresholds to see your prediction accuracy for games above or below that total score.
+            </p>
+            <Alert variant="destructive" className="mt-2">
+              <InfoIcon className="h-4 w-4" />
+              <AlertDescription>
+                Important: For each threshold, your prediction must be clearly over or under. 
+                Predicting exactly the threshold value will be marked as incorrect.
+              </AlertDescription>
+            </Alert>
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="space-y-4">
+          <RoundSelector 
+            selectedRound={selectedRound} 
+            onRoundChange={setSelectedRound}
+            className="w-full"
+          />
 
-            {isLoading ? (
-              <div className="text-center py-4 text-muted-foreground">
-                Loading predictions...
-              </div>
-            ) : predictions && predictions.length > 0 ? (
-              <Tabs value={selectedThreshold} onValueChange={setSelectedThreshold}>
-                <TabsList className="grid grid-cols-8 w-full h-9">
-                  {THRESHOLDS.map((threshold) => (
-                    <TabsTrigger 
-                      key={threshold} 
-                      value={threshold.toString()}
-                      className="text-xs sm:text-sm px-0"
-                    >
-                      {threshold}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-
+          {isLoading ? (
+            <div className="text-center py-4 text-muted-foreground">
+              Loading predictions...
+            </div>
+          ) : predictions && predictions.length > 0 ? (
+            <Tabs value={selectedThreshold} onValueChange={setSelectedThreshold}>
+              <TabsList className="grid grid-cols-8 w-full">
                 {THRESHOLDS.map((threshold) => (
-                  <ThresholdTabsContent 
-                    key={threshold}
-                    threshold={threshold}
-                    predictions={predictions}
-                  />
+                  <TabsTrigger 
+                    key={threshold} 
+                    value={threshold.toString()}
+                    className="text-xs sm:text-sm"
+                  >
+                    {threshold}
+                  </TabsTrigger>
                 ))}
-              </Tabs>
-            ) : (
-              <EmptyPredictionState selectedRound={selectedRound} />
-            )}
-          </ScrollContent>
-        </DialogLayout>
+              </TabsList>
+
+              {THRESHOLDS.map((threshold) => (
+                <ThresholdTabsContent 
+                  key={threshold}
+                  threshold={threshold}
+                  predictions={predictions}
+                />
+              ))}
+            </Tabs>
+          ) : (
+            <EmptyPredictionState selectedRound={selectedRound} />
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

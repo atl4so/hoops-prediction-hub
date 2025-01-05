@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Check, X } from "lucide-react";
 import { RoundSelector } from "../predictions/RoundSelector";
 import { useState } from "react";
-import { DialogLayout, DialogContent as ScrollContent } from "@/components/shared/DialogLayout";
 
 interface WinnerPredictionsDialogProps {
   isOpen: boolean;
@@ -56,6 +55,7 @@ export function WinnerPredictionsDialog({
         throw error;
       }
 
+      console.log('Raw predictions data:', data);
       return data.filter(pred => pred.game.game_results.is_final);
     },
     enabled: isOpen && !!selectedRound,
@@ -92,72 +92,68 @@ export function WinnerPredictionsDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] p-0 gap-0">
-        <DialogLayout>
-          <div className="p-6 pb-0">
-            <DialogHeader>
-              <DialogTitle>Winner Predictions by Round</DialogTitle>
-              <DialogDescription>
-                View your completed predictions and their results
-              </DialogDescription>
-            </DialogHeader>
-          </div>
-          
-          <ScrollContent className="px-6">
-            <RoundSelector 
-              selectedRound={selectedRound} 
-              onRoundChange={setSelectedRound}
-              className="w-full"
-            />
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Winner Predictions by Round</DialogTitle>
+          <DialogDescription>
+            View your completed predictions and their results
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="space-y-4">
+          <RoundSelector 
+            selectedRound={selectedRound} 
+            onRoundChange={setSelectedRound}
+            className="w-full"
+          />
 
-            {isLoading ? (
-              <div className="text-center py-4 text-muted-foreground">
-                Loading predictions...
-              </div>
-            ) : predictions && predictions.length > 0 ? (
-              <div className="space-y-2">
-                {predictions.map((prediction) => {
-                  const result = getPredictionResult(prediction);
-                  if (!result) return null;
+          {isLoading ? (
+            <div className="text-center py-4 text-muted-foreground">
+              Loading predictions...
+            </div>
+          ) : predictions && predictions.length > 0 ? (
+            <div className="space-y-2 max-h-[400px] overflow-y-auto">
+              {predictions.map((prediction) => {
+                const result = getPredictionResult(prediction);
+                if (!result) return null;
 
-                  return (
-                    <div 
-                      key={prediction.id} 
-                      className={`flex items-center justify-between p-3 rounded-lg border ${
-                        result.isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
-                      }`}
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium">
-                            {prediction.game.home_team.name} vs {prediction.game.away_team.name}
-                          </span>
-                          {result.isCorrect ? (
-                            <Check className="h-4 w-4 text-green-600" />
-                          ) : (
-                            <X className="h-4 w-4 text-red-600" />
-                          )}
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
-                          <p>Your prediction: {result.predicted.home} - {result.predicted.away}</p>
-                          <p>Final score: {result.actual.home} - {result.actual.away}</p>
-                        </div>
+                return (
+                  <div 
+                    key={prediction.id} 
+                    className={`flex items-center justify-between p-3 rounded-lg border ${
+                      result.isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                    }`}
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">
+                          {prediction.game.home_team.name} vs {prediction.game.away_team.name}
+                        </span>
+                        {result.isCorrect ? (
+                          <Check className="h-4 w-4 text-green-600" />
+                        ) : (
+                          <X className="h-4 w-4 text-red-600" />
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
+                        <p>Your prediction: {result.predicted.home} - {result.predicted.away}</p>
+                        <p>Final score: {result.actual.home} - {result.actual.away}</p>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-            ) : selectedRound ? (
-              <div className="text-center py-6 text-muted-foreground">
-                No completed predictions found for this round
-              </div>
-            ) : (
-              <div className="text-center py-6 text-muted-foreground">
-                Select a round to view predictions
-              </div>
-            )}
-          </ScrollContent>
-        </DialogLayout>
+                  </div>
+                );
+              })}
+            </div>
+          ) : selectedRound ? (
+            <div className="text-center py-6 text-muted-foreground">
+              No completed predictions found for this round
+            </div>
+          ) : (
+            <div className="text-center py-6 text-muted-foreground">
+              Select a round to view predictions
+            </div>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );
