@@ -27,11 +27,10 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
           if (mounted) {
             setIsAuthenticated(false);
             setIsLoading(false);
-            // Only clear session if it's not already a session_not_found error
             if (!error.message.includes('session_not_found')) {
               await clearAuthSession();
+              toast.error("Session error. Please try logging in again.");
             }
-            toast.error("Session error. Please try logging in again.");
           }
           return;
         }
@@ -55,7 +54,6 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
         if (mounted) {
           setIsAuthenticated(false);
           setIsLoading(false);
-          await clearAuthSession();
           toast.error("Session verification failed. Please try logging in again.");
         }
       }
@@ -66,7 +64,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
 
     // Set up auth state change listener
     const setupAuthListener = async () => {
-      const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+      authListener = supabase.auth.onAuthStateChange(async (event, session) => {
         if (!mounted) return;
         
         console.log('Auth state changed:', event, session?.user?.id);
@@ -86,8 +84,6 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
           }
         }
       });
-      
-      authListener = data;
     };
 
     setupAuthListener();
