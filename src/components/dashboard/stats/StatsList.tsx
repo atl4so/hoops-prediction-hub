@@ -112,7 +112,7 @@ export function StatsList({
       {isMobile && allStats.length > 2 && (
         <Button
           variant="outline"
-          className="w-full mt-4"
+          className="w-full mt-4 bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary"
           onClick={() => setShowAllCards(!showAllCards)}
         >
           {showAllCards ? "Show Less" : "Show More"}

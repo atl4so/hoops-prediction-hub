@@ -1,11 +1,18 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 interface RoundSelectorProps {
   selectedRound: string;
-  onRoundChange: (round: string) => void;
+  onRoundChange: (roundId: string) => void;
   className?: string;
 }
 
@@ -14,8 +21,8 @@ export function RoundSelector({ selectedRound, onRoundChange, className }: Round
     queryKey: ["rounds"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('rounds')
-        .select('id, name')
+        .from("rounds")
+        .select("*")
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -23,15 +30,25 @@ export function RoundSelector({ selectedRound, onRoundChange, className }: Round
     },
   });
 
+  useEffect(() => {
+    if (rounds && rounds.length > 0 && !selectedRound) {
+      onRoundChange(rounds[0].id);
+    }
+  }, [rounds, selectedRound, onRoundChange]);
+
+  if (!rounds?.length) return null;
+
   return (
     <Select value={selectedRound} onValueChange={onRoundChange}>
-      <SelectTrigger className={cn("w-full", className)}>
-        <SelectValue placeholder="Select round" />
+      <SelectTrigger className={cn("w-full bg-white shadow-sm", className)}>
+        <SelectValue placeholder="Select a round">
+          {selectedRound && rounds.find(r => r.id === selectedRound)?.name}
+        </SelectValue>
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="bg-white shadow-lg border z-50">
         {rounds?.map((round) => (
-          <SelectItem key={round.id} value={round.id}>
-            {round.name}
+          <SelectItem key={round.id} value={round.id} className="cursor-pointer">
+            Round {round.name}
           </SelectItem>
         ))}
       </SelectContent>
