@@ -4,7 +4,7 @@
  
 @layer base {
   :root {
-    --background: 270 60% 98%;
+    --background: 240 20% 97%;
     --foreground: 0 0% 0%;
     
     --card: 0 0% 100%;
@@ -34,9 +34,7 @@
  
     --radius: 0.75rem;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
