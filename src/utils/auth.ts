@@ -10,7 +10,6 @@ export const clearAuthSession = async () => {
     
     // Clear any local storage items
     localStorage.removeItem('supabase.auth.token');
-    localStorage.removeItem('sb-nuswsfxmaqyzfmpmbuky-auth-token');
     sessionStorage.clear();
   } catch (error) {
     console.error('Session cleanup error:', error);

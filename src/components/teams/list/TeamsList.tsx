@@ -11,46 +11,19 @@ interface TeamsListProps {
   sortBy: "predictions" | "success" | "upsets" | "wins" | "losses";
 }
 
-interface TeamStats {
-  total_games: number;
-  total_predictions: number;
-  overall_success_rate: number;
-  home_success_rate: number;
-  away_success_rate: number;
-  underdog_wins: number;
-  unexpected_losses: number;
-  avg_upset_margin: number;
-  avg_loss_margin: number;
-  margin_1_9_wins: number;
-  margin_10_15_wins: number;
-  margin_15plus_wins: number;
-  margin_1_9_losses: number;
-  margin_10_15_losses: number;
-  margin_15plus_losses: number;
-  home_games: number;
-  away_games: number;
-  percentage_favoring_team: number;
-  wins_predicted: number;
-  losses_predicted: number;
-}
-
 export function TeamsList({ teams, isLoading, onTeamClick, sortBy }: TeamsListProps) {
-  const { data: teamStats } = useQuery<(TeamStats & { teamId: string })[]>({
+  const { data: teamStats } = useQuery({
     queryKey: ["team-stats"],
     queryFn: async () => {
-      const statsPromises = teams.map(async (team) => {
-        const { data, error } = await supabase
-          .rpc('get_team_prediction_stats', { team_id_param: team.id });
-          
-        if (error) {
-          console.error('Error fetching team stats:', error);
-          throw error;
-        }
+      const { data, error } = await supabase
+        .rpc('get_team_prediction_stats', { team_id_param: team.id });
         
-        return { ...data[0], teamId: team.id };
-      });
-
-      return Promise.all(statsPromises);
+      if (error) {
+        console.error('Error fetching team stats:', error);
+        throw error;
+      }
+      
+      return { teamId: team.id, ...data[0] };
     },
     enabled: teams.length > 0,
   });
