@@ -39,22 +39,38 @@ export function SessionHandler({ children, queryClient }: SessionHandlerProps) {
   }, [navigate, isLoading]);
 
   useEffect(() => {
-    const setupSessionRefresh = () => {
+    const setupSessionRefresh = async () => {
       // Clear any existing interval
       if (refreshIntervalRef.current) {
         window.clearInterval(refreshIntervalRef.current);
+      }
+
+      // Initial session refresh
+      if (session) {
+        try {
+          await refreshSession();
+          console.log('Initial session refresh successful');
+        } catch (error) {
+          console.error('Initial session refresh failed:', error);
+        }
       }
 
       // Set up new refresh interval if we have a session
       if (session) {
         refreshIntervalRef.current = window.setInterval(async () => {
           try {
-            await refreshSession();
+            const refreshedSession = await refreshSession();
+            if (!refreshedSession) {
+              console.log('Session refresh failed, redirecting to login...');
+              navigate("/login");
+              return;
+            }
             console.log('Session refreshed successfully');
           } catch (error) {
             console.error('Failed to refresh session:', error);
+            navigate("/login");
           }
-        }, 30 * 60 * 1000); // Refresh every 30 minutes
+        }, 10 * 60 * 1000); // Refresh every 10 minutes
       }
     };
 
@@ -66,7 +82,7 @@ export function SessionHandler({ children, queryClient }: SessionHandlerProps) {
         window.clearInterval(refreshIntervalRef.current);
       }
     };
-  }, [session]);
+  }, [session, navigate]);
 
   useEffect(() => {
     const handleAuthChange = (event: string, session: any) => {
