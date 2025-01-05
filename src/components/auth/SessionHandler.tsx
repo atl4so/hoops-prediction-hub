@@ -15,7 +15,6 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
 
   useEffect(() => {
     let mounted = true;
-    let authListener: { subscription: { unsubscribe: () => void } } | null = null;
 
     const checkSession = async () => {
       try {
@@ -63,36 +62,32 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
     checkSession();
 
     // Set up auth state change listener
-    const setupAuthListener = async () => {
-      authListener = supabase.auth.onAuthStateChange(async (event, session) => {
-        if (!mounted) return;
-        
-        console.log('Auth state changed:', event, session?.user?.id);
-        
-        if (event === 'SIGNED_OUT') {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!mounted) return;
+      
+      console.log('Auth state changed:', event, session?.user?.id);
+      
+      if (event === 'SIGNED_OUT') {
+        setIsAuthenticated(false);
+        setIsLoading(false);
+        queryClient.clear();
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        if (session) {
+          setIsAuthenticated(true);
+          setIsLoading(false);
+          queryClient.invalidateQueries();
+        } else {
           setIsAuthenticated(false);
           setIsLoading(false);
-          queryClient.clear();
-        } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          if (session) {
-            setIsAuthenticated(true);
-            setIsLoading(false);
-            queryClient.invalidateQueries();
-          } else {
-            setIsAuthenticated(false);
-            setIsLoading(false);
-          }
         }
-      });
-    };
-
-    setupAuthListener();
+      }
+    });
 
     // Cleanup function
     return () => {
       mounted = false;
-      if (authListener) {
-        authListener.subscription.unsubscribe();
+      if (subscription) {
+        subscription.unsubscribe();
       }
     };
   }, [queryClient]);
