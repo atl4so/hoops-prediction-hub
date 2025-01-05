@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSession } from "@supabase/auth-helpers-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -59,7 +59,25 @@ export default function MyPredictions() {
 
         if (error) throw error;
 
-        setPredictions(data || []);
+        // Transform the data to ensure game_results is always an array
+        const transformedPredictions = data.map(pred => ({
+          id: pred.id,
+          game: {
+            ...pred.game,
+            game_results: Array.isArray(pred.game.game_results) 
+              ? pred.game.game_results 
+              : pred.game.game_results 
+                ? [pred.game.game_results] 
+                : []
+          },
+          prediction: {
+            prediction_home_score: pred.prediction_home_score,
+            prediction_away_score: pred.prediction_away_score,
+            points_earned: pred.points_earned
+          }
+        }));
+
+        setPredictions(transformedPredictions);
       } catch (error) {
         console.error('Error fetching predictions:', error);
         toast.error("Failed to load predictions. Please try again.");
