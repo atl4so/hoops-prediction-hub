@@ -51,15 +51,19 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
       // Upload new avatar
       const fileExt = file.name.split('.').pop();
       const fileName = `${profile.id}-${Date.now()}.${fileExt}`;
-      
+
       console.log('Uploading file:', {
         name: fileName,
         type: file.type,
         size: file.size
       });
 
-      // Create a new File object with the correct MIME type
-      const newFile = new File([file], fileName, { type: file.type });
+      // Read the file as an ArrayBuffer
+      const arrayBuffer = await file.arrayBuffer();
+      // Create a new Blob with the correct MIME type
+      const blob = new Blob([arrayBuffer], { type: file.type });
+      // Create a new File with the correct MIME type
+      const newFile = new File([blob], fileName, { type: file.type });
 
       const { error: uploadError, data } = await supabase.storage
         .from('avatars')
