@@ -34,6 +34,7 @@ export function WinnerPredictionsDialog({
           game:games!inner (
             id,
             game_date,
+            round_id,
             home_team:teams!games_home_team_id_fkey (
               name
             ),
