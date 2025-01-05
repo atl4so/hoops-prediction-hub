@@ -28,9 +28,9 @@ const formatRank = (rank: number | null | undefined) => {
   return rank + (suffix[(v - 20) % 10] || suffix[v] || suffix[0]);
 };
 
-const formatPercentage = (correct: number = 0, total: number = 0): string => {
-  if (total === 0) return "0";
-  return Math.round((correct / total) * 100).toString();
+const calculatePercentage = (correct: number = 0, total: number = 0): number => {
+  if (total === 0) return 0;
+  return Math.round((correct / total) * 100);
 };
 
 export function StatsList({
@@ -51,6 +51,9 @@ export function StatsList({
 }: StatsListProps) {
   const [showWinnerDialog, setShowWinnerDialog] = useState(false);
   const [showHomeAwayDialog, setShowHomeAwayDialog] = useState(false);
+
+  const homeWinPercentage = calculatePercentage(homeWinnerPredictionsCorrect, homeWinnerPredictionsTotal);
+  const awayWinPercentage = calculatePercentage(awayWinnerPredictionsCorrect, awayWinnerPredictionsTotal);
 
   const stats = [
     {
@@ -74,14 +77,14 @@ export function StatsList({
     {
       icon: Target,
       label: "Winner Prediction",
-      value: `${winnerPredictionsTotal > 0 ? Math.round((winnerPredictionsCorrect / winnerPredictionsTotal) * 100) : 0}%`,
+      value: `${calculatePercentage(winnerPredictionsCorrect, winnerPredictionsTotal)}%`,
       description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} games`,
       onClick: userId ? () => setShowWinnerDialog(true) : undefined
     },
     {
       icon: Home,
       label: "Home/Away",
-      value: `${homeWinnerPredictionsCorrect}/${homeWinnerPredictionsTotal} | ${awayWinnerPredictionsCorrect}/${awayWinnerPredictionsTotal}`,
+      value: `${homeWinPercentage}/${awayWinPercentage}%`,
       description: `Home wins: ${homeWinnerPredictionsCorrect} of ${homeWinnerPredictionsTotal} | Away wins: ${awayWinnerPredictionsCorrect} of ${awayWinnerPredictionsTotal}`,
       onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
     },
