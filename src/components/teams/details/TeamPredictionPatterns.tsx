@@ -50,7 +50,7 @@ export function TeamPredictionPatterns({ stats }: TeamPredictionPatternsProps) {
               <span className="font-medium">{Math.round(stats?.percentage_favoring_team || 0)}%</span>
             </div>
             <div className="text-xs text-muted-foreground">
-              These are wins that occurred when less than 50% of users predicted this team would win
+              These are wins that occurred when less than 50% of users predicted this team would win. In other words, the team won despite being considered the underdog by the majority of predictors.
             </div>
           </div>
         </div>
@@ -67,7 +67,7 @@ export function TeamPredictionPatterns({ stats }: TeamPredictionPatternsProps) {
               <span className="font-medium">{Math.round(stats?.percentage_favoring_team || 0)}%</span>
             </div>
             <div className="text-xs text-muted-foreground">
-              These are losses that happened when more than 50% of users predicted this team would win
+              These are losses that happened when more than 50% of users predicted this team would win. This means the team lost despite being favored to win by the majority of predictors.
             </div>
           </div>
         </div>
