@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { QueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { clearAuthSession } from '@/utils/auth';
+import { clearAuthSession, verifySession } from '@/utils/auth';
 import { toast } from "sonner";
 
 interface SessionHandlerProps {
@@ -17,17 +17,6 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
     let mounted = true;
     let authListener: { subscription: { unsubscribe: () => void } } | null = null;
 
-    const handleSessionError = async () => {
-      console.log('Handling session error...');
-      if (mounted) {
-        setIsAuthenticated(false);
-        setIsLoading(false);
-        await clearAuthSession();
-        queryClient.clear();
-        toast.error("Session expired. Please log in again.");
-      }
-    };
-
     const checkSession = async () => {
       try {
         console.log('Checking session...');
@@ -35,7 +24,12 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
         
         if (error) {
           console.error('Session error:', error);
-          await handleSessionError();
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+            await clearAuthSession();
+            toast.error("Session error. Please try logging in again.");
+          }
           return;
         }
 
@@ -48,14 +42,6 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
           return;
         }
 
-        // Verify the session is still valid
-        const { error: verifyError } = await supabase.auth.getUser();
-        if (verifyError) {
-          console.error('Session verification error:', verifyError);
-          await handleSessionError();
-          return;
-        }
-
         console.log('Valid session found:', session.user.id);
         if (mounted) {
           setIsAuthenticated(true);
@@ -63,7 +49,12 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
         }
       } catch (error) {
         console.error('Session verification error:', error);
-        await handleSessionError();
+        if (mounted) {
+          setIsAuthenticated(false);
+          setIsLoading(false);
+          await clearAuthSession();
+          toast.error("Session verification failed. Please try logging in again.");
+        }
       }
     };
 
@@ -77,7 +68,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
         
         console.log('Auth state changed:', event, session?.user?.id);
         
-        if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+        if (event === 'SIGNED_OUT') {
           setIsAuthenticated(false);
           setIsLoading(false);
           queryClient.clear();
@@ -87,7 +78,9 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
             setIsLoading(false);
             queryClient.invalidateQueries();
           } else {
-            await handleSessionError();
+            setIsAuthenticated(false);
+            setIsLoading(false);
+            await clearAuthSession();
           }
         }
       });
