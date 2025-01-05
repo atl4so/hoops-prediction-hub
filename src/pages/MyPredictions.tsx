@@ -7,21 +7,35 @@ import { toast } from "sonner";
 import { useUserProfile } from "@/components/dashboard/UserProfile";
 import { RoundSelector } from "@/components/dashboard/predictions/RoundSelector";
 import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function MyPredictions() {
   const session = useSession();
   const navigate = useNavigate();
-  const userId = session?.user?.id;
+  const [userId, setUserId] = useState<string | null>(null);
   const { data: predictions, isError: predictionsError, isLoading } = useUserPredictions(userId);
   const { data: profile } = useUserProfile(userId);
   const [selectedRound, setSelectedRound] = useState<string>("");
 
   useEffect(() => {
-    if (!session) {
-      navigate("/login");
-      return;
-    }
-  }, [session, navigate]);
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          navigate("/login");
+          return;
+        }
+        setUserId(session.user.id);
+      } catch (error) {
+        console.error('Session check error:', error);
+        toast.error("Session error. Please try logging in again.");
+        navigate("/login");
+      }
+    };
+
+    checkSession();
+  }, [navigate]);
 
   if (predictionsError) {
     toast.error("Failed to load predictions");
@@ -80,14 +94,10 @@ export default function MyPredictions() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <section className="text-center space-y-3 sm:space-y-4">
-        <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-foreground">
-          My Predictions
-        </h1>
-        <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
-          Track your predictions and their outcomes
-        </p>
-      </section>
+      <PageHeader 
+        title="My Predictions" 
+        description="Track your predictions and their outcomes"
+      />
 
       <div className="w-[240px] mx-auto">
         <RoundSelector

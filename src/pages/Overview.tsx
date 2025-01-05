@@ -7,6 +7,7 @@ import { useCurrentRoundRank } from "@/components/dashboard/useCurrentRoundRank"
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardStats } from "@/components/dashboard/sections/DashboardStats";
+import { PageHeader } from "@/components/shared/PageHeader";
 
 export default function Overview() {
   const session = useSession();
@@ -15,41 +16,23 @@ export default function Overview() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (!session) {
-      navigate("/login");
-      return;
-    }
-    setUserId(session.user.id);
-  }, [session, navigate]);
-
-  useEffect(() => {
-    if (!userId) return;
-
-    const gameResultsChannel = supabase
-      .channel('game-results-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'game_results'
-        },
-        () => {
-          console.log('Game results changed, invalidating queries...');
-          queryClient.invalidateQueries({ queryKey: ['userProfile', userId] });
-          queryClient.invalidateQueries({ queryKey: ['userPredictions', userId] });
-          queryClient.invalidateQueries({ queryKey: ['currentRoundRank', userId] });
-          queryClient.invalidateQueries({ queryKey: ['games'] });
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          navigate("/login");
+          return;
         }
-      )
-      .subscribe((status) => {
-        console.log('Game results subscription status:', status);
-      });
-
-    return () => {
-      supabase.removeChannel(gameResultsChannel);
+        setUserId(session.user.id);
+      } catch (error) {
+        console.error('Session check error:', error);
+        toast.error("Session error. Please try logging in again.");
+        navigate("/login");
+      }
     };
-  }, [userId, queryClient]);
+
+    checkSession();
+  }, [navigate]);
 
   const { data: userProfileData, isError: profileError } = useUserProfile(userId);
   const currentRoundRank = useCurrentRoundRank(userId);
@@ -66,14 +49,10 @@ export default function Overview() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <section className="text-center space-y-3 sm:space-y-4">
-        <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-foreground">
-          Overview
-        </h1>
-        <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
-          Track your performance and statistics
-        </p>
-      </section>
+      <PageHeader 
+        title="Overview" 
+        description="Track your performance and statistics"
+      />
       
       <DashboardStats
         totalPoints={totalPoints}
