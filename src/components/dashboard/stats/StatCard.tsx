@@ -9,6 +9,10 @@ interface StatCardProps {
   description?: string;
   delay?: number;
   onClick?: () => void;
+  descriptionIcons?: {
+    firstIcon: LucideIcon;
+    secondIcon: LucideIcon;
+  };
 }
 
 export function StatCard({ 
@@ -17,7 +21,8 @@ export function StatCard({
   value, 
   description,
   delay = 0,
-  onClick
+  onClick,
+  descriptionIcons
 }: StatCardProps) {
   const isClickable = !!onClick;
 
@@ -52,7 +57,21 @@ export function StatCard({
             </p>
             {description && (
               <p className="text-xs sm:text-sm text-muted-foreground max-w-[200px] mx-auto leading-relaxed">
-                {description}
+                {descriptionIcons ? (
+                  <span className="flex items-center justify-center gap-1">
+                    <span className="flex items-center gap-0.5">
+                      <descriptionIcons.firstIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                      {description.split('|')[0].trim()}
+                    </span>
+                    <span className="text-muted-foreground mx-1">|</span>
+                    <span className="flex items-center gap-0.5">
+                      <descriptionIcons.secondIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                      {description.split('|')[1].trim()}
+                    </span>
+                  </span>
+                ) : (
+                  description
+                )}
               </p>
             )}
             {isClickable && (

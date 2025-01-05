@@ -1,4 +1,4 @@
-import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal, Home, ArrowLeftRight } from "lucide-react";
+import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal, Home, Plane, ArrowLeftRight } from "lucide-react";
 import { StatsGrid } from "./StatsGrid";
 import { useState } from "react";
 import { WinnerPredictionsDialog } from "./WinnerPredictionsDialog";
@@ -87,7 +87,11 @@ export function StatsList({
       label: "Home/Away",
       value: `${homePercentage}/${awayPercentage}%`,
       description: `Home: ${homeWinnerPredictionsCorrect}/${homeWinnerPredictionsTotal} | Away: ${awayWinnerPredictionsCorrect}/${awayWinnerPredictionsTotal}`,
-      onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
+      onClick: userId ? () => setShowHomeAwayDialog(true) : undefined,
+      descriptionIcons: {
+        firstIcon: Home,
+        secondIcon: Plane
+      }
     },
     {
       icon: Target,

@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Check, X } from "lucide-react";
+import { Check, X, Home, Plane } from "lucide-react";
 import { RoundSelector } from "../predictions/RoundSelector";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -100,7 +100,7 @@ export function HomeAwayPredictionsDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] max-h-[90vh] flex flex-col">
-        <DialogHeader>
+        <DialogHeader className="space-y-2">
           <DialogTitle>Home/Away Winner Predictions</DialogTitle>
           <DialogDescription>
             View your home and away winner predictions by round
@@ -108,13 +108,11 @@ export function HomeAwayPredictionsDialog({
         </DialogHeader>
         
         <div className="space-y-4 flex-1 overflow-y-auto">
-          <div className="rounded-lg border bg-white text-card-foreground">
-            <RoundSelector 
-              selectedRound={selectedRound} 
-              onRoundChange={setSelectedRound}
-              className="w-full"
-            />
-          </div>
+          <RoundSelector 
+            selectedRound={selectedRound} 
+            onRoundChange={setSelectedRound}
+            className="w-full"
+          />
 
           {isLoading ? (
             <div className="text-center py-4 text-muted-foreground">
@@ -123,17 +121,32 @@ export function HomeAwayPredictionsDialog({
           ) : predictions && predictions.length > 0 ? (
             <Tabs defaultValue="home" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="home">Home Winners</TabsTrigger>
-                <TabsTrigger value="away">Away Winners</TabsTrigger>
+                <TabsTrigger value="home" className="px-2 py-1">
+                  <span className="flex items-center gap-1.5">
+                    <Home className="h-3 w-3" />
+                    <span className="text-sm">Home</span>
+                  </span>
+                </TabsTrigger>
+                <TabsTrigger value="away" className="px-2 py-1">
+                  <span className="flex items-center gap-1.5">
+                    <Plane className="h-3 w-3" />
+                    <span className="text-sm">Away</span>
+                  </span>
+                </TabsTrigger>
               </TabsList>
 
               {['home', 'away'].map((type) => {
                 const stats = getStats(type as 'home' | 'away');
+                const Icon = type === 'home' ? Home : Plane;
+                
                 return (
-                  <TabsContent key={type} value={type} className="space-y-4">
-                    <div className="text-center space-y-2">
-                      <p className="text-2xl font-bold">{stats.percentage}%</p>
-                      <p className="text-sm text-muted-foreground">
+                  <TabsContent key={type} value={type} className="space-y-3 mt-3">
+                    <div className="text-center space-y-1 p-3 bg-muted/10 rounded-lg">
+                      <div className="flex items-center justify-center gap-2">
+                        <Icon className="h-4 w-4" />
+                        <p className="text-xl font-bold">{stats.percentage}%</p>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
                         Correctly predicted {stats.correct} {type} wins out of {stats.total}
                       </p>
                     </div>
@@ -149,22 +162,22 @@ export function HomeAwayPredictionsDialog({
                         return (
                           <div 
                             key={prediction.id} 
-                            className={`flex items-center justify-between p-3 rounded-lg border ${
+                            className={`flex items-center justify-between p-2 rounded-lg border ${
                               result.isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
                             }`}
                           >
                             <div className="flex-1">
                               <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium">
+                                <span className="text-xs font-medium">
                                   {prediction.game.home_team.name} vs {prediction.game.away_team.name}
                                 </span>
                                 {result.isCorrect ? (
-                                  <Check className="h-4 w-4 text-green-600" />
+                                  <Check className="h-3 w-3 text-green-600" />
                                 ) : (
-                                  <X className="h-4 w-4 text-red-600" />
+                                  <X className="h-3 w-3 text-red-600" />
                                 )}
                               </div>
-                              <div className="text-xs text-muted-foreground mt-1">
+                              <div className="text-[10px] text-muted-foreground mt-0.5">
                                 <p>Your prediction: {result.prediction}</p>
                                 <p>Final result: {result.actual}</p>
                               </div>
@@ -179,11 +192,11 @@ export function HomeAwayPredictionsDialog({
             </Tabs>
           ) : selectedRound ? (
             <div className="text-center py-6 text-muted-foreground">
-              No completed predictions found for this round
+              <p className="text-sm">No completed predictions found for this round</p>
             </div>
           ) : (
             <div className="text-center py-6 text-muted-foreground">
-              Select a round to view predictions
+              <p className="text-sm">Select a round to view predictions</p>
             </div>
           )}
         </div>
