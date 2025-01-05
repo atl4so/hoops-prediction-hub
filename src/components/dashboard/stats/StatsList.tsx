@@ -14,10 +14,6 @@ interface StatsListProps {
   currentRoundRank?: { rank: number | null; isCurrent: boolean; roundName: string };
   winnerPredictionsCorrect?: number;
   winnerPredictionsTotal?: number;
-  homeWinnerPredictionsCorrect?: number;
-  homeWinnerPredictionsTotal?: number;
-  awayWinnerPredictionsCorrect?: number;
-  awayWinnerPredictionsTotal?: number;
   userId?: string;
 }
 
@@ -38,10 +34,6 @@ export function StatsList({
   currentRoundRank,
   winnerPredictionsCorrect = 0,
   winnerPredictionsTotal = 0,
-  homeWinnerPredictionsCorrect = 0,
-  homeWinnerPredictionsTotal = 0,
-  awayWinnerPredictionsCorrect = 0,
-  awayWinnerPredictionsTotal = 0,
   userId,
 }: StatsListProps) {
   const [showWinnerDialog, setShowWinnerDialog] = useState(false);
@@ -76,8 +68,8 @@ export function StatsList({
     {
       icon: Home,
       label: "Home/Away",
-      value: `Home: ${homeWinnerPredictionsCorrect}/${homeWinnerPredictionsTotal}, Away: ${awayWinnerPredictionsCorrect}/${awayWinnerPredictionsTotal}`,
-      description: "Click to see detailed breakdown of your home and away predictions",
+      value: "Click to view stats",
+      description: "View your prediction accuracy for home and away games",
       onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
     },
     {

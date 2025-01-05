@@ -4,8 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useUserProfile } from "@/components/dashboard/UserProfile";
 import { useCurrentRoundRank } from "@/components/dashboard/useCurrentRoundRank";
-import { useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { DashboardStats } from "@/components/dashboard/sections/DashboardStats";
 import { PageHeader } from "@/components/shared/PageHeader";
 
@@ -13,7 +11,6 @@ export default function Overview() {
   const session = useSession();
   const navigate = useNavigate();
   const [userId, setUserId] = useState<string | null>(null);
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     const checkSession = async () => {
@@ -58,12 +55,6 @@ export default function Overview() {
         currentRoundRank={currentRoundRank}
         winnerPredictionsCorrect={userProfileData?.winner_predictions_correct}
         winnerPredictionsTotal={userProfileData?.winner_predictions_total}
-        homeWinnerPredictionsCorrect={userProfileData?.home_winner_predictions_correct}
-        homeWinnerPredictionsTotal={userProfileData?.home_winner_predictions_total}
-        awayWinnerPredictionsCorrect={userProfileData?.away_winner_predictions_correct}
-        awayWinnerPredictionsTotal={userProfileData?.away_winner_predictions_total}
-        overUnderPredictionsCorrect={userProfileData?.over_under_predictions_correct}
-        overUnderPredictionsTotal={userProfileData?.over_under_predictions_total}
         userId={userId}
       />
     </div>

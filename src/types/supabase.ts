@@ -1,53 +1,548 @@
-export interface Team {
-  id: string;
-  name: string;
-  logo_url: string;
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  public: {
+    Tables: {
+      background_settings: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean | null
+          opacity: number
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          opacity?: number
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          opacity?: number
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      game_results: {
+        Row: {
+          away_score: number
+          created_at: string
+          game_id: string | null
+          home_score: number
+          id: string
+          is_final: boolean
+          updated_at: string
+        }
+        Insert: {
+          away_score: number
+          created_at?: string
+          game_id?: string | null
+          home_score: number
+          id?: string
+          is_final?: boolean
+          updated_at?: string
+        }
+        Update: {
+          away_score?: number
+          created_at?: string
+          game_id?: string | null
+          home_score?: number
+          id?: string
+          is_final?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_results_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: true
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      games: {
+        Row: {
+          away_team_id: string
+          created_at: string
+          game_date: string
+          home_team_id: string
+          id: string
+          round_id: string
+          updated_at: string
+        }
+        Insert: {
+          away_team_id: string
+          created_at?: string
+          game_date: string
+          home_team_id: string
+          id?: string
+          round_id: string
+          updated_at?: string
+        }
+        Update: {
+          away_team_id?: string
+          created_at?: string
+          game_date?: string
+          home_team_id?: string
+          id?: string
+          round_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "games_away_team_id_fkey"
+            columns: ["away_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "games_home_team_id_fkey"
+            columns: ["home_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "games_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "rounds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      predictions: {
+        Row: {
+          created_at: string
+          game_id: string | null
+          id: string
+          points_earned: number | null
+          prediction_away_score: number
+          prediction_home_score: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          game_id?: string | null
+          id?: string
+          points_earned?: number | null
+          prediction_away_score: number
+          prediction_home_score: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          game_id?: string | null
+          id?: string
+          points_earned?: number | null
+          prediction_away_score?: number
+          prediction_home_score?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "predictions_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string
+          email: string
+          highest_game_points: number | null
+          highest_round_points: number | null
+          id: string
+          is_admin: boolean | null
+          lowest_game_points: number | null
+          lowest_round_points: number | null
+          over_under_predictions_correct: number | null
+          over_under_predictions_total: number | null
+          points_per_game: number | null
+          total_points: number | null
+          total_predictions: number | null
+          updated_at: string
+          winner_predictions_correct: number | null
+          winner_predictions_total: number | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name: string
+          email: string
+          highest_game_points?: number | null
+          highest_round_points?: number | null
+          id: string
+          is_admin?: boolean | null
+          lowest_game_points?: number | null
+          lowest_round_points?: number | null
+          over_under_predictions_correct?: number | null
+          over_under_predictions_total?: number | null
+          points_per_game?: number | null
+          total_points?: number | null
+          total_predictions?: number | null
+          updated_at?: string
+          winner_predictions_correct?: number | null
+          winner_predictions_total?: number | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string
+          email?: string
+          highest_game_points?: number | null
+          highest_round_points?: number | null
+          id?: string
+          is_admin?: boolean | null
+          lowest_game_points?: number | null
+          lowest_round_points?: number | null
+          over_under_predictions_correct?: number | null
+          over_under_predictions_total?: number | null
+          points_per_game?: number | null
+          total_points?: number | null
+          total_predictions?: number | null
+          updated_at?: string
+          winner_predictions_correct?: number | null
+          winner_predictions_total?: number | null
+        }
+        Relationships: []
+      }
+      rounds: {
+        Row: {
+          created_at: string
+          end_date: string
+          id: string
+          name: string
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          id?: string
+          name: string
+          start_date: string
+          updated_at: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          id?: string
+          name?: string
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      teams: {
+        Row: {
+          created_at: string
+          id: string
+          logo_url: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logo_url: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logo_url?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_follows: {
+        Row: {
+          created_at: string
+          follower_id: string | null
+          following_id: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id?: string | null
+          following_id?: string | null
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string | null
+          following_id?: string | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_follows_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_follows_following_id_fkey"
+            columns: ["following_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_permissions: {
+        Row: {
+          can_view_future_predictions: boolean
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          can_view_future_predictions?: boolean
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          can_view_future_predictions?: boolean
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_permissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      admin_list_auth_users: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          email: string
+          created_at: string
+        }[]
+      }
+      calculate_prediction_points: {
+        Args: {
+          pred_home: number
+          pred_away: number
+          actual_home: number
+          actual_away: number
+        }
+        Returns: number
+      }
+      calculate_user_round_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      delete_game_completely: {
+        Args: {
+          game_id: string
+        }
+        Returns: undefined
+      }
+      delete_user: {
+        Args: {
+          user_id: string
+        }
+        Returns: undefined
+      }
+      delete_user_completely: {
+        Args: {
+          email_arg: string
+        }
+        Returns: undefined
+      }
+      get_round_rankings: {
+        Args: {
+          round_id: string
+        }
+        Returns: {
+          user_id: string
+          display_name: string
+          total_points: number
+          predictions_count: number
+        }[]
+      }
+      recalculate_all_prediction_points: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      recalculate_over_under_predictions: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      update_profile_stats: {
+        Args: {
+          user_id_arg: string
+          total_points_arg: number
+          total_predictions_arg: number
+          points_per_game_arg: number
+          highest_game_points_arg: number
+          lowest_game_points_arg: number
+        }
+        Returns: undefined
+      }
+      update_user_profile: {
+        Args: {
+          avatar_url_arg: string
+          user_id_arg: string
+        }
+        Returns: undefined
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
 }
 
-export interface Round {
-  id: string;
-  name: string;
-}
+type PublicSchema = Database[Extract<keyof Database, "public">]
 
-export interface GameResult {
-  home_score: number;
-  away_score: number;
-  is_final: boolean;
-}
+export type Tables<
+  PublicTableNameOrOptions extends
+    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
+    : never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
+        PublicSchema["Views"])
+    ? (PublicSchema["Tables"] &
+        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
 
-export interface Game {
-  id: string;
-  game_date: string;
-  parsedDate: Date;
-  round: Round;
-  home_team: Team;
-  away_team: Team;
-  game_results?: GameResult[];
-}
+export type TablesInsert<
+  PublicTableNameOrOptions extends
+    | keyof PublicSchema["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
 
-export interface UserProfile {
-  id: string;
-  display_name: string;
-  avatar_url?: string;
-  total_points?: number;
-  points_per_game?: number;
-  total_predictions?: number;
-  highest_game_points?: number;
-  lowest_game_points?: number;
-  highest_round_points?: number;
-  lowest_round_points?: number;
-  winner_predictions_correct?: number;
-  winner_predictions_total?: number;
-  over_under_predictions_correct?: number;
-  over_under_predictions_total?: number;
-}
+export type TablesUpdate<
+  PublicTableNameOrOptions extends
+    | keyof PublicSchema["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
 
-export interface RoundRank {
-  rank: number;
-  roundId: string;
-  roundName: string;
-  isCurrent: boolean;
-}
+export type Enums<
+  PublicEnumNameOrOptions extends
+    | keyof PublicSchema["Enums"]
+    | { schema: keyof Database },
+  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = PublicEnumNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
+    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof PublicSchema["CompositeTypes"]
+    | { schema: keyof Database },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
+    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
 
 export interface StatsListProps {
   totalPoints: number;
@@ -64,32 +559,4 @@ export interface StatsListProps {
   awayWinnerPredictionsCorrect?: number;
   awayWinnerPredictionsTotal?: number;
   userId?: string;
-}
-
-export interface Prediction {
-  id: string;
-  user: UserProfile;
-  game: Game;
-  prediction_home_score: number;
-  prediction_away_score: number;
-  points_earned?: number;
-}
-
-export interface UserPrediction {
-  id: string;
-  prediction: {
-    prediction_home_score: number;
-    prediction_away_score: number;
-    points_earned?: number;
-  };
-  game: Game;
-}
-
-export interface BackgroundSetting {
-  id: string;
-  url: string;
-  opacity: number;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
 }
