@@ -1,48 +1,59 @@
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
 import { useRef } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface AvatarUploadProps {
-  currentAvatarUrl?: string | null;
+  currentAvatarUrl?: string;
   onAvatarChange: (file: File | null) => void;
   isUploading: boolean;
   displayName?: string;
 }
 
-export function AvatarUpload({ 
-  currentAvatarUrl, 
-  onAvatarChange, 
+export function AvatarUpload({
+  currentAvatarUrl,
+  onAvatarChange,
   isUploading,
-  displayName 
+  displayName,
 }: AvatarUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    const file = event.target.files?.[0] || null;
     if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please upload an image file');
+        return;
+      }
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('File size must be less than 5MB');
+        return;
+      }
       onAvatarChange(file);
     }
   };
 
-  const handleRemove = () => {
-    onAvatarChange(null);
-  };
-
   return (
-    <div className="space-y-2">
-      <Label>Profile Picture</Label>
+    <div className="grid gap-2">
+      <Label htmlFor="avatar">Profile Picture</Label>
       <div className="flex items-center gap-4">
-        {currentAvatarUrl && (
-          <img 
-            src={currentAvatarUrl} 
-            alt={`${displayName}'s avatar`}
-            className="h-16 w-16 rounded-full object-cover"
+        <Avatar className="h-16 w-16">
+          <AvatarImage 
+            src={currentAvatarUrl || undefined} 
+            alt={displayName || "Profile"} 
           />
-        )}
+          <AvatarFallback>
+            {displayName?.[0]?.toUpperCase() || "U"}
+          </AvatarFallback>
+        </Avatar>
         <input
           ref={fileInputRef}
           type="file"
+          id="avatar"
           accept="image/*"
           className="hidden"
           onChange={handleFileChange}
@@ -59,13 +70,13 @@ export function AvatarUpload({
                 Uploading...
               </>
             ) : (
-              'Upload Picture'
+              'Change'
             )}
           </Button>
           {currentAvatarUrl && (
             <Button
               variant="destructive"
-              onClick={handleRemove}
+              onClick={() => onAvatarChange(null)}
               disabled={isUploading}
             >
               Remove

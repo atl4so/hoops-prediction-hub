@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { QueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { clearAuthSession, verifySession } from '@/utils/auth';
+import { clearAuthSession } from '@/utils/auth';
 import { toast } from "sonner";
 
 interface SessionHandlerProps {
@@ -20,6 +20,18 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
     const checkSession = async () => {
       try {
         console.log('Checking session...');
+        // Clear any stale session data first
+        const currentSession = await supabase.auth.getSession();
+        if (currentSession.error?.message?.includes('session_not_found')) {
+          console.log('Stale session found, clearing...');
+          await clearAuthSession();
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+          }
+          return;
+        }
+
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -68,10 +80,11 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
         
         console.log('Auth state changed:', event, session?.user?.id);
         
-        if (event === 'SIGNED_OUT') {
+        if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
           setIsAuthenticated(false);
           setIsLoading(false);
           queryClient.clear();
+          await clearAuthSession();
         } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
           if (session) {
             setIsAuthenticated(true);

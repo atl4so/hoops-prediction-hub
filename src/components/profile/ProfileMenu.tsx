@@ -9,6 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ProfileSettings } from "./ProfileSettings";
 import { useUserProfile } from "@/components/dashboard/UserProfile";
@@ -100,6 +101,15 @@ export function ProfileMenu() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex items-center gap-2 h-auto py-1.5 px-2 rounded-full hover:bg-accent/50">
               <span className="hidden md:block text-sm font-medium">Hi, {profile?.display_name}</span>
+              <Avatar className="h-8 w-8">
+                <AvatarImage 
+                  src={profile?.avatar_url || undefined} 
+                  alt={profile?.display_name || "User"} 
+                />
+                <AvatarFallback>
+                  {profile?.display_name?.[0]?.toUpperCase() || "U"}
+                </AvatarFallback>
+              </Avatar>
             </Button>
           </DropdownMenuTrigger>
         </div>

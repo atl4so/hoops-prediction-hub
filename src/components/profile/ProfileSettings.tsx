@@ -42,7 +42,7 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
           .eq('id', profile.id);
 
         if (updateError) throw updateError;
-
+        
         queryClient.invalidateQueries({ queryKey: ['userProfile'] });
         toast.success('Profile picture removed successfully');
         return;
@@ -50,29 +50,20 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
 
       // Upload new avatar
       const fileExt = file.name.split('.').pop();
-      const fileName = `${profile.id}-${Date.now()}.${fileExt}`;
-
-      console.log('Uploading file:', {
-        name: fileName,
-        type: file.type,
-        size: file.size
-      });
-
-      const { error: uploadError, data } = await supabase.storage
+      const filePath = `${profile.id}-${Date.now()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file);
+        .upload(filePath, file);
 
-      if (uploadError) {
-        console.error('Upload error:', uploadError);
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
-        .getPublicUrl(fileName);
+        .getPublicUrl(filePath);
 
-      // Update profile with new avatar URL
+      // Update profile
       const { error: updateError } = await supabase
         .from('profiles')
         .update({ avatar_url: publicUrl })
@@ -82,7 +73,7 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
 
       queryClient.invalidateQueries({ queryKey: ['userProfile'] });
       toast.success('Profile picture updated successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating avatar:', error);
       toast.error('Failed to update profile picture');
     } finally {
