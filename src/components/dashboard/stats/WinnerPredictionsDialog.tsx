@@ -47,14 +47,16 @@ export function WinnerPredictionsDialog({
           )
         `)
         .eq('user_id', userId)
-        .eq('game:games.round_id', selectedRound)
+        .eq('game.round_id', selectedRound)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
       // Filter to only include predictions with final results
       return data.filter(prediction => 
-        prediction.game?.game_results?.length > 0 && 
+        prediction.game?.game_results && 
+        Array.isArray(prediction.game.game_results) &&
+        prediction.game.game_results.length > 0 && 
         prediction.game.game_results[0].is_final
       );
     },
@@ -62,7 +64,7 @@ export function WinnerPredictionsDialog({
   });
 
   const getPredictionResult = (prediction: any) => {
-    if (!prediction.game?.game_results?.length) return null;
+    if (!prediction.game?.game_results?.[0]) return null;
 
     const predictionWinner = prediction.prediction_home_score > prediction.prediction_away_score 
       ? 'home' 
