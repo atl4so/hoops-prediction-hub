@@ -14,7 +14,6 @@ export function useUserPredictions(userId: string | null) {
     if (!userId) return;
 
     const setupChannel = () => {
-      // Clean up existing channel if any
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current);
       }
@@ -33,6 +32,8 @@ export function useUserPredictions(userId: string | null) {
           (payload) => {
             console.log('Predictions changed:', payload);
             queryClient.invalidateQueries({ queryKey: ['userPredictions', userId] });
+            // Also invalidate the user profile to refresh stats
+            queryClient.invalidateQueries({ queryKey: ['userProfile', userId] });
           }
         )
         .subscribe((status) => {
@@ -100,7 +101,7 @@ export function useUserPredictions(userId: string | null) {
           throw error;
         }
 
-        const transformedData = data.map(prediction => ({
+        return data.map(prediction => ({
           ...prediction,
           game: {
             ...prediction.game,
@@ -111,20 +112,16 @@ export function useUserPredictions(userId: string | null) {
                 : []
           }
         }));
-
-        return transformedData;
       } catch (error) {
         console.error('Error in predictions query:', error);
-        toast.error("Failed to load predictions", {
-          id: 'predictions-error'
-        });
+        toast.error("Failed to load predictions");
         throw error;
       }
     },
     enabled: !!userId && !!session,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes instead of 1
-    gcTime: 1000 * 60 * 10, // Keep unused data for 10 minutes
-    refetchOnWindowFocus: false, // Disable automatic refetch on window focus
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
+    refetchOnWindowFocus: false,
     refetchOnMount: true,
     retry: 2
   });

@@ -42,6 +42,7 @@ export function StatsList({
 }: StatsListProps) {
   const [showWinnerDialog, setShowWinnerDialog] = useState(false);
 
+  // Calculate percentages safely
   const winnerPercentage = winnerPredictionsTotal > 0
     ? Math.round((winnerPredictionsCorrect / winnerPredictionsTotal) * 100)
     : 0;
@@ -49,6 +50,12 @@ export function StatsList({
   const overUnderPercentage = overUnderPredictionsTotal > 0
     ? Math.round((overUnderPredictionsCorrect / overUnderPredictionsTotal) * 100)
     : 0;
+
+  console.log('Over/Under Stats:', { 
+    correct: overUnderPredictionsCorrect, 
+    total: overUnderPredictionsTotal, 
+    percentage: overUnderPercentage 
+  });
 
   const stats = [
     {
@@ -81,6 +88,7 @@ export function StatsList({
       label: "Over/Under %",
       value: `${overUnderPercentage}%`,
       description: `Correctly predicted ${overUnderPredictionsCorrect} over/under out of ${overUnderPredictionsTotal} games`,
+      highlight: true
     },
     {
       icon: Target,
