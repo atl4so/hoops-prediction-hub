@@ -1,5 +1,5 @@
 import { Trophy, Target } from "lucide-react";
-import { StatCard } from "./stats/StatCard";
+import { StatCard } from "@/components/dashboard/StatCard";
 import { MarginDistribution } from "./stats/MarginDistribution";
 
 interface TeamPredictionPatternsProps {
@@ -26,44 +26,53 @@ export function TeamPredictionPatterns({ stats }: TeamPredictionPatternsProps) {
           icon={Trophy}
           label="Underdog Wins"
           value={stats?.underdog_wins || 0}
-          subValue={`Avg. Margin: ${formatMargin(stats?.avg_upset_margin)}`}
-          predictions={stats?.total_predictions}
-          tooltip="Games won when less than 50% of users predicted a win"
-          className="bg-green-50/50"
-          details={[
-            {
-              label: "Win prediction rate",
-              value: calculatePercentage(stats?.underdog_wins || 0, stats?.total_games || 0),
-              tooltip: "Percentage of games won as underdog out of total games"
-            },
-            {
-              label: "User predictions against",
-              value: `${Math.round((stats?.percentage_favoring_team || 0))}%`,
-              tooltip: "Average percentage of users who predicted against these wins"
-            }
-          ]}
+          description={`Average margin: ${formatMargin(stats?.avg_upset_margin)}`}
+          highlight={true}
+          tooltip="Games won when less than 50% of users predicted a win. These are unexpected victories!"
         />
         <StatCard
           icon={Target}
           label="Unexpected Losses"
           value={stats?.unexpected_losses || 0}
-          subValue={`Avg. Margin: ${formatMargin(stats?.avg_loss_margin)}`}
-          predictions={stats?.total_predictions}
-          tooltip="Games lost when more than 50% of users predicted a win"
-          className="bg-red-50/50"
-          details={[
-            {
-              label: "Loss prediction rate",
-              value: calculatePercentage(stats?.unexpected_losses || 0, stats?.total_games || 0),
-              tooltip: "Percentage of unexpected losses out of total games"
-            },
-            {
-              label: "User predictions for",
-              value: `${Math.round((stats?.percentage_favoring_team || 0))}%`,
-              tooltip: "Average percentage of users who predicted wins in these losses"
-            }
-          ]}
+          description={`Average margin: ${formatMargin(stats?.avg_loss_margin)}`}
+          tooltip="Games lost when more than 50% of users predicted a win. These are surprising defeats!"
         />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-4">
+          <h3 className="text-sm font-medium text-muted-foreground">Underdog Win Details</h3>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-muted-foreground">Win prediction rate:</span>
+              <span className="font-medium">{calculatePercentage(stats?.underdog_wins || 0, stats?.total_games || 0)}</span>
+            </div>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-muted-foreground">Users who predicted against:</span>
+              <span className="font-medium">{Math.round(100 - (stats?.percentage_favoring_team || 0))}%</span>
+            </div>
+            <div className="text-xs text-muted-foreground">
+              These wins occurred when less than 50% of users predicted victory
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-sm font-medium text-muted-foreground">Unexpected Loss Details</h3>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-muted-foreground">Loss prediction rate:</span>
+              <span className="font-medium">{calculatePercentage(stats?.unexpected_losses || 0, stats?.total_games || 0)}</span>
+            </div>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-muted-foreground">Users who predicted victory:</span>
+              <span className="font-medium">{Math.round(stats?.percentage_favoring_team || 0)}%</span>
+            </div>
+            <div className="text-xs text-muted-foreground">
+              These losses happened when more than 50% of users predicted victory
+            </div>
+          </div>
+        </div>
       </div>
 
       <MarginDistribution stats={stats} />
