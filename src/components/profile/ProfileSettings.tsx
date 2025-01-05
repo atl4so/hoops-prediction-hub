@@ -52,8 +52,10 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
       const fileExt = file.name.split('.').pop();
       const fileName = `${profile.id}-${Date.now()}.${fileExt}`;
 
+      // Read the file as an ArrayBuffer
+      const arrayBuffer = await file.arrayBuffer();
       // Create a Blob with the correct type
-      const blob = new Blob([file], { type: file.type });
+      const blob = new Blob([arrayBuffer], { type: file.type });
       
       const { error: uploadError, data } = await supabase.storage
         .from('avatars')
