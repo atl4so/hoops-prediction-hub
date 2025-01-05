@@ -12,8 +12,8 @@ interface TeamCardProps {
 export function TeamCard({ team, stats, onClick }: TeamCardProps) {
   const winRate = stats?.overall_success_rate || 0;
   const totalPredictions = stats?.total_predictions || 0;
-  const winsPredicted = stats?.home_winner_predictions_total || 0;
-  const lossesPredicted = totalPredictions - winsPredicted;
+  const winsPredicted = stats?.wins_predicted || 0;
+  const lossesPredicted = stats?.losses_predicted || 0;
 
   return (
     <Button
@@ -57,7 +57,7 @@ export function TeamCard({ team, stats, onClick }: TeamCardProps) {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <p className="cursor-help">Win Rate: {winRate}%</p>
+                      <p className="cursor-help">Win Rate: {Math.round(winRate)}%</p>
                     </TooltipTrigger>
                     <TooltipContent side="top" align="start" className="max-w-[200px] text-sm">
                       Percentage of correct predictions for {team.name}'s games

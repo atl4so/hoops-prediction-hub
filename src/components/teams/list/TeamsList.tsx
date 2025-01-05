@@ -19,7 +19,12 @@ export function TeamsList({ teams, isLoading, onTeamClick, sortBy }: TeamsListPr
         const { data, error } = await supabase
           .rpc('get_team_prediction_stats', { team_id_param: team.id });
         
-        if (error) throw error;
+        if (error) {
+          console.error('Error fetching team stats:', error);
+          throw error;
+        }
+        
+        console.log(`Stats for team ${team.name}:`, data[0]);
         return { teamId: team.id, ...data[0] };
       });
 
@@ -44,11 +49,9 @@ export function TeamsList({ teams, isLoading, onTeamClick, sortBy }: TeamsListPr
       case "upsets":
         return (statsB.underdog_wins || 0) - (statsA.underdog_wins || 0);
       case "wins":
-        return (statsB.home_winner_predictions_total || 0) - (statsA.home_winner_predictions_total || 0);
+        return (statsB.wins_predicted || 0) - (statsA.wins_predicted || 0);
       case "losses":
-        const lossesA = (statsA.total_predictions || 0) - (statsA.home_winner_predictions_total || 0);
-        const lossesB = (statsB.total_predictions || 0) - (statsB.home_winner_predictions_total || 0);
-        return lossesB - lossesA;
+        return (statsB.losses_predicted || 0) - (statsA.losses_predicted || 0);
       default:
         return 0;
     }

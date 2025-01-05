@@ -446,6 +446,8 @@ export type Database = {
           home_games: number
           away_games: number
           percentage_favoring_team: number
+          wins_predicted: number
+          losses_predicted: number
         }[]
       }
       get_team_result_distribution: {
