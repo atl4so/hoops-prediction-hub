@@ -54,32 +54,43 @@ export function RoundSelector({ selectedRound, onRoundChange, className }: Round
       if (!rounds?.length || selectedRound) return;
 
       for (const round of rounds) {
-        // First, get games for this round
-        const { data: games } = await supabase
-          .from('games')
-          .select('id')
-          .eq('round_id', round.id);
+        try {
+          // First, get games for this round
+          const { data: games, error: gamesError } = await supabase
+            .from('games')
+            .select('id')
+            .eq('round_id', round.id);
 
-        if (!games?.length) continue;
+          if (gamesError || !games?.length) continue;
 
-        // Then, check if any of these games have results
-        const { data: gameResults } = await supabase
-          .from('game_results')
-          .select('game_id')
-          .in('game_id', games.map(g => g.id));
+          const gameIds = games.map(g => g.id);
 
-        if (!gameResults?.length) continue;
+          // Then, check if any of these games have results
+          const { data: gameResults, error: resultsError } = await supabase
+            .from('game_results')
+            .select('game_id')
+            .in('game_id', gameIds);
 
-        // Finally, check if there are any predictions for these games
-        const { data: predictions } = await supabase
-          .from('predictions')
-          .select('id')
-          .in('game_id', gameResults.map(gr => gr.game_id))
-          .limit(1);
+          if (resultsError || !gameResults?.length) continue;
 
-        if (predictions?.length) {
-          onRoundChange(round.id);
-          break;
+          const gameResultIds = gameResults.map(gr => gr.game_id);
+
+          // Finally, check if there are any predictions for these games
+          const { data: predictions, error: predictionsError } = await supabase
+            .from('predictions')
+            .select('id')
+            .in('game_id', gameResultIds)
+            .limit(1);
+
+          if (predictionsError) continue;
+
+          if (predictions?.length) {
+            onRoundChange(round.id);
+            break;
+          }
+        } catch (error) {
+          console.error('Error finding latest round with data:', error);
+          continue;
         }
       }
     }
