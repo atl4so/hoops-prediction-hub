@@ -1,3 +1,8 @@
-import type { Database } from "@/integrations/supabase/types";
-
-export type BackgroundSetting = Database["public"]["Tables"]["background_settings"]["Row"];
+export interface BackgroundSetting {
+  id: string;
+  url: string;
+  opacity: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}

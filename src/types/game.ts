@@ -1,11 +1,16 @@
-import type { Database } from "@/integrations/supabase/types";
-
-export type Game = Database["public"]["Tables"]["games"]["Row"] & {
-  home_team: {
+export interface Game {
+  id: string;
+  round_id: string;
+  home_team_id: string;
+  away_team_id: string;
+  game_date: string;
+  created_at: string;
+  updated_at: string;
+  home_team?: {
     name: string;
     logo_url: string;
   };
-  away_team: {
+  away_team?: {
     name: string;
     logo_url: string;
   };
@@ -13,7 +18,5 @@ export type Game = Database["public"]["Tables"]["games"]["Row"] & {
     home_score: number;
     away_score: number;
     is_final: boolean;
-  }[];
-};
-
-export type GameResult = Database["public"]["Tables"]["game_results"]["Row"];
+  };
+}
