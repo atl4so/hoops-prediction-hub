@@ -18,12 +18,10 @@ export function WinnerPredictionsDialog({
 }: WinnerPredictionsDialogProps) {
   const [selectedRound, setSelectedRound] = useState("");
 
-  const { data: predictions } = useQuery({
+  const { data: predictions, isLoading } = useQuery({
     queryKey: ['round-winner-predictions', userId, selectedRound],
     queryFn: async () => {
       if (!selectedRound) return [];
-      
-      console.log('Fetching predictions for round:', selectedRound);
       
       const { data, error } = await supabase
         .from('predictions')
@@ -34,7 +32,6 @@ export function WinnerPredictionsDialog({
           game:games!inner (
             id,
             game_date,
-            round_id,
             home_team:teams!games_home_team_id_fkey (
               name
             ),
@@ -56,41 +53,32 @@ export function WinnerPredictionsDialog({
         throw error;
       }
 
-      console.log('Raw predictions data:', data);
-
       // Filter to only include predictions with final results
-      const filteredPredictions = data.filter(prediction => {
-        const hasResults = prediction.game?.game_results && 
-                         Array.isArray(prediction.game.game_results) &&
-                         prediction.game.game_results.length > 0 && 
-                         prediction.game.game_results[0].is_final;
-        console.log('Prediction', prediction.id, 'has results:', hasResults);
-        return hasResults;
-      });
-
-      console.log('Filtered predictions:', filteredPredictions);
-      return filteredPredictions;
+      return data.filter(prediction => 
+        prediction.game?.game_results && 
+        prediction.game.game_results[0]?.is_final
+      );
     },
     enabled: isOpen && !!selectedRound,
   });
 
-  const getPredictionResult = (prediction: any) => {
-    if (!prediction.game?.game_results?.[0]) return null;
+  const getPredictionWinner = (prediction: any) => {
+    const gameResult = prediction.game.game_results[0];
+    if (!gameResult) return null;
 
-    const predictionWinner = prediction.prediction_home_score > prediction.prediction_away_score 
+    const predictedWinner = prediction.prediction_home_score > prediction.prediction_away_score 
       ? 'home' 
       : prediction.prediction_home_score < prediction.prediction_away_score 
         ? 'away' 
         : 'draw';
 
-    const gameResult = prediction.game.game_results[0];
     const actualWinner = gameResult.home_score > gameResult.away_score 
       ? 'home' 
       : gameResult.home_score < gameResult.away_score 
         ? 'away' 
         : 'draw';
 
-    return predictionWinner === actualWinner;
+    return predictedWinner === actualWinner;
   };
 
   return (
@@ -110,45 +98,52 @@ export function WinnerPredictionsDialog({
             className="w-full"
           />
 
-          <div className="space-y-2 max-h-[400px] overflow-y-auto">
-            {predictions?.map((prediction) => {
-              const result = getPredictionResult(prediction);
-              const isCorrect = result === true;
-              const gameResult = prediction.game.game_results[0];
+          {isLoading ? (
+            <div className="text-center py-4 text-muted-foreground">
+              Loading predictions...
+            </div>
+          ) : predictions && predictions.length > 0 ? (
+            <div className="space-y-2 max-h-[400px] overflow-y-auto">
+              {predictions.map((prediction) => {
+                const isCorrect = getPredictionWinner(prediction);
+                const gameResult = prediction.game.game_results[0];
 
-              return (
-                <div 
-                  key={prediction.id} 
-                  className={`flex items-center justify-between p-3 rounded-lg border ${
-                    isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
-                  }`}
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium">
-                        {prediction.game.home_team.name} vs {prediction.game.away_team.name}
-                      </p>
-                      {isCorrect ? (
-                        <Check className="h-4 w-4 text-green-600" />
-                      ) : (
-                        <X className="h-4 w-4 text-red-600" />
-                      )}
-                    </div>
-                    <div className="text-xs text-muted-foreground space-y-0.5">
-                      <p>Your prediction: {prediction.prediction_home_score} - {prediction.prediction_away_score}</p>
-                      <p>Final score: {gameResult.home_score} - {gameResult.away_score}</p>
+                return (
+                  <div 
+                    key={prediction.id} 
+                    className={`flex items-center justify-between p-3 rounded-lg border ${
+                      isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                    }`}
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">
+                          {prediction.game.home_team.name} vs {prediction.game.away_team.name}
+                        </span>
+                        {isCorrect ? (
+                          <Check className="h-4 w-4 text-green-600" />
+                        ) : (
+                          <X className="h-4 w-4 text-red-600" />
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
+                        <p>Your prediction: {prediction.prediction_home_score} - {prediction.prediction_away_score}</p>
+                        <p>Final score: {gameResult.home_score} - {gameResult.away_score}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-
-            {predictions?.length === 0 && selectedRound && (
-              <div className="text-center py-6 text-muted-foreground">
-                No completed predictions found for this round
-              </div>
-            )}
-          </div>
+                );
+              })}
+            </div>
+          ) : selectedRound ? (
+            <div className="text-center py-6 text-muted-foreground">
+              No completed predictions found for this round
+            </div>
+          ) : (
+            <div className="text-center py-6 text-muted-foreground">
+              Select a round to view predictions
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
