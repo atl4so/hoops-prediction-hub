@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Trophy, Home, Plane, Percent } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface TeamOverviewProps {
   stats: any;
@@ -8,20 +9,29 @@ interface TeamOverviewProps {
 }
 
 export function TeamOverview({ stats, distribution }: TeamOverviewProps) {
-  const StatCard = ({ icon: Icon, label, value, className = "" }) => (
-    <div className={cn(
-      "flex items-center gap-3 p-4 rounded-lg border-2 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20",
-      "transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:-translate-y-0.5",
-      className
-    )}>
-      <div className="rounded-xl p-3 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
-        <Icon className="h-5 w-5" />
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground">{label}</p>
-        <p className="text-xl font-bold">{value}</p>
-      </div>
-    </div>
+  const StatCard = ({ icon: Icon, label, value, tooltip, className = "" }) => (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className={cn(
+            "flex items-center gap-3 p-4 rounded-lg border-2 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20",
+            "transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:-translate-y-0.5",
+            className
+          )}>
+            <div className="rounded-xl p-3 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+              <Icon className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">{label}</p>
+              <p className="text-xl font-bold">{value}</p>
+            </div>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-[300px] text-sm">
+          {tooltip}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 
   return (
@@ -31,26 +41,47 @@ export function TeamOverview({ stats, distribution }: TeamOverviewProps) {
           icon={Trophy}
           label="Overall Success"
           value={`${stats?.overall_success_rate || 0}%`}
+          tooltip="Percentage of users who correctly predicted this team's wins/losses across all games"
         />
         <StatCard
           icon={Home}
           label="Home Success"
-          value={`${stats?.home_success_rate || 0}%`}
+          value={`${stats?.home_success_rate || 'N/A'}%`}
+          tooltip="Percentage of users who correctly predicted this team's home game results"
         />
         <StatCard
           icon={Plane}
           label="Away Success"
-          value={`${stats?.away_success_rate || 0}%`}
+          value={`${stats?.away_success_rate || 'N/A'}%`}
+          tooltip="Percentage of users who correctly predicted this team's away game results"
         />
       </div>
 
       <Card>
         <CardContent className="p-6">
-          <h3 className="font-display text-lg font-semibold mb-4">Result Distribution</h3>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <h3 className="font-display text-lg font-semibold mb-4 cursor-help">Result Distribution</h3>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-[300px] text-sm">
+                Breakdown of game results by margin of victory/defeat
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <div className="space-y-6">
             {distribution?.map((item) => (
               <div key={item.margin_range} className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">{item.margin_range}</p>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <p className="text-sm font-medium text-muted-foreground cursor-help">{item.margin_range}</p>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-[300px] text-sm">
+                      Games decided by {item.margin_range.toLowerCase()} margin
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-green-50/50 border border-green-100">
                     <div className="rounded-lg p-2 bg-green-100">
