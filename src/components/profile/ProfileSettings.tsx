@@ -58,16 +58,25 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
         size: file.size
       });
 
-      const { error: uploadError, data } = await supabase.storage
-        .from('avatars')
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
+      // Create a FormData object
+      const formData = new FormData();
+      formData.append('file', file);
 
-      if (uploadError) {
-        console.error('Upload error:', uploadError);
-        throw uploadError;
+      // Upload using fetch to ensure proper content-type handling
+      const response = await fetch(
+        `${supabase.storageUrl}/object/avatars/${fileName}`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${supabase.supabaseKey}`,
+          },
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Upload failed');
       }
 
       // Get public URL after successful upload
