@@ -73,39 +73,21 @@ export function MainLayout({ children }: MainLayoutProps) {
           />
         </div>
       ) : (
-        <>
-          {/* Primary gradient background */}
-          <div 
-            style={{ 
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              width: '100vw',
-              height: '100vh',
-              background: 'linear-gradient(180deg, #16a34a 0%, #86efac 100%)',
-              pointerEvents: 'none',
-              zIndex: -2,
-            }}
-          />
-          {/* Glassmorphism overlay */}
-          <div 
-            style={{ 
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              width: '100vw',
-              height: '100vh',
-              backdropFilter: 'blur(100px)',
-              background: 'linear-gradient(125deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%)',
-              pointerEvents: 'none',
-              zIndex: -1,
-            }}
-          />
-        </>
+        // Show green gradient background when no active background is set
+        <div 
+          style={{ 
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'linear-gradient(180deg, #22c55e 0%, #bbf7d0 100%)',
+            pointerEvents: 'none',
+            zIndex: -1,
+          }}
+        />
       )}
       <AppHeader />
       <main className="flex-1 relative">
