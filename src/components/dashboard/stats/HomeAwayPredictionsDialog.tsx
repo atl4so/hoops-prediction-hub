@@ -83,6 +83,20 @@ export function HomeAwayPredictionsDialog({
     };
   };
 
+  const getPredictionResult = (prediction: any) => {
+    const isPredictedHomeWin = prediction.prediction_home_score > prediction.prediction_away_score;
+    const isActualHomeWin = prediction.game.game_results.home_score > prediction.game.game_results.away_score;
+    const isDraw = prediction.game.game_results.home_score === prediction.game.game_results.away_score;
+
+    return {
+      prediction: isPredictedHomeWin ? "Home Win" : "Away Win",
+      actual: isDraw ? "Draw" : (isActualHomeWin ? "Home Win" : "Away Win"),
+      isCorrect: isDraw 
+        ? prediction.prediction_home_score === prediction.prediction_away_score
+        : isPredictedHomeWin === isActualHomeWin
+    };
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
@@ -124,20 +138,17 @@ export function HomeAwayPredictionsDialog({
                     <div className="space-y-2">
                       {predictions.map((prediction) => {
                         const isPredictedHomeWin = prediction.prediction_home_score > prediction.prediction_away_score;
-                        const isActualHomeWin = prediction.game.game_results.home_score > prediction.game.game_results.away_score;
                         const isRelevantPrediction = type === 'home' ? isPredictedHomeWin : !isPredictedHomeWin;
                         
                         if (!isRelevantPrediction) return null;
 
-                        const isCorrect = type === 'home' 
-                          ? (isPredictedHomeWin && isActualHomeWin)
-                          : (!isPredictedHomeWin && !isActualHomeWin);
+                        const result = getPredictionResult(prediction);
 
                         return (
                           <div 
                             key={prediction.id} 
                             className={`flex items-center justify-between p-3 rounded-lg border ${
-                              isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                              result.isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
                             }`}
                           >
                             <div className="flex-1">
@@ -145,15 +156,15 @@ export function HomeAwayPredictionsDialog({
                                 <span className="text-sm font-medium">
                                   {prediction.game.home_team.name} vs {prediction.game.away_team.name}
                                 </span>
-                                {isCorrect ? (
+                                {result.isCorrect ? (
                                   <Check className="h-4 w-4 text-green-600" />
                                 ) : (
                                   <X className="h-4 w-4 text-red-600" />
                                 )}
                               </div>
                               <div className="text-xs text-muted-foreground mt-1">
-                                <p>Your prediction: {prediction.prediction_home_score} - {prediction.prediction_away_score}</p>
-                                <p>Final score: {prediction.game.game_results.home_score} - {prediction.game.game_results.away_score}</p>
+                                <p>Your prediction: {result.prediction}</p>
+                                <p>Final result: {result.actual}</p>
                               </div>
                             </div>
                           </div>
