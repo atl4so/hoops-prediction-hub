@@ -99,7 +99,7 @@ export function HomeAwayPredictionsDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Home/Away Winner Predictions</DialogTitle>
           <DialogDescription>
@@ -107,7 +107,7 @@ export function HomeAwayPredictionsDialog({
           </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-4">
+        <div className="space-y-4 flex-1 overflow-y-auto">
           <RoundSelector 
             selectedRound={selectedRound} 
             onRoundChange={setSelectedRound}
