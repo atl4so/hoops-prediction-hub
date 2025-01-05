@@ -32,7 +32,7 @@ export function TeamCard({ team, stats, onClick }: TeamCardProps) {
                     <TooltipTrigger asChild>
                       <p className="cursor-help">Games: {stats?.total_games || 0}</p>
                     </TooltipTrigger>
-                    <TooltipContent side="right" className="max-w-[250px]">
+                    <TooltipContent side="top" align="start" className="max-w-[200px] text-sm">
                       Total number of games played by {team.name}
                     </TooltipContent>
                   </Tooltip>
@@ -43,7 +43,7 @@ export function TeamCard({ team, stats, onClick }: TeamCardProps) {
                     <TooltipTrigger asChild>
                       <p className="cursor-help">Predictions: {stats?.total_predictions || 0}</p>
                     </TooltipTrigger>
-                    <TooltipContent side="right" className="max-w-[250px]">
+                    <TooltipContent side="top" align="start" className="max-w-[200px] text-sm">
                       Total number of predictions made by users for {team.name}'s games. Multiple users can predict the same game.
                     </TooltipContent>
                   </Tooltip>
@@ -54,7 +54,7 @@ export function TeamCard({ team, stats, onClick }: TeamCardProps) {
                     <TooltipTrigger asChild>
                       <p className="cursor-help">Success Rate: {stats?.overall_success_rate || 0}%</p>
                     </TooltipTrigger>
-                    <TooltipContent side="right" className="max-w-[250px]">
+                    <TooltipContent side="top" align="start" className="max-w-[200px] text-sm">
                       Percentage of correct predictions made for {team.name}'s games. A higher percentage means users are better at predicting this team's results.
                     </TooltipContent>
                   </Tooltip>
