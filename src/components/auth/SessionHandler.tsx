@@ -15,38 +15,33 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
 
   useEffect(() => {
     let mounted = true;
-    let authListener: { subscription: { unsubscribe: () => void } } | null = null;
 
     const checkSession = async () => {
       try {
         console.log('Checking session...');
         const { data: { session }, error } = await supabase.auth.getSession();
         
+        if (!mounted) return;
+
         if (error) {
           console.error('Session error:', error);
-          if (mounted) {
-            setIsAuthenticated(false);
-            setIsLoading(false);
-            await clearAuthSession();
-            toast.error("Session error. Please try logging in again.");
-          }
+          setIsAuthenticated(false);
+          setIsLoading(false);
+          await clearAuthSession();
+          toast.error("Session error. Please try logging in again.");
           return;
         }
 
         if (!session) {
           console.log('No session found');
-          if (mounted) {
-            setIsAuthenticated(false);
-            setIsLoading(false);
-          }
+          setIsAuthenticated(false);
+          setIsLoading(false);
           return;
         }
 
         console.log('Valid session found:', session.user.id);
-        if (mounted) {
-          setIsAuthenticated(true);
-          setIsLoading(false);
-        }
+        setIsAuthenticated(true);
+        setIsLoading(false);
       } catch (error) {
         console.error('Session verification error:', error);
         if (mounted) {
@@ -62,34 +57,28 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
     checkSession();
 
     // Set up auth state change listener
-    const setupAuthListener = async () => {
-      const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
-        if (!mounted) return;
-        
-        console.log('Auth state changed:', event, session?.user?.id);
-        
-        if (event === 'SIGNED_OUT') {
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
+      
+      console.log('Auth state changed:', event, session?.user?.id);
+      
+      if (event === 'SIGNED_OUT') {
+        setIsAuthenticated(false);
+        setIsLoading(false);
+        queryClient.clear();
+        await clearAuthSession();
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        if (session) {
+          setIsAuthenticated(true);
+          setIsLoading(false);
+          queryClient.invalidateQueries();
+        } else {
           setIsAuthenticated(false);
           setIsLoading(false);
-          queryClient.clear();
           await clearAuthSession();
-        } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          if (session) {
-            setIsAuthenticated(true);
-            setIsLoading(false);
-            queryClient.invalidateQueries();
-          } else {
-            setIsAuthenticated(false);
-            setIsLoading(false);
-            await clearAuthSession();
-          }
         }
-      });
-      
-      authListener = data;
-    };
-
-    setupAuthListener();
+      }
+    });
 
     // Cleanup function
     return () => {
