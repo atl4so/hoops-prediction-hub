@@ -9,7 +9,7 @@ import { TeamsList } from "@/components/teams/list/TeamsList";
 import { TeamDetailsDialog } from "@/components/teams/TeamDetailsDialog";
 import type { Team } from "@/types/supabase";
 
-type SortOption = "predictions" | "success" | "upsets";
+type SortOption = "predictions" | "success" | "upsets" | "wins" | "losses";
 
 export default function Teams() {
   const [search, setSearch] = useState("");
@@ -53,8 +53,10 @@ export default function Teams() {
           </SelectTrigger>
           <SelectContent className="bg-white border shadow-lg z-[100]">
             <SelectItem value="predictions" className="hover:bg-accent">Most Predicted</SelectItem>
-            <SelectItem value="success" className="hover:bg-accent">Best Success Rate</SelectItem>
+            <SelectItem value="success" className="hover:bg-accent">Best Win Rate</SelectItem>
             <SelectItem value="upsets" className="hover:bg-accent">Most Underdog Wins</SelectItem>
+            <SelectItem value="wins" className="hover:bg-accent">Most Wins Predicted</SelectItem>
+            <SelectItem value="losses" className="hover:bg-accent">Most Losses Predicted</SelectItem>
           </SelectContent>
         </Select>
       </div>

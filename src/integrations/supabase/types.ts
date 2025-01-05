@@ -469,6 +469,7 @@ export type Database = {
           success_rate: number
           correct_predictions: number
           total_predictions: number
+          avatar_url: string
         }[]
       }
       recalculate_all_prediction_points: {

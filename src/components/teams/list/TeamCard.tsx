@@ -10,10 +10,15 @@ interface TeamCardProps {
 }
 
 export function TeamCard({ team, stats, onClick }: TeamCardProps) {
+  const winRate = stats?.overall_success_rate || 0;
+  const totalPredictions = stats?.total_predictions || 0;
+  const winsPredicted = stats?.home_winner_predictions_total || 0;
+  const lossesPredicted = totalPredictions - winsPredicted;
+
   return (
     <Button
       variant="ghost"
-      className="h-auto p-0 hover:bg-transparent"
+      className="h-auto p-0 hover:bg-transparent w-full"
       onClick={onClick}
     >
       <Card className="w-full overflow-hidden transition-all hover:shadow-lg hover:border-primary/20">
@@ -41,10 +46,10 @@ export function TeamCard({ team, stats, onClick }: TeamCardProps) {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <p className="cursor-help">Predictions: {stats?.total_predictions || 0}</p>
+                      <p className="cursor-help">Predictions: {totalPredictions}</p>
                     </TooltipTrigger>
                     <TooltipContent side="top" align="start" className="max-w-[200px] text-sm">
-                      Total number of predictions made by users for {team.name}'s games. Multiple users can predict the same game.
+                      Total number of predictions made for {team.name}'s games
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -52,10 +57,21 @@ export function TeamCard({ team, stats, onClick }: TeamCardProps) {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <p className="cursor-help">Win Rate: {stats?.overall_success_rate || 0}%</p>
+                      <p className="cursor-help">Win Rate: {winRate}%</p>
                     </TooltipTrigger>
                     <TooltipContent side="top" align="start" className="max-w-[200px] text-sm">
-                      Percentage of correct predictions made for {team.name}'s games. A higher percentage means users are better at predicting this team's results.
+                      Percentage of correct predictions for {team.name}'s games
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <p className="cursor-help">Predictions (W/L): {winsPredicted}/{lossesPredicted}</p>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" align="start" className="max-w-[200px] text-sm">
+                      Number of wins vs losses predicted for {team.name}
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>

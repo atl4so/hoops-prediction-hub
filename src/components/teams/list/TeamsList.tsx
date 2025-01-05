@@ -8,7 +8,7 @@ interface TeamsListProps {
   teams: Team[];
   isLoading: boolean;
   onTeamClick: (team: Team) => void;
-  sortBy: "predictions" | "success" | "upsets";
+  sortBy: "predictions" | "success" | "upsets" | "wins" | "losses";
 }
 
 export function TeamsList({ teams, isLoading, onTeamClick, sortBy }: TeamsListProps) {
@@ -43,6 +43,12 @@ export function TeamsList({ teams, isLoading, onTeamClick, sortBy }: TeamsListPr
         return (statsB.overall_success_rate || 0) - (statsA.overall_success_rate || 0);
       case "upsets":
         return (statsB.underdog_wins || 0) - (statsA.underdog_wins || 0);
+      case "wins":
+        return (statsB.home_winner_predictions_total || 0) - (statsA.home_winner_predictions_total || 0);
+      case "losses":
+        const lossesA = (statsA.total_predictions || 0) - (statsA.home_winner_predictions_total || 0);
+        const lossesB = (statsB.total_predictions || 0) - (statsB.home_winner_predictions_total || 0);
+        return lossesB - lossesA;
       default:
         return 0;
     }
