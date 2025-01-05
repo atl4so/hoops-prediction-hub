@@ -1,5 +1,4 @@
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import type { Session, Provider } from '@supabase/supabase-js';
 
 export const loginWithEmail = async (email: string, password: string) => {
