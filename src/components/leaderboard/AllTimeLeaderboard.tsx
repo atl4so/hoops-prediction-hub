@@ -16,7 +16,13 @@ export function AllTimeLeaderboard() {
           user:profiles!predictions_user_id_fkey (
             id,
             display_name,
-            avatar_url
+            avatar_url,
+            winner_predictions_correct,
+            winner_predictions_total,
+            home_winner_predictions_correct,
+            home_winner_predictions_total,
+            away_winner_predictions_correct,
+            away_winner_predictions_total
           ),
           game:games!inner (
             id
@@ -36,7 +42,13 @@ export function AllTimeLeaderboard() {
             avatar_url: pred.user.avatar_url,
             total_points: 0,
             total_predictions: 0,
-            points_per_game: 0
+            points_per_game: 0,
+            winner_predictions_correct: pred.user.winner_predictions_correct,
+            winner_predictions_total: pred.user.winner_predictions_total,
+            home_winner_predictions_correct: pred.user.home_winner_predictions_correct,
+            home_winner_predictions_total: pred.user.home_winner_predictions_total,
+            away_winner_predictions_correct: pred.user.away_winner_predictions_correct,
+            away_winner_predictions_total: pred.user.away_winner_predictions_total
           };
         }
         acc[userId].total_predictions += 1;
@@ -78,7 +90,8 @@ export function AllTimeLeaderboard() {
               <TableHead className="w-20 font-bold text-base">Rank</TableHead>
               <TableHead className="font-bold text-base">Player</TableHead>
               <TableHead className="text-right font-bold text-base">Points</TableHead>
-              <TableHead className="text-right hidden sm:table-cell font-bold text-base">PPG</TableHead>
+              <TableHead className="text-right hidden lg:table-cell font-bold text-base">Winner %</TableHead>
+              <TableHead className="text-right hidden xl:table-cell font-bold text-base">Home/Away %</TableHead>
               <TableHead className="text-right font-bold text-base">Games</TableHead>
             </TableRow>
           </TableHeader>

@@ -20,25 +20,46 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
   const { data: rankings, isLoading } = useQuery({
     queryKey: ["roundRankings", selectedRound],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Get round rankings with additional user stats
+      const { data: roundData, error: rankingsError } = await supabase
         .rpc('get_round_rankings', {
           round_id: selectedRound
         });
 
-      if (error) throw error;
+      if (rankingsError) throw rankingsError;
 
-      // Fetch avatar URLs for all users
-      const userIds = data.map((player: any) => player.user_id);
-      const { data: profiles } = await supabase
+      // Fetch additional stats for users
+      const userIds = roundData.map((player: any) => player.user_id);
+      const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, avatar_url')
+        .select(`
+          id,
+          avatar_url,
+          winner_predictions_correct,
+          winner_predictions_total,
+          home_winner_predictions_correct,
+          home_winner_predictions_total,
+          away_winner_predictions_correct,
+          away_winner_predictions_total
+        `)
         .in('id', userIds);
 
-      // Merge avatar URLs with rankings data
-      return data.map((player: any) => ({
-        ...player,
-        avatar_url: profiles?.find((p: any) => p.id === player.user_id)?.avatar_url
-      }));
+      if (profilesError) throw profilesError;
+
+      // Merge the data
+      return roundData.map((player: any) => {
+        const profile = profiles?.find((p: any) => p.id === player.user_id);
+        return {
+          ...player,
+          avatar_url: profile?.avatar_url,
+          winner_predictions_correct: profile?.winner_predictions_correct,
+          winner_predictions_total: profile?.winner_predictions_total,
+          home_winner_predictions_correct: profile?.home_winner_predictions_correct,
+          home_winner_predictions_total: profile?.home_winner_predictions_total,
+          away_winner_predictions_correct: profile?.away_winner_predictions_correct,
+          away_winner_predictions_total: profile?.away_winner_predictions_total
+        };
+      });
     },
     enabled: !!selectedRound
   });
@@ -84,7 +105,13 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
                   display_name: player.display_name,
                   total_points: player.total_points,
                   total_predictions: player.predictions_count,
-                  avatar_url: player.avatar_url
+                  avatar_url: player.avatar_url,
+                  winner_predictions_correct: player.winner_predictions_correct,
+                  winner_predictions_total: player.winner_predictions_total,
+                  home_winner_predictions_correct: player.home_winner_predictions_correct,
+                  home_winner_predictions_total: player.home_winner_predictions_total,
+                  away_winner_predictions_correct: player.away_winner_predictions_correct,
+                  away_winner_predictions_total: player.away_winner_predictions_total
                 }}
                 rank={index + 1}
                 index={index}
