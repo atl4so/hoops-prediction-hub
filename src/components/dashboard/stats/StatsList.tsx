@@ -1,4 +1,4 @@
-import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal, Home } from "lucide-react";
+import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal, Home, ArrowLeftRight } from "lucide-react";
 import { StatsGrid } from "./StatsGrid";
 import { useState } from "react";
 import { WinnerPredictionsDialog } from "./WinnerPredictionsDialog";
@@ -54,6 +54,7 @@ export function StatsList({
 
   const homePercentage = calculatePercentage(homeWinnerPredictionsCorrect, homeWinnerPredictionsTotal);
   const awayPercentage = calculatePercentage(awayWinnerPredictionsCorrect, awayWinnerPredictionsTotal);
+  const winnerPercentage = calculatePercentage(winnerPredictionsCorrect, winnerPredictionsTotal);
 
   const stats = [
     {
@@ -77,12 +78,12 @@ export function StatsList({
     {
       icon: Target,
       label: "Winner Prediction",
-      value: `${calculatePercentage(winnerPredictionsCorrect, winnerPredictionsTotal)}%`,
+      value: `${winnerPercentage}%`,
       description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} games`,
       onClick: userId ? () => setShowWinnerDialog(true) : undefined
     },
     {
-      icon: Home,
+      icon: ArrowLeftRight,
       label: "Home/Away",
       value: `${homePercentage}/${awayPercentage}%`,
       description: `Home: ${homeWinnerPredictionsCorrect}/${homeWinnerPredictionsTotal} | Away: ${awayWinnerPredictionsCorrect}/${awayWinnerPredictionsTotal}`,
