@@ -23,6 +23,8 @@ export function WinnerPredictionsDialog({
     queryFn: async () => {
       if (!selectedRound) return [];
       
+      console.log('Fetching predictions for round:', selectedRound);
+      
       const { data, error } = await supabase
         .from('predictions')
         .select(`
@@ -46,23 +48,24 @@ export function WinnerPredictionsDialog({
           )
         `)
         .eq('user_id', userId)
-        .eq('game.round_id', selectedRound);
+        .eq('games.round_id', selectedRound);
 
       if (error) {
         console.error('Error fetching predictions:', error);
         throw error;
       }
 
+      console.log('Raw predictions data:', data);
+
       // Filter to only include predictions with final results
       return data.filter(prediction => 
-        prediction.game?.game_results && 
-        prediction.game.game_results[0]?.is_final
+        prediction.game?.game_results?.[0]?.is_final
       );
     },
     enabled: isOpen && !!selectedRound,
   });
 
-  const getPredictionWinner = (prediction: any) => {
+  const getPredictionResult = (prediction: any) => {
     const gameResult = prediction.game.game_results[0];
     if (!gameResult) return null;
 
@@ -78,7 +81,17 @@ export function WinnerPredictionsDialog({
         ? 'away' 
         : 'draw';
 
-    return predictedWinner === actualWinner;
+    return {
+      isCorrect: predictedWinner === actualWinner,
+      predicted: {
+        home: prediction.prediction_home_score,
+        away: prediction.prediction_away_score
+      },
+      actual: {
+        home: gameResult.home_score,
+        away: gameResult.away_score
+      }
+    };
   };
 
   return (
@@ -105,14 +118,14 @@ export function WinnerPredictionsDialog({
           ) : predictions && predictions.length > 0 ? (
             <div className="space-y-2 max-h-[400px] overflow-y-auto">
               {predictions.map((prediction) => {
-                const isCorrect = getPredictionWinner(prediction);
-                const gameResult = prediction.game.game_results[0];
+                const result = getPredictionResult(prediction);
+                if (!result) return null;
 
                 return (
                   <div 
                     key={prediction.id} 
                     className={`flex items-center justify-between p-3 rounded-lg border ${
-                      isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                      result.isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
                     }`}
                   >
                     <div className="flex-1">
@@ -120,15 +133,15 @@ export function WinnerPredictionsDialog({
                         <span className="text-sm font-medium">
                           {prediction.game.home_team.name} vs {prediction.game.away_team.name}
                         </span>
-                        {isCorrect ? (
+                        {result.isCorrect ? (
                           <Check className="h-4 w-4 text-green-600" />
                         ) : (
                           <X className="h-4 w-4 text-red-600" />
                         )}
                       </div>
                       <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
-                        <p>Your prediction: {prediction.prediction_home_score} - {prediction.prediction_away_score}</p>
-                        <p>Final score: {gameResult.home_score} - {gameResult.away_score}</p>
+                        <p>Your prediction: {result.predicted.home} - {result.predicted.away}</p>
+                        <p>Final score: {result.actual.home} - {result.actual.away}</p>
                       </div>
                     </div>
                   </div>
