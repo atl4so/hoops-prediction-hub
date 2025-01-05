@@ -65,7 +65,7 @@ export function OverUnderPredictionsDialog({
         game: {
           home_team: pred.game.home_team,
           away_team: pred.game.away_team,
-          game_results: pred.game.game_results
+          game_results: [pred.game.game_results[0]]
         },
         prediction: {
           prediction_home_score: pred.prediction_home_score,
