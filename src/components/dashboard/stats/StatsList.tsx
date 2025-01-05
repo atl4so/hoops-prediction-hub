@@ -29,6 +29,11 @@ const formatRank = (rank: number | null | undefined) => {
   return rank + (suffix[(v - 20) % 10] || suffix[v] || suffix[0]);
 };
 
+const formatPercentage = (correct: number = 0, total: number = 0): string => {
+  if (total === 0) return "0";
+  return Math.round((correct / total) * 100).toString();
+};
+
 export function StatsList({
   totalPoints,
   pointsPerGame,
@@ -77,19 +82,8 @@ export function StatsList({
     {
       icon: Home,
       label: "Home/Away",
-      value: (
-        <div className="flex items-center justify-center gap-4">
-          <div className="flex flex-col items-center gap-1">
-            <Home className="h-4 w-4 text-primary" />
-            <span className="text-sm">{homeWinnerPredictionsTotal > 0 ? Math.round((homeWinnerPredictionsCorrect / homeWinnerPredictionsTotal) * 100) : 0}</span>
-          </div>
-          <div className="flex flex-col items-center gap-1">
-            <Plane className="h-4 w-4 text-primary" />
-            <span className="text-sm">{awayWinnerPredictionsTotal > 0 ? Math.round((awayWinnerPredictionsCorrect / awayWinnerPredictionsTotal) * 100) : 0}</span>
-          </div>
-        </div>
-      ),
-      description: "Home and away prediction accuracy",
+      value: `${formatPercentage(homeWinnerPredictionsCorrect, homeWinnerPredictionsTotal)}/${formatPercentage(awayWinnerPredictionsCorrect, awayWinnerPredictionsTotal)}`,
+      description: "Home/Away prediction accuracy (%)",
       onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
     },
     {
