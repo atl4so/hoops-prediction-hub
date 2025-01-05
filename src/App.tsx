@@ -2,23 +2,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
-import { useEffect, useState } from 'react';
-import { MainLayout } from "./components/layout/MainLayout";
-import Index from "./pages/Index";
-import Login from "./pages/Login";
-import { RegisterForm } from "./components/auth/RegisterForm";
-import Overview from "./pages/Overview";
-import Admin from "./pages/Admin";
-import Leaderboard from "./pages/Leaderboard";
-import Predict from "./pages/Predict";
-import Following from "./pages/Following";
-import Rules from "./pages/Rules";
-import Terms from "./pages/Terms";
-import MyPredictions from "./pages/MyPredictions";
 import { supabase } from "./integrations/supabase/client";
-import { toast } from "sonner";
+import { SessionHandler } from "./components/auth/SessionHandler";
+import { AppRoutes } from "./components/routing/AppRoutes";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,94 +19,6 @@ const queryClient = new QueryClient({
   },
 });
 
-const SessionHandler = ({ children }: { children: React.ReactNode }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    let mounted = true;
-
-    const checkSession = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error('Session check error:', error);
-          if (mounted) {
-            setIsAuthenticated(false);
-            setIsLoading(false);
-          }
-          return;
-        }
-
-        if (!session) {
-          console.log('No session found');
-          if (mounted) {
-            setIsAuthenticated(false);
-            setIsLoading(false);
-          }
-          return;
-        }
-
-        // Verify the session is still valid
-        const { data: { user }, error: refreshError } = await supabase.auth.getUser();
-        
-        if (refreshError || !user) {
-          console.error('User verification failed:', refreshError);
-          if (mounted) {
-            setIsAuthenticated(false);
-            setIsLoading(false);
-          }
-          return;
-        }
-
-        if (mounted) {
-          setIsAuthenticated(true);
-          setIsLoading(false);
-        }
-        console.log('Session verified for user:', user.id);
-      } catch (error) {
-        console.error('Session verification error:', error);
-        if (mounted) {
-          setIsAuthenticated(false);
-          setIsLoading(false);
-        }
-      }
-    };
-
-    checkSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!mounted) return;
-      
-      console.log('Auth state changed:', event, session?.user?.id);
-      
-      if (event === 'SIGNED_OUT') {
-        setIsAuthenticated(false);
-        queryClient.clear();
-        await supabase.auth.signOut(); // Ensure complete sign out
-      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        const { data: { user }, error } = await supabase.auth.getUser();
-        if (!error && user) {
-          setIsAuthenticated(true);
-          queryClient.invalidateQueries();
-        }
-      }
-    });
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  if (isLoading) {
-    return null;
-  }
-
-  return <>{children}</>;
-};
-
 const App = () => {
   return (
     <SessionContextProvider 
@@ -130,23 +30,8 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <SessionHandler>
-              <MainLayout>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<RegisterForm />} />
-                  <Route path="/overview" element={<Overview />} />
-                  <Route path="/admin" element={<Admin />} />
-                  <Route path="/leaderboard" element={<Leaderboard />} />
-                  <Route path="/predict" element={<Predict />} />
-                  <Route path="/following" element={<Following />} />
-                  <Route path="/my-predictions" element={<MyPredictions />} />
-                  <Route path="/rules" element={<Rules />} />
-                  <Route path="/terms" element={<Terms />} />
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </MainLayout>
+            <SessionHandler queryClient={queryClient}>
+              <AppRoutes />
             </SessionHandler>
           </BrowserRouter>
         </TooltipProvider>
