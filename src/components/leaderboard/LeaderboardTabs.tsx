@@ -10,25 +10,41 @@ import { supabase } from "@/integrations/supabase/client";
 export function LeaderboardTabs() {
   const [selectedRound, setSelectedRound] = useState("");
 
-  const { data: latestRound } = useQuery({
-    queryKey: ["latest-round"],
+  // Query to find the latest round with actual data
+  const { data: latestRoundWithData } = useQuery({
+    queryKey: ["latest-round-with-data"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Get all rounds first
+      const { data: rounds, error: roundsError } = await supabase
         .from('rounds')
         .select('id')
-        .order('created_at', { ascending: false })
-        .limit(1);
+        .order('start_date', { ascending: false });
 
-      if (error) throw error;
-      return data?.[0]?.id || "";
+      if (roundsError) throw roundsError;
+
+      // For each round, check if it has predictions with points
+      for (const round of rounds || []) {
+        const { data: predictions } = await supabase
+          .from('predictions')
+          .select('id')
+          .eq('points_earned', 0, { not: true })
+          .limit(1);
+
+        if (predictions?.length) {
+          return round.id;
+        }
+      }
+      
+      // If no round with data is found, return the latest round
+      return rounds?.[0]?.id || "";
     },
   });
 
   useEffect(() => {
-    if (latestRound && !selectedRound) {
-      setSelectedRound(latestRound);
+    if (latestRoundWithData && !selectedRound) {
+      setSelectedRound(latestRoundWithData);
     }
-  }, [latestRound, selectedRound]);
+  }, [latestRoundWithData, selectedRound]);
 
   return (
     <Tabs defaultValue="all-time" className="space-y-8">
