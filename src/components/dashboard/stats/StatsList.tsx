@@ -70,17 +70,17 @@ export function StatsList({
       description: `Your position in Round ${currentRoundRank?.roundName} leaderboard`,
     },
     {
-      icon: Target,
-      label: "Points per Game",
-      value: (pointsPerGame || 0).toFixed(1),
-      description: "Average points earned per prediction"
-    },
-    {
       icon: Percent,
       label: "Winner Prediction %",
       value: `${winnerPercentage}%`,
       description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} games`,
       onClick: userId ? () => setShowWinnerDialog(true) : undefined
+    },
+    {
+      icon: Target,
+      label: "Points per Game",
+      value: (pointsPerGame || 0).toFixed(1),
+      description: "Average points earned per prediction"
     },
     {
       icon: TrendingUp,
