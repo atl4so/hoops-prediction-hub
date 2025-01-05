@@ -108,11 +108,13 @@ export function HomeAwayPredictionsDialog({
         </DialogHeader>
         
         <div className="space-y-4 flex-1 overflow-y-auto">
-          <RoundSelector 
-            selectedRound={selectedRound} 
-            onRoundChange={setSelectedRound}
-            className="w-full"
-          />
+          <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+            <RoundSelector 
+              selectedRound={selectedRound} 
+              onRoundChange={setSelectedRound}
+              className="w-full"
+            />
+          </div>
 
           {isLoading ? (
             <div className="text-center py-4 text-muted-foreground">
