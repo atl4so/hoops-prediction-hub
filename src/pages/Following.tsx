@@ -63,10 +63,6 @@ export default function Following() {
       </div>
 
       <FollowingSection searchQuery={searchQuery} />
-
-      <footer className="text-center text-sm text-muted-foreground pt-8 sm:pt-12">
-        © {new Date().getFullYear()} euroleague.bet - All rights reserved
-      </footer>
     </div>
   );
 }
