@@ -8,9 +8,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
+import { AvatarUpload } from "./AvatarUpload";
 import { supabase } from "@/integrations/supabase/client";
 
 interface ProfileSettingsProps {
@@ -22,27 +20,13 @@ interface ProfileSettingsProps {
 export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettingsProps) {
   const [isUploading, setIsUploading] = useState(false);
   const queryClient = useQueryClient();
-  const fileInputRef = useState<HTMLInputElement | null>(null);
 
-  const handleAvatarChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file || !profile?.id) return;
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please upload an image file');
-      return;
-    }
-
-    // Validate file size (5MB limit)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('File size must be less than 5MB');
-      return;
-    }
+  const handleAvatarChange = async (file: File | null) => {
+    if (!profile?.id) return;
 
     setIsUploading(true);
     try {
-      // Delete existing avatar if it exists
+      // Delete existing avatar if it exists and we're either removing or replacing it
       if (profile.avatar_url) {
         const oldPath = profile.avatar_url.split('/').pop();
         if (oldPath) {
@@ -50,11 +34,31 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
         }
       }
 
+      // If file is null, we're just removing the avatar
+      if (!file) {
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ avatar_url: null })
+          .eq('id', profile.id);
+
+        if (updateError) throw updateError;
+
+        queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+        toast.success('Profile picture removed successfully');
+        return;
+      }
+
       // Upload new avatar
       const fileExt = file.name.split('.').pop();
       const fileName = `${profile.id}-${Date.now()}.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage
+      console.log('Uploading file:', {
+        name: fileName,
+        type: file.type,
+        size: file.size
+      });
+
+      const { error: uploadError, data } = await supabase.storage
         .from('avatars')
         .upload(fileName, file);
 
@@ -78,36 +82,9 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
 
       queryClient.invalidateQueries({ queryKey: ['userProfile'] });
       toast.success('Profile picture updated successfully');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error updating avatar:', error);
       toast.error('Failed to update profile picture');
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleRemoveAvatar = async () => {
-    if (!profile?.id || !profile.avatar_url) return;
-
-    setIsUploading(true);
-    try {
-      const oldPath = profile.avatar_url.split('/').pop();
-      if (oldPath) {
-        await supabase.storage.from('avatars').remove([oldPath]);
-      }
-
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ avatar_url: null })
-        .eq('id', profile.id);
-
-      if (updateError) throw updateError;
-
-      queryClient.invalidateQueries({ queryKey: ['userProfile'] });
-      toast.success('Profile picture removed successfully');
-    } catch (error: any) {
-      console.error('Error removing avatar:', error);
-      toast.error('Failed to remove profile picture');
     } finally {
       setIsUploading(false);
     }
@@ -123,50 +100,12 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="space-y-2">
-            <Label>Profile Picture</Label>
-            <div className="flex items-center gap-4">
-              {profile?.avatar_url && (
-                <img 
-                  src={profile.avatar_url} 
-                  alt="Profile" 
-                  className="h-16 w-16 rounded-full object-cover"
-                />
-              )}
-              <input
-                ref={(el) => fileInputRef[1](el)}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleAvatarChange}
-              />
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => fileInputRef[0]?.click()}
-                  disabled={isUploading}
-                >
-                  {isUploading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Uploading...
-                    </>
-                  ) : (
-                    'Upload Picture'
-                  )}
-                </Button>
-                {profile?.avatar_url && (
-                  <Button
-                    variant="destructive"
-                    onClick={handleRemoveAvatar}
-                    disabled={isUploading}
-                  >
-                    Remove
-                  </Button>
-                )}
-              </div>
-            </div>
-          </div>
+          <AvatarUpload
+            currentAvatarUrl={profile?.avatar_url}
+            onAvatarChange={handleAvatarChange}
+            isUploading={isUploading}
+            displayName={profile?.display_name}
+          />
         </div>
       </DialogContent>
     </Dialog>
