@@ -37,7 +37,7 @@ export default function Teams() {
     <div className="space-y-6 animate-fade-in">
       <PageHeader title="Teams" />
       
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center relative z-50">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -51,7 +51,7 @@ export default function Teams() {
           <SelectTrigger className="w-full sm:w-[200px] bg-white">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
-          <SelectContent className="bg-white border shadow-lg z-50">
+          <SelectContent className="bg-white border shadow-lg z-[100]">
             <SelectItem value="predictions" className="hover:bg-accent">Most Predicted</SelectItem>
             <SelectItem value="success" className="hover:bg-accent">Best Success Rate</SelectItem>
             <SelectItem value="upsets" className="hover:bg-accent">Most Underdog Wins</SelectItem>
@@ -59,12 +59,14 @@ export default function Teams() {
         </Select>
       </div>
 
-      <TeamsList 
-        teams={filteredTeams || []}
-        isLoading={isLoading}
-        onTeamClick={setSelectedTeam}
-        sortBy={sort}
-      />
+      <div className="relative z-0">
+        <TeamsList 
+          teams={filteredTeams || []}
+          isLoading={isLoading}
+          onTeamClick={setSelectedTeam}
+          sortBy={sort}
+        />
+      </div>
 
       <TeamDetailsDialog
         team={selectedTeam}
