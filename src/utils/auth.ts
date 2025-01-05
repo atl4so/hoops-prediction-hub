@@ -1,22 +1,15 @@
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import type { Session } from '@supabase/supabase-js';
 
 export const clearAuthSession = async () => {
   try {
-    // First try to sign out with local scope to avoid the body stream error
     const { error: signOutError } = await supabase.auth.signOut({
       scope: 'local'
     });
     
     if (signOutError) {
       console.error('Error signing out:', signOutError);
-    }
-    
-    // Clear local storage regardless of signout success
-    localStorage.removeItem('supabase.auth.token');
-    sessionStorage.clear();
-    
-    // If there was an error signing out, we still want to clear the session
-    if (signOutError) {
       throw signOutError;
     }
   } catch (error) {
@@ -25,7 +18,7 @@ export const clearAuthSession = async () => {
   }
 };
 
-export const verifySession = async () => {
+export const verifySession = async (): Promise<Session | null> => {
   try {
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     
@@ -36,13 +29,6 @@ export const verifySession = async () => {
     
     if (!session) {
       console.log('No active session found');
-      return null;
-    }
-
-    // Additional verification step
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      console.error('User verification error:', userError);
       return null;
     }
 
@@ -68,6 +54,20 @@ export const loginWithEmail = async (email: string, password: string) => {
     return data;
   } catch (error) {
     console.error('Login error:', error);
+    throw error;
+  }
+};
+
+export const refreshSession = async () => {
+  try {
+    const { data: { session }, error } = await supabase.auth.refreshSession();
+    if (error) {
+      console.error('Session refresh error:', error);
+      throw error;
+    }
+    return session;
+  } catch (error) {
+    console.error('Session refresh error:', error);
     throw error;
   }
 };
