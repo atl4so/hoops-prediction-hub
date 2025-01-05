@@ -23,13 +23,14 @@ const Login = () => {
   useEffect(() => {
     const clearSession = async () => {
       try {
-        localStorage.clear();
+        // Clear any existing session data
+        localStorage.removeItem('supabase.auth.token');
         sessionStorage.clear();
-        try {
-          await supabase.auth.signOut({ scope: 'global' });
-        } catch (signOutError) {
-          console.log("Sign out error (expected if no session):", signOutError);
-        }
+        
+        // Force sign out to clear any existing session
+        await supabase.auth.signOut({ scope: 'global' });
+        
+        // Double check session is cleared
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
           await supabase.auth.signOut();
@@ -48,6 +49,9 @@ const Login = () => {
     setError(null);
 
     try {
+      // Ensure we're starting with a clean session
+      await supabase.auth.signOut();
+
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: normalizeEmail(formData.email),
         password: formData.password,
@@ -65,6 +69,14 @@ const Login = () => {
       }
 
       if (data.user) {
+        // Verify the session was created successfully
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError || !session) {
+          setError("Failed to establish session. Please try again.");
+          return;
+        }
+
         toast({
           title: "Welcome back!",
           description: "You have successfully logged in.",
