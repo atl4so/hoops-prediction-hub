@@ -14,8 +14,14 @@ import { Button } from "@/components/ui/button";
 import { ProfileSettings } from "./ProfileSettings";
 import { useUserProfile } from "@/components/dashboard/UserProfile";
 import { useCurrentRoundRank } from "@/components/dashboard/useCurrentRoundRank";
-import { Loader2, Trophy, ListOrdered } from "lucide-react";
+import { Loader2, Trophy } from "lucide-react";
 import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function ProfileMenu() {
   const session = useSession();
@@ -60,18 +66,36 @@ export function ProfileMenu() {
         <DropdownMenuTrigger asChild>
           <div className="flex items-center gap-4 cursor-pointer">
             {/* Desktop Rank Display */}
-            <div className="hidden md:flex items-center gap-3">
-              <div className="flex items-center gap-2 text-sm">
-                <Trophy className="h-4 w-4 text-yellow-500" />
-                <span className="text-muted-foreground">Rank:</span>
-                <span className="font-medium">{profile?.allTimeRank || '-'}</span>
-              </div>
+            <div className="hidden md:flex items-center gap-4">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center gap-2 bg-accent/50 px-3 py-1.5 rounded-full hover:bg-accent transition-colors">
+                      <Trophy className="h-4 w-4 text-yellow-500" />
+                      <span className="text-muted-foreground font-medium">ATR:</span>
+                      <span className="font-semibold text-foreground">{profile?.allTimeRank || '-'}</span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>All Time Rank - Your overall position based on total points earned</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
               {currentRoundRank && (
-                <div className="flex items-center gap-2 text-sm">
-                  <ListOrdered className="h-4 w-4 text-blue-500" />
-                  <span className="text-muted-foreground">{currentRoundRank.roundName}:</span>
-                  <span className="font-medium">{currentRoundRank.rank || '-'}</span>
-                </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-2 bg-accent/50 px-3 py-1.5 rounded-full hover:bg-accent transition-colors">
+                        <span className="text-muted-foreground font-medium">Rank {currentRoundRank.roundName}:</span>
+                        <span className="font-semibold text-foreground">{currentRoundRank.rank || '-'}</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Your current rank in the latest round with completed games</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               )}
             </div>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -100,17 +124,16 @@ export function ProfileMenu() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           {/* Mobile Rank Display */}
-          <div className="md:hidden px-2 py-1.5 space-y-1">
-            <div className="flex items-center gap-2 text-sm">
+          <div className="md:hidden px-2 py-1.5 space-y-2">
+            <div className="flex items-center gap-2 text-sm bg-accent/50 px-2 py-1.5 rounded-lg">
               <Trophy className="h-4 w-4 text-yellow-500" />
-              <span className="text-muted-foreground">All-time Rank:</span>
-              <span className="font-medium">{profile?.allTimeRank || '-'}</span>
+              <span className="text-muted-foreground font-medium">ATR:</span>
+              <span className="font-semibold">{profile?.allTimeRank || '-'}</span>
             </div>
             {currentRoundRank && (
-              <div className="flex items-center gap-2 text-sm">
-                <ListOrdered className="h-4 w-4 text-blue-500" />
-                <span className="text-muted-foreground">{currentRoundRank.roundName}:</span>
-                <span className="font-medium">{currentRoundRank.rank || '-'}</span>
+              <div className="flex items-center gap-2 text-sm bg-accent/50 px-2 py-1.5 rounded-lg">
+                <span className="text-muted-foreground font-medium">Rank {currentRoundRank.roundName}:</span>
+                <span className="font-semibold">{currentRoundRank.rank || '-'}</span>
               </div>
             )}
           </div>
