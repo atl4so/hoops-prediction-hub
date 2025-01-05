@@ -20,7 +20,6 @@ export function HomeAwayStats({ userId }: HomeAwayStatsProps) {
   const handleDialogClose = (open: boolean) => {
     setShowDialog(open);
     if (!open) {
-      // Reset selected round when dialog closes
       setSelectedRound("");
     }
   };

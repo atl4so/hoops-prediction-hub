@@ -1,8 +1,10 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Check, Home, Plane, X } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Home, Plane } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { HomeAwayStatsDisplay } from "./HomeAwayStatsDisplay";
+import { PredictionsList } from "./PredictionsList";
 
 interface HomeAwayPredictionsDialogProps {
   isOpen: boolean;
@@ -108,26 +110,7 @@ export function HomeAwayPredictionsDialog({
         </DialogHeader>
         
         <div className="space-y-4 flex-1 overflow-y-auto">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 rounded-lg border border-[#9b87f5]/20 bg-white space-y-2">
-              <div className="flex items-center justify-center gap-2">
-                <Home className="h-5 w-5 text-[#9b87f5]" />
-                <span className="text-lg font-semibold text-[#1A1F2C]">{homeStats.percentage}%</span>
-              </div>
-              <p className="text-sm text-center text-[#7E69AB]">
-                {homeStats.correct} of {homeStats.total} correct
-              </p>
-            </div>
-            <div className="p-4 rounded-lg border border-[#9b87f5]/20 bg-white space-y-2">
-              <div className="flex items-center justify-center gap-2">
-                <Plane className="h-5 w-5 text-[#7E69AB]" />
-                <span className="text-lg font-semibold text-[#1A1F2C]">{awayStats.percentage}%</span>
-              </div>
-              <p className="text-sm text-center text-[#7E69AB]">
-                {awayStats.correct} of {awayStats.total} correct
-              </p>
-            </div>
-          </div>
+          <HomeAwayStatsDisplay homeStats={homeStats} awayStats={awayStats} />
 
           {isLoading ? (
             <div className="text-center py-4 text-[#7E69AB]">
@@ -146,48 +129,8 @@ export function HomeAwayPredictionsDialog({
                 </TabsTrigger>
               </TabsList>
 
-              {['home', 'away'].map((type) => (
-                <TabsContent key={type} value={type} className="space-y-4">
-                  <div className="space-y-2">
-                    {predictions.map((prediction) => {
-                      const isPredictedHomeWin = prediction.prediction_home_score > prediction.prediction_away_score;
-                      const isActualHomeWin = prediction.game.game_results.home_score > prediction.game.game_results.away_score;
-                      const isRelevantPrediction = type === 'home' ? isPredictedHomeWin : !isPredictedHomeWin;
-                      
-                      if (!isRelevantPrediction) return null;
-
-                      const isCorrect = type === 'home' 
-                        ? (isPredictedHomeWin && isActualHomeWin)
-                        : (!isPredictedHomeWin && !isActualHomeWin);
-
-                      return (
-                        <div 
-                          key={prediction.id} 
-                          className={`flex items-center justify-between p-3 rounded-lg border ${
-                            isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
-                          }`}
-                        >
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium">
-                                {prediction.game.home_team.name} vs {prediction.game.away_team.name}
-                              </span>
-                              {isCorrect ? (
-                                <Check className="h-4 w-4 text-green-600" />
-                              ) : (
-                                <X className="h-4 w-4 text-red-600" />
-                              )}
-                            </div>
-                            <div className="text-xs text-[#7E69AB] mt-1">
-                              {prediction.prediction_home_score} - {prediction.prediction_away_score}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </TabsContent>
-              ))}
+              <PredictionsList predictions={predictions} type="home" />
+              <PredictionsList predictions={predictions} type="away" />
             </Tabs>
           ) : (
             <div className="text-center py-6 text-[#7E69AB]">
