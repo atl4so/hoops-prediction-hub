@@ -19,6 +19,8 @@ export function StatCard({
   delay = 0,
   onClick
 }: StatCardProps) {
+  const isClickable = !!onClick;
+
   return (
     <Card 
       className={cn(
@@ -26,7 +28,7 @@ export function StatCard({
         "hover:scale-[1.02] hover:-translate-y-0.5",
         "bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20",
         "opacity-0", // Start invisible for animation
-        onClick && "cursor-pointer"
+        isClickable && "cursor-pointer hover:border-primary/40 relative"
       )}
       style={{
         animationDelay: `${delay * 0.1}s`,
@@ -51,6 +53,11 @@ export function StatCard({
             {description && (
               <p className="text-xs sm:text-sm text-muted-foreground max-w-[200px] mx-auto leading-relaxed">
                 {description}
+              </p>
+            )}
+            {isClickable && (
+              <p className="text-xs text-primary animate-pulse mt-2">
+                Click to view details
               </p>
             )}
           </div>
