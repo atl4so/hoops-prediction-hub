@@ -42,7 +42,7 @@ export default function MyPredictions() {
   const groupPredictions = (predictions: any[]) => {
     const grouped: { [key: string]: any[] } = {};
     predictions.forEach(prediction => {
-      const roundName = prediction.round; // Assuming there's a round field
+      const roundName = prediction.round;
       if (!grouped[roundName]) {
         grouped[roundName] = [];
       }
@@ -74,8 +74,10 @@ export default function MyPredictions() {
         {Object.entries(groupedPredictions).map(([roundName, roundPredictions]) => (
           <CollapsibleRoundSection
             key={roundName}
+            roundId={roundName}
             roundName={roundName}
             predictions={roundPredictions}
+            userName={session?.user?.email || ''}
           />
         ))}
       </div>
