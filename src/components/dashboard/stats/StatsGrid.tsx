@@ -19,12 +19,12 @@ export function StatsGrid({ stats }: StatsGridProps) {
   const [showAllCards, setShowAllCards] = useState(false);
   const isMobile = useIsMobile();
 
-  const visibleStats = isMobile 
-    ? (showAllCards ? stats : stats.slice(0, 4))
-    : stats;
+  const initialCardsToShow = isMobile ? 4 : 8;
+  const visibleStats = showAllCards ? stats : stats.slice(0, initialCardsToShow);
+  const hasMoreCards = stats.length > initialCardsToShow;
 
   return (
-    <div>
+    <div className="space-y-4">
       <div className={cn(
         "grid gap-2 sm:gap-4",
         isMobile ? "grid-cols-2" : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
@@ -41,7 +41,7 @@ export function StatsGrid({ stats }: StatsGridProps) {
           />
         ))}
       </div>
-      {isMobile && stats.length > 4 && (
+      {hasMoreCards && (
         <Button
           variant="outline"
           className="w-full mt-4 bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary"
