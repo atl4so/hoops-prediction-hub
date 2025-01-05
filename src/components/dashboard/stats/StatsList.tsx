@@ -1,8 +1,7 @@
-import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal, Home, Plane } from "lucide-react";
+import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal } from "lucide-react";
 import { StatsGrid } from "./StatsGrid";
 import { useState } from "react";
 import { WinnerPredictionsDialog } from "./WinnerPredictionsDialog";
-import { HomeAwayPredictionsDialog } from "./HomeAwayPredictionsDialog";
 import { cn } from "@/lib/utils";
 
 interface StatsListProps {
@@ -15,10 +14,6 @@ interface StatsListProps {
   currentRoundRank?: { rank: number | null; isCurrent: boolean; roundName: string };
   winnerPredictionsCorrect?: number;
   winnerPredictionsTotal?: number;
-  homeWinnerPredictionsCorrect?: number;
-  homeWinnerPredictionsTotal?: number;
-  awayWinnerPredictionsCorrect?: number;
-  awayWinnerPredictionsTotal?: number;
   userId?: string;
 }
 
@@ -39,14 +34,9 @@ export function StatsList({
   currentRoundRank,
   winnerPredictionsCorrect = 0,
   winnerPredictionsTotal = 0,
-  homeWinnerPredictionsCorrect = 0,
-  homeWinnerPredictionsTotal = 0,
-  awayWinnerPredictionsCorrect = 0,
-  awayWinnerPredictionsTotal = 0,
   userId,
 }: StatsListProps) {
   const [showWinnerDialog, setShowWinnerDialog] = useState(false);
-  const [showHomeAwayDialog, setShowHomeAwayDialog] = useState(false);
 
   const stats = [
     {
@@ -73,24 +63,6 @@ export function StatsList({
       value: `${winnerPredictionsTotal > 0 ? Math.round((winnerPredictionsCorrect / winnerPredictionsTotal) * 100) : 0}%`,
       description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} games`,
       onClick: userId ? () => setShowWinnerDialog(true) : undefined
-    },
-    {
-      icon: Home,
-      label: "Home/Away",
-      value: (
-        <div className="flex items-center justify-center gap-4">
-          <div className="flex items-center gap-1">
-            <Home className="h-4 w-4" />
-            <span>{homeWinnerPredictionsTotal > 0 ? Math.round((homeWinnerPredictionsCorrect / homeWinnerPredictionsTotal) * 100) : 0}</span>
-          </div>
-          <span>/</span>
-          <div className="flex items-center gap-1">
-            <Plane className="h-4 w-4" />
-            <span>{awayWinnerPredictionsTotal > 0 ? Math.round((awayWinnerPredictionsCorrect / awayWinnerPredictionsTotal) * 100) : 0}</span>
-          </div>
-        </div>
-      ),
-      onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
     },
     {
       icon: Target,
@@ -122,18 +94,11 @@ export function StatsList({
     <>
       <StatsGrid stats={stats} />
       {userId && (
-        <>
-          <WinnerPredictionsDialog
-            isOpen={showWinnerDialog}
-            onOpenChange={setShowWinnerDialog}
-            userId={userId}
-          />
-          <HomeAwayPredictionsDialog
-            isOpen={showHomeAwayDialog}
-            onOpenChange={setShowHomeAwayDialog}
-            userId={userId}
-          />
-        </>
+        <WinnerPredictionsDialog
+          isOpen={showWinnerDialog}
+          onOpenChange={setShowWinnerDialog}
+          userId={userId}
+        />
       )}
     </>
   );
