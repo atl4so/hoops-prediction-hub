@@ -58,11 +58,14 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
         size: file.size
       });
 
+      // Create a new FormData instance
+      const formData = new FormData();
+      formData.append('file', file);
+
       const { error: uploadError, data } = await supabase.storage
         .from('avatars')
         .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: true
+          contentType: file.type // Explicitly set the content type
         });
 
       if (uploadError) {
