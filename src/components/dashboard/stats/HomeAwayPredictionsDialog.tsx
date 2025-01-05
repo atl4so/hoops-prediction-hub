@@ -28,6 +28,8 @@ export function HomeAwayPredictionsDialog({
     queryFn: async () => {
       if (!selectedRound) return [];
       
+      console.log('Fetching predictions for round:', selectedRound);
+      
       const { data, error } = await supabase
         .from('predictions')
         .select(`
@@ -58,22 +60,27 @@ export function HomeAwayPredictionsDialog({
         throw error;
       }
 
-      // Transform the data to match PredictionData type
-      return data.filter(pred => pred.game.game_results[0].is_final).map(pred => ({
-        ...pred,
-        game: {
-          ...pred.game,
-          game_results: Array.isArray(pred.game.game_results) 
-            ? pred.game.game_results 
-            : [pred.game.game_results]
-        }
-      })) as PredictionData[];
+      // Transform and filter the data
+      const transformedData = data
+        .filter(pred => pred.game.game_results[0].is_final)
+        .map(pred => ({
+          ...pred,
+          game: {
+            ...pred.game,
+            game_results: Array.isArray(pred.game.game_results) 
+              ? pred.game.game_results 
+              : [pred.game.game_results]
+          }
+        }));
+
+      console.log('Transformed predictions:', transformedData);
+      return transformedData as PredictionData[];
     },
     enabled: isOpen && !!selectedRound,
   });
 
   const getStats = (type: 'home' | 'away') => {
-    if (!predictions) return { total: 0, correct: 0, percentage: 0 };
+    if (!predictions || predictions.length === 0) return { total: 0, correct: 0, percentage: 0 };
 
     const results = predictions.reduce((acc, pred) => {
       const isPredictedHomeWin = pred.prediction_home_score > pred.prediction_away_score;
