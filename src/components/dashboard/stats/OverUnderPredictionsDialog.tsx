@@ -62,7 +62,18 @@ export function OverUnderPredictionsDialog({
         throw error;
       }
 
-      return data.filter(pred => pred.game.game_results.is_final) as PredictionData[];
+      // Filter out predictions without final results and ensure game_results is an array
+      return data
+        .filter(pred => pred.game.game_results[0]?.is_final)
+        .map(pred => ({
+          ...pred,
+          game: {
+            ...pred.game,
+            game_results: Array.isArray(pred.game.game_results) 
+              ? pred.game.game_results 
+              : [pred.game.game_results]
+          }
+        })) as PredictionData[];
     },
     enabled: isOpen && !!selectedRound,
   });
