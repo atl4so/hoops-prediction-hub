@@ -1,4 +1,4 @@
-import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal, Home } from "lucide-react";
+import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal, Home, Percent } from "lucide-react";
 import { StatsGrid } from "./StatsGrid";
 import { useState } from "react";
 import { WinnerPredictionsDialog } from "./WinnerPredictionsDialog";
@@ -9,6 +9,9 @@ interface StatsListProps {
   pointsPerGame: number;
   totalPredictions: number;
   highestGamePoints?: number | null;
+  lowestGamePoints?: number | null;
+  highestRoundPoints?: number | null;
+  lowestRoundPoints?: number | null;
   allTimeRank?: number | null;
   currentRoundRank?: { rank: number | null; isCurrent: boolean; roundName: string };
   winnerPredictionsCorrect?: number;
@@ -17,6 +20,8 @@ interface StatsListProps {
   homeWinnerPredictionsTotal?: number;
   awayWinnerPredictionsCorrect?: number;
   awayWinnerPredictionsTotal?: number;
+  overUnderPredictionsCorrect?: number;
+  overUnderPredictionsTotal?: number;
   userId?: string;
 }
 
@@ -32,6 +37,9 @@ export function StatsList({
   pointsPerGame,
   totalPredictions,
   highestGamePoints,
+  lowestGamePoints,
+  highestRoundPoints,
+  lowestRoundPoints,
   allTimeRank,
   currentRoundRank,
   winnerPredictionsCorrect = 0,
@@ -40,6 +48,8 @@ export function StatsList({
   homeWinnerPredictionsTotal = 0,
   awayWinnerPredictionsCorrect = 0,
   awayWinnerPredictionsTotal = 0,
+  overUnderPredictionsCorrect = 0,
+  overUnderPredictionsTotal = 0,
   userId,
 }: StatsListProps) {
   const [showWinnerDialog, setShowWinnerDialog] = useState(false);
@@ -52,6 +62,10 @@ export function StatsList({
 
   const awayWinnerPercentage = awayWinnerPredictionsTotal > 0
     ? Math.round((awayWinnerPredictionsCorrect / awayWinnerPredictionsTotal) * 100)
+    : 0;
+
+  const overUnderPercentage = overUnderPredictionsTotal > 0
+    ? Math.round((overUnderPredictionsCorrect / overUnderPredictionsTotal) * 100)
     : 0;
 
   const stats = [
@@ -75,7 +89,7 @@ export function StatsList({
     },
     {
       icon: Target,
-      label: "Winner Prediction %",
+      label: "Winner Prediction",
       value: `${winnerPredictionsTotal > 0 ? Math.round((winnerPredictionsCorrect / winnerPredictionsTotal) * 100) : 0}%`,
       description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} games`,
       onClick: userId ? () => setShowWinnerDialog(true) : undefined
@@ -83,8 +97,15 @@ export function StatsList({
     {
       icon: Home,
       label: "Home/Away",
-      value: `${homeWinnerPercentage} / ${awayWinnerPercentage}`,
+      value: `${homeWinnerPercentage}/${awayWinnerPercentage}`,
+      description: `Home: ${homeWinnerPredictionsCorrect}/${homeWinnerPredictionsTotal}, Away: ${awayWinnerPredictionsCorrect}/${awayWinnerPredictionsTotal}`,
       onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
+    },
+    {
+      icon: Percent,
+      label: "Over/Under",
+      value: `${overUnderPercentage}%`,
+      description: `Correctly predicted ${overUnderPredictionsCorrect} over/unders out of ${overUnderPredictionsTotal}`,
     },
     {
       icon: Target,
@@ -100,9 +121,27 @@ export function StatsList({
     },
     {
       icon: ArrowUp,
-      label: "Highest Game Points",
+      label: "Best Game",
       value: highestGamePoints || 0,
       description: "Best performance in a single game"
+    },
+    {
+      icon: ArrowUp,
+      label: "Best Round",
+      value: highestRoundPoints || 0,
+      description: "Best performance in a single round"
+    },
+    {
+      icon: ArrowUp,
+      label: "Lowest Game",
+      value: lowestGamePoints || 0,
+      description: "Lowest performance in a single game"
+    },
+    {
+      icon: ArrowUp,
+      label: "Lowest Round",
+      value: lowestRoundPoints || 0,
+      description: "Lowest performance in a single round"
     }
   ];
 
