@@ -17,7 +17,6 @@
   will-change: transform;
 }
 
-/* Base styles to prevent scrolling issues */
 html, body {
   margin: 0;
   padding: 0;
@@ -25,12 +24,10 @@ html, body {
   height: 100%;
   position: fixed;
   overflow: hidden;
-  background: linear-gradient(180deg, #22c55e 0%, #bbf7d0 100%);
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: none;
 }
 
-/* Ensure content is properly contained */
 .container {
   height: 100%;
   overflow-y: auto;
