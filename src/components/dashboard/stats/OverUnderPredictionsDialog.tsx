@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Check, X } from "lucide-react";
 import { RoundSelector } from "../predictions/RoundSelector";
 import { useState } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { InfoIcon } from "lucide-react";
 
 interface OverUnderPredictionsDialogProps {
   isOpen: boolean;
@@ -92,8 +94,17 @@ export function OverUnderPredictionsDialog({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Over/Under Predictions by Round</DialogTitle>
-          <DialogDescription>
-            View your completed predictions and their results (threshold: 150 points)
+          <DialogDescription className="space-y-2">
+            <p>
+              For each game, predict whether the total combined score will be over or under 150 points.
+            </p>
+            <Alert variant="warning" className="mt-2">
+              <InfoIcon className="h-4 w-4" />
+              <AlertDescription>
+                Important: If you predict exactly 150 points total, it will be marked as incorrect. 
+                Your prediction must be clearly over (≥151) or under (≤149) points.
+              </AlertDescription>
+            </Alert>
           </DialogDescription>
         </DialogHeader>
         
