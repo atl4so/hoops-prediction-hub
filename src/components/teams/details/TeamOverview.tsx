@@ -25,11 +25,11 @@ export function TeamOverview({ stats, distribution }: TeamOverviewProps) {
         />
       </div>
 
-      {/* Overall Success Rate */}
+      {/* Overall Win Rate */}
       <div className="grid gap-4 sm:grid-cols-2">
         <StatCard
           icon={Trophy}
-          label="Overall Success Rate"
+          label="Overall Win Rate"
           value={`${Math.round(stats?.overall_success_rate || 0)}%`}
           description={`${stats?.total_games || 0} games played`}
         />
@@ -41,35 +41,19 @@ export function TeamOverview({ stats, distribution }: TeamOverviewProps) {
         />
       </div>
 
-      {/* Home/Away Success Rates */}
+      {/* Home/Away Win Rates */}
       <div className="grid gap-4 sm:grid-cols-2">
         <StatCard
           icon={Home}
-          label="Home Success Rate"
+          label="Home Win Rate"
           value={`${Math.round(stats?.home_success_rate || 0)}%`}
           description={`${stats?.home_games || 0} home games`}
         />
         <StatCard
           icon={ExternalLink}
-          label="Away Success Rate"
+          label="Away Win Rate"
           value={`${Math.round(stats?.away_success_rate || 0)}%`}
           description={`${stats?.away_games || 0} away games`}
-        />
-      </div>
-
-      {/* Underdog Stats */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <StatCard
-          icon={Trophy}
-          label="Underdog Wins"
-          value={stats?.underdog_wins || 0}
-          description={`Average margin: ${Math.round(stats?.avg_upset_margin || 0)} pts`}
-        />
-        <StatCard
-          icon={Target}
-          label="Unexpected Losses"
-          value={stats?.unexpected_losses || 0}
-          description={`Average margin: ${Math.round(stats?.avg_loss_margin || 0)} pts`}
         />
       </div>
 
