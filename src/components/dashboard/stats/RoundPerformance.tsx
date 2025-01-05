@@ -85,12 +85,16 @@ export function RoundPerformance({ userId }: RoundPerformanceProps) {
       <h3 className="text-lg font-semibold mb-4">Round Performance</h3>
       <div className="space-y-4">
         <Select value={selectedRound} onValueChange={setSelectedRound}>
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-[200px] bg-white">
             <SelectValue placeholder="Select a round" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white border shadow-md z-50">
             {rounds?.map((round) => (
-              <SelectItem key={round.id} value={round.id}>
+              <SelectItem 
+                key={round.id} 
+                value={round.id}
+                className="cursor-pointer hover:bg-accent focus:bg-accent"
+              >
                 Round {round.name}
               </SelectItem>
             ))}
