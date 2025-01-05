@@ -51,11 +51,14 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
       // Upload new avatar
       const fileExt = file.name.split('.').pop();
       const fileName = `${profile.id}-${Date.now()}.${fileExt}`;
+
+      // Create a Blob with the correct type
+      const blob = new Blob([file], { type: file.type });
       
       const { error: uploadError, data } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file, {
-          contentType: file.type, // Explicitly set the content type from the file
+        .upload(fileName, blob, {
+          contentType: file.type,
           cacheControl: '3600',
           upsert: false
         });
