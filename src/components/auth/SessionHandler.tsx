@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { QueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { clearAuthSession, verifySession } from '@/utils/auth';
+import { clearAuthSession } from '@/utils/auth';
 import { toast } from "sonner";
 
 interface SessionHandlerProps {
@@ -27,7 +27,10 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
           if (mounted) {
             setIsAuthenticated(false);
             setIsLoading(false);
-            await clearAuthSession();
+            // Only clear session if it's not already a session_not_found error
+            if (!error.message.includes('session_not_found')) {
+              await clearAuthSession();
+            }
             toast.error("Session error. Please try logging in again.");
           }
           return;
@@ -80,7 +83,6 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
           } else {
             setIsAuthenticated(false);
             setIsLoading(false);
-            await clearAuthSession();
           }
         }
       });

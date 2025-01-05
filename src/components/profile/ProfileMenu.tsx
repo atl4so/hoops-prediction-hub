@@ -33,22 +33,25 @@ export function ProfileMenu() {
 
   const handleLogout = async () => {
     try {
+      // Clear any local storage/session storage first
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // Then attempt to sign out from Supabase
       const { error } = await supabase.auth.signOut();
-      if (error) {
-        if (error.message.includes('session_not_found')) {
-          localStorage.clear();
-          sessionStorage.clear();
-          navigate("/login");
-          return;
-        }
-        throw error;
+      
+      // If there's a session_not_found error, we can ignore it since we're logging out anyway
+      if (error && !error.message.includes('session_not_found')) {
+        console.error('Logout error:', error);
+        toast.error("Failed to log out. Please try again.");
       }
+
+      // Always navigate to login page
       navigate("/login");
     } catch (error) {
       console.error('Logout error:', error);
       toast.error("Failed to log out. Please try again.");
-      localStorage.clear();
-      sessionStorage.clear();
+      // Still navigate to login page even if there's an error
       navigate("/login");
     }
   };

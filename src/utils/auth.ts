@@ -2,15 +2,16 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const clearAuthSession = async () => {
   try {
+    // Clear local storage first
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Attempt to sign out, but don't throw on session_not_found
     const { error } = await supabase.auth.signOut();
-    if (error) {
+    if (error && !error.message.includes('session_not_found')) {
       console.error('Error clearing session:', error);
       throw error;
     }
-    
-    // Clear any local storage items
-    localStorage.removeItem('supabase.auth.token');
-    sessionStorage.clear();
   } catch (error) {
     console.error('Session cleanup error:', error);
     throw error;
