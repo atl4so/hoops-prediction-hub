@@ -58,10 +58,10 @@ export default function Overview() {
         currentRoundRank={currentRoundRank}
         winnerPredictionsCorrect={userProfileData?.winner_predictions_correct}
         winnerPredictionsTotal={userProfileData?.winner_predictions_total}
-        homeWinnerPredictionsCorrect={userProfileData?.winner_predictions_correct}
-        homeWinnerPredictionsTotal={userProfileData?.winner_predictions_total}
-        awayWinnerPredictionsCorrect={userProfileData?.winner_predictions_correct}
-        awayWinnerPredictionsTotal={userProfileData?.winner_predictions_total}
+        homeWinnerPredictionsCorrect={userProfileData?.home_winner_predictions_correct}
+        homeWinnerPredictionsTotal={userProfileData?.home_winner_predictions_total}
+        awayWinnerPredictionsCorrect={userProfileData?.away_winner_predictions_correct}
+        awayWinnerPredictionsTotal={userProfileData?.away_winner_predictions_total}
         userId={userId}
       />
     </div>
