@@ -3,7 +3,6 @@ import { StatsGrid } from "./StatsGrid";
 import { useState } from "react";
 import { WinnerPredictionsDialog } from "./WinnerPredictionsDialog";
 import { HomeAwayPredictionsDialog } from "./HomeAwayPredictionsDialog";
-import { cn } from "@/lib/utils";
 
 interface StatsListProps {
   totalPoints: number;
@@ -53,6 +52,9 @@ export function StatsList({
   const [showWinnerDialog, setShowWinnerDialog] = useState(false);
   const [showHomeAwayDialog, setShowHomeAwayDialog] = useState(false);
 
+  const homePercentage = formatPercentage(homeWinnerPredictionsCorrect, homeWinnerPredictionsTotal);
+  const awayPercentage = formatPercentage(awayWinnerPredictionsCorrect, awayWinnerPredictionsTotal);
+
   const stats = [
     {
       icon: Trophy,
@@ -82,8 +84,8 @@ export function StatsList({
     {
       icon: Home,
       label: "Home/Away",
-      value: `${formatPercentage(homeWinnerPredictionsCorrect, homeWinnerPredictionsTotal)}/${formatPercentage(awayWinnerPredictionsCorrect, awayWinnerPredictionsTotal)}`,
-      description: "Home/Away prediction accuracy (%)",
+      value: `${homePercentage}/${awayPercentage}%`,
+      description: `Home: ${homeWinnerPredictionsCorrect}/${homeWinnerPredictionsTotal} | Away: ${awayWinnerPredictionsCorrect}/${awayWinnerPredictionsTotal}`,
       onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
     },
     {
