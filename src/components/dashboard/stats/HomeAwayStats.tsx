@@ -17,14 +17,22 @@ export function HomeAwayStats({ userId }: HomeAwayStatsProps) {
     setShowDialog(true);
   };
 
+  const handleDialogClose = (open: boolean) => {
+    setShowDialog(open);
+    if (!open) {
+      // Reset selected round when dialog closes
+      setSelectedRound("");
+    }
+  };
+
   return (
     <>
-      <Card className="bg-white/50 backdrop-blur-sm">
+      <Card className="bg-[#1A1F2C]/5 backdrop-blur-sm border-[#9b87f5]/20">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold flex items-center gap-2">
+          <CardTitle className="text-xl font-semibold flex items-center gap-2 text-[#1A1F2C]">
             <div className="flex items-center gap-1">
-              <Home className="h-5 w-5" />
-              <Plane className="h-5 w-5" />
+              <Home className="h-5 w-5 text-[#9b87f5]" />
+              <Plane className="h-5 w-5 text-[#7E69AB]" />
             </div>
             Winner Predictions by Round
           </CardTitle>
@@ -33,7 +41,7 @@ export function HomeAwayStats({ userId }: HomeAwayStatsProps) {
           <RoundSelector
             selectedRound={selectedRound}
             onRoundChange={handleRoundChange}
-            className="w-full bg-white"
+            className="w-full bg-white border-[#9b87f5]/20"
           />
         </CardContent>
       </Card>
@@ -41,7 +49,7 @@ export function HomeAwayStats({ userId }: HomeAwayStatsProps) {
       {userId && (
         <HomeAwayPredictionsDialog
           isOpen={showDialog}
-          onOpenChange={setShowDialog}
+          onOpenChange={handleDialogClose}
           userId={userId}
           roundId={selectedRound}
         />
