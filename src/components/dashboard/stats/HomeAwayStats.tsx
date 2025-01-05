@@ -13,8 +13,10 @@ export function HomeAwayStats({ userId }: HomeAwayStatsProps) {
   const [showDialog, setShowDialog] = useState(false);
 
   const handleRoundChange = (roundId: string) => {
-    setSelectedRound(roundId);
-    setShowDialog(true);
+    if (roundId) {
+      setSelectedRound(roundId);
+      setShowDialog(true);
+    }
   };
 
   const handleDialogClose = (open: boolean) => {
@@ -45,7 +47,7 @@ export function HomeAwayStats({ userId }: HomeAwayStatsProps) {
         </CardContent>
       </Card>
 
-      {userId && (
+      {userId && selectedRound && (
         <HomeAwayPredictionsDialog
           isOpen={showDialog}
           onOpenChange={handleDialogClose}
