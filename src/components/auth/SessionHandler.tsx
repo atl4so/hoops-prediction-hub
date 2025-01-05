@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { QueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { clearAuthSession, verifySession } from '@/utils/auth';
+import { toast } from "sonner";
 
 interface SessionHandlerProps {
   children: React.ReactNode;
@@ -45,12 +46,15 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
           setIsAuthenticated(false);
           setIsLoading(false);
           await clearAuthSession();
+          toast.error("Session verification failed. Please try logging in again.");
         }
       }
     };
 
+    // Initial session check
     checkSession();
 
+    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
       
@@ -58,20 +62,31 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
       
       if (event === 'SIGNED_OUT') {
         setIsAuthenticated(false);
+        setIsLoading(false);
         queryClient.clear();
-        await clearAuthSession();
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        const validSession = await verifySession();
-        if (validSession) {
-          setIsAuthenticated(true);
-          queryClient.invalidateQueries();
-        } else {
+        try {
+          const validSession = await verifySession();
+          if (validSession) {
+            setIsAuthenticated(true);
+            setIsLoading(false);
+            queryClient.invalidateQueries();
+          } else {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+            await clearAuthSession();
+          }
+        } catch (error) {
+          console.error('Session verification error:', error);
           setIsAuthenticated(false);
+          setIsLoading(false);
           await clearAuthSession();
+          toast.error("Session verification failed. Please try logging in again.");
         }
       }
     });
 
+    // Cleanup function
     return () => {
       mounted = false;
       subscription.unsubscribe();
@@ -81,7 +96,11 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
   console.log('SessionHandler state:', { isLoading, isAuthenticated });
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   return <>{children}</>;
