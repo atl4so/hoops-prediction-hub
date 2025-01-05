@@ -40,7 +40,7 @@ export function ThresholdTabsContent({ threshold, predictions }: ThresholdTabsCo
                 )}
               </div>
               <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
-                <p>Your prediction: {prediction.prediction.prediction_home_score} - {prediction.prediction.prediction_away_score} (Total: {prediction.predictedTotal})</p>
+                <p>Your prediction: {prediction.prediction_home_score} - {prediction.prediction_away_score} (Total: {prediction.predictedTotal})</p>
                 <p>Final score: {prediction.game.game_results[0].home_score} - {prediction.game.game_results[0].away_score} (Total: {prediction.actualTotal})</p>
                 <p className="font-medium">
                   {prediction.isOver ? 'Predicted Over' : 'Predicted Under'} • 
@@ -57,7 +57,7 @@ export function ThresholdTabsContent({ threshold, predictions }: ThresholdTabsCo
 
 function getPredictionStats(threshold: number, predictions: PredictionData[]) {
   const thresholdPredictions = predictions.map(prediction => {
-    const predictedTotal = prediction.prediction.prediction_home_score + prediction.prediction.prediction_away_score;
+    const predictedTotal = prediction.prediction_home_score + prediction.prediction_away_score;
     const actualTotal = prediction.game.game_results[0].home_score + prediction.game.game_results[0].away_score;
 
     return {

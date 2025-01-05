@@ -1,6 +1,10 @@
 export interface PredictionData {
   id: string;
+  prediction_home_score: number;
+  prediction_away_score: number;
   game: {
+    id: string;
+    game_date: string;
     home_team: {
       name: string;
     };
@@ -10,10 +14,7 @@ export interface PredictionData {
     game_results: {
       home_score: number;
       away_score: number;
+      is_final: boolean;
     }[];
-  };
-  prediction: {
-    prediction_home_score: number;
-    prediction_away_score: number;
   };
 }
