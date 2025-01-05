@@ -1,7 +1,7 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   height: 100%;
   position: fixed;
   left: 0;
@@ -34,61 +34,6 @@ html, body {
   -webkit-overflow-scrolling: touch;
   position: relative;
   z-index: 1;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-
-.card {
-  padding: 2em;
-  border-radius: 1rem;
-  background-color: #FFF7ED;
-  border: 1px solid rgba(249, 115, 22, 0.1);
-  transition: all 0.3s ease;
-}
-
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.1), 0 2px 4px -1px rgba(249, 115, 22, 0.06);
-}
-
-.game-card {
-  background-color: #FFF7ED;
-  border: 1px solid rgba(249, 115, 22, 0.1);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  transition: all 0.3s ease;
-}
-
-.game-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.1), 0 2px 4px -1px rgba(249, 115, 22, 0.06);
-}
-
-.team-logo {
-  width: 64px;
-  height: 64px;
-  object-fit: contain;
-}
-
-.prediction-button {
-  background-color: #F97316;
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.prediction-button:hover {
-  background-color: #EA580C;
-}
-
-.prediction-button:disabled {
-  background-color: #FDA4AF;
-  cursor: not-allowed;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
