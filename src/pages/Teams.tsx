@@ -48,10 +48,10 @@ export default function Teams() {
           />
         </div>
         <Select value={sort} onValueChange={(value) => setSort(value as SortOption)}>
-          <SelectTrigger className="w-full sm:w-[200px]">
+          <SelectTrigger className="w-full sm:w-[200px] bg-white">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
-          <SelectContent className="bg-background border shadow-lg z-50">
+          <SelectContent className="bg-white border shadow-lg z-50">
             <SelectItem value="predictions" className="hover:bg-accent">Most Predicted</SelectItem>
             <SelectItem value="success" className="hover:bg-accent">Best Success Rate</SelectItem>
             <SelectItem value="upsets" className="hover:bg-accent">Most Underdog Wins</SelectItem>
