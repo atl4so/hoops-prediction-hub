@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface RoundSelectorProps {
   selectedRound: string;
@@ -17,17 +18,28 @@ interface RoundSelectorProps {
 }
 
 export function RoundSelector({ selectedRound, onRoundChange, className }: RoundSelectorProps) {
-  const { data: rounds } = useQuery({
+  const { data: rounds, error } = useQuery({
     queryKey: ["rounds"],
     queryFn: async () => {
+      console.log('Fetching rounds...');
       const { data, error } = await supabase
         .from("rounds")
         .select("*")
-        .order('created_at', { ascending: false });
+        .order('start_date', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching rounds:', error);
+        throw error;
+      }
+
+      console.log('Fetched rounds:', data);
       return data;
     },
+    retry: 3,
+    onError: (error) => {
+      console.error('Failed to fetch rounds:', error);
+      toast.error("Failed to load rounds. Please try again later.");
+    }
   });
 
   // Set the latest round as default when rounds are loaded
