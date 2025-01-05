@@ -1,5 +1,57 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { Session, Provider } from '@supabase/supabase-js';
+
+export const clearAuthSession = async () => {
+  try {
+    // First try to sign out normally
+    const { error: signOutError } = await supabase.auth.signOut({
+      scope: 'local' // Use local scope to avoid the body stream error
+    });
+    
+    if (signOutError) {
+      console.error('Error signing out:', signOutError);
+    }
+    
+    // Clear local storage regardless of signout success
+    localStorage.removeItem('supabase.auth.token');
+    sessionStorage.clear();
+    
+    // If there was an error signing out, we still want to clear the session
+    if (signOutError) {
+      throw signOutError;
+    }
+  } catch (error) {
+    console.error('Session cleanup error:', error);
+    throw error;
+  }
+};
+
+export const verifySession = async () => {
+  try {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError) {
+      console.error('Session verification error:', sessionError);
+      return null;
+    }
+    
+    if (!session) {
+      console.log('No active session found');
+      return null;
+    }
+
+    // Additional verification step
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      console.error('User verification error:', userError);
+      return null;
+    }
+
+    return session;
+  } catch (error) {
+    console.error('Session verification error:', error);
+    return null;
+  }
+};
 
 export const loginWithEmail = async (email: string, password: string) => {
   try {
@@ -17,88 +69,5 @@ export const loginWithEmail = async (email: string, password: string) => {
   } catch (error) {
     console.error('Login error:', error);
     throw error;
-  }
-};
-
-export const loginWithProvider = async (provider: Provider) => {
-  try {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider,
-    });
-
-    if (error) {
-      console.error('OAuth login error:', error);
-      throw error;
-    }
-
-    return data;
-  } catch (error) {
-    console.error('OAuth login error:', error);
-    throw error;
-  }
-};
-
-let lastRefreshTime = 0;
-const MIN_REFRESH_INTERVAL = 60000; // Minimum 1 minute between refreshes
-
-export const verifySession = async (): Promise<Session | null> => {
-  try {
-    const { data: { session }, error } = await supabase.auth.getSession();
-    
-    if (error) {
-      console.error('Session verification error:', error);
-      throw error;
-    }
-    
-    return session;
-  } catch (error) {
-    console.error('Session verification error:', error);
-    throw error;
-  }
-};
-
-export const refreshSession = async (): Promise<Session | null> => {
-  const now = Date.now();
-  if (now - lastRefreshTime < MIN_REFRESH_INTERVAL) {
-    console.log('Skipping refresh - too soon since last refresh');
-    return null;
-  }
-
-  try {
-    lastRefreshTime = now;
-    const { data: { session }, error } = await supabase.auth.refreshSession();
-    
-    if (error) {
-      console.error('Session refresh error:', error);
-      throw error;
-    }
-    
-    return session;
-  } catch (error) {
-    console.error('Session refresh error:', error);
-    throw error;
-  }
-};
-
-export const clearAuthSession = async () => {
-  try {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('Sign out error:', error);
-      throw error;
-    }
-  } catch (error) {
-    console.error('Sign out error:', error);
-    throw error;
-  }
-};
-
-export const isUserAdmin = async (): Promise<boolean> => {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    return user?.email === 'likasvy@gmail.com';
-  } catch (error) {
-    console.error('Admin check error:', error);
-    return false;
   }
 };

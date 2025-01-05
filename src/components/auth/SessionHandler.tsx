@@ -1,132 +1,149 @@
-import { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSession } from "@supabase/auth-helpers-react";
-import { supabase } from "@/integrations/supabase/client";
-import { verifySession, refreshSession } from "@/utils/auth";
+import { useState, useEffect } from 'react';
 import { QueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { clearAuthSession } from '@/utils/auth';
 import { toast } from "sonner";
+import type { AuthError } from '@supabase/supabase-js';
 
 interface SessionHandlerProps {
   children: React.ReactNode;
   queryClient: QueryClient;
 }
 
-export function SessionHandler({ children, queryClient }: SessionHandlerProps) {
-  const session = useSession();
-  const navigate = useNavigate();
-  const refreshIntervalRef = useRef<number>();
-  const isLoading = useRef(true);
-  const isRefreshing = useRef(false);
+export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Initial session verification
   useEffect(() => {
+    let mounted = true;
+    let authListener: { subscription: { unsubscribe: () => void } } | null = null;
+
+    const handleSessionError = async (error?: AuthError) => {
+      console.log('Handling session error...', error);
+      if (!mounted) return;
+
+      setIsAuthenticated(false);
+      setIsLoading(false);
+      
+      try {
+        await clearAuthSession();
+        queryClient.clear();
+        toast.error("Session expired. Please log in again.");
+      } catch (clearError) {
+        console.error('Error clearing session:', clearError);
+        // Even if clearing fails, we want to ensure the user is logged out in the UI
+        setIsAuthenticated(false);
+        setIsLoading(false);
+      }
+    };
+
+    const verifySession = async () => {
+      try {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError) throw userError;
+        return !!user;
+      } catch (error) {
+        console.error('Session verification error:', error);
+        return false;
+      }
+    };
+
     const checkSession = async () => {
       try {
-        const currentSession = await verifySession();
-        if (!currentSession && !window.location.pathname.startsWith('/login')) {
-          console.log('No session found, redirecting to login...');
-          navigate("/login");
+        console.log('Checking session...');
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Session error:', error);
+          await handleSessionError(error);
+          return;
+        }
+
+        if (!session) {
+          console.log('No session found');
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+          }
+          return;
+        }
+
+        // Additional verification step
+        const isValid = await verifySession();
+        if (!isValid) {
+          console.error('Session verification failed');
+          await handleSessionError();
+          return;
+        }
+
+        console.log('Valid session found:', session.user.id);
+        if (mounted) {
+          setIsAuthenticated(true);
+          setIsLoading(false);
         }
       } catch (error) {
-        console.error('Session verification failed:', error);
-        toast.error("Session verification failed. Please log in again.");
-        navigate("/login");
-      } finally {
-        isLoading.current = false;
+        console.error('Session verification error:', error);
+        await handleSessionError();
       }
     };
 
-    checkSession();
-  }, [navigate]);
-
-  // Prevent rendering until initial session check is complete
-  useEffect(() => {
-    if (!isLoading.current && !session && !window.location.pathname.startsWith('/login')) {
-      navigate("/login");
-    }
-  }, [navigate, session]);
-
-  // Session refresh handling
-  useEffect(() => {
-    const setupSessionRefresh = async () => {
-      if (refreshIntervalRef.current) {
-        window.clearInterval(refreshIntervalRef.current);
-      }
-
-      // Initial session refresh
-      if (session && !isRefreshing.current) {
-        isRefreshing.current = true;
-        try {
-          await refreshSession();
-          console.log('Initial session refresh successful');
-        } catch (error) {
-          console.error('Initial session refresh failed:', error);
-          if (error.message?.includes('rate_limit')) {
-            toast.error("Too many refresh attempts. Please wait a moment.");
-          } else {
-            toast.error("Session refresh failed. Please log in again.");
-            navigate("/login");
-          }
-        } finally {
-          isRefreshing.current = false;
-        }
-
-        // Set up new refresh interval
-        refreshIntervalRef.current = window.setInterval(async () => {
-          if (isRefreshing.current) return;
-          isRefreshing.current = true;
-          
-          try {
-            const refreshedSession = await refreshSession();
-            if (!refreshedSession) {
-              console.log('Session refresh failed, redirecting to login...');
-              toast.error("Session expired. Please log in again.");
-              navigate("/login");
-              return;
-            }
-            console.log('Session refreshed successfully');
-          } catch (error) {
-            console.error('Failed to refresh session:', error);
-            if (error.message?.includes('rate_limit')) {
-              toast.error("Too many refresh attempts. Please wait a moment.");
-            } else {
-              toast.error("Failed to refresh session. Please log in again.");
-              navigate("/login");
-            }
-          } finally {
-            isRefreshing.current = false;
-          }
-        }, 240000); // Refresh every 4 minutes
-      }
-    };
-
-    setupSessionRefresh();
-
-    return () => {
-      if (refreshIntervalRef.current) {
-        window.clearInterval(refreshIntervalRef.current);
-      }
-    };
-  }, [session, navigate]);
-
-  // Auth state change handler
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+    const setupAuthListener = async () => {
+      const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (!mounted) return;
+        
         console.log('Auth state changed:', event, session?.user?.id);
-        if (event === 'SIGNED_IN') {
-          queryClient.invalidateQueries();
-        } else if (event === 'SIGNED_OUT') {
-          queryClient.clear();
-          navigate("/login");
+        
+        switch (event) {
+          case 'SIGNED_OUT':
+            setIsAuthenticated(false);
+            setIsLoading(false);
+            queryClient.clear();
+            break;
+          
+          case 'SIGNED_IN':
+          case 'TOKEN_REFRESHED':
+            if (session) {
+              const isValid = await verifySession();
+              if (isValid) {
+                setIsAuthenticated(true);
+                setIsLoading(false);
+                queryClient.invalidateQueries();
+              } else {
+                await handleSessionError();
+              }
+            } else {
+              await handleSessionError();
+            }
+            break;
+          
+          default:
+            // Handle other events if needed
+            break;
         }
-      }
-    );
+      });
+      
+      authListener = data;
+    };
+
+    // Initial session check
+    checkSession();
+    setupAuthListener();
 
     return () => {
-      subscription.unsubscribe();
+      mounted = false;
+      if (authListener) {
+        authListener.subscription.unsubscribe();
+      }
     };
-  }, [navigate, queryClient]);
+  }, [queryClient]);
+
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return <>{children}</>;
-}
+};
