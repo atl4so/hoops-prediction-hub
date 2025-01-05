@@ -1,7 +1,8 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Check, Home, Plane, X } from "lucide-react";
+import { Check, X } from "lucide-react";
+import { RoundSelector } from "../predictions/RoundSelector";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -9,33 +10,19 @@ interface HomeAwayPredictionsDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   userId: string;
-  roundId: string;
 }
 
 export function HomeAwayPredictionsDialog({
   isOpen,
   onOpenChange,
   userId,
-  roundId,
 }: HomeAwayPredictionsDialogProps) {
-  const { data: roundInfo } = useQuery({
-    queryKey: ['round-info', roundId],
-    queryFn: async () => {
-      if (!roundId) return null;
-      const { data } = await supabase
-        .from('rounds')
-        .select('name')
-        .eq('id', roundId)
-        .single();
-      return data;
-    },
-    enabled: !!roundId,
-  });
+  const [selectedRound, setSelectedRound] = useState("");
 
   const { data: predictions, isLoading } = useQuery({
-    queryKey: ['round-home-away-predictions', userId, roundId],
+    queryKey: ['round-home-away-predictions', userId, selectedRound],
     queryFn: async () => {
-      if (!roundId) return [];
+      if (!selectedRound) return [];
       
       const { data, error } = await supabase
         .from('predictions')
@@ -60,7 +47,7 @@ export function HomeAwayPredictionsDialog({
           )
         `)
         .eq('user_id', userId)
-        .eq('game.round_id', roundId);
+        .eq('game.round_id', selectedRound);
 
       if (error) {
         console.error('Error fetching predictions:', error);
@@ -69,7 +56,7 @@ export function HomeAwayPredictionsDialog({
 
       return data.filter(pred => pred.game.game_results.is_final);
     },
-    enabled: isOpen && !!roundId,
+    enabled: isOpen && !!selectedRound,
   });
 
   const getStats = (type: 'home' | 'away') => {
@@ -96,38 +83,37 @@ export function HomeAwayPredictionsDialog({
     };
   };
 
-  const homeStats = getStats('home');
-  const awayStats = getStats('away');
+  const getPredictionResult = (prediction: any) => {
+    const isPredictedHomeWin = prediction.prediction_home_score > prediction.prediction_away_score;
+    const isActualHomeWin = prediction.game.game_results.home_score > prediction.game.game_results.away_score;
+    const isDraw = prediction.game.game_results.home_score === prediction.game.game_results.away_score;
+
+    return {
+      prediction: isPredictedHomeWin ? "Home Win" : "Away Win",
+      actual: isDraw ? "Draw" : (isActualHomeWin ? "Home Win" : "Away Win"),
+      isCorrect: isDraw 
+        ? prediction.prediction_home_score === prediction.prediction_away_score
+        : isPredictedHomeWin === isActualHomeWin
+    };
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] max-h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            Round {roundInfo?.name} Winner Predictions
-          </DialogTitle>
+          <DialogTitle>Home/Away Winner Predictions</DialogTitle>
+          <DialogDescription>
+            View your home and away winner predictions by round
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4 flex-1 overflow-y-auto">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 rounded-lg border bg-white space-y-2">
-              <div className="flex items-center justify-center gap-2">
-                <Home className="h-5 w-5" />
-                <span className="text-lg font-semibold">{homeStats.percentage}%</span>
-              </div>
-              <p className="text-sm text-center text-muted-foreground">
-                {homeStats.correct} of {homeStats.total} correct
-              </p>
-            </div>
-            <div className="p-4 rounded-lg border bg-white space-y-2">
-              <div className="flex items-center justify-center gap-2">
-                <Plane className="h-5 w-5" />
-                <span className="text-lg font-semibold">{awayStats.percentage}%</span>
-              </div>
-              <p className="text-sm text-center text-muted-foreground">
-                {awayStats.correct} of {awayStats.total} correct
-              </p>
-            </div>
+          <div className="rounded-lg border bg-white text-card-foreground">
+            <RoundSelector 
+              selectedRound={selectedRound} 
+              onRoundChange={setSelectedRound}
+              className="w-full"
+            />
           </div>
 
           {isLoading ? (
@@ -137,62 +123,67 @@ export function HomeAwayPredictionsDialog({
           ) : predictions && predictions.length > 0 ? (
             <Tabs defaultValue="home" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="home" className="gap-2">
-                  <Home className="h-4 w-4" />
-                  Home
-                </TabsTrigger>
-                <TabsTrigger value="away" className="gap-2">
-                  <Plane className="h-4 w-4" />
-                  Away
-                </TabsTrigger>
+                <TabsTrigger value="home">Home Winners</TabsTrigger>
+                <TabsTrigger value="away">Away Winners</TabsTrigger>
               </TabsList>
 
-              {['home', 'away'].map((type) => (
-                <TabsContent key={type} value={type} className="space-y-4">
-                  <div className="space-y-2">
-                    {predictions.map((prediction) => {
-                      const isPredictedHomeWin = prediction.prediction_home_score > prediction.prediction_away_score;
-                      const isActualHomeWin = prediction.game.game_results.home_score > prediction.game.game_results.away_score;
-                      const isRelevantPrediction = type === 'home' ? isPredictedHomeWin : !isPredictedHomeWin;
-                      
-                      if (!isRelevantPrediction) return null;
+              {['home', 'away'].map((type) => {
+                const stats = getStats(type as 'home' | 'away');
+                return (
+                  <TabsContent key={type} value={type} className="space-y-4">
+                    <div className="text-center space-y-2">
+                      <p className="text-2xl font-bold">{stats.percentage}%</p>
+                      <p className="text-sm text-muted-foreground">
+                        Correctly predicted {stats.correct} {type} wins out of {stats.total}
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      {predictions.map((prediction) => {
+                        const isPredictedHomeWin = prediction.prediction_home_score > prediction.prediction_away_score;
+                        const isRelevantPrediction = type === 'home' ? isPredictedHomeWin : !isPredictedHomeWin;
+                        
+                        if (!isRelevantPrediction) return null;
 
-                      const isCorrect = type === 'home' 
-                        ? (isPredictedHomeWin && isActualHomeWin)
-                        : (!isPredictedHomeWin && !isActualHomeWin);
+                        const result = getPredictionResult(prediction);
 
-                      return (
-                        <div 
-                          key={prediction.id} 
-                          className={`flex items-center justify-between p-3 rounded-lg border ${
-                            isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
-                          }`}
-                        >
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium">
-                                {prediction.game.home_team.name} vs {prediction.game.away_team.name}
-                              </span>
-                              {isCorrect ? (
-                                <Check className="h-4 w-4 text-green-600" />
-                              ) : (
-                                <X className="h-4 w-4 text-red-600" />
-                              )}
-                            </div>
-                            <div className="text-xs text-muted-foreground mt-1">
-                              {prediction.prediction_home_score} - {prediction.prediction_away_score}
+                        return (
+                          <div 
+                            key={prediction.id} 
+                            className={`flex items-center justify-between p-3 rounded-lg border ${
+                              result.isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                            }`}
+                          >
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium">
+                                  {prediction.game.home_team.name} vs {prediction.game.away_team.name}
+                                </span>
+                                {result.isCorrect ? (
+                                  <Check className="h-4 w-4 text-green-600" />
+                                ) : (
+                                  <X className="h-4 w-4 text-red-600" />
+                                )}
+                              </div>
+                              <div className="text-xs text-muted-foreground mt-1">
+                                <p>Your prediction: {result.prediction}</p>
+                                <p>Final result: {result.actual}</p>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </TabsContent>
-              ))}
+                        );
+                      })}
+                    </div>
+                  </TabsContent>
+                );
+              })}
             </Tabs>
-          ) : (
+          ) : selectedRound ? (
             <div className="text-center py-6 text-muted-foreground">
               No completed predictions found for this round
+            </div>
+          ) : (
+            <div className="text-center py-6 text-muted-foreground">
+              Select a round to view predictions
             </div>
           )}
         </div>
