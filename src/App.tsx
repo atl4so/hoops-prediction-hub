@@ -36,17 +36,7 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const cleanupSession = async () => {
-      try {
-        console.log('Cleaning up session...');
-        localStorage.clear();
-        sessionStorage.clear();
-        queryClient.clear();
-        setIsAuthenticated(false);
-      } catch (error) {
-        console.error('Session cleanup error:', error);
-      }
-    };
+    let mounted = true;
 
     const checkSession = async () => {
       try {
@@ -54,17 +44,19 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
         
         if (error) {
           console.error('Session check error:', error);
-          if (error.message.includes('refresh_token_not_found') || 
-              error.message.includes('session_not_found')) {
-            await cleanupSession();
-            return;
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsLoading(false);
           }
-          throw error;
+          return;
         }
 
         if (!session) {
           console.log('No session found');
-          await cleanupSession();
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+          }
           return;
         }
 
@@ -73,18 +65,24 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
         
         if (refreshError || !user) {
           console.error('User verification failed:', refreshError);
-          await cleanupSession();
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+          }
           return;
         }
 
-        setIsAuthenticated(true);
+        if (mounted) {
+          setIsAuthenticated(true);
+          setIsLoading(false);
+        }
         console.log('Session verified for user:', user.id);
       } catch (error) {
         console.error('Session verification error:', error);
-        toast.error("Session error. Please try logging in again.");
-        await cleanupSession();
-      } finally {
-        setIsLoading(false);
+        if (mounted) {
+          setIsAuthenticated(false);
+          setIsLoading(false);
+        }
       }
     };
 
@@ -93,23 +91,16 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, !!session);
       
-      if (event === 'SIGNED_OUT') {
-        console.log('User signed out, cleaning up...');
-        await cleanupSession();
-      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      if (event === 'SIGNED_OUT' && mounted) {
+        setIsAuthenticated(false);
+      } else if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && mounted) {
         setIsAuthenticated(true);
         queryClient.invalidateQueries();
-      } else if (event === 'INITIAL_SESSION') {
-        if (session) {
-          setIsAuthenticated(true);
-          queryClient.invalidateQueries();
-        } else {
-          await cleanupSession();
-        }
       }
     });
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);
