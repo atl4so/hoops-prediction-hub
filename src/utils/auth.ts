@@ -2,17 +2,16 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const clearAuthSession = async () => {
   try {
-    // Clear specific auth tokens instead of all localStorage
-    localStorage.removeItem('supabase.auth.token');
-    sessionStorage.clear();
-    
-    // Get current session first
+    // Check if there's an active session before attempting to sign out
     const { data: { session } } = await supabase.auth.getSession();
     
     if (session) {
-      // Only attempt to sign out if there's an active session
       await supabase.auth.signOut();
     }
+    
+    // Clear specific auth tokens
+    localStorage.removeItem('supabase.auth.token');
+    sessionStorage.clear();
   } catch (error) {
     console.error('Session cleanup error:', error);
   }
@@ -21,13 +20,25 @@ export const clearAuthSession = async () => {
 export const verifySession = async () => {
   try {
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
     if (sessionError) {
       console.error('Session verification error:', sessionError);
       return null;
     }
+    
     if (!session) {
+      console.log('No active session found');
       return null;
     }
+
+    // Additional verification of user data
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    
+    if (userError || !user) {
+      console.error('User verification failed:', userError);
+      return null;
+    }
+
     return session;
   } catch (error) {
     console.error('Session verification error:', error);

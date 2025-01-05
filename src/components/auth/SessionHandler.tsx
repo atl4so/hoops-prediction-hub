@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { QueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { clearAuthSession } from '@/utils/auth';
+import { clearAuthSession, verifySession } from '@/utils/auth';
 
 interface SessionHandlerProps {
   children: React.ReactNode;
@@ -13,41 +13,19 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    console.log('SessionHandler mounted'); // Debug log
+    console.log('SessionHandler mounted');
     let mounted = true;
 
     const checkSession = async () => {
       try {
-        console.log('Checking session...'); // Debug log
+        console.log('Checking session...');
         
         if (!mounted) return;
 
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const session = await verifySession();
         
-        if (error) {
-          console.error('Session check error:', error);
-          if (mounted) {
-            setIsAuthenticated(false);
-            setIsLoading(false);
-            await clearAuthSession();
-          }
-          return;
-        }
-
         if (!session) {
-          console.log('No session found');
-          if (mounted) {
-            setIsAuthenticated(false);
-            setIsLoading(false);
-          }
-          return;
-        }
-
-        // Verify the session is valid
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
-        if (userError || !user) {
-          console.error('User verification failed:', userError);
+          console.log('No valid session found');
           if (mounted) {
             setIsAuthenticated(false);
             setIsLoading(false);
@@ -56,7 +34,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
           return;
         }
 
-        console.log('Session found and verified:', session.user.id); // Debug log
+        console.log('Valid session found:', session.user.id);
         if (mounted) {
           setIsAuthenticated(true);
           setIsLoading(false);
@@ -83,8 +61,14 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
         queryClient.clear();
         await clearAuthSession();
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        setIsAuthenticated(true);
-        queryClient.invalidateQueries();
+        const validSession = await verifySession();
+        if (validSession) {
+          setIsAuthenticated(true);
+          queryClient.invalidateQueries();
+        } else {
+          setIsAuthenticated(false);
+          await clearAuthSession();
+        }
       }
     });
 
@@ -94,7 +78,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
     };
   }, [queryClient]);
 
-  console.log('SessionHandler state:', { isLoading, isAuthenticated }); // Debug log
+  console.log('SessionHandler state:', { isLoading, isAuthenticated });
 
   if (isLoading) {
     return <div>Loading...</div>;
