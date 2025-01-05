@@ -16,6 +16,7 @@ export function SessionHandler({ children, queryClient }: SessionHandlerProps) {
   const navigate = useNavigate();
   const refreshIntervalRef = useRef<number>();
   const isLoading = useRef(true);
+  const isRefreshing = useRef(false);
 
   // Initial session verification
   useEffect(() => {
@@ -53,19 +54,28 @@ export function SessionHandler({ children, queryClient }: SessionHandlerProps) {
       }
 
       // Initial session refresh
-      if (session) {
+      if (session && !isRefreshing.current) {
+        isRefreshing.current = true;
         try {
           await refreshSession();
           console.log('Initial session refresh successful');
         } catch (error) {
           console.error('Initial session refresh failed:', error);
-          toast.error("Session refresh failed. Please log in again.");
-          navigate("/login");
-          return;
+          if (error.message?.includes('rate_limit')) {
+            toast.error("Too many refresh attempts. Please wait a moment.");
+          } else {
+            toast.error("Session refresh failed. Please log in again.");
+            navigate("/login");
+          }
+        } finally {
+          isRefreshing.current = false;
         }
 
         // Set up new refresh interval
         refreshIntervalRef.current = window.setInterval(async () => {
+          if (isRefreshing.current) return;
+          isRefreshing.current = true;
+          
           try {
             const refreshedSession = await refreshSession();
             if (!refreshedSession) {
@@ -77,10 +87,16 @@ export function SessionHandler({ children, queryClient }: SessionHandlerProps) {
             console.log('Session refreshed successfully');
           } catch (error) {
             console.error('Failed to refresh session:', error);
-            toast.error("Failed to refresh session. Please log in again.");
-            navigate("/login");
+            if (error.message?.includes('rate_limit')) {
+              toast.error("Too many refresh attempts. Please wait a moment.");
+            } else {
+              toast.error("Failed to refresh session. Please log in again.");
+              navigate("/login");
+            }
+          } finally {
+            isRefreshing.current = false;
           }
-        }, 4 * 60 * 1000); // Refresh every 4 minutes
+        }, 240000); // Refresh every 4 minutes
       }
     };
 

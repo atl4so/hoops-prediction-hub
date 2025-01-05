@@ -38,6 +38,9 @@ export const loginWithProvider = async (provider: Provider) => {
   }
 };
 
+let lastRefreshTime = 0;
+const MIN_REFRESH_INTERVAL = 60000; // Minimum 1 minute between refreshes
+
 export const verifySession = async (): Promise<Session | null> => {
   try {
     const { data: { session }, error } = await supabase.auth.getSession();
@@ -55,7 +58,14 @@ export const verifySession = async (): Promise<Session | null> => {
 };
 
 export const refreshSession = async (): Promise<Session | null> => {
+  const now = Date.now();
+  if (now - lastRefreshTime < MIN_REFRESH_INTERVAL) {
+    console.log('Skipping refresh - too soon since last refresh');
+    return null;
+  }
+
   try {
+    lastRefreshTime = now;
     const { data: { session }, error } = await supabase.auth.refreshSession();
     
     if (error) {
