@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Trophy, Medal, Star } from "lucide-react";
+import { Trophy, Medal, Star, ThumbsDown, Frown, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Team } from "@/types/supabase";
 
@@ -10,9 +10,10 @@ interface TeamCardProps {
   stats: any;
   onClick: () => void;
   rank?: number;
+  isLossesRanking?: boolean;
 }
 
-export function TeamCard({ team, stats, onClick, rank }: TeamCardProps) {
+export function TeamCard({ team, stats, onClick, rank, isLossesRanking = false }: TeamCardProps) {
   const winRate = stats?.overall_success_rate || 0;
   const totalPredictions = stats?.total_predictions || 0;
   const winsPredicted = stats?.wins_predicted || 0;
@@ -20,6 +21,20 @@ export function TeamCard({ team, stats, onClick, rank }: TeamCardProps) {
 
   const getRankIcon = (rank: number | undefined) => {
     if (!rank) return null;
+
+    if (isLossesRanking) {
+      switch (rank) {
+        case 1:
+          return <ThumbsDown className="h-3.5 w-3.5 text-red-500" />;
+        case 2:
+          return <Frown className="h-3.5 w-3.5 text-red-400" />;
+        case 3:
+          return <AlertTriangle className="h-3.5 w-3.5 text-red-300" />;
+        default:
+          return rank <= 10 ? <AlertTriangle className="h-3.5 w-3.5 text-red-200/40" /> : null;
+      }
+    }
+
     switch (rank) {
       case 1:
         return <Trophy className="h-3.5 w-3.5 text-yellow-500" />;
@@ -45,10 +60,17 @@ export function TeamCard({ team, stats, onClick, rank }: TeamCardProps) {
               {getRankIcon(rank)}
               <span className={cn(
                 "text-xs font-semibold",
-                rank === 1 ? "text-yellow-500" :
-                rank === 2 ? "text-gray-400" :
-                rank === 3 ? "text-amber-600" :
-                rank <= 10 ? "text-primary/70" : "text-muted-foreground"
+                isLossesRanking ? (
+                  rank === 1 ? "text-red-500" :
+                  rank === 2 ? "text-red-400" :
+                  rank === 3 ? "text-red-300" :
+                  rank <= 10 ? "text-red-200" : "text-muted-foreground"
+                ) : (
+                  rank === 1 ? "text-yellow-500" :
+                  rank === 2 ? "text-gray-400" :
+                  rank === 3 ? "text-amber-600" :
+                  rank <= 10 ? "text-primary/70" : "text-muted-foreground"
+                )
               )}>
                 {rank}
               </span>
