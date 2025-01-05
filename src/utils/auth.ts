@@ -19,11 +19,20 @@ export const clearAuthSession = async () => {
 };
 
 export const verifySession = async () => {
-  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-  if (sessionError || !session) {
-    throw new Error("Failed to establish session");
+  try {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) {
+      console.error('Session verification error:', sessionError);
+      return null;
+    }
+    if (!session) {
+      return null;
+    }
+    return session;
+  } catch (error) {
+    console.error('Session verification error:', error);
+    return null;
   }
-  return session;
 };
 
 export const loginWithEmail = async (email: string, password: string) => {
@@ -48,6 +57,10 @@ export const loginWithEmail = async (email: string, password: string) => {
   }
 
   // Verify session establishment
-  await verifySession();
+  const session = await verifySession();
+  if (!session) {
+    throw new Error("Failed to establish session");
+  }
+  
   return data.user;
 };
