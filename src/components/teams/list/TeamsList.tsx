@@ -67,6 +67,7 @@ export function TeamsList({ teams, isLoading, onTeamClick, sortBy }: TeamsListPr
             stats={stats}
             onClick={() => onTeamClick(team)}
             rank={index + 1}
+            isLossesRanking={sortBy === "losses"}
           />
         );
       })}
