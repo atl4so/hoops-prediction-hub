@@ -42,22 +42,16 @@ export default function Overview() {
     return null;
   }
 
-  // Calculate statistics
-  const totalPoints = userProfileData?.total_points || 0;
-  const totalPredictions = userProfileData?.total_predictions || 0;
-  const pointsPerGame = userProfileData?.points_per_game || 0;
-
   return (
     <div className="space-y-8 animate-fade-in">
-      <PageHeader 
-        title="Overview" 
-        description="Track your performance and statistics"
-      />
+      <PageHeader title="Overview">
+        <p className="text-muted-foreground">Track your performance and statistics</p>
+      </PageHeader>
       
       <DashboardStats
-        totalPoints={totalPoints}
-        pointsPerGame={pointsPerGame}
-        totalPredictions={totalPredictions}
+        totalPoints={userProfileData?.total_points || 0}
+        pointsPerGame={userProfileData?.points_per_game || 0}
+        totalPredictions={userProfileData?.total_predictions || 0}
         highestGamePoints={userProfileData?.highest_game_points}
         lowestGamePoints={userProfileData?.lowest_game_points}
         highestRoundPoints={userProfileData?.highest_round_points}

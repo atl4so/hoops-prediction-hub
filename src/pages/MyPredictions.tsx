@@ -94,10 +94,9 @@ export default function MyPredictions() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <PageHeader 
-        title="My Predictions" 
-        description="Track your predictions and their outcomes"
-      />
+      <PageHeader title="My Predictions">
+        <p className="text-muted-foreground">Track your predictions and their outcomes</p>
+      </PageHeader>
 
       <div className="w-[240px] mx-auto">
         <RoundSelector

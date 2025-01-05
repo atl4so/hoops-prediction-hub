@@ -36,10 +36,9 @@ export default function Predict() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <PageHeader 
-        title="Make Predictions" 
-        description="Predict the outcomes of upcoming Euroleague games"
-      />
+      <PageHeader title="Make Predictions">
+        <p className="text-muted-foreground">Predict the outcomes of upcoming Euroleague games</p>
+      </PageHeader>
 
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
