@@ -6,6 +6,7 @@ import { RoundSelector } from "../predictions/RoundSelector";
 import { useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { InfoIcon } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface OverUnderPredictionsDialogProps {
   isOpen: boolean;
@@ -13,12 +14,15 @@ interface OverUnderPredictionsDialogProps {
   userId: string;
 }
 
+const THRESHOLDS = [145, 155, 165, 175, 185, 195];
+
 export function OverUnderPredictionsDialog({
   isOpen,
   onOpenChange,
   userId,
 }: OverUnderPredictionsDialogProps) {
   const [selectedRound, setSelectedRound] = useState("");
+  const [selectedThreshold, setSelectedThreshold] = useState(THRESHOLDS[0].toString());
 
   const { data: predictions, isLoading } = useQuery({
     queryKey: ['round-over-under-predictions', userId, selectedRound],
@@ -57,50 +61,53 @@ export function OverUnderPredictionsDialog({
         throw error;
       }
 
-      console.log('Raw over/under predictions data:', data);
       return data.filter(pred => pred.game.game_results.is_final);
     },
     enabled: isOpen && !!selectedRound,
   });
 
-  const getPredictionResult = (prediction: any) => {
-    const gameResult = prediction.game.game_results;
-    if (!gameResult) return null;
+  const getPredictionStats = (threshold: number) => {
+    if (!predictions) return { correct: 0, total: 0, predictions: [] };
 
-    const predictedTotal = prediction.prediction_home_score + prediction.prediction_away_score;
-    const actualTotal = gameResult.home_score + gameResult.away_score;
+    const thresholdPredictions = predictions.map(prediction => {
+      const predictedTotal = prediction.prediction_home_score + prediction.prediction_away_score;
+      const actualTotal = prediction.game.game_results.home_score + prediction.game.game_results.away_score;
 
+      return {
+        ...prediction,
+        predictedTotal,
+        actualTotal,
+        isOver: predictedTotal > threshold,
+        wasOver: actualTotal > threshold,
+        isCorrect: (predictedTotal > threshold && actualTotal > threshold) || 
+                  (predictedTotal < threshold && actualTotal < threshold)
+      };
+    });
+
+    const correct = thresholdPredictions.filter(p => p.isCorrect).length;
+    
     return {
-      isCorrect: (predictedTotal < actualTotal && actualTotal > predictedTotal) || 
-                 (predictedTotal > actualTotal && actualTotal < predictedTotal),
-      predicted: {
-        total: predictedTotal,
-        home: prediction.prediction_home_score,
-        away: prediction.prediction_away_score
-      },
-      actual: {
-        total: actualTotal,
-        home: gameResult.home_score,
-        away: gameResult.away_score
-      }
+      correct,
+      total: thresholdPredictions.length,
+      percentage: Math.round((correct / thresholdPredictions.length) * 100),
+      predictions: thresholdPredictions
     };
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Over/Under Predictions by Round</DialogTitle>
+          <DialogTitle>Over/Under Predictions by Threshold</DialogTitle>
           <DialogDescription className="space-y-2">
             <p>
-              For each game, predict whether the total combined score will be higher or lower than the actual final total score.
+              Select different thresholds to see your prediction accuracy for games above or below that total score.
             </p>
             <Alert variant="destructive" className="mt-2">
               <InfoIcon className="h-4 w-4" />
               <AlertDescription>
-                Important: If you predict exactly the same total score as the final result, 
-                it will be marked as incorrect. Your prediction must be clearly over or under 
-                the actual final score.
+                Important: For each threshold, your prediction must be clearly over or under. 
+                Predicting exactly the threshold value will be marked as incorrect.
               </AlertDescription>
             </Alert>
           </DialogDescription>
@@ -118,38 +125,66 @@ export function OverUnderPredictionsDialog({
               Loading predictions...
             </div>
           ) : predictions && predictions.length > 0 ? (
-            <div className="space-y-2 max-h-[400px] overflow-y-auto">
-              {predictions.map((prediction) => {
-                const result = getPredictionResult(prediction);
-                if (!result) return null;
-
-                return (
-                  <div 
-                    key={prediction.id} 
-                    className={`flex items-center justify-between p-3 rounded-lg border ${
-                      result.isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
-                    }`}
+            <Tabs value={selectedThreshold} onValueChange={setSelectedThreshold}>
+              <TabsList className="grid grid-cols-6 w-full">
+                {THRESHOLDS.map((threshold) => (
+                  <TabsTrigger 
+                    key={threshold} 
+                    value={threshold.toString()}
+                    className="text-xs sm:text-sm"
                   >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium">
-                          {prediction.game.home_team.name} vs {prediction.game.away_team.name}
-                        </span>
-                        {result.isCorrect ? (
-                          <Check className="h-4 w-4 text-green-600" />
-                        ) : (
-                          <X className="h-4 w-4 text-red-600" />
-                        )}
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
-                        <p>Your prediction: {result.predicted.home} - {result.predicted.away} (Total: {result.predicted.total})</p>
-                        <p>Final score: {result.actual.home} - {result.actual.away} (Total: {result.actual.total})</p>
-                      </div>
+                    {threshold}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+
+              {THRESHOLDS.map((threshold) => {
+                const stats = getPredictionStats(threshold);
+                return (
+                  <TabsContent key={threshold} value={threshold.toString()}>
+                    <div className="mb-4 p-4 bg-muted rounded-lg">
+                      <p className="text-lg font-semibold">
+                        Threshold: {threshold} points
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Accuracy: {stats.percentage}% ({stats.correct} correct out of {stats.total} predictions)
+                      </p>
                     </div>
-                  </div>
+                    <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                      {stats.predictions.map((prediction) => (
+                        <div 
+                          key={prediction.id} 
+                          className={`flex items-center justify-between p-3 rounded-lg border ${
+                            prediction.isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                          }`}
+                        >
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium">
+                                {prediction.game.home_team.name} vs {prediction.game.away_team.name}
+                              </span>
+                              {prediction.isCorrect ? (
+                                <Check className="h-4 w-4 text-green-600" />
+                              ) : (
+                                <X className="h-4 w-4 text-red-600" />
+                              )}
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
+                              <p>Your prediction: {prediction.prediction_home_score} - {prediction.prediction_away_score} (Total: {prediction.predictedTotal})</p>
+                              <p>Final score: {prediction.game.game_results.home_score} - {prediction.game.game_results.away_score} (Total: {prediction.actualTotal})</p>
+                              <p className="font-medium">
+                                {prediction.isOver ? 'Predicted Over' : 'Predicted Under'} • 
+                                {prediction.wasOver ? ' Was Over' : ' Was Under'}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </TabsContent>
                 );
               })}
-            </div>
+            </Tabs>
           ) : selectedRound ? (
             <div className="text-center py-6 text-muted-foreground">
               No completed predictions found for this round
