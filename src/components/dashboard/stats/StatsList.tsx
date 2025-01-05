@@ -76,19 +76,8 @@ export function StatsList({
     {
       icon: Home,
       label: "Home/Away",
-      value: (
-        <div className="flex items-center justify-center gap-4">
-          <div className="flex flex-col items-center">
-            <Home className="h-5 w-5 mb-1" />
-            <span className="text-sm">{homeWinnerPredictionsCorrect}/{homeWinnerPredictionsTotal}</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <Plane className="h-5 w-5 mb-1" />
-            <span className="text-sm">{awayWinnerPredictionsCorrect}/{awayWinnerPredictionsTotal}</span>
-          </div>
-        </div>
-      ),
-      description: `Prediction accuracy for home (${homeWinnerPredictionsCorrect}/${homeWinnerPredictionsTotal}) and away (${awayWinnerPredictionsCorrect}/${awayWinnerPredictionsTotal}) games. Click for details.`,
+      value: `Home: ${homeWinnerPredictionsCorrect}/${homeWinnerPredictionsTotal}, Away: ${awayWinnerPredictionsCorrect}/${awayWinnerPredictionsTotal}`,
+      description: "Click to see detailed breakdown of your home and away predictions",
       onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
     },
     {
