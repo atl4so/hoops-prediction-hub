@@ -8,7 +8,7 @@ interface TeamPredictionPatternsProps {
 }
 
 export function TeamPredictionPatterns({ stats }: TeamPredictionPatternsProps) {
-  const StatCard = ({ icon: Icon, label, value, subValue, tooltip, className = "" }) => (
+  const StatCard = ({ icon: Icon, label, value, subValue, predictions, tooltip, className = "" }) => (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
@@ -25,6 +25,11 @@ export function TeamPredictionPatterns({ stats }: TeamPredictionPatternsProps) {
               <p className="text-xl font-bold">{value}</p>
               {subValue && (
                 <p className="text-xs text-muted-foreground mt-0.5">{subValue}</p>
+              )}
+              {predictions && (
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Based on {predictions} predictions
+                </p>
               )}
             </div>
           </div>
@@ -44,7 +49,8 @@ export function TeamPredictionPatterns({ stats }: TeamPredictionPatternsProps) {
           label="Underdog Wins"
           value={stats?.underdog_wins || 0}
           subValue={`Avg. Margin: ${stats?.avg_upset_margin || 'N/A'} pts`}
-          tooltip="Games won when less than 50% of users predicted a win. The margin shows the average points difference in these victories."
+          predictions={stats?.total_predictions}
+          tooltip="Games won when less than 50% of users predicted a win. Shows N/A if the team hasn't won any games as an underdog yet."
           className="bg-green-50/50"
         />
         <StatCard
@@ -52,7 +58,8 @@ export function TeamPredictionPatterns({ stats }: TeamPredictionPatternsProps) {
           label="Unexpected Losses"
           value={stats?.unexpected_losses || 0}
           subValue={`Avg. Margin: ${stats?.avg_loss_margin || 'N/A'} pts`}
-          tooltip="Games lost when more than 50% of users predicted a win. The margin shows the average points difference in these defeats."
+          predictions={stats?.total_predictions}
+          tooltip="Games lost when more than 50% of users predicted a win. Shows N/A if the team hasn't lost any games as a favorite yet."
           className="bg-red-50/50"
         />
       </div>

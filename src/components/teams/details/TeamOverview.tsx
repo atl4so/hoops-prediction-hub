@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Trophy, Home, Plane, Percent } from "lucide-react";
+import { Trophy, Home, Plane } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -9,7 +9,7 @@ interface TeamOverviewProps {
 }
 
 export function TeamOverview({ stats, distribution }: TeamOverviewProps) {
-  const StatCard = ({ icon: Icon, label, value, tooltip, className = "" }) => (
+  const StatCard = ({ icon: Icon, label, value, predictions, tooltip, className = "" }) => (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
@@ -24,6 +24,11 @@ export function TeamOverview({ stats, distribution }: TeamOverviewProps) {
             <div>
               <p className="text-sm text-muted-foreground">{label}</p>
               <p className="text-xl font-bold">{value}</p>
+              {predictions && (
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Based on {predictions} predictions
+                </p>
+              )}
             </div>
           </div>
         </TooltipTrigger>
@@ -41,19 +46,22 @@ export function TeamOverview({ stats, distribution }: TeamOverviewProps) {
           icon={Trophy}
           label="Overall Success"
           value={`${stats?.overall_success_rate || 0}%`}
-          tooltip="Percentage of users who correctly predicted this team's wins/losses across all games"
+          predictions={stats?.total_predictions}
+          tooltip="Percentage of users who correctly predicted this team's game results across all matches. This includes both home and away games."
         />
         <StatCard
           icon={Home}
           label="Home Success"
-          value={`${stats?.home_success_rate || 'N/A'}%`}
-          tooltip="Percentage of users who correctly predicted this team's home game results"
+          value={stats?.home_success_rate === null ? "N/A" : `${stats?.home_success_rate || 0}%`}
+          predictions={stats?.home_games ? stats?.total_predictions / (stats?.home_games + stats?.away_games) * stats?.home_games : 0}
+          tooltip="Percentage of users who correctly predicted this team's home game results. Shows N/A if no home games have been played yet."
         />
         <StatCard
           icon={Plane}
           label="Away Success"
-          value={`${stats?.away_success_rate || 'N/A'}%`}
-          tooltip="Percentage of users who correctly predicted this team's away game results"
+          value={stats?.away_success_rate === null ? "N/A" : `${stats?.away_success_rate || 0}%`}
+          predictions={stats?.away_games ? stats?.total_predictions / (stats?.home_games + stats?.away_games) * stats?.away_games : 0}
+          tooltip="Percentage of users who correctly predicted this team's away game results. Shows N/A if no away games have been played yet."
         />
       </div>
 
