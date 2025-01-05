@@ -427,6 +427,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      recalculate_home_away_predictions: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       recalculate_over_under_predictions: {
         Args: Record<PropertyKey, never>
         Returns: undefined
