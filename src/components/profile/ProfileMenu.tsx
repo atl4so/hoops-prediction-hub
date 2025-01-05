@@ -63,43 +63,44 @@ export function ProfileMenu() {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <div className="flex items-center gap-4">
-            {/* Desktop Rank Display - Non-clickable */}
-            <div className="hidden md:flex items-center gap-4 pointer-events-none">
+        <div className="flex items-center gap-4">
+          {/* Desktop Rank Display - Non-clickable */}
+          <div className="hidden md:flex items-center gap-4 pointer-events-none">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-2 bg-accent/50 px-3 py-1.5 rounded-full">
+                    <Trophy className="h-4 w-4 text-yellow-500" />
+                    <span className="text-muted-foreground font-medium">ATR:</span>
+                    <span className="font-semibold text-foreground">{profile?.allTimeRank || '-'}</span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>All Time Rank - Your overall position based on total points earned</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            {currentRoundRank && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div className="flex items-center gap-2 bg-accent/50 px-3 py-1.5 rounded-full">
-                      <Trophy className="h-4 w-4 text-yellow-500" />
-                      <span className="text-muted-foreground font-medium">ATR:</span>
-                      <span className="font-semibold text-foreground">{profile?.allTimeRank || '-'}</span>
+                      <ListOrdered className="h-4 w-4 text-blue-500" />
+                      <span className="text-muted-foreground font-medium">Rank {currentRoundRank.roundName}:</span>
+                      <span className="font-semibold text-foreground">{currentRoundRank.rank || '-'}</span>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>All Time Rank - Your overall position based on total points earned</p>
+                    <p>Your current rank in the latest round with completed games</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
+            )}
+          </div>
 
-              {currentRoundRank && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex items-center gap-2 bg-accent/50 px-3 py-1.5 rounded-full">
-                        <ListOrdered className="h-4 w-4 text-blue-500" />
-                        <span className="text-muted-foreground font-medium">Rank {currentRoundRank.roundName}:</span>
-                        <span className="font-semibold text-foreground">{currentRoundRank.rank || '-'}</span>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Your current rank in the latest round with completed games</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
-            </div>
-            {/* Profile Button */}
+          {/* Profile Button - Only this triggers the dropdown */}
+          <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex items-center gap-2 h-auto py-1.5 px-2 rounded-full hover:bg-accent/50">
               <span className="hidden md:block text-sm font-medium">Hi, {profile?.display_name}</span>
               <Avatar className="h-8 w-8">
@@ -112,8 +113,9 @@ export function ProfileMenu() {
                 </AvatarFallback>
               </Avatar>
             </Button>
-          </div>
-        </DropdownMenuTrigger>
+          </DropdownMenuTrigger>
+        </div>
+
         <DropdownMenuContent className="w-56 bg-white shadow-lg" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">

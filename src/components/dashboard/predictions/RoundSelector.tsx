@@ -48,11 +48,28 @@ export function RoundSelector({ selectedRound, onRoundChange, className }: Round
     }
   }, [error]);
 
-  // Set the latest round as default when rounds are loaded
+  // Find the latest round with data and set it as default
   useEffect(() => {
-    if (rounds && rounds.length > 0 && !selectedRound) {
-      onRoundChange(rounds[0].id);
+    async function findLatestRoundWithData() {
+      if (!rounds?.length || selectedRound) return;
+
+      for (const round of rounds) {
+        const { data: predictions } = await supabase
+          .from('predictions')
+          .select('id')
+          .eq('game.round_id', round.id)
+          .join('games', { foreignTable: 'games', on: 'game_id=id' })
+          .join('game_results', { foreignTable: 'game_results', on: 'games.id=game_results.game_id' })
+          .limit(1);
+
+        if (predictions?.length) {
+          onRoundChange(round.id);
+          break;
+        }
+      }
     }
+
+    findLatestRoundWithData();
   }, [rounds, selectedRound, onRoundChange]);
 
   if (!rounds?.length) return null;
