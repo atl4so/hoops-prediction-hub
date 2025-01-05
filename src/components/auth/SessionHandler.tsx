@@ -12,10 +12,12 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    console.log('SessionHandler mounted'); // Debug log
     let mounted = true;
 
     const checkSession = async () => {
       try {
+        console.log('Checking session...'); // Debug log
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -36,23 +38,11 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
           return;
         }
 
-        // Verify the session is still valid
-        const { data: { user }, error: refreshError } = await supabase.auth.getUser();
-        
-        if (refreshError || !user) {
-          console.error('User verification failed:', refreshError);
-          if (mounted) {
-            setIsAuthenticated(false);
-            setIsLoading(false);
-          }
-          return;
-        }
-
+        console.log('Session found:', session.user.id); // Debug log
         if (mounted) {
           setIsAuthenticated(true);
           setIsLoading(false);
         }
-        console.log('Session verified for user:', user.id);
       } catch (error) {
         console.error('Session verification error:', error);
         if (mounted) {
@@ -72,13 +62,9 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
       if (event === 'SIGNED_OUT') {
         setIsAuthenticated(false);
         queryClient.clear();
-        await supabase.auth.signOut(); // Ensure complete sign out
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        const { data: { user }, error } = await supabase.auth.getUser();
-        if (!error && user) {
-          setIsAuthenticated(true);
-          queryClient.invalidateQueries();
-        }
+        setIsAuthenticated(true);
+        queryClient.invalidateQueries();
       }
     });
 
@@ -88,8 +74,10 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
     };
   }, [queryClient]);
 
+  console.log('SessionHandler state:', { isLoading, isAuthenticated }); // Debug log
+
   if (isLoading) {
-    return null;
+    return <div>Loading...</div>; // Show loading indicator instead of null
   }
 
   return <>{children}</>;

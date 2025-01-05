@@ -5,10 +5,12 @@ import { useSession } from "@supabase/auth-helpers-react";
 import { Lock, User } from "lucide-react";
 
 const Index = () => {
+  console.log('Index page rendering'); // Debug log
   const navigate = useNavigate();
   const session = useSession();
 
   useEffect(() => {
+    console.log('Index useEffect, session:', session?.user?.id); // Debug log
     if (session) {
       navigate('/predict');
     }

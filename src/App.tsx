@@ -20,6 +20,8 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
+  console.log('App component rendering'); // Debug log
+
   return (
     <SessionContextProvider 
       supabaseClient={supabase}
@@ -27,11 +29,11 @@ const App = () => {
     >
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <Toaster />
-          <Sonner />
           <BrowserRouter>
             <SessionHandler queryClient={queryClient}>
               <AppRoutes />
+              <Toaster />
+              <Sonner />
             </SessionHandler>
           </BrowserRouter>
         </TooltipProvider>
