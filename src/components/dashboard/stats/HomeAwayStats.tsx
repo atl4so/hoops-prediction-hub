@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RoundSelector } from "../predictions/RoundSelector";
 import { useState } from "react";
 import { HomeAwayPredictionsDialog } from "./HomeAwayPredictionsDialog";
+import { Home, Plane } from "lucide-react";
 
 interface HomeAwayStatsProps {
   userId?: string | null;
@@ -18,9 +19,15 @@ export function HomeAwayStats({ userId }: HomeAwayStatsProps) {
 
   return (
     <>
-      <Card>
+      <Card className="bg-white/50 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold">Home/Away % by Round</CardTitle>
+          <CardTitle className="text-xl font-semibold flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <Home className="h-5 w-5" />
+              <Plane className="h-5 w-5" />
+            </div>
+            Winner Predictions by Round
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <RoundSelector
@@ -36,6 +43,7 @@ export function HomeAwayStats({ userId }: HomeAwayStatsProps) {
           isOpen={showDialog}
           onOpenChange={setShowDialog}
           userId={userId}
+          roundId={selectedRound}
         />
       )}
     </>
