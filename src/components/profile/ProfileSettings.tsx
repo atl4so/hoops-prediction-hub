@@ -50,20 +50,23 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
 
       // Upload new avatar
       const fileExt = file.name.split('.').pop();
-      const filePath = `${profile.id}-${Date.now()}.${fileExt}`;
+      const fileName = `${profile.id}-${Date.now()}.${fileExt}`;
       
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError, data } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
+      // Get public URL after successful upload
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
-        .getPublicUrl(filePath);
+        .getPublicUrl(fileName);
 
-      // Update profile
+      // Update profile with new avatar URL
       const { error: updateError } = await supabase
         .from('profiles')
         .update({ avatar_url: publicUrl })
