@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TeamOverview } from "./details/TeamOverview";
 import { TeamPredictionPatterns } from "./details/TeamPredictionPatterns";
 import { TeamTopPredictors } from "./details/TeamTopPredictors";
+import { supabase } from "@/integrations/supabase/client"; // Added this import
 import type { Team } from "@/types/supabase";
 
 interface TeamDetailsDialogProps {
