@@ -46,10 +46,6 @@ export function StatsList({
   const [showHomeAwayDialog, setShowHomeAwayDialog] = useState(false);
 
   // Calculate percentages safely
-  const winnerPercentage = winnerPredictionsTotal > 0
-    ? Math.round((winnerPredictionsCorrect / winnerPredictionsTotal) * 100)
-    : 0;
-
   const homeWinnerPercentage = homeWinnerPredictionsTotal > 0
     ? Math.round((homeWinnerPredictionsCorrect / homeWinnerPredictionsTotal) * 100)
     : 0;
@@ -80,7 +76,7 @@ export function StatsList({
     {
       icon: Target,
       label: "Winner Prediction %",
-      value: `${winnerPercentage}%`,
+      value: `${winnerPredictionsTotal > 0 ? Math.round((winnerPredictionsCorrect / winnerPredictionsTotal) * 100) : 0}%`,
       description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} games`,
       onClick: userId ? () => setShowWinnerDialog(true) : undefined
     },
