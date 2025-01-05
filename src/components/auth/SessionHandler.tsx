@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { QueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { clearAuthSession } from '@/utils/auth';
 
 interface SessionHandlerProps {
   children: React.ReactNode;
@@ -18,6 +19,11 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
     const checkSession = async () => {
       try {
         console.log('Checking session...'); // Debug log
+        
+        // Clear any stale session data first
+        if (!mounted) return;
+        await clearAuthSession();
+        
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -38,7 +44,20 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
           return;
         }
 
-        console.log('Session found:', session.user.id); // Debug log
+        // Verify the session is valid
+        const { data: user, error: userError } = await supabase.auth.getUser();
+        
+        if (userError || !user) {
+          console.error('User verification failed:', userError);
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+            await clearAuthSession();
+          }
+          return;
+        }
+
+        console.log('Session found and verified:', session.user.id); // Debug log
         if (mounted) {
           setIsAuthenticated(true);
           setIsLoading(false);
@@ -48,6 +67,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
         if (mounted) {
           setIsAuthenticated(false);
           setIsLoading(false);
+          await clearAuthSession();
         }
       }
     };
@@ -59,9 +79,10 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
       
       console.log('Auth state changed:', event, session?.user?.id);
       
-      if (event === 'SIGNED_OUT') {
+      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
         setIsAuthenticated(false);
         queryClient.clear();
+        await clearAuthSession();
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         setIsAuthenticated(true);
         queryClient.invalidateQueries();
@@ -77,7 +98,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
   console.log('SessionHandler state:', { isLoading, isAuthenticated }); // Debug log
 
   if (isLoading) {
-    return <div>Loading...</div>; // Show loading indicator instead of null
+    return <div>Loading...</div>;
   }
 
   return <>{children}</>;

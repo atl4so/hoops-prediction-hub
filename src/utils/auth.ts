@@ -1,5 +1,4 @@
 import { supabase } from "@/integrations/supabase/client";
-import { normalizeEmail } from "./validation";
 
 export const clearAuthSession = async () => {
   try {
@@ -30,10 +29,10 @@ export const verifySession = async () => {
 
 export const loginWithEmail = async (email: string, password: string) => {
   // Ensure clean session before login
-  await supabase.auth.signOut();
+  await clearAuthSession();
 
   const { data, error: signInError } = await supabase.auth.signInWithPassword({
-    email: normalizeEmail(email),
+    email: email.toLowerCase().trim(),
     password,
   });
 
