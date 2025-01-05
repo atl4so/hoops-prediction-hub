@@ -1,8 +1,7 @@
-import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal, Percent, Scale, ArrowDown } from "lucide-react";
+import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal, Percent, Home, ExternalLink } from "lucide-react";
 import { StatsGrid } from "./StatsGrid";
 import { useState } from "react";
 import { WinnerPredictionsDialog } from "./WinnerPredictionsDialog";
-import { OverUnderPredictionsDialog } from "./OverUnderPredictionsDialog";
 
 interface StatsListProps {
   totalPoints: number;
@@ -13,8 +12,10 @@ interface StatsListProps {
   currentRoundRank?: { rank: number | null; isCurrent: boolean; roundName: string };
   winnerPredictionsCorrect?: number;
   winnerPredictionsTotal?: number;
-  overUnderPredictionsCorrect?: number;
-  overUnderPredictionsTotal?: number;
+  homeWinnerPredictionsCorrect?: number;
+  homeWinnerPredictionsTotal?: number;
+  awayWinnerPredictionsCorrect?: number;
+  awayWinnerPredictionsTotal?: number;
   userId?: string;
 }
 
@@ -34,45 +35,26 @@ export function StatsList({
   currentRoundRank,
   winnerPredictionsCorrect = 0,
   winnerPredictionsTotal = 0,
-  overUnderPredictionsCorrect = 0,
-  overUnderPredictionsTotal = 0,
+  homeWinnerPredictionsCorrect = 0,
+  homeWinnerPredictionsTotal = 0,
+  awayWinnerPredictionsCorrect = 0,
+  awayWinnerPredictionsTotal = 0,
   userId,
 }: StatsListProps) {
   const [showWinnerDialog, setShowWinnerDialog] = useState(false);
-  const [showOverUnderDialog, setShowOverUnderDialog] = useState(false);
 
   // Calculate percentages safely
   const winnerPercentage = winnerPredictionsTotal > 0
     ? Math.round((winnerPredictionsCorrect / winnerPredictionsTotal) * 100)
     : 0;
 
-  const overUnderPercentage = overUnderPredictionsTotal > 0
-    ? Math.round((overUnderPredictionsCorrect / overUnderPredictionsTotal) * 100)
+  const homeWinnerPercentage = homeWinnerPredictionsTotal > 0
+    ? Math.round((homeWinnerPredictionsCorrect / homeWinnerPredictionsTotal) * 100)
     : 0;
 
-  // Split over/under predictions into separate categories
-  const overPredictionsCorrect = Math.floor(overUnderPredictionsCorrect / 2); // Example split
-  const underPredictionsCorrect = overUnderPredictionsCorrect - overPredictionsCorrect;
-  const overPredictionsTotal = Math.floor(overUnderPredictionsTotal / 2);
-  const underPredictionsTotal = overUnderPredictionsTotal - overPredictionsTotal;
-
-  const overPercentage = overPredictionsTotal > 0
-    ? Math.round((overPredictionsCorrect / overPredictionsTotal) * 100)
+  const awayWinnerPercentage = awayWinnerPredictionsTotal > 0
+    ? Math.round((awayWinnerPredictionsCorrect / awayWinnerPredictionsTotal) * 100)
     : 0;
-
-  const underPercentage = underPredictionsTotal > 0
-    ? Math.round((underPredictionsCorrect / underPredictionsTotal) * 100)
-    : 0;
-
-  console.log('Over/Under Stats:', { 
-    correct: overUnderPredictionsCorrect, 
-    total: overUnderPredictionsTotal, 
-    percentage: overUnderPercentage,
-    overCorrect: overPredictionsCorrect,
-    overTotal: overPredictionsTotal,
-    underCorrect: underPredictionsCorrect,
-    underTotal: underPredictionsTotal
-  });
 
   const stats = [
     {
@@ -101,25 +83,16 @@ export function StatsList({
       onClick: userId ? () => setShowWinnerDialog(true) : undefined
     },
     {
-      icon: Scale,
-      label: "Over/Under Total %",
-      value: `${overUnderPercentage}%`,
-      description: `Correctly predicted ${overUnderPredictionsCorrect} over/under out of ${overUnderPredictionsTotal} games`,
-      onClick: userId ? () => setShowOverUnderDialog(true) : undefined,
+      icon: Home,
+      label: "Home Winner %",
+      value: `${homeWinnerPercentage}%`,
+      description: `Correctly predicted ${homeWinnerPredictionsCorrect} home wins out of ${homeWinnerPredictionsTotal}`,
     },
     {
-      icon: ArrowUp,
-      label: "Over Predictions %",
-      value: `${overPercentage}%`,
-      description: `Correctly predicted ${overPredictionsCorrect} overs out of ${overPredictionsTotal} games`,
-      onClick: userId ? () => setShowOverUnderDialog(true) : undefined,
-    },
-    {
-      icon: ArrowDown,
-      label: "Under Predictions %",
-      value: `${underPercentage}%`,
-      description: `Correctly predicted ${underPredictionsCorrect} unders out of ${underPredictionsTotal} games`,
-      onClick: userId ? () => setShowOverUnderDialog(true) : undefined,
+      icon: ExternalLink,
+      label: "Away Winner %",
+      value: `${awayWinnerPercentage}%`,
+      description: `Correctly predicted ${awayWinnerPredictionsCorrect} away wins out of ${awayWinnerPredictionsTotal}`,
     },
     {
       icon: Target,
@@ -145,18 +118,11 @@ export function StatsList({
     <>
       <StatsGrid stats={stats} />
       {userId && (
-        <>
-          <WinnerPredictionsDialog
-            isOpen={showWinnerDialog}
-            onOpenChange={setShowWinnerDialog}
-            userId={userId}
-          />
-          <OverUnderPredictionsDialog
-            isOpen={showOverUnderDialog}
-            onOpenChange={setShowOverUnderDialog}
-            userId={userId}
-          />
-        </>
+        <WinnerPredictionsDialog
+          isOpen={showWinnerDialog}
+          onOpenChange={setShowWinnerDialog}
+          userId={userId}
+        />
       )}
     </>
   );

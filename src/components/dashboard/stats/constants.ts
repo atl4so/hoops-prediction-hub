@@ -1,1 +1,1 @@
-export const THRESHOLDS = [125, 135, 145, 155, 165, 175, 185, 195];
+export const THRESHOLDS = [125, 135, 140, 145, 150, 155, 160, 165];
