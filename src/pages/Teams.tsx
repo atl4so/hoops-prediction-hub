@@ -51,10 +51,10 @@ export default function Teams() {
           <SelectTrigger className="w-full sm:w-[200px]">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="predictions">Most Predicted</SelectItem>
-            <SelectItem value="success">Best Success Rate</SelectItem>
-            <SelectItem value="upsets">Most Underdog Wins</SelectItem>
+          <SelectContent className="bg-background border shadow-lg z-50">
+            <SelectItem value="predictions" className="hover:bg-accent">Most Predicted</SelectItem>
+            <SelectItem value="success" className="hover:bg-accent">Best Success Rate</SelectItem>
+            <SelectItem value="upsets" className="hover:bg-accent">Most Underdog Wins</SelectItem>
           </SelectContent>
         </Select>
       </div>
