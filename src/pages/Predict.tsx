@@ -35,7 +35,7 @@ export default function Predict() {
       <PageHeader title="Predict">
         <p className="text-muted-foreground">Make your predictions for upcoming games</p>
       </PageHeader>
-      <GamesList isAuthenticated={!!session} userId={userId || undefined} />
+      <GamesList userId={userId} />
     </div>
   );
 }
