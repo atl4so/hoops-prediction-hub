@@ -34,14 +34,13 @@ export function WinnerPredictionsDialog({
           game:games!inner (
             id,
             game_date,
-            round_id,
             home_team:teams!games_home_team_id_fkey (
               name
             ),
             away_team:teams!games_away_team_id_fkey (
               name
             ),
-            game_results (
+            game_results!inner (
               home_score,
               away_score,
               is_final
@@ -49,7 +48,8 @@ export function WinnerPredictionsDialog({
           )
         `)
         .eq('user_id', userId)
-        .eq('game.round_id', selectedRound);
+        .eq('game.round_id', selectedRound)
+        .eq('game.game_results.is_final', true);
 
       if (error) {
         console.error('Error fetching predictions:', error);
@@ -58,10 +58,7 @@ export function WinnerPredictionsDialog({
 
       console.log('Raw predictions data:', data);
 
-      // Only include predictions that have game results and are final
-      return data.filter(prediction => 
-        prediction.game?.game_results?.[0]?.is_final
-      );
+      return data;
     },
     enabled: isOpen && !!selectedRound,
   });
