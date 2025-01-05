@@ -99,12 +99,6 @@ export function LeaderboardRow({
           <span className="font-bold text-base">{player.total_points}</span>
         </TableCell>
 
-        {/* Show winner% on both desktop and mobile */}
-        <TableCell className="text-right py-4 px-4">
-          <span className="font-semibold text-base">{winnerPercentage}%</span>
-        </TableCell>
-
-        {/* Keep existing StatsDisplay for desktop-only stats */}
         <StatsDisplay
           winnerPercentage={winnerPercentage}
           homeWinPercentage={homeWinPercentage}

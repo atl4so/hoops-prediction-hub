@@ -35,16 +35,10 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
             display_name,
             avatar_url,
             total_points,
-            points_per_game,
-            winner_predictions_correct,
-            winner_predictions_total,
-            home_winner_predictions_correct,
-            home_winner_predictions_total,
-            away_winner_predictions_correct,
-            away_winner_predictions_total
+            points_per_game
           `)
           .ilike('display_name', `%${searchQuery}%`)
-          .neq('id', user.id);
+          .neq('id', user.id); // Exclude current user
 
         if (searchError) throw searchError;
 
@@ -74,13 +68,7 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
               display_name,
               avatar_url,
               total_points,
-              points_per_game,
-              winner_predictions_correct,
-              winner_predictions_total,
-              home_winner_predictions_correct,
-              home_winner_predictions_total,
-              away_winner_predictions_correct,
-              away_winner_predictions_total
+              points_per_game
             )
           `)
           .eq("follower_id", user.id);
@@ -134,19 +122,13 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
       )}
 
       <div className="space-y-3 sm:space-y-4">
-        {followedUsers?.map((follow) => (
+        {followedUsers.map((follow) => (
           <FollowedUserCard
             key={follow.following_id}
             user={{
               ...follow.following,
               total_points: follow.following.total_points || 0,
-              points_per_game: follow.following.points_per_game || 0,
-              winner_predictions_correct: follow.following.winner_predictions_correct || 0,
-              winner_predictions_total: follow.following.winner_predictions_total || 0,
-              home_winner_predictions_correct: follow.following.home_winner_predictions_correct || 0,
-              home_winner_predictions_total: follow.following.home_winner_predictions_total || 0,
-              away_winner_predictions_correct: follow.following.away_winner_predictions_correct || 0,
-              away_winner_predictions_total: follow.following.away_winner_predictions_total || 0
+              points_per_game: follow.following.points_per_game || 0
             }}
             onUserClick={setSelectedUser}
             onFollowChange={refetch}

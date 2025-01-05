@@ -27,7 +27,7 @@ export function LeaderboardTabs() {
         const { data: predictions } = await supabase
           .from('predictions')
           .select('id')
-          .not('points_earned', 'is', null)
+          .eq('points_earned', 0, { not: true })
           .limit(1);
 
         if (predictions?.length) {
