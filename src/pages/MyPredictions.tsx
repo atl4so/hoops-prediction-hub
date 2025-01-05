@@ -25,6 +25,8 @@ export default function MyPredictions() {
       }
 
       try {
+        console.log('Fetching predictions for round:', selectedRound);
+        
         const query = supabase
           .from("predictions")
           .select(`
@@ -32,7 +34,7 @@ export default function MyPredictions() {
             prediction_home_score,
             prediction_away_score,
             points_earned,
-            game:games (
+            game:games!inner (
               id,
               game_date,
               round:rounds (
@@ -56,8 +58,7 @@ export default function MyPredictions() {
               )
             )
           `)
-          .eq("user_id", session.user.id)
-          .order('created_at', { ascending: false });
+          .eq("user_id", session.user.id);
 
         if (selectedRound) {
           query.eq('game.round_id', selectedRound);
@@ -65,7 +66,12 @@ export default function MyPredictions() {
 
         const { data, error } = await query;
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error fetching predictions:', error);
+          throw error;
+        }
+
+        console.log('Raw predictions data:', data);
 
         const transformedPredictions = (data || []).map(pred => ({
           id: pred.id,
@@ -74,7 +80,7 @@ export default function MyPredictions() {
             game_results: Array.isArray(pred.game.game_results) 
               ? pred.game.game_results 
               : pred.game.game_results 
-                ? [pred.game.game_results] 
+                ? [pred.game.game_results]
                 : []
           },
           prediction: {
@@ -84,6 +90,7 @@ export default function MyPredictions() {
           }
         }));
 
+        console.log('Transformed predictions:', transformedPredictions);
         setPredictions(transformedPredictions);
       } catch (error) {
         console.error('Error fetching predictions:', error);
@@ -144,7 +151,7 @@ export default function MyPredictions() {
 
       {!predictions || predictions.length === 0 ? (
         <Card className="p-6">
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-center">
             {selectedRound 
               ? "No predictions found for this round" 
               : "No predictions found"}
