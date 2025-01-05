@@ -40,31 +40,9 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
 
     const checkSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const { data: { session } } = await supabase.auth.getSession();
         
-        if (error) {
-          console.error('Session check error:', error);
-          if (mounted) {
-            setIsAuthenticated(false);
-            setIsLoading(false);
-          }
-          return;
-        }
-
         if (!session) {
-          console.log('No session found');
-          if (mounted) {
-            setIsAuthenticated(false);
-            setIsLoading(false);
-          }
-          return;
-        }
-
-        // Verify the session is still valid
-        const { data: { user }, error: refreshError } = await supabase.auth.getUser();
-        
-        if (refreshError || !user) {
-          console.error('User verification failed:', refreshError);
           if (mounted) {
             setIsAuthenticated(false);
             setIsLoading(false);
@@ -76,9 +54,8 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
           setIsAuthenticated(true);
           setIsLoading(false);
         }
-        console.log('Session verified for user:', user.id);
       } catch (error) {
-        console.error('Session verification error:', error);
+        console.error('Session check error:', error);
         if (mounted) {
           setIsAuthenticated(false);
           setIsLoading(false);
@@ -88,12 +65,15 @@ const SessionHandler = ({ children }: { children: React.ReactNode }) => {
 
     checkSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, !!session);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!mounted) return;
       
-      if (event === 'SIGNED_OUT' && mounted) {
+      console.log('Auth state changed:', event, session?.user?.id);
+      
+      if (event === 'SIGNED_OUT') {
         setIsAuthenticated(false);
-      } else if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && mounted) {
+        queryClient.clear();
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         setIsAuthenticated(true);
         queryClient.invalidateQueries();
       }
