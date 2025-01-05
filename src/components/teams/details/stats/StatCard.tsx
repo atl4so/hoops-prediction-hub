@@ -1,15 +1,22 @@
-import { cn } from "@/lib/utils";
-import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { LucideIcon } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+
+interface StatDetail {
+  label: string;
+  value: string;
+  tooltip: string;
+}
 
 interface StatCardProps {
   icon: LucideIcon;
   label: string;
   value: number;
-  subValue?: string;
+  subValue: string;
   predictions?: number;
   tooltip: string;
   className?: string;
+  details?: StatDetail[];
 }
 
 export function StatCard({ 
@@ -17,40 +24,51 @@ export function StatCard({
   label, 
   value, 
   subValue, 
-  predictions, 
-  tooltip, 
-  className = "" 
+  predictions,
+  tooltip,
+  className = "",
+  details = []
 }: StatCardProps) {
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className={cn(
-            "flex items-center gap-3 p-4 rounded-lg border-2 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20",
-            "transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:-translate-y-0.5",
-            className
-          )}>
-            <div className="rounded-xl p-3 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
-              <Icon className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">{label}</p>
-              <p className="text-xl font-bold">{value}</p>
-              {subValue && (
-                <p className="text-xs text-muted-foreground mt-0.5">{subValue}</p>
-              )}
-              {predictions && (
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Based on {predictions} total predictions
-                </p>
-              )}
-            </div>
+    <Card className={className}>
+      <CardContent className="p-6">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-3 cursor-help">
+                <Icon className="h-5 w-5" />
+                <h3 className="font-display text-lg font-semibold">{label}</h3>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top" align="start" className="max-w-[250px] text-sm">
+              {tooltip}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        <div className="mt-4 space-y-2">
+          <div className="flex items-baseline justify-between">
+            <span className="text-3xl font-bold">{value}</span>
+            <span className="text-sm text-muted-foreground">{subValue}</span>
           </div>
-        </TooltipTrigger>
-        <TooltipContent side="top" className="max-w-[300px] text-sm">
-          {tooltip}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+
+          {details.map((detail, index) => (
+            <TooltipProvider key={index}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex justify-between items-center text-sm cursor-help border-t pt-2">
+                    <span className="text-muted-foreground">{detail.label}</span>
+                    <span className="font-medium">{detail.value}</span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="top" align="start" className="max-w-[250px] text-sm">
+                  {detail.tooltip}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

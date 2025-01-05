@@ -13,6 +13,12 @@ export function TeamPredictionPatterns({ stats }: TeamPredictionPatternsProps) {
     return `${Math.round(margin)} pts`;
   };
 
+  // Calculate percentages for predictions
+  const calculatePercentage = (value: number, total: number) => {
+    if (!total) return '0%';
+    return `${Math.round((value / total) * 100)}%`;
+  };
+
   return (
     <div className="space-y-6 py-4">
       <div className="grid gap-4 sm:grid-cols-2">
@@ -22,8 +28,20 @@ export function TeamPredictionPatterns({ stats }: TeamPredictionPatternsProps) {
           value={stats?.underdog_wins || 0}
           subValue={`Avg. Margin: ${formatMargin(stats?.avg_upset_margin)}`}
           predictions={stats?.total_predictions}
-          tooltip="Games won when less than 50% of users predicted a win. For example, if only 3 out of 10 users predicted a win and the team won, it counts as an underdog win."
+          tooltip="Games won when less than 50% of users predicted a win"
           className="bg-green-50/50"
+          details={[
+            {
+              label: "Win prediction rate",
+              value: calculatePercentage(stats?.underdog_wins || 0, stats?.total_games || 0),
+              tooltip: "Percentage of games won as underdog out of total games"
+            },
+            {
+              label: "User predictions against",
+              value: `${Math.round((stats?.percentage_favoring_team || 0))}%`,
+              tooltip: "Average percentage of users who predicted against these wins"
+            }
+          ]}
         />
         <StatCard
           icon={Target}
@@ -31,8 +49,20 @@ export function TeamPredictionPatterns({ stats }: TeamPredictionPatternsProps) {
           value={stats?.unexpected_losses || 0}
           subValue={`Avg. Margin: ${formatMargin(stats?.avg_loss_margin)}`}
           predictions={stats?.total_predictions}
-          tooltip="Games lost when more than 50% of users predicted a win. For example, if 7 out of 10 users predicted a win but the team lost, it counts as an unexpected loss."
+          tooltip="Games lost when more than 50% of users predicted a win"
           className="bg-red-50/50"
+          details={[
+            {
+              label: "Loss prediction rate",
+              value: calculatePercentage(stats?.unexpected_losses || 0, stats?.total_games || 0),
+              tooltip: "Percentage of unexpected losses out of total games"
+            },
+            {
+              label: "User predictions for",
+              value: `${Math.round((stats?.percentage_favoring_team || 0))}%`,
+              tooltip: "Average percentage of users who predicted wins in these losses"
+            }
+          ]}
         />
       </div>
 
