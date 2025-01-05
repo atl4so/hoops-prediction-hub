@@ -6,12 +6,11 @@ export const clearAuthSession = async () => {
     localStorage.removeItem('supabase.auth.token');
     sessionStorage.clear();
     
-    // Force sign out
-    await supabase.auth.signOut({ scope: 'global' });
-    
-    // Verify session is cleared
+    // Get current session first
     const { data: { session } } = await supabase.auth.getSession();
+    
     if (session) {
+      // Only attempt to sign out if there's an active session
       await supabase.auth.signOut();
     }
   } catch (error) {
