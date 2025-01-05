@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Trophy, Home, Plane } from "lucide-react";
+import { Trophy, Home, Plane, Percent } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
