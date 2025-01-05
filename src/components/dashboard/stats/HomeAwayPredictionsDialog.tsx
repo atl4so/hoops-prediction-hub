@@ -108,7 +108,7 @@ export function HomeAwayPredictionsDialog({
         </DialogHeader>
         
         <div className="space-y-4 flex-1 overflow-y-auto">
-          <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+          <div className="rounded-lg border bg-white text-card-foreground">
             <RoundSelector 
               selectedRound={selectedRound} 
               onRoundChange={setSelectedRound}
