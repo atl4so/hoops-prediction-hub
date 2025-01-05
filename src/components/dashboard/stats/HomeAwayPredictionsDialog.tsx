@@ -99,7 +99,7 @@ export function HomeAwayPredictionsDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] max-h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>Home/Away Winner Predictions</DialogTitle>
           <DialogDescription>
@@ -107,11 +107,11 @@ export function HomeAwayPredictionsDialog({
           </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-4 flex-1 overflow-y-auto">
+        <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
           <RoundSelector 
             selectedRound={selectedRound} 
             onRoundChange={setSelectedRound}
-            className="w-full"
+            className="w-full bg-white"
           />
 
           {isLoading ? (
@@ -119,7 +119,7 @@ export function HomeAwayPredictionsDialog({
               Loading predictions...
             </div>
           ) : predictions && predictions.length > 0 ? (
-            <Tabs defaultValue="home" className="w-full">
+            <Tabs defaultValue="home" className="w-full flex-1 flex flex-col">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="home">Home Winners</TabsTrigger>
                 <TabsTrigger value="away">Away Winners</TabsTrigger>
@@ -128,14 +128,14 @@ export function HomeAwayPredictionsDialog({
               {['home', 'away'].map((type) => {
                 const stats = getStats(type as 'home' | 'away');
                 return (
-                  <TabsContent key={type} value={type} className="space-y-4">
-                    <div className="text-center space-y-2">
+                  <TabsContent key={type} value={type} className="flex-1 overflow-hidden flex flex-col mt-0 pt-4">
+                    <div className="text-center space-y-2 mb-4">
                       <p className="text-2xl font-bold">{stats.percentage}%</p>
                       <p className="text-sm text-muted-foreground">
                         Correctly predicted {stats.correct} {type} wins out of {stats.total}
                       </p>
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-2 overflow-y-auto flex-1 px-1">
                       {predictions.map((prediction) => {
                         const isPredictedHomeWin = prediction.prediction_home_score > prediction.prediction_away_score;
                         const isRelevantPrediction = type === 'home' ? isPredictedHomeWin : !isPredictedHomeWin;

@@ -75,7 +75,7 @@ export function StatsList({
     },
     {
       icon: Target,
-      label: "Winner Prediction %",
+      label: "Winner Prediction",
       value: `${winnerPredictionsTotal > 0 ? Math.round((winnerPredictionsCorrect / winnerPredictionsTotal) * 100) : 0}%`,
       description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} games`,
       onClick: userId ? () => setShowWinnerDialog(true) : undefined
@@ -83,7 +83,7 @@ export function StatsList({
     {
       icon: Home,
       label: "Home/Away",
-      value: `${homeWinnerPercentage} / ${awayWinnerPercentage}`,
+      value: `${homeWinnerPercentage}/${awayWinnerPercentage}`,
       onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
     },
     {
