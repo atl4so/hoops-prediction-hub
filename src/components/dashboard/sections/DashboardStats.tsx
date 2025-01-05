@@ -1,12 +1,6 @@
-import { StatsOverview } from "../StatsOverview";
-import { HomeAwayStats } from "../stats/HomeAwayStats";
+import { StatsOverview } from "@/components/dashboard/StatsOverview";
 import type { StatsListProps } from "@/types/supabase";
 
 export function DashboardStats(props: StatsListProps) {
-  return (
-    <div className="space-y-8">
-      <StatsOverview {...props} />
-      <HomeAwayStats userId={props.userId} />
-    </div>
-  );
+  return <StatsOverview {...props} />;
 }
