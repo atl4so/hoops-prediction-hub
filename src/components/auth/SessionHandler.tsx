@@ -4,6 +4,7 @@ import { useSession } from "@supabase/auth-helpers-react";
 import { supabase } from "@/integrations/supabase/client";
 import { verifySession, refreshSession } from "@/utils/auth";
 import { QueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface SessionHandlerProps {
   children: React.ReactNode;
@@ -27,6 +28,7 @@ export function SessionHandler({ children, queryClient }: SessionHandlerProps) {
         }
       } catch (error) {
         console.error('Session verification failed:', error);
+        toast.error("Session verification failed. Please log in again.");
         navigate("/login");
       } finally {
         isLoading.current = false;
@@ -57,26 +59,28 @@ export function SessionHandler({ children, queryClient }: SessionHandlerProps) {
           console.log('Initial session refresh successful');
         } catch (error) {
           console.error('Initial session refresh failed:', error);
+          toast.error("Session refresh failed. Please log in again.");
           navigate("/login");
+          return;
         }
-      }
 
-      // Set up new refresh interval if we have a session
-      if (session) {
+        // Set up new refresh interval
         refreshIntervalRef.current = window.setInterval(async () => {
           try {
             const refreshedSession = await refreshSession();
             if (!refreshedSession) {
               console.log('Session refresh failed, redirecting to login...');
+              toast.error("Session expired. Please log in again.");
               navigate("/login");
               return;
             }
             console.log('Session refreshed successfully');
           } catch (error) {
             console.error('Failed to refresh session:', error);
+            toast.error("Failed to refresh session. Please log in again.");
             navigate("/login");
           }
-        }, 10 * 60 * 1000); // Refresh every 10 minutes
+        }, 4 * 60 * 1000); // Refresh every 4 minutes
       }
     };
 
@@ -93,6 +97,7 @@ export function SessionHandler({ children, queryClient }: SessionHandlerProps) {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.id);
         if (event === 'SIGNED_IN') {
           queryClient.invalidateQueries();
         } else if (event === 'SIGNED_OUT') {
