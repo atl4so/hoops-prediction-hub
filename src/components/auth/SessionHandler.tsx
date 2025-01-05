@@ -95,13 +95,15 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
 
   console.log('SessionHandler state:', { isLoading, isAuthenticated });
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
+  // Return children immediately if not loading, regardless of authentication state
+  if (!isLoading) {
+    return <>{children}</>;
   }
 
-  return <>{children}</>;
+  // Show loading spinner only during initial load
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+    </div>
+  );
 };
