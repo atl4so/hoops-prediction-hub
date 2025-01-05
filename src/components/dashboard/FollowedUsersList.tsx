@@ -27,7 +27,6 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
       if (!user) return [];
 
       if (searchQuery) {
-        // Search all users when there's a search query
         const { data: searchResults, error: searchError } = await supabase
           .from("profiles")
           .select(`
@@ -44,11 +43,10 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
             away_winner_predictions_total
           `)
           .ilike('display_name', `%${searchQuery}%`)
-          .neq('id', user.id); // Exclude current user
+          .neq('id', user.id);
 
         if (searchError) throw searchError;
 
-        // Check which users are being followed
         const { data: followedData } = await supabase
           .from("user_follows")
           .select("following_id")
@@ -64,7 +62,6 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
           }
         }));
       } else {
-        // Only show followed users when there's no search
         const { data, error } = await supabase
           .from("user_follows")
           .select(`
@@ -100,10 +97,10 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
 
   if (isLoading) {
     return (
-      <div className="space-y-3 sm:space-y-4 animate-pulse">
-        <div className="h-20 sm:h-24 w-full bg-muted rounded-lg" />
-        <div className="h-20 sm:h-24 w-full bg-muted rounded-lg" />
-        <div className="h-20 sm:h-24 w-full bg-muted rounded-lg" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 animate-pulse">
+        <Skeleton className="h-[140px] rounded-lg" />
+        <Skeleton className="h-[140px] rounded-lg" />
+        <Skeleton className="h-[140px] rounded-lg" />
       </div>
     );
   }
@@ -133,7 +130,7 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
         </div>
       )}
 
-      <div className="space-y-3 sm:space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {followedUsers.map((follow) => (
           <FollowedUserCard
             key={follow.following_id}
