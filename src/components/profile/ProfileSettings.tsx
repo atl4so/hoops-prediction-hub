@@ -51,21 +51,24 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
       // Upload new avatar
       const fileExt = file.name.split('.').pop();
       const fileName = `${profile.id}-${Date.now()}.${fileExt}`;
-
-      // Read the file as an ArrayBuffer
-      const arrayBuffer = await file.arrayBuffer();
-      // Create a Blob with the correct type
-      const blob = new Blob([arrayBuffer], { type: file.type });
       
+      console.log('Uploading file:', {
+        name: fileName,
+        type: file.type,
+        size: file.size
+      });
+
       const { error: uploadError, data } = await supabase.storage
         .from('avatars')
-        .upload(fileName, blob, {
-          contentType: file.type,
+        .upload(fileName, file, {
           cacheControl: '3600',
           upsert: false
         });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        throw uploadError;
+      }
 
       // Get public URL after successful upload
       const { data: { publicUrl } } = supabase.storage
