@@ -100,10 +100,10 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 animate-pulse">
-        <div className="h-[140px] bg-muted rounded-lg" />
-        <div className="h-[140px] bg-muted rounded-lg" />
-        <div className="h-[140px] bg-muted rounded-lg" />
+      <div className="space-y-3 sm:space-y-4 animate-pulse">
+        <div className="h-20 sm:h-24 w-full bg-muted rounded-lg" />
+        <div className="h-20 sm:h-24 w-full bg-muted rounded-lg" />
+        <div className="h-20 sm:h-24 w-full bg-muted rounded-lg" />
       </div>
     );
   }
@@ -133,7 +133,7 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+      <div className="space-y-3 sm:space-y-4">
         {followedUsers.map((follow) => (
           <FollowedUserCard
             key={follow.following_id}
