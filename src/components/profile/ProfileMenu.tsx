@@ -64,7 +64,6 @@ export function ProfileMenu() {
     <>
       <DropdownMenu>
         <div className="flex items-center gap-4">
-          {/* Desktop Rank Display - Non-clickable */}
           <div className="hidden md:flex items-center gap-4 pointer-events-none">
             <TooltipProvider>
               <Tooltip>
@@ -87,7 +86,7 @@ export function ProfileMenu() {
                   <TooltipTrigger asChild>
                     <div className="flex items-center gap-2 bg-accent/50 px-3 py-1.5 rounded-full">
                       <ListOrdered className="h-4 w-4 text-blue-500" />
-                      <span className="text-muted-foreground font-medium">Rank {currentRoundRank.roundName}:</span>
+                      <span className="text-muted-foreground font-medium">Round {currentRoundRank.roundName}:</span>
                       <span className="font-semibold text-foreground">{currentRoundRank.rank || '-'}</span>
                     </div>
                   </TooltipTrigger>
@@ -99,7 +98,6 @@ export function ProfileMenu() {
             )}
           </div>
 
-          {/* Profile Button - Only this triggers the dropdown */}
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex items-center gap-2 h-auto py-1.5 px-2 rounded-full hover:bg-accent/50">
               <span className="hidden md:block text-sm font-medium">Hi, {profile?.display_name}</span>
@@ -128,7 +126,6 @@ export function ProfileMenu() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {/* Mobile Rank Display */}
           <div className="md:hidden px-2 py-1.5 space-y-2">
             <div className="flex items-center gap-2 text-sm bg-accent/50 px-2 py-1.5 rounded-lg">
               <Trophy className="h-4 w-4 text-yellow-500" />
@@ -138,7 +135,7 @@ export function ProfileMenu() {
             {currentRoundRank && (
               <div className="flex items-center gap-2 text-sm bg-accent/50 px-2 py-1.5 rounded-lg">
                 <ListOrdered className="h-4 w-4 text-blue-500" />
-                <span className="text-muted-foreground font-medium">Rank {currentRoundRank.roundName}:</span>
+                <span className="text-muted-foreground font-medium">Round {currentRoundRank.roundName}:</span>
                 <span className="font-semibold">{currentRoundRank.rank || '-'}</span>
               </div>
             )}
