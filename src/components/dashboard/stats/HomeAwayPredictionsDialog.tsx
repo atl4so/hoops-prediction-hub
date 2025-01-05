@@ -2,27 +2,25 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Check, X } from "lucide-react";
-import { RoundSelector } from "../predictions/RoundSelector";
-import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface HomeAwayPredictionsDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   userId: string;
+  roundId: string;
 }
 
 export function HomeAwayPredictionsDialog({
   isOpen,
   onOpenChange,
   userId,
+  roundId,
 }: HomeAwayPredictionsDialogProps) {
-  const [selectedRound, setSelectedRound] = useState("");
-
   const { data: predictions, isLoading } = useQuery({
-    queryKey: ['round-home-away-predictions', userId, selectedRound],
+    queryKey: ['round-home-away-predictions', userId, roundId],
     queryFn: async () => {
-      if (!selectedRound) return [];
+      if (!roundId) return [];
       
       const { data, error } = await supabase
         .from('predictions')
@@ -47,7 +45,7 @@ export function HomeAwayPredictionsDialog({
           )
         `)
         .eq('user_id', userId)
-        .eq('game.round_id', selectedRound);
+        .eq('game.round_id', roundId);
 
       if (error) {
         console.error('Error fetching predictions:', error);
@@ -56,7 +54,7 @@ export function HomeAwayPredictionsDialog({
 
       return data.filter(pred => pred.game.game_results.is_final);
     },
-    enabled: isOpen && !!selectedRound,
+    enabled: isOpen && !!roundId,
   });
 
   const getStats = (type: 'home' | 'away') => {
@@ -101,21 +99,13 @@ export function HomeAwayPredictionsDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] max-h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>Home/Away Winner Predictions</DialogTitle>
+          <DialogTitle>Winner Predictions</DialogTitle>
           <DialogDescription>
-            View your home and away winner predictions by round
+            View your home and away winner predictions for this round
           </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4 flex-1 overflow-y-auto">
-          <div className="rounded-lg border bg-white text-card-foreground">
-            <RoundSelector 
-              selectedRound={selectedRound} 
-              onRoundChange={setSelectedRound}
-              className="w-full"
-            />
-          </div>
-
           {isLoading ? (
             <div className="text-center py-4 text-muted-foreground">
               Loading predictions...
@@ -177,13 +167,9 @@ export function HomeAwayPredictionsDialog({
                 );
               })}
             </Tabs>
-          ) : selectedRound ? (
-            <div className="text-center py-6 text-muted-foreground">
-              No completed predictions found for this round
-            </div>
           ) : (
             <div className="text-center py-6 text-muted-foreground">
-              Select a round to view predictions
+              No completed predictions found for this round
             </div>
           )}
         </div>
