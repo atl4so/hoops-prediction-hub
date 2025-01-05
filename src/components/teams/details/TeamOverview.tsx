@@ -1,5 +1,5 @@
-import { Trophy, Target, TrendingUp, TrendingDown } from "lucide-react";
-import { StatCard } from "@/components/dashboard/StatCard";
+import { Trophy, Target, TrendingUp, TrendingDown, Home, ExternalLink } from "lucide-react";
+import { StatCard } from "@/components/dashboard/stats/StatCard";
 
 interface TeamOverviewProps {
   stats: any;
@@ -9,13 +9,13 @@ interface TeamOverviewProps {
 export function TeamOverview({ stats, distribution }: TeamOverviewProps) {
   return (
     <div className="space-y-6">
+      {/* Win/Loss Predictions */}
       <div className="grid gap-4 sm:grid-cols-2">
         <StatCard
           icon={TrendingUp}
           label="Total Wins Predicted"
           value={stats?.wins_predicted || 0}
           description={`${Math.round((stats?.wins_predicted / stats?.total_predictions) * 100 || 0)}% of all predictions`}
-          highlight={true}
         />
         <StatCard
           icon={TrendingDown}
@@ -25,6 +25,39 @@ export function TeamOverview({ stats, distribution }: TeamOverviewProps) {
         />
       </div>
 
+      {/* Overall Success Rate */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <StatCard
+          icon={Trophy}
+          label="Overall Success Rate"
+          value={`${Math.round(stats?.overall_success_rate || 0)}%`}
+          description={`${stats?.total_games || 0} games played`}
+        />
+        <StatCard
+          icon={Target}
+          label="Percentage Favoring Team"
+          value={`${Math.round(stats?.percentage_favoring_team || 0)}%`}
+          description={`${stats?.total_predictions || 0} total predictions`}
+        />
+      </div>
+
+      {/* Home/Away Success Rates */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <StatCard
+          icon={Home}
+          label="Home Success Rate"
+          value={`${Math.round(stats?.home_success_rate || 0)}%`}
+          description={`${stats?.home_games || 0} home games`}
+        />
+        <StatCard
+          icon={ExternalLink}
+          label="Away Success Rate"
+          value={`${Math.round(stats?.away_success_rate || 0)}%`}
+          description={`${stats?.away_games || 0} away games`}
+        />
+      </div>
+
+      {/* Underdog Stats */}
       <div className="grid gap-4 sm:grid-cols-2">
         <StatCard
           icon={Trophy}
