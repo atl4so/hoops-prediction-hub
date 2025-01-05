@@ -1,8 +1,9 @@
-import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal, Home, Percent } from "lucide-react";
+import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal, Home, Plane } from "lucide-react";
 import { StatsGrid } from "./StatsGrid";
 import { useState } from "react";
 import { WinnerPredictionsDialog } from "./WinnerPredictionsDialog";
 import { HomeAwayPredictionsDialog } from "./HomeAwayPredictionsDialog";
+import { cn } from "@/lib/utils";
 
 interface StatsListProps {
   totalPoints: number;
@@ -18,8 +19,6 @@ interface StatsListProps {
   homeWinnerPredictionsTotal?: number;
   awayWinnerPredictionsCorrect?: number;
   awayWinnerPredictionsTotal?: number;
-  overUnderPredictionsCorrect?: number;
-  overUnderPredictionsTotal?: number;
   userId?: string;
 }
 
@@ -44,25 +43,10 @@ export function StatsList({
   homeWinnerPredictionsTotal = 0,
   awayWinnerPredictionsCorrect = 0,
   awayWinnerPredictionsTotal = 0,
-  overUnderPredictionsCorrect = 0,
-  overUnderPredictionsTotal = 0,
   userId,
 }: StatsListProps) {
   const [showWinnerDialog, setShowWinnerDialog] = useState(false);
   const [showHomeAwayDialog, setShowHomeAwayDialog] = useState(false);
-
-  // Calculate percentages safely
-  const homeWinnerPercentage = homeWinnerPredictionsTotal > 0
-    ? Math.round((homeWinnerPredictionsCorrect / homeWinnerPredictionsTotal) * 100)
-    : 0;
-
-  const awayWinnerPercentage = awayWinnerPredictionsTotal > 0
-    ? Math.round((awayWinnerPredictionsCorrect / awayWinnerPredictionsTotal) * 100)
-    : 0;
-
-  const overUnderPercentage = overUnderPredictionsTotal > 0
-    ? Math.round((overUnderPredictionsCorrect / overUnderPredictionsTotal) * 100)
-    : 0;
 
   const stats = [
     {
@@ -93,15 +77,21 @@ export function StatsList({
     {
       icon: Home,
       label: "Home/Away",
-      value: `${homeWinnerPercentage}/${awayWinnerPercentage}`,
+      value: (
+        <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center gap-1">
+            <Home className="h-4 w-4" />
+            <span>{homeWinnerPredictionsTotal > 0 ? Math.round((homeWinnerPredictionsCorrect / homeWinnerPredictionsTotal) * 100) : 0}</span>
+          </div>
+          <span>/</span>
+          <div className="flex items-center gap-1">
+            <Plane className="h-4 w-4" />
+            <span>{awayWinnerPredictionsTotal > 0 ? Math.round((awayWinnerPredictionsCorrect / awayWinnerPredictionsTotal) * 100) : 0}</span>
+          </div>
+        </div>
+      ),
       description: `Home: ${homeWinnerPredictionsCorrect}/${homeWinnerPredictionsTotal}, Away: ${awayWinnerPredictionsCorrect}/${awayWinnerPredictionsTotal}`,
       onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
-    },
-    {
-      icon: Percent,
-      label: "Over/Under",
-      value: `${overUnderPercentage}%`,
-      description: `Correctly predicted ${overUnderPredictionsCorrect} over/unders out of ${overUnderPredictionsTotal}`,
     },
     {
       icon: Target,
