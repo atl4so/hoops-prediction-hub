@@ -22,13 +22,13 @@ export function TeamCard({ team, stats, onClick, rank }: TeamCardProps) {
     if (!rank) return null;
     switch (rank) {
       case 1:
-        return <Trophy className="h-5 w-5 text-yellow-500" />;
+        return <Trophy className="h-3.5 w-3.5 text-yellow-500" />;
       case 2:
-        return <Medal className="h-5 w-5 text-gray-400" />;
+        return <Medal className="h-3.5 w-3.5 text-gray-400" />;
       case 3:
-        return <Medal className="h-5 w-5 text-amber-600" />;
+        return <Medal className="h-3.5 w-3.5 text-amber-600" />;
       default:
-        return rank <= 10 ? <Star className="h-5 w-5 text-primary/40" /> : null;
+        return rank <= 10 ? <Star className="h-3.5 w-3.5 text-primary/40" /> : null;
     }
   };
 
@@ -39,22 +39,22 @@ export function TeamCard({ team, stats, onClick, rank }: TeamCardProps) {
       onClick={onClick}
     >
       <Card className="w-full overflow-hidden transition-all hover:shadow-lg hover:border-primary/20">
-        <CardContent className="p-6">
+        <CardContent className="p-6 relative">
+          {rank && (
+            <div className="absolute top-2 left-2 flex items-center gap-0.5">
+              {getRankIcon(rank)}
+              <span className={cn(
+                "text-xs font-semibold",
+                rank === 1 ? "text-yellow-500" :
+                rank === 2 ? "text-gray-400" :
+                rank === 3 ? "text-amber-600" :
+                rank <= 10 ? "text-primary/70" : "text-muted-foreground"
+              )}>
+                {rank}
+              </span>
+            </div>
+          )}
           <div className="flex items-center gap-4">
-            {rank && (
-              <div className="flex flex-col items-center justify-center min-w-[40px]">
-                {getRankIcon(rank)}
-                <span className={cn(
-                  "font-bold text-base mt-1",
-                  rank === 1 ? "text-yellow-500" :
-                  rank === 2 ? "text-gray-400" :
-                  rank === 3 ? "text-amber-600" :
-                  rank <= 10 ? "text-primary/70" : ""
-                )}>
-                  {rank}
-                </span>
-              </div>
-            )}
             <img
               src={team.logo_url}
               alt={`${team.name} logo`}
