@@ -49,7 +49,7 @@ export function WinnerPredictionsDialog({
           )
         `)
         .eq('user_id', userId)
-        .eq('games.round_id', selectedRound);
+        .eq('game.round_id', selectedRound);
 
       if (error) {
         console.error('Error fetching predictions:', error);
@@ -58,7 +58,7 @@ export function WinnerPredictionsDialog({
 
       console.log('Raw predictions data:', data);
 
-      // Filter to only include predictions with final results
+      // Only include predictions that have game results and are final
       return data.filter(prediction => 
         prediction.game?.game_results?.[0]?.is_final
       );
