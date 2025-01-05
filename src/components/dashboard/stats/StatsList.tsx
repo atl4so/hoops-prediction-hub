@@ -41,6 +41,8 @@ export function StatsList({
   highestRoundPoints,
   allTimeRank,
   currentRoundRank,
+  winnerPredictionsCorrect = 0,
+  winnerPredictionsTotal = 0,
   homeWinnerPredictionsCorrect = 0,
   homeWinnerPredictionsTotal = 0,
   awayWinnerPredictionsCorrect = 0,
@@ -74,9 +76,10 @@ export function StatsList({
     },
     {
       icon: Target,
-      label: "Points per Game",
-      value: (pointsPerGame || 0).toFixed(1),
-      description: "Average points earned per prediction"
+      label: "Winner Prediction",
+      value: `${calculatePercentage(winnerPredictionsCorrect, winnerPredictionsTotal)}%`,
+      description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} games`,
+      onClick: userId ? () => setShowWinnerDialog(true) : undefined
     },
     {
       icon: Home,
@@ -84,6 +87,12 @@ export function StatsList({
       value: `${homePercentage}/${awayPercentage}%`,
       description: `Home: ${homeWinnerPredictionsCorrect}/${homeWinnerPredictionsTotal} | Away: ${awayWinnerPredictionsCorrect}/${awayWinnerPredictionsTotal}`,
       onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
+    },
+    {
+      icon: Target,
+      label: "Points per Game",
+      value: (pointsPerGame || 0).toFixed(1),
+      description: "Average points earned per prediction"
     },
     {
       icon: TrendingUp,
