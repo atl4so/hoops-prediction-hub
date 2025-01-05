@@ -1,64 +1,81 @@
+import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal, Home } from "lucide-react";
+import { StatsGrid } from "./StatsGrid";
 import { useState } from "react";
-import { StatCard } from "./StatCard";
-import { ArrowUp, Home, Target, Trophy } from "lucide-react";
 import { WinnerPredictionsDialog } from "./WinnerPredictionsDialog";
 import { HomeAwayPredictionsDialog } from "./HomeAwayPredictionsDialog";
-import { OverUnderPredictionsDialog } from "./OverUnderPredictionsDialog";
 
 interface StatsListProps {
-  userId?: string;
   totalPoints: number;
   pointsPerGame: number;
   totalPredictions: number;
-  highestGamePoints?: number;
-  allTimeRank?: number;
-  currentRoundRank?: number;
+  highestGamePoints?: number | null;
+  allTimeRank?: number | null;
+  currentRoundRank?: { rank: number | null; isCurrent: boolean; roundName: string };
   winnerPredictionsCorrect?: number;
   winnerPredictionsTotal?: number;
-  overUnderPredictionsCorrect?: number;
-  overUnderPredictionsTotal?: number;
+  homeWinnerPredictionsCorrect?: number;
+  homeWinnerPredictionsTotal?: number;
+  awayWinnerPredictionsCorrect?: number;
+  awayWinnerPredictionsTotal?: number;
+  userId?: string;
 }
 
+const formatRank = (rank: number | null | undefined) => {
+  if (!rank) return "-";
+  const suffix = ["th", "st", "nd", "rd"];
+  const v = rank % 100;
+  return rank + (suffix[(v - 20) % 10] || suffix[v] || suffix[0]);
+};
+
 export function StatsList({
-  userId,
   totalPoints,
   pointsPerGame,
   totalPredictions,
-  highestGamePoints = 0,
+  highestGamePoints,
   allTimeRank,
   currentRoundRank,
   winnerPredictionsCorrect = 0,
   winnerPredictionsTotal = 0,
-  overUnderPredictionsCorrect = 0,
-  overUnderPredictionsTotal = 0,
+  homeWinnerPredictionsCorrect = 0,
+  homeWinnerPredictionsTotal = 0,
+  awayWinnerPredictionsCorrect = 0,
+  awayWinnerPredictionsTotal = 0,
+  userId,
 }: StatsListProps) {
   const [showWinnerDialog, setShowWinnerDialog] = useState(false);
   const [showHomeAwayDialog, setShowHomeAwayDialog] = useState(false);
-  const [showOverUnderDialog, setShowOverUnderDialog] = useState(false);
 
-  // Calculate home/away percentages from winner predictions
-  const homeWinnerPredictionsCorrect = winnerPredictionsCorrect || 0;
-  const homeWinnerPredictionsTotal = winnerPredictionsTotal || 0;
-  const homeWinnerPercentage = homeWinnerPredictionsTotal > 0 
-    ? Math.round((homeWinnerPredictionsCorrect / homeWinnerPredictionsTotal) * 100) 
+  // Calculate percentages safely
+  const homeWinnerPercentage = homeWinnerPredictionsTotal > 0
+    ? Math.round((homeWinnerPredictionsCorrect / homeWinnerPredictionsTotal) * 100)
     : 0;
 
-  const awayWinnerPredictionsCorrect = overUnderPredictionsCorrect || 0;
-  const awayWinnerPredictionsTotal = overUnderPredictionsTotal || 0;
-  const awayWinnerPercentage = awayWinnerPredictionsTotal > 0 
-    ? Math.round((awayWinnerPredictionsCorrect / awayWinnerPredictionsTotal) * 100) 
+  const awayWinnerPercentage = awayWinnerPredictionsTotal > 0
+    ? Math.round((awayWinnerPredictionsCorrect / awayWinnerPredictionsTotal) * 100)
     : 0;
 
   const stats = [
     {
       icon: Trophy,
       label: "Total Points",
-      value: totalPoints,
-      description: "Your cumulative points from all predictions"
+      value: totalPoints || 0,
+      description: "Your cumulative points from all predictions",
+    },
+    {
+      icon: Crown,
+      label: "All-Time Rank",
+      value: formatRank(allTimeRank),
+      description: "Your overall ranking among all players",
+    },
+    {
+      icon: Medal,
+      label: "Latest Round Rank",
+      value: formatRank(currentRoundRank?.rank),
+      description: `Your position in Round ${currentRoundRank?.roundName} leaderboard`,
     },
     {
       icon: Target,
-      label: "Winner Prediction",
+      label: "Winner Prediction %",
       value: `${winnerPredictionsTotal > 0 ? Math.round((winnerPredictionsCorrect / winnerPredictionsTotal) * 100) : 0}%`,
       description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} games`,
       onClick: userId ? () => setShowWinnerDialog(true) : undefined
@@ -66,32 +83,32 @@ export function StatsList({
     {
       icon: Home,
       label: "Home/Away",
-      value: `${homeWinnerPercentage}/${awayWinnerPercentage}`,
+      value: `${homeWinnerPercentage} / ${awayWinnerPercentage}`,
       onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
+    },
+    {
+      icon: Target,
+      label: "Points per Game",
+      value: (pointsPerGame || 0).toFixed(1),
+      description: "Average points earned per prediction"
+    },
+    {
+      icon: TrendingUp,
+      label: "Total Predictions",
+      value: totalPredictions || 0,
+      description: "Number of predictions you've made"
     },
     {
       icon: ArrowUp,
       label: "Highest Game Points",
-      value: highestGamePoints,
+      value: highestGamePoints || 0,
       description: "Best performance in a single game"
     }
   ];
 
   return (
     <>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat, index) => (
-          <StatCard
-            key={index}
-            icon={stat.icon}
-            label={stat.label}
-            value={stat.value}
-            description={stat.description}
-            onClick={stat.onClick}
-          />
-        ))}
-      </div>
-
+      <StatsGrid stats={stats} />
       {userId && (
         <>
           <WinnerPredictionsDialog
@@ -102,11 +119,6 @@ export function StatsList({
           <HomeAwayPredictionsDialog
             isOpen={showHomeAwayDialog}
             onOpenChange={setShowHomeAwayDialog}
-            userId={userId}
-          />
-          <OverUnderPredictionsDialog
-            isOpen={showOverUnderDialog}
-            onOpenChange={setShowOverUnderDialog}
             userId={userId}
           />
         </>
