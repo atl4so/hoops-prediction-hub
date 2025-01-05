@@ -83,7 +83,7 @@ export function StatsList({
     {
       icon: Home,
       label: "Home/Away %",
-      value: `H${homeWinnerPercentage} / A${awayWinnerPercentage}`,
+      value: `${homeWinnerPercentage} / ${awayWinnerPercentage}`,
       onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
     },
     {
