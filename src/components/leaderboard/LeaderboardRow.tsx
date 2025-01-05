@@ -1,12 +1,12 @@
-import { Trophy, Medal, Award, User, Star } from "lucide-react";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { RankDisplay } from "./components/RankDisplay";
+import { PlayerInfo } from "./components/PlayerInfo";
+import { StatsDisplay } from "./components/StatsDisplay";
+import { PlayerDetailsDialog } from "./components/PlayerDetailsDialog";
 
 interface LeaderboardRowProps {
   player: {
@@ -39,25 +39,6 @@ export function LeaderboardRow({
   const [showDetails, setShowDetails] = useState(false);
   const isMobile = useIsMobile();
 
-  const getRankIcon = (rank: number) => {
-    switch (rank) {
-      case 1:
-        return <Trophy className="h-5 w-5 text-yellow-500" />;
-      case 2:
-        return <Medal className="h-5 w-5 text-gray-400" />;
-      case 3:
-        return <Medal className="h-5 w-5 text-amber-600" />;
-      default:
-        return rank <= 10 ? <Star className="h-5 w-5 text-primary/40" /> : null;
-    }
-  };
-
-  const handleUserClick = () => {
-    if (isMobile) {
-      setShowDetails(true);
-    }
-  };
-
   const calculatePercentage = (correct?: number, total?: number) => {
     if (!correct || !total) return 0;
     return Math.round((correct / total) * 100);
@@ -66,6 +47,12 @@ export function LeaderboardRow({
   const homeWinPercentage = calculatePercentage(player.home_winner_predictions_correct, player.home_winner_predictions_total);
   const awayWinPercentage = calculatePercentage(player.away_winner_predictions_correct, player.away_winner_predictions_total);
   const winnerPercentage = calculatePercentage(player.winner_predictions_correct, player.winner_predictions_total);
+
+  const handleUserClick = () => {
+    if (isMobile) {
+      setShowDetails(true);
+    }
+  };
 
   const rowVariants = {
     hidden: { 
@@ -98,128 +85,42 @@ export function LeaderboardRow({
         onClick={handleUserClick}
       >
         <TableCell className="font-medium py-4 px-4">
-          <div className="flex items-center gap-2">
-            {getRankIcon(rank)}
-            <span className={cn(
-              "font-bold text-base",
-              rank === 1 ? "text-yellow-500" :
-              rank === 2 ? "text-gray-400" :
-              rank === 3 ? "text-amber-600" :
-              rank <= 10 ? "text-primary/70" : ""
-            )}>
-              {rank}
-            </span>
-          </div>
+          <RankDisplay rank={rank} />
         </TableCell>
 
         <TableCell className="py-4">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={player.avatar_url} />
-              <AvatarFallback>
-                <User className="h-4 w-4" />
-              </AvatarFallback>
-            </Avatar>
-            <span className="font-semibold text-base">{player.display_name}</span>
-          </div>
+          <PlayerInfo 
+            displayName={player.display_name}
+            avatarUrl={player.avatar_url}
+          />
         </TableCell>
 
         <TableCell className="text-right py-4 px-4">
           <span className="font-bold text-base">{player.total_points}</span>
         </TableCell>
 
-        {!isRoundLeaderboard && (
-          <>
-            <TableCell className="text-right py-4 px-4 hidden lg:table-cell">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <span className="font-semibold text-base">{winnerPercentage}%</span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Winner prediction accuracy</p>
-                    <p className="text-xs text-muted-foreground">
-                      {player.winner_predictions_correct} correct out of {player.winner_predictions_total}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </TableCell>
-            <TableCell className="text-right py-4 px-4 hidden xl:table-cell">
-              <div className="space-y-1">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <span className="font-semibold text-base">{homeWinPercentage}% / {awayWinPercentage}%</span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Home/Away prediction accuracy</p>
-                      <p className="text-xs text-muted-foreground">
-                        Home: {player.home_winner_predictions_correct} of {player.home_winner_predictions_total}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Away: {player.away_winner_predictions_correct} of {player.away_winner_predictions_total}
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-            </TableCell>
-          </>
-        )}
+        <StatsDisplay
+          winnerPercentage={winnerPercentage}
+          homeWinPercentage={homeWinPercentage}
+          awayWinPercentage={awayWinPercentage}
+          homeTotalStats={`Home: ${player.home_winner_predictions_correct} of ${player.home_winner_predictions_total}`}
+          awayTotalStats={`Away: ${player.away_winner_predictions_correct} of ${player.away_winner_predictions_total}`}
+          winnerStats={`${player.winner_predictions_correct} correct out of ${player.winner_predictions_total}`}
+          isRoundLeaderboard={isRoundLeaderboard}
+        />
 
         <TableCell className="text-right py-4 px-4">
           <span className="font-semibold text-base">{player.total_predictions}</span>
         </TableCell>
       </motion.tr>
 
-      <Dialog open={showDetails} onOpenChange={setShowDetails}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Player Details</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-6">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16">
-                <AvatarImage src={player.avatar_url} />
-                <AvatarFallback>
-                  <User className="h-8 w-8" />
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h3 className="text-lg font-bold">{player.display_name}</h3>
-                <p className="text-sm text-muted-foreground">Rank {rank}</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Total Points</p>
-                <p className="text-2xl font-bold">{player.total_points}</p>
-              </div>
-              {!isRoundLeaderboard && (
-                <>
-                  <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">Winner %</p>
-                    <p className="text-2xl font-bold">{winnerPercentage}%</p>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">Home Win %</p>
-                    <p className="text-2xl font-bold">{homeWinPercentage}%</p>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">Away Win %</p>
-                    <p className="text-2xl font-bold">{awayWinPercentage}%</p>
-                  </div>
-                </>
-              )}
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Predictions</p>
-                <p className="text-2xl font-bold">{player.total_predictions}</p>
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <PlayerDetailsDialog
+        open={showDetails}
+        onOpenChange={setShowDetails}
+        player={player}
+        rank={rank}
+        isRoundLeaderboard={isRoundLeaderboard}
+      />
     </>
   );
 }
