@@ -59,6 +59,8 @@ export function CollapsibleRoundSection({
 
   // Group predictions by round
   const predictionsByRound = predictions.reduce((acc, prediction) => {
+    if (!prediction.game?.round) return acc;
+    
     const roundId = prediction.game.round.id;
     const roundName = prediction.game.round.name;
     
