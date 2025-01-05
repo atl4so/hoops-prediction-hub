@@ -1,43 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import type { Session } from '@supabase/supabase-js';
-
-export const clearAuthSession = async () => {
-  try {
-    const { error: signOutError } = await supabase.auth.signOut({
-      scope: 'local'
-    });
-    
-    if (signOutError) {
-      console.error('Error signing out:', signOutError);
-      throw signOutError;
-    }
-  } catch (error) {
-    console.error('Session cleanup error:', error);
-    throw error;
-  }
-};
-
-export const verifySession = async (): Promise<Session | null> => {
-  try {
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    
-    if (sessionError) {
-      console.error('Session verification error:', sessionError);
-      return null;
-    }
-    
-    if (!session) {
-      console.log('No active session found');
-      return null;
-    }
-
-    return session;
-  } catch (error) {
-    console.error('Session verification error:', error);
-    return null;
-  }
-};
+import type { Session, Provider } from '@supabase/supabase-js';
 
 export const loginWithEmail = async (email: string, password: string) => {
   try {
@@ -54,6 +17,53 @@ export const loginWithEmail = async (email: string, password: string) => {
     return data;
   } catch (error) {
     console.error('Login error:', error);
+    throw error;
+  }
+};
+
+export const loginWithProvider = async (provider: Provider) => {
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+    });
+
+    if (error) {
+      console.error('OAuth login error:', error);
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('OAuth login error:', error);
+    throw error;
+  }
+};
+
+export const clearAuthSession = async () => {
+  try {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Error signing out:', error);
+      throw error;
+    }
+  } catch (error) {
+    console.error('Error clearing session:', error);
+    throw error;
+  }
+};
+
+export const verifySession = async (): Promise<Session | null> => {
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    
+    if (error) {
+      console.error('Session verification error:', error);
+      throw error;
+    }
+    
+    return session;
+  } catch (error) {
+    console.error('Session verification error:', error);
     throw error;
   }
 };
