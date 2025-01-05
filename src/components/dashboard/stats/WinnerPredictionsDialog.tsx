@@ -41,7 +41,8 @@ export function WinnerPredictionsDialog({
             ),
             game_results (
               home_score,
-              away_score
+              away_score,
+              is_final
             )
           )
         `)
@@ -50,7 +51,12 @@ export function WinnerPredictionsDialog({
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+
+      // Filter to only include predictions with final results
+      return data.filter(prediction => 
+        prediction.game?.game_results?.length > 0 && 
+        prediction.game.game_results[0].is_final
+      );
     },
     enabled: isOpen && !!selectedRound,
   });
@@ -80,7 +86,7 @@ export function WinnerPredictionsDialog({
         <DialogHeader>
           <DialogTitle>Winner Predictions by Round</DialogTitle>
           <DialogDescription>
-            View your winner predictions for each round
+            View your completed predictions and their results
           </DialogDescription>
         </DialogHeader>
         
@@ -91,48 +97,46 @@ export function WinnerPredictionsDialog({
             className="w-full"
           />
 
-          {predictions?.map((prediction) => {
-            const result = getPredictionResult(prediction);
-            const isCorrect = result === true;
-            const isPending = result === null;
+          <div className="space-y-2 max-h-[400px] overflow-y-auto">
+            {predictions?.map((prediction) => {
+              const result = getPredictionResult(prediction);
+              const isCorrect = result === true;
 
-            return (
-              <div 
-                key={prediction.id} 
-                className={`flex items-center justify-between p-3 rounded-lg border 
-                  ${isCorrect ? 'bg-green-50 border-green-200' : 
-                    isPending ? 'bg-gray-50 border-gray-200' : 
-                    'bg-red-50 border-red-200'}`}
-              >
-                <div className="flex-1">
-                  <p className="text-sm font-medium flex items-center gap-2">
-                    {prediction.game.home_team.name} vs {prediction.game.away_team.name}
-                    {!isPending && (
-                      result ? (
+              return (
+                <div 
+                  key={prediction.id} 
+                  className={`flex items-center justify-between p-3 rounded-lg border ${
+                    isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                  }`}
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium">
+                        {prediction.game.home_team.name} vs {prediction.game.away_team.name}
+                      </p>
+                      {isCorrect ? (
                         <Check className="h-4 w-4 text-green-600" />
                       ) : (
                         <X className="h-4 w-4 text-red-600" />
-                      )
-                    )}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Your prediction: {prediction.prediction_home_score} - {prediction.prediction_away_score}
-                  </p>
-                  {!isPending && prediction.game.game_results[0] && (
-                    <p className="text-xs text-muted-foreground">
-                      Final score: {prediction.game.game_results[0].home_score} - {prediction.game.game_results[0].away_score}
-                    </p>
-                  )}
+                      )}
+                    </div>
+                    <div className="text-xs text-muted-foreground space-y-0.5">
+                      <p>Your prediction: {prediction.prediction_home_score} - {prediction.prediction_away_score}</p>
+                      {prediction.game.game_results[0] && (
+                        <p>Final score: {prediction.game.game_results[0].home_score} - {prediction.game.game_results[0].away_score}</p>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
 
-          {predictions?.length === 0 && selectedRound && (
-            <div className="text-center py-6 text-muted-foreground">
-              No predictions found for this round
-            </div>
-          )}
+            {predictions?.length === 0 && selectedRound && (
+              <div className="text-center py-6 text-muted-foreground">
+                No completed predictions found for this round
+              </div>
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
