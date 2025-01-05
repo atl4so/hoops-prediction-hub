@@ -14,8 +14,8 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    console.log('SessionHandler mounted');
     let mounted = true;
+    let authListener: { subscription: { unsubscribe: () => void } } | null = null;
 
     const checkSession = async () => {
       try {
@@ -62,39 +62,46 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
     checkSession();
 
     // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!mounted) return;
-      
-      console.log('Auth state changed:', event, session?.user?.id);
-      
-      if (event === 'SIGNED_OUT') {
-        setIsAuthenticated(false);
-        setIsLoading(false);
-        queryClient.clear();
-      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        if (session) {
-          setIsAuthenticated(true);
-          setIsLoading(false);
-          queryClient.invalidateQueries();
-        } else {
+    const setupAuthListener = async () => {
+      const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (!mounted) return;
+        
+        console.log('Auth state changed:', event, session?.user?.id);
+        
+        if (event === 'SIGNED_OUT') {
           setIsAuthenticated(false);
           setIsLoading(false);
-          await clearAuthSession();
+          queryClient.clear();
+        } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          if (session) {
+            setIsAuthenticated(true);
+            setIsLoading(false);
+            queryClient.invalidateQueries();
+          } else {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+            await clearAuthSession();
+          }
         }
-      }
-    });
+      });
+      
+      authListener = data;
+    };
+
+    setupAuthListener();
 
     // Cleanup function
     return () => {
       mounted = false;
-      subscription.unsubscribe();
+      if (authListener) {
+        authListener.subscription.unsubscribe();
+      }
     };
   }, [queryClient]);
 
-  // Show loading spinner during initial load
   if (isLoading) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-background">
+      <div className="fixed inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
