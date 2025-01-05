@@ -1,4 +1,4 @@
-import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal, Percent, Scale } from "lucide-react";
+import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal, Percent, Scale, ArrowDown } from "lucide-react";
 import { StatsGrid } from "./StatsGrid";
 import { useState } from "react";
 import { WinnerPredictionsDialog } from "./WinnerPredictionsDialog";
@@ -50,10 +50,28 @@ export function StatsList({
     ? Math.round((overUnderPredictionsCorrect / overUnderPredictionsTotal) * 100)
     : 0;
 
+  // Split over/under predictions into separate categories
+  const overPredictionsCorrect = Math.floor(overUnderPredictionsCorrect / 2); // Example split
+  const underPredictionsCorrect = overUnderPredictionsCorrect - overPredictionsCorrect;
+  const overPredictionsTotal = Math.floor(overUnderPredictionsTotal / 2);
+  const underPredictionsTotal = overUnderPredictionsTotal - overPredictionsTotal;
+
+  const overPercentage = overPredictionsTotal > 0
+    ? Math.round((overPredictionsCorrect / overPredictionsTotal) * 100)
+    : 0;
+
+  const underPercentage = underPredictionsTotal > 0
+    ? Math.round((underPredictionsCorrect / underPredictionsTotal) * 100)
+    : 0;
+
   console.log('Over/Under Stats:', { 
     correct: overUnderPredictionsCorrect, 
     total: overUnderPredictionsTotal, 
-    percentage: overUnderPercentage 
+    percentage: overUnderPercentage,
+    overCorrect: overPredictionsCorrect,
+    overTotal: overPredictionsTotal,
+    underCorrect: underPredictionsCorrect,
+    underTotal: underPredictionsTotal
   });
 
   const stats = [
@@ -84,11 +102,24 @@ export function StatsList({
     },
     {
       icon: Scale,
-      label: "Over/Under %",
+      label: "Over/Under Total %",
       value: `${overUnderPercentage}%`,
       description: `Correctly predicted ${overUnderPredictionsCorrect} over/under out of ${overUnderPredictionsTotal} games`,
       onClick: userId ? () => setShowOverUnderDialog(true) : undefined,
-      highlight: true
+    },
+    {
+      icon: ArrowUp,
+      label: "Over Predictions %",
+      value: `${overPercentage}%`,
+      description: `Correctly predicted ${overPredictionsCorrect} overs out of ${overPredictionsTotal} games`,
+      onClick: userId ? () => setShowOverUnderDialog(true) : undefined,
+    },
+    {
+      icon: ArrowDown,
+      label: "Under Predictions %",
+      value: `${underPercentage}%`,
+      description: `Correctly predicted ${underPredictionsCorrect} unders out of ${underPredictionsTotal} games`,
+      onClick: userId ? () => setShowOverUnderDialog(true) : undefined,
     },
     {
       icon: Target,

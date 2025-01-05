@@ -95,7 +95,7 @@ export function OverUnderPredictionsDialog({
             <p>
               For each game, predict whether the total combined score will be higher or lower than the actual final total score.
             </p>
-            <Alert className="mt-2">
+            <Alert variant="destructive" className="mt-2">
               <InfoIcon className="h-4 w-4" />
               <AlertDescription>
                 Important: If you predict exactly the same total score as the final result, 
