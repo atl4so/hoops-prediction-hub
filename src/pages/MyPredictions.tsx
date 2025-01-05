@@ -8,12 +8,14 @@ import { Card } from "@/components/ui/card";
 import { CollapsibleRoundSection } from "@/components/dashboard/CollapsibleRoundSection";
 import { Button } from "@/components/ui/button";
 import { LogIn } from "lucide-react";
+import { RoundSelector } from "@/components/ui/round-selector";
 
 export default function MyPredictions() {
   const session = useSession();
   const navigate = useNavigate();
   const [predictions, setPredictions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedRound, setSelectedRound] = useState("");
 
   useEffect(() => {
     const fetchPredictions = async () => {
@@ -23,7 +25,7 @@ export default function MyPredictions() {
       }
 
       try {
-        const { data, error } = await supabase
+        const query = supabase
           .from("predictions")
           .select(`
             id,
@@ -57,6 +59,13 @@ export default function MyPredictions() {
           .eq("user_id", session.user.id)
           .order('created_at', { ascending: false });
 
+        // Add round filter if a round is selected
+        if (selectedRound) {
+          query.eq('game.round_id', selectedRound);
+        }
+
+        const { data, error } = await query;
+
         if (error) throw error;
 
         // Transform the data to ensure game_results is always an array
@@ -87,7 +96,7 @@ export default function MyPredictions() {
     };
 
     fetchPredictions();
-  }, [session]);
+  }, [session, selectedRound]);
 
   if (!session) {
     return (
@@ -121,31 +130,36 @@ export default function MyPredictions() {
     );
   }
 
-  if (!predictions || predictions.length === 0) {
-    return (
-      <div className="container max-w-5xl mx-auto py-8 animate-fade-in">
-        <PageHeader title="My Predictions">
-          <p className="text-muted-foreground">Track your predictions and their outcomes</p>
-        </PageHeader>
-        <Card className="p-6">
-          <p className="text-muted-foreground">No predictions found</p>
-        </Card>
-      </div>
-    );
-  }
-
   return (
-    <div className="container max-w-5xl mx-auto py-8 animate-fade-in">
+    <div className="container max-w-5xl mx-auto py-8 animate-fade-in space-y-6">
       <PageHeader title="My Predictions">
         <p className="text-muted-foreground">Track your predictions and their outcomes</p>
       </PageHeader>
 
-      <CollapsibleRoundSection
-        roundId={predictions[0]?.game?.round?.id || ""}
-        roundName={predictions[0]?.game?.round?.name || ""}
-        predictions={predictions}
-        userName={session?.user?.email || ""}
-      />
+      <div className="w-full max-w-xs">
+        <RoundSelector
+          selectedRound={selectedRound}
+          onRoundChange={setSelectedRound}
+          className="w-full"
+        />
+      </div>
+
+      {!predictions || predictions.length === 0 ? (
+        <Card className="p-6">
+          <p className="text-muted-foreground">
+            {selectedRound 
+              ? "No predictions found for this round" 
+              : "No predictions found"}
+          </p>
+        </Card>
+      ) : (
+        <CollapsibleRoundSection
+          roundId={predictions[0]?.game?.round?.id || ""}
+          roundName={predictions[0]?.game?.round?.name || ""}
+          predictions={predictions}
+          userName={session?.user?.email || ""}
+        />
+      )}
     </div>
   );
 }
