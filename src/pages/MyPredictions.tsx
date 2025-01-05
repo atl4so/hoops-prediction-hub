@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { useSession } from "@supabase/auth-helpers-react";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Card } from "@/components/ui/card";
 import { CollapsibleRoundSection } from "@/components/dashboard/CollapsibleRoundSection";
+import { Button } from "@/components/ui/button";
+import { LogIn } from "lucide-react";
 
 export default function MyPredictions() {
   const session = useSession();
@@ -15,8 +17,8 @@ export default function MyPredictions() {
 
   useEffect(() => {
     const fetchPredictions = async () => {
-      if (!session) {
-        navigate('/login');
+      if (!session?.user?.id) {
+        setIsLoading(false);
         return;
       }
 
@@ -57,21 +59,7 @@ export default function MyPredictions() {
 
         if (error) throw error;
 
-        // Transform the data to match the expected format
-        const transformedPredictions = data.map(pred => ({
-          id: pred.id,
-          game: {
-            ...pred.game,
-            game_results: pred.game.game_results
-          },
-          prediction: {
-            prediction_home_score: pred.prediction_home_score,
-            prediction_away_score: pred.prediction_away_score,
-            points_earned: pred.points_earned
-          }
-        }));
-
-        setPredictions(transformedPredictions);
+        setPredictions(data || []);
       } catch (error) {
         console.error('Error fetching predictions:', error);
         toast.error("Failed to load predictions. Please try again.");
@@ -81,7 +69,26 @@ export default function MyPredictions() {
     };
 
     fetchPredictions();
-  }, [session, navigate]);
+  }, [session]);
+
+  if (!session) {
+    return (
+      <div className="container max-w-5xl mx-auto py-8 animate-fade-in">
+        <PageHeader title="My Predictions">
+          <p className="text-muted-foreground">Track your predictions and their outcomes</p>
+        </PageHeader>
+        <Card className="p-6">
+          <div className="flex flex-col items-center justify-center gap-4">
+            <p className="text-muted-foreground">Please log in to view your predictions</p>
+            <Button onClick={() => navigate('/login')} className="flex items-center gap-2">
+              <LogIn className="h-4 w-4" />
+              Log In
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
