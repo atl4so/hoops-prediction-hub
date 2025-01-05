@@ -13,7 +13,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ProfileSettings } from "./ProfileSettings";
 import { useUserProfile } from "@/components/dashboard/UserProfile";
-import { Loader2 } from "lucide-react";
+import { useCurrentRoundRank } from "@/components/dashboard/useCurrentRoundRank";
+import { Loader2, Trophy, ListOrdered } from "lucide-react";
 import { toast } from "sonner";
 
 export function ProfileMenu() {
@@ -22,6 +23,7 @@ export function ProfileMenu() {
   const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
   const { data: profile, isLoading } = useUserProfile(session?.user?.id || null);
+  const currentRoundRank = useCurrentRoundRank(session?.user?.id || null);
 
   const handleLogout = async () => {
     try {
@@ -56,17 +58,34 @@ export function ProfileMenu() {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-            <Avatar className="h-8 w-8">
-              <AvatarImage 
-                src={profile?.avatar_url || undefined} 
-                alt={profile?.display_name || "User"} 
-              />
-              <AvatarFallback>
-                {profile?.display_name?.[0]?.toUpperCase() || "U"}
-              </AvatarFallback>
-            </Avatar>
-          </Button>
+          <div className="flex items-center gap-4 cursor-pointer">
+            {/* Desktop Rank Display */}
+            <div className="hidden md:flex items-center gap-3">
+              <div className="flex items-center gap-2 text-sm">
+                <Trophy className="h-4 w-4 text-yellow-500" />
+                <span className="text-muted-foreground">Rank:</span>
+                <span className="font-medium">{profile?.allTimeRank || '-'}</span>
+              </div>
+              {currentRoundRank && (
+                <div className="flex items-center gap-2 text-sm">
+                  <ListOrdered className="h-4 w-4 text-blue-500" />
+                  <span className="text-muted-foreground">{currentRoundRank.roundName}:</span>
+                  <span className="font-medium">{currentRoundRank.rank || '-'}</span>
+                </div>
+              )}
+            </div>
+            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+              <Avatar className="h-8 w-8">
+                <AvatarImage 
+                  src={profile?.avatar_url || undefined} 
+                  alt={profile?.display_name || "User"} 
+                />
+                <AvatarFallback>
+                  {profile?.display_name?.[0]?.toUpperCase() || "U"}
+                </AvatarFallback>
+              </Avatar>
+            </Button>
+          </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56 bg-white shadow-lg" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
@@ -80,6 +99,22 @@ export function ProfileMenu() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+          {/* Mobile Rank Display */}
+          <div className="md:hidden px-2 py-1.5 space-y-1">
+            <div className="flex items-center gap-2 text-sm">
+              <Trophy className="h-4 w-4 text-yellow-500" />
+              <span className="text-muted-foreground">All-time Rank:</span>
+              <span className="font-medium">{profile?.allTimeRank || '-'}</span>
+            </div>
+            {currentRoundRank && (
+              <div className="flex items-center gap-2 text-sm">
+                <ListOrdered className="h-4 w-4 text-blue-500" />
+                <span className="text-muted-foreground">{currentRoundRank.roundName}:</span>
+                <span className="font-medium">{currentRoundRank.rank || '-'}</span>
+              </div>
+            )}
+          </div>
+          <DropdownMenuSeparator className="md:hidden" />
           <DropdownMenuItem onClick={() => setShowSettings(true)}>
             Profile settings
           </DropdownMenuItem>
