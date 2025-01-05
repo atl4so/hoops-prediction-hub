@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSession } from "@supabase/auth-helpers-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
@@ -9,25 +9,35 @@ import { GameResults } from "@/components/admin/GameResults";
 import { AdminStats } from "@/components/admin/stats/AdminStats";
 import { BackgroundSettings } from "@/components/admin/BackgroundSettings";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { isUserAdmin } from "@/utils/auth";
+import { toast } from "sonner";
 
 const Admin = () => {
   const session = useSession();
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    if (!session) {
-      navigate("/login");
-    }
+    const checkAdminStatus = async () => {
+      if (!session) {
+        navigate("/login");
+        return;
+      }
+
+      const adminStatus = await isUserAdmin();
+      setIsAdmin(adminStatus);
+
+      if (!adminStatus) {
+        toast.error("You don't have permission to access this page");
+        navigate("/overview");
+      }
+    };
+
+    checkAdminStatus();
   }, [session, navigate]);
 
-  if (!session?.user.email || session.user.email !== "likasvy@gmail.com") {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <p className="text-lg text-muted-foreground">
-          You don't have permission to access this page.
-        </p>
-      </div>
-    );
+  if (!isAdmin) {
+    return null;
   }
 
   return (

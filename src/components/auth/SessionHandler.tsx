@@ -1,10 +1,9 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSessionContext } from "@supabase/auth-helpers-react";
-import { QueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { verifySession, refreshSession } from "@/utils/auth";
+import { useSession } from "@supabase/auth-helpers-react";
 import { supabase } from "@/integrations/supabase/client";
+import { verifySession, refreshSession } from "@/utils/auth";
+import { QueryClient } from "@tanstack/react-query";
 
 interface SessionHandlerProps {
   children: React.ReactNode;
@@ -12,35 +11,41 @@ interface SessionHandlerProps {
 }
 
 export function SessionHandler({ children, queryClient }: SessionHandlerProps) {
+  const session = useSession();
   const navigate = useNavigate();
-  const { session, isLoading } = useSessionContext();
   const refreshIntervalRef = useRef<number>();
+  const isLoading = useRef(true);
 
+  // Initial session verification
   useEffect(() => {
-    console.log('Checking session...');
-    
     const checkSession = async () => {
       try {
         const currentSession = await verifySession();
-        if (!currentSession) {
-          console.log('No active session, redirecting to login...');
+        if (!currentSession && !window.location.pathname.startsWith('/login')) {
+          console.log('No session found, redirecting to login...');
           navigate("/login");
         }
       } catch (error) {
-        console.error('Session check error:', error);
-        toast.error("Session error. Please try logging in again.");
+        console.error('Session verification failed:', error);
         navigate("/login");
+      } finally {
+        isLoading.current = false;
       }
     };
 
-    if (!isLoading) {
-      checkSession();
-    }
-  }, [navigate, isLoading]);
+    checkSession();
+  }, [navigate]);
 
+  // Prevent rendering until initial session check is complete
+  useEffect(() => {
+    if (!isLoading.current && !session && !window.location.pathname.startsWith('/login')) {
+      navigate("/login");
+    }
+  }, [navigate, session]);
+
+  // Session refresh handling
   useEffect(() => {
     const setupSessionRefresh = async () => {
-      // Clear any existing interval
       if (refreshIntervalRef.current) {
         window.clearInterval(refreshIntervalRef.current);
       }
@@ -52,6 +57,7 @@ export function SessionHandler({ children, queryClient }: SessionHandlerProps) {
           console.log('Initial session refresh successful');
         } catch (error) {
           console.error('Initial session refresh failed:', error);
+          navigate("/login");
         }
       }
 
@@ -76,7 +82,6 @@ export function SessionHandler({ children, queryClient }: SessionHandlerProps) {
 
     setupSessionRefresh();
 
-    // Cleanup function
     return () => {
       if (refreshIntervalRef.current) {
         window.clearInterval(refreshIntervalRef.current);
@@ -84,25 +89,23 @@ export function SessionHandler({ children, queryClient }: SessionHandlerProps) {
     };
   }, [session, navigate]);
 
+  // Auth state change handler
   useEffect(() => {
-    const handleAuthChange = (event: string, session: any) => {
-      console.log('Auth state changed:', event, session?.user?.id);
-      
-      if (event === 'SIGNED_IN') {
-        queryClient.invalidateQueries();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN') {
+          queryClient.invalidateQueries();
+        } else if (event === 'SIGNED_OUT') {
+          queryClient.clear();
+          navigate("/login");
+        }
       }
-    };
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthChange);
+    );
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [queryClient]);
-
-  if (isLoading) {
-    return null;
-  }
+  }, [navigate, queryClient]);
 
   return <>{children}</>;
 }
