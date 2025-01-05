@@ -11,6 +11,7 @@ import Following from "@/pages/Following";
 import Rules from "@/pages/Rules";
 import Terms from "@/pages/Terms";
 import MyPredictions from "@/pages/MyPredictions";
+import Teams from "@/pages/Teams";
 
 export const AppRoutes = () => {
   return (
@@ -25,10 +26,11 @@ export const AppRoutes = () => {
         <Route path="/predict" element={<Predict />} />
         <Route path="/following" element={<Following />} />
         <Route path="/my-predictions" element={<MyPredictions />} />
+        <Route path="/teams" element={<Teams />} />
         <Route path="/rules" element={<Rules />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </MainLayout>
   );
-};
+}

@@ -1,4 +1,4 @@
-import { LayoutDashboard, Trophy, Target, Users2, ScrollText, Scale } from "lucide-react";
+import { LayoutDashboard, Trophy, Target, Users2, ScrollText, Scale, Shield } from "lucide-react";
 
 export const navigationItems = [
   {
@@ -20,6 +20,11 @@ export const navigationItems = [
     title: "Following",
     href: "/following",
     icon: Users2,
+  },
+  {
+    title: "Teams",
+    href: "/teams",
+    icon: Shield,
   },
   {
     title: "Leaderboard",

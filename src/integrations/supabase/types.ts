@@ -423,6 +423,45 @@ export type Database = {
           predictions_count: number
         }[]
       }
+      get_team_prediction_stats: {
+        Args: {
+          team_id_param: string
+        }
+        Returns: {
+          total_games: number
+          total_predictions: number
+          overall_success_rate: number
+          home_success_rate: number
+          away_success_rate: number
+          underdog_wins: number
+          unexpected_losses: number
+          avg_upset_margin: number
+          avg_loss_margin: number
+        }[]
+      }
+      get_team_result_distribution: {
+        Args: {
+          team_id_param: string
+        }
+        Returns: {
+          margin_range: string
+          win_percentage: number
+          loss_percentage: number
+        }[]
+      }
+      get_team_top_predictors: {
+        Args: {
+          team_id_param: string
+          min_games?: number
+        }
+        Returns: {
+          user_id: string
+          display_name: string
+          success_rate: number
+          correct_predictions: number
+          total_predictions: number
+        }[]
+      }
       recalculate_all_prediction_points: {
         Args: Record<PropertyKey, never>
         Returns: undefined
