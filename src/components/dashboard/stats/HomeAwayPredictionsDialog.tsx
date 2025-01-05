@@ -1,10 +1,9 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Home, Plane } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { HomeAwayStatsDisplay } from "./HomeAwayStatsDisplay";
-import { PredictionsList } from "./PredictionsList";
+import { Check, Home, Plane, X } from "lucide-react";
+import { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface HomeAwayPredictionsDialogProps {
   isOpen: boolean;
@@ -102,38 +101,97 @@ export function HomeAwayPredictionsDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] max-h-[90vh] flex flex-col bg-white">
+      <DialogContent className="sm:max-w-[425px] max-h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-[#1A1F2C]">
+          <DialogTitle className="flex items-center gap-2">
             Round {roundInfo?.name} Winner Predictions
           </DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4 flex-1 overflow-y-auto">
-          <HomeAwayStatsDisplay homeStats={homeStats} awayStats={awayStats} />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-4 rounded-lg border bg-white space-y-2">
+              <div className="flex items-center justify-center gap-2">
+                <Home className="h-5 w-5" />
+                <span className="text-lg font-semibold">{homeStats.percentage}%</span>
+              </div>
+              <p className="text-sm text-center text-muted-foreground">
+                {homeStats.correct} of {homeStats.total} correct
+              </p>
+            </div>
+            <div className="p-4 rounded-lg border bg-white space-y-2">
+              <div className="flex items-center justify-center gap-2">
+                <Plane className="h-5 w-5" />
+                <span className="text-lg font-semibold">{awayStats.percentage}%</span>
+              </div>
+              <p className="text-sm text-center text-muted-foreground">
+                {awayStats.correct} of {awayStats.total} correct
+              </p>
+            </div>
+          </div>
 
           {isLoading ? (
-            <div className="text-center py-4 text-[#7E69AB]">
+            <div className="text-center py-4 text-muted-foreground">
               Loading predictions...
             </div>
           ) : predictions && predictions.length > 0 ? (
             <Tabs defaultValue="home" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-[#1A1F2C]/5">
-                <TabsTrigger value="home" className="gap-2 data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="home" className="gap-2">
                   <Home className="h-4 w-4" />
                   Home
                 </TabsTrigger>
-                <TabsTrigger value="away" className="gap-2 data-[state=active]:bg-[#7E69AB] data-[state=active]:text-white">
+                <TabsTrigger value="away" className="gap-2">
                   <Plane className="h-4 w-4" />
                   Away
                 </TabsTrigger>
               </TabsList>
 
-              <PredictionsList predictions={predictions} type="home" />
-              <PredictionsList predictions={predictions} type="away" />
+              {['home', 'away'].map((type) => (
+                <TabsContent key={type} value={type} className="space-y-4">
+                  <div className="space-y-2">
+                    {predictions.map((prediction) => {
+                      const isPredictedHomeWin = prediction.prediction_home_score > prediction.prediction_away_score;
+                      const isActualHomeWin = prediction.game.game_results.home_score > prediction.game.game_results.away_score;
+                      const isRelevantPrediction = type === 'home' ? isPredictedHomeWin : !isPredictedHomeWin;
+                      
+                      if (!isRelevantPrediction) return null;
+
+                      const isCorrect = type === 'home' 
+                        ? (isPredictedHomeWin && isActualHomeWin)
+                        : (!isPredictedHomeWin && !isActualHomeWin);
+
+                      return (
+                        <div 
+                          key={prediction.id} 
+                          className={`flex items-center justify-between p-3 rounded-lg border ${
+                            isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                          }`}
+                        >
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium">
+                                {prediction.game.home_team.name} vs {prediction.game.away_team.name}
+                              </span>
+                              {isCorrect ? (
+                                <Check className="h-4 w-4 text-green-600" />
+                              ) : (
+                                <X className="h-4 w-4 text-red-600" />
+                              )}
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {prediction.prediction_home_score} - {prediction.prediction_away_score}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </TabsContent>
+              ))}
             </Tabs>
           ) : (
-            <div className="text-center py-6 text-[#7E69AB]">
+            <div className="text-center py-6 text-muted-foreground">
               No completed predictions found for this round
             </div>
           )}

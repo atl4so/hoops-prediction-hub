@@ -13,27 +13,18 @@ export function HomeAwayStats({ userId }: HomeAwayStatsProps) {
   const [showDialog, setShowDialog] = useState(false);
 
   const handleRoundChange = (roundId: string) => {
-    if (roundId) {
-      setSelectedRound(roundId);
-      setShowDialog(true);
-    }
-  };
-
-  const handleDialogClose = (open: boolean) => {
-    setShowDialog(open);
-    if (!open) {
-      setSelectedRound("");
-    }
+    setSelectedRound(roundId);
+    setShowDialog(true);
   };
 
   return (
     <>
-      <Card className="bg-[#1A1F2C]/5 backdrop-blur-sm border-[#9b87f5]/20">
+      <Card className="bg-white/50 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold flex items-center gap-2 text-[#1A1F2C]">
+          <CardTitle className="text-xl font-semibold flex items-center gap-2">
             <div className="flex items-center gap-1">
-              <Home className="h-5 w-5 text-[#9b87f5]" />
-              <Plane className="h-5 w-5 text-[#7E69AB]" />
+              <Home className="h-5 w-5" />
+              <Plane className="h-5 w-5" />
             </div>
             Winner Predictions by Round
           </CardTitle>
@@ -42,15 +33,15 @@ export function HomeAwayStats({ userId }: HomeAwayStatsProps) {
           <RoundSelector
             selectedRound={selectedRound}
             onRoundChange={handleRoundChange}
-            className="w-full bg-white border-[#9b87f5]/20"
+            className="w-full bg-white"
           />
         </CardContent>
       </Card>
 
-      {userId && selectedRound && (
+      {userId && (
         <HomeAwayPredictionsDialog
           isOpen={showDialog}
-          onOpenChange={handleDialogClose}
+          onOpenChange={setShowDialog}
           userId={userId}
           roundId={selectedRound}
         />
