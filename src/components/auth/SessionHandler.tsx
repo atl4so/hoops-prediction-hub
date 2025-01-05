@@ -20,18 +20,6 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
     const checkSession = async () => {
       try {
         console.log('Checking session...');
-        // Clear any stale session data first
-        const currentSession = await supabase.auth.getSession();
-        if (currentSession.error?.message?.includes('session_not_found')) {
-          console.log('Stale session found, clearing...');
-          await clearAuthSession();
-          if (mounted) {
-            setIsAuthenticated(false);
-            setIsLoading(false);
-          }
-          return;
-        }
-
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -80,7 +68,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
         
         console.log('Auth state changed:', event, session?.user?.id);
         
-        if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+        if (event === 'SIGNED_OUT') {
           setIsAuthenticated(false);
           setIsLoading(false);
           queryClient.clear();
