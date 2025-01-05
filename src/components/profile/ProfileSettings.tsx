@@ -55,6 +55,7 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
       const { error: uploadError, data } = await supabase.storage
         .from('avatars')
         .upload(fileName, file, {
+          contentType: file.type, // Explicitly set the content type from the file
           cacheControl: '3600',
           upsert: false
         });
