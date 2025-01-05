@@ -6,6 +6,7 @@ import { useUserProfile } from "@/components/dashboard/UserProfile";
 import { useCurrentRoundRank } from "@/components/dashboard/useCurrentRoundRank";
 import { DashboardStats } from "@/components/dashboard/sections/DashboardStats";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Overview() {
   const session = useSession();
@@ -55,6 +56,10 @@ export default function Overview() {
         currentRoundRank={currentRoundRank}
         winnerPredictionsCorrect={userProfileData?.winner_predictions_correct}
         winnerPredictionsTotal={userProfileData?.winner_predictions_total}
+        homeWinnerPredictionsCorrect={userProfileData?.home_winner_predictions_correct}
+        homeWinnerPredictionsTotal={userProfileData?.home_winner_predictions_total}
+        awayWinnerPredictionsCorrect={userProfileData?.away_winner_predictions_correct}
+        awayWinnerPredictionsTotal={userProfileData?.away_winner_predictions_total}
         userId={userId}
       />
     </div>

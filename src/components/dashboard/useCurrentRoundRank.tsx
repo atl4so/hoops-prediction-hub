@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
-import type { RoundRank } from "@/types/supabase";
+import type { RoundRank } from "@/types/stats";
 
 export function useCurrentRoundRank(userId?: string) {
   const [currentRoundRank, setCurrentRoundRank] = useState<RoundRank | null>(null);

@@ -3,19 +3,7 @@ import { StatsGrid } from "./StatsGrid";
 import { useState } from "react";
 import { WinnerPredictionsDialog } from "./WinnerPredictionsDialog";
 import { HomeAwayPredictionsDialog } from "./HomeAwayPredictionsDialog";
-
-interface StatsListProps {
-  totalPoints: number;
-  pointsPerGame: number;
-  totalPredictions: number;
-  highestGamePoints?: number | null;
-  highestRoundPoints?: number | null;
-  allTimeRank?: number | null;
-  currentRoundRank?: { rank: number | null; isCurrent: boolean; roundName: string };
-  winnerPredictionsCorrect?: number;
-  winnerPredictionsTotal?: number;
-  userId?: string;
-}
+import type { StatsListProps } from "@/types/stats";
 
 const formatRank = (rank: number | null | undefined) => {
   if (!rank) return "-";
@@ -34,6 +22,10 @@ export function StatsList({
   currentRoundRank,
   winnerPredictionsCorrect = 0,
   winnerPredictionsTotal = 0,
+  homeWinnerPredictionsCorrect = 0,
+  homeWinnerPredictionsTotal = 0,
+  awayWinnerPredictionsCorrect = 0,
+  awayWinnerPredictionsTotal = 0,
   userId,
 }: StatsListProps) {
   const [showWinnerDialog, setShowWinnerDialog] = useState(false);
@@ -68,8 +60,8 @@ export function StatsList({
     {
       icon: Home,
       label: "Home/Away",
-      value: "Click to view stats",
-      description: "View your prediction accuracy for home and away games",
+      value: `Home: ${homeWinnerPredictionsCorrect}/${homeWinnerPredictionsTotal}, Away: ${awayWinnerPredictionsCorrect}/${awayWinnerPredictionsTotal}`,
+      description: "Click to view detailed home and away prediction stats",
       onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
     },
     {

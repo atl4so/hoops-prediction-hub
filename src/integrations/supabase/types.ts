@@ -177,11 +177,15 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          away_winner_predictions_correct: number | null
+          away_winner_predictions_total: number | null
           created_at: string
           display_name: string
           email: string
           highest_game_points: number | null
           highest_round_points: number | null
+          home_winner_predictions_correct: number | null
+          home_winner_predictions_total: number | null
           id: string
           is_admin: boolean | null
           lowest_game_points: number | null
@@ -197,11 +201,15 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          away_winner_predictions_correct?: number | null
+          away_winner_predictions_total?: number | null
           created_at?: string
           display_name: string
           email: string
           highest_game_points?: number | null
           highest_round_points?: number | null
+          home_winner_predictions_correct?: number | null
+          home_winner_predictions_total?: number | null
           id: string
           is_admin?: boolean | null
           lowest_game_points?: number | null
@@ -217,11 +225,15 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          away_winner_predictions_correct?: number | null
+          away_winner_predictions_total?: number | null
           created_at?: string
           display_name?: string
           email?: string
           highest_game_points?: number | null
           highest_round_points?: number | null
+          home_winner_predictions_correct?: number | null
+          home_winner_predictions_total?: number | null
           id?: string
           is_admin?: boolean | null
           lowest_game_points?: number | null
