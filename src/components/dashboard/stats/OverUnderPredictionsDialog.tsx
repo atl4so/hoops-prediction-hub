@@ -70,12 +70,9 @@ export function OverUnderPredictionsDialog({
     const predictedTotal = prediction.prediction_home_score + prediction.prediction_away_score;
     const actualTotal = gameResult.home_score + gameResult.away_score;
 
-    const predictedOverUnder = predictedTotal > actualTotal ? 'over' : 'under';
-    const actualOverUnder = 'actual'; // This is just a placeholder since we compare directly
-
     return {
-      isCorrect: (predictedTotal > actualTotal && actualTotal < predictedTotal) || 
-                 (predictedTotal < actualTotal && actualTotal > predictedTotal),
+      isCorrect: (predictedTotal < actualTotal && actualTotal > predictedTotal) || 
+                 (predictedTotal > actualTotal && actualTotal < predictedTotal),
       predicted: {
         total: predictedTotal,
         home: prediction.prediction_home_score,
