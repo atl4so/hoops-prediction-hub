@@ -3,7 +3,6 @@ import { StatsGrid } from "./StatsGrid";
 import { useState } from "react";
 import { WinnerPredictionsDialog } from "./WinnerPredictionsDialog";
 import { HomeAwayPredictionsDialog } from "./HomeAwayPredictionsDialog";
-import { cn } from "@/lib/utils";
 
 interface StatsListProps {
   totalPoints: number;
@@ -70,7 +69,7 @@ export function StatsList({
     {
       icon: Target,
       label: "Winner Prediction",
-      value: `${winnerPredictionsTotal > 0 ? Math.round((winnerPredictionsCorrect / winnerPredictionsTotal) * 100) : 0}%`,
+      value: `${winnerPredictionsCorrect}/${winnerPredictionsTotal}`,
       description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} games`,
       onClick: userId ? () => setShowWinnerDialog(true) : undefined
     },
@@ -78,16 +77,9 @@ export function StatsList({
       icon: Home,
       label: "Home/Away",
       value: (
-        <div className="flex items-center justify-center gap-2">
-          <div className="flex items-center gap-1">
-            <Home className="h-4 w-4" />
-            <span>{homeWinnerPredictionsTotal > 0 ? Math.round((homeWinnerPredictionsCorrect / homeWinnerPredictionsTotal) * 100) : 0}</span>
-          </div>
-          <span>/</span>
-          <div className="flex items-center gap-1">
-            <Plane className="h-4 w-4" />
-            <span>{awayWinnerPredictionsTotal > 0 ? Math.round((awayWinnerPredictionsCorrect / awayWinnerPredictionsTotal) * 100) : 0}</span>
-          </div>
+        <div className="flex items-center justify-center gap-4">
+          <Home className="h-5 w-5" />
+          <Plane className="h-5 w-5" />
         </div>
       ),
       description: `Home: ${homeWinnerPredictionsCorrect}/${homeWinnerPredictionsTotal}, Away: ${awayWinnerPredictionsCorrect}/${awayWinnerPredictionsTotal}`,
