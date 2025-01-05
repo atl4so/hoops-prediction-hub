@@ -59,7 +59,19 @@ export function OverUnderPredictionsDialog({
         throw error;
       }
 
-      return data.filter(pred => pred.game.game_results[0].is_final);
+      // Transform the data to match the expected structure
+      return data.filter(pred => pred.game.game_results[0].is_final).map(pred => ({
+        id: pred.id,
+        game: {
+          home_team: pred.game.home_team,
+          away_team: pred.game.away_team,
+          game_results: pred.game.game_results
+        },
+        prediction: {
+          prediction_home_score: pred.prediction_home_score,
+          prediction_away_score: pred.prediction_away_score
+        }
+      }));
     },
     enabled: isOpen && !!selectedRound,
   });
@@ -69,15 +81,17 @@ export function OverUnderPredictionsDialog({
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Over/Under Predictions by Threshold</DialogTitle>
-          <DialogDescription className="space-y-2">
-            <p>
-              Select different thresholds to see your prediction accuracy. For each threshold, 
-              your prediction is correct if:
-            </p>
-            <ul className="list-disc pl-4 space-y-1">
-              <li>You predicted OVER the threshold and the final total was OVER the threshold</li>
-              <li>You predicted UNDER the threshold and the final total was UNDER the threshold</li>
-            </ul>
+          <DialogDescription>
+            <div className="space-y-2">
+              <p>
+                Select different thresholds to see your prediction accuracy. For each threshold, 
+                your prediction is correct if:
+              </p>
+              <ul className="list-disc pl-4 space-y-1">
+                <li>You predicted OVER the threshold and the final total was OVER the threshold</li>
+                <li>You predicted UNDER the threshold and the final total was UNDER the threshold</li>
+              </ul>
+            </div>
             <Alert variant="destructive" className="mt-2">
               <InfoIcon className="h-4 w-4" />
               <AlertDescription>
