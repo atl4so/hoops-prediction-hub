@@ -2,6 +2,7 @@ import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal, Percent, Scale } fro
 import { StatsGrid } from "./StatsGrid";
 import { useState } from "react";
 import { WinnerPredictionsDialog } from "./WinnerPredictionsDialog";
+import { OverUnderPredictionsDialog } from "./OverUnderPredictionsDialog";
 
 interface StatsListProps {
   totalPoints: number;
@@ -38,6 +39,7 @@ export function StatsList({
   userId,
 }: StatsListProps) {
   const [showWinnerDialog, setShowWinnerDialog] = useState(false);
+  const [showOverUnderDialog, setShowOverUnderDialog] = useState(false);
 
   // Calculate percentages safely
   const winnerPercentage = winnerPredictionsTotal > 0
@@ -85,6 +87,7 @@ export function StatsList({
       label: "Over/Under %",
       value: `${overUnderPercentage}%`,
       description: `Correctly predicted ${overUnderPredictionsCorrect} over/under out of ${overUnderPredictionsTotal} games`,
+      onClick: userId ? () => setShowOverUnderDialog(true) : undefined,
       highlight: true
     },
     {
@@ -111,11 +114,18 @@ export function StatsList({
     <>
       <StatsGrid stats={stats} />
       {userId && (
-        <WinnerPredictionsDialog
-          isOpen={showWinnerDialog}
-          onOpenChange={setShowWinnerDialog}
-          userId={userId}
-        />
+        <>
+          <WinnerPredictionsDialog
+            isOpen={showWinnerDialog}
+            onOpenChange={setShowWinnerDialog}
+            userId={userId}
+          />
+          <OverUnderPredictionsDialog
+            isOpen={showOverUnderDialog}
+            onOpenChange={setShowOverUnderDialog}
+            userId={userId}
+          />
+        </>
       )}
     </>
   );
