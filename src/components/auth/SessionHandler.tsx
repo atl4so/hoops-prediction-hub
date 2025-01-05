@@ -4,6 +4,7 @@ import { useSessionContext } from "@supabase/auth-helpers-react";
 import { QueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { verifySession, refreshSession } from "@/utils/auth";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SessionHandlerProps {
   children: React.ReactNode;
