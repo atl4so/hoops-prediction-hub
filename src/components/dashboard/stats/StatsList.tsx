@@ -103,14 +103,14 @@ export function StatsList({
   ];
 
   const visibleStats = isMobile 
-    ? (showAllCards ? allStats : allStats.slice(0, 2))
+    ? (showAllCards ? allStats : allStats.slice(0, 4))
     : allStats;
 
   return (
     <div>
       <div className={cn(
-        "grid gap-4",
-        isMobile ? "grid-cols-1" : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+        "grid gap-2 sm:gap-4",
+        isMobile ? "grid-cols-2" : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
       )}>
         {visibleStats.map((stat, index) => (
           <StatCard
@@ -123,7 +123,7 @@ export function StatsList({
           />
         ))}
       </div>
-      {isMobile && allStats.length > 2 && (
+      {isMobile && allStats.length > 4 && (
         <Button
           variant="outline"
           className="w-full mt-4 bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary"

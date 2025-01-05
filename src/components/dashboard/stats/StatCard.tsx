@@ -36,18 +36,18 @@ export function StatCard({
       }}
       onClick={onClick}
     >
-      <CardContent className="p-4 sm:p-6">
-        <div className="flex flex-col items-center text-center space-y-4">
+      <CardContent className="p-2 sm:p-6">
+        <div className="flex flex-col items-center text-center space-y-2 sm:space-y-4">
           <div className={cn(
-            "rounded-xl p-3 sm:p-4 transition-colors duration-300",
+            "rounded-xl p-2 sm:p-4 transition-colors duration-300",
             "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground",
             "group-hover:from-primary/90 group-hover:to-primary/70"
           )}>
-            <Icon className="h-6 w-6 sm:h-8 sm:w-8" />
+            <Icon className="h-4 w-4 sm:h-8 sm:w-8" />
           </div>
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-muted-foreground">{label}</p>
-            <p className="text-2xl sm:text-3xl font-bold tracking-tight">
+          <div className="space-y-1 sm:space-y-2">
+            <p className="text-xs sm:text-sm font-medium text-muted-foreground">{label}</p>
+            <p className="text-lg sm:text-3xl font-bold tracking-tight">
               {value}
             </p>
             {description && (
@@ -56,7 +56,7 @@ export function StatCard({
               </p>
             )}
             {isClickable && (
-              <p className="text-xs text-primary animate-pulse mt-2">
+              <p className="text-xs text-primary animate-pulse mt-1 sm:mt-2">
                 Click to view details
               </p>
             )}
