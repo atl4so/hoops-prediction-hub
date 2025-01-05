@@ -52,9 +52,6 @@ export function StatsList({
   const [showWinnerDialog, setShowWinnerDialog] = useState(false);
   const [showHomeAwayDialog, setShowHomeAwayDialog] = useState(false);
 
-  const homeWinPercentage = calculatePercentage(homeWinnerPredictionsCorrect, homeWinnerPredictionsTotal);
-  const awayWinPercentage = calculatePercentage(awayWinnerPredictionsCorrect, awayWinnerPredictionsTotal);
-
   const stats = [
     {
       icon: Trophy,
@@ -84,8 +81,8 @@ export function StatsList({
     {
       icon: Home,
       label: "Home/Away",
-      value: `${homeWinPercentage}/${awayWinPercentage}%`,
-      description: `Home wins: ${homeWinnerPredictionsCorrect} of ${homeWinnerPredictionsTotal} | Away wins: ${awayWinnerPredictionsCorrect} of ${awayWinnerPredictionsTotal}`,
+      value: `${homeWinnerPredictionsCorrect}/${homeWinnerPredictionsTotal} | ${awayWinnerPredictionsCorrect}/${awayWinnerPredictionsTotal}`,
+      description: `Home: ${calculatePercentage(homeWinnerPredictionsCorrect, homeWinnerPredictionsTotal)}% | Away: ${calculatePercentage(awayWinnerPredictionsCorrect, awayWinnerPredictionsTotal)}%`,
       onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
     },
     {
