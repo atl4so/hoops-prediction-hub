@@ -5,6 +5,7 @@ import { RankDisplay } from "@/components/leaderboard/components/RankDisplay";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { TeamPredictor } from "./types";
 
 interface TeamTopPredictorsProps {
   teamId: string;
@@ -73,7 +74,7 @@ export function TeamTopPredictors({ teamId }: TeamTopPredictorsProps) {
             Best Predictors
           </h3>
           <div className="space-y-4">
-            {predictors.map((predictor: any, index: number) => (
+            {predictors.map((predictor: TeamPredictor, index: number) => (
               <div
                 key={predictor.user_id}
                 className={cn(
@@ -101,7 +102,7 @@ export function TeamTopPredictors({ teamId }: TeamTopPredictorsProps) {
                   </div>
                 </div>
                 <p className="text-base sm:text-xl font-semibold whitespace-nowrap">
-                  {predictor.success_rate}% <span className="text-xs sm:text-sm font-normal text-muted-foreground">win rate</span>
+                  {predictor.correct_predictions}/{predictor.total_predictions}
                 </p>
               </div>
             ))}

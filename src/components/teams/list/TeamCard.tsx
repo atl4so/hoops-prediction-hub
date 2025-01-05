@@ -52,7 +52,7 @@ export function TeamCard({ team, stats, onClick }: TeamCardProps) {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <p className="cursor-help">Success Rate: {stats?.overall_success_rate || 0}%</p>
+                      <p className="cursor-help">Win Rate: {stats?.overall_success_rate || 0}%</p>
                     </TooltipTrigger>
                     <TooltipContent side="top" align="start" className="max-w-[200px] text-sm">
                       Percentage of correct predictions made for {team.name}'s games. A higher percentage means users are better at predicting this team's results.
