@@ -82,12 +82,12 @@ export default function MyPredictions() {
   if (!predictions || predictions.length === 0) {
     return (
       <div className="space-y-8">
-        <section className="text-center space-y-3">
-          <h1 className="text-2xl font-bold">My Predictions</h1>
-          <Card className="p-6">
-            <p className="text-muted-foreground">No predictions found</p>
-          </Card>
-        </section>
+        <PageHeader title="My Predictions">
+          <p className="text-muted-foreground">Track your predictions and their outcomes</p>
+        </PageHeader>
+        <Card className="p-6">
+          <p className="text-muted-foreground">No predictions found</p>
+        </Card>
       </div>
     );
   }
