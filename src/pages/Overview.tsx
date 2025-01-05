@@ -53,13 +53,12 @@ export default function Overview() {
         pointsPerGame={userProfileData?.points_per_game || 0}
         totalPredictions={userProfileData?.total_predictions || 0}
         highestGamePoints={userProfileData?.highest_game_points}
-        lowestGamePoints={userProfileData?.lowest_game_points}
-        highestRoundPoints={userProfileData?.highest_round_points}
-        lowestRoundPoints={userProfileData?.lowest_round_points}
         allTimeRank={userProfileData?.allTimeRank}
         currentRoundRank={currentRoundRank}
         winnerPredictionsCorrect={userProfileData?.winner_predictions_correct}
         winnerPredictionsTotal={userProfileData?.winner_predictions_total}
+        overUnderPredictionsCorrect={userProfileData?.over_under_predictions_correct}
+        overUnderPredictionsTotal={userProfileData?.over_under_predictions_total}
         userId={userId}
       />
     </div>
