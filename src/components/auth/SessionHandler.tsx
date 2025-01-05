@@ -57,7 +57,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
     checkSession();
 
     // Set up auth state change listener
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
       
       console.log('Auth state changed:', event, session?.user?.id);
@@ -83,9 +83,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
     // Cleanup function
     return () => {
       mounted = false;
-      if (authListener) {
-        authListener.subscription.unsubscribe();
-      }
+      subscription.unsubscribe();
     };
   }, [queryClient]);
 

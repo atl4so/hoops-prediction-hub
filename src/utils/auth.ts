@@ -3,7 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 export const clearAuthSession = async () => {
   try {
     // First try to sign out properly
-    const { error } = await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut({
+      scope: 'local'  // Only clear the local session
+    });
+    
     if (error && !error.message.includes('session_not_found')) {
       console.error('Error signing out:', error);
     }
