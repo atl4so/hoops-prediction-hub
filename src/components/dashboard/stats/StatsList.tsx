@@ -78,7 +78,7 @@ export function StatsList({
       icon: Home,
       label: "Home/Away",
       value: (
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-4">
           <div className="flex items-center gap-1">
             <Home className="h-4 w-4" />
             <span>{homeWinnerPredictionsTotal > 0 ? Math.round((homeWinnerPredictionsCorrect / homeWinnerPredictionsTotal) * 100) : 0}</span>
@@ -90,7 +90,6 @@ export function StatsList({
           </div>
         </div>
       ),
-      description: `Home: ${homeWinnerPredictionsCorrect}/${homeWinnerPredictionsTotal}, Away: ${awayWinnerPredictionsCorrect}/${awayWinnerPredictionsTotal}`,
       onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
     },
     {
