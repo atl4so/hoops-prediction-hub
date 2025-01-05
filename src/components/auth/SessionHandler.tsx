@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { QueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { clearAuthSession } from '@/utils/auth';
+import { clearAuthSession, verifySession } from '@/utils/auth';
 import { toast } from "sonner";
 
 interface SessionHandlerProps {
@@ -15,6 +15,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
 
   useEffect(() => {
     let mounted = true;
+    let authListener: { subscription: { unsubscribe: () => void } } | null = null;
 
     const checkSession = async () => {
       try {
@@ -26,10 +27,8 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
           if (mounted) {
             setIsAuthenticated(false);
             setIsLoading(false);
-            if (!error.message.includes('session_not_found')) {
-              await clearAuthSession();
-              toast.error("Session error. Please try logging in again.");
-            }
+            await clearAuthSession();
+            toast.error("Session error. Please try logging in again.");
           }
           return;
         }
@@ -53,6 +52,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
         if (mounted) {
           setIsAuthenticated(false);
           setIsLoading(false);
+          await clearAuthSession();
           toast.error("Session verification failed. Please try logging in again.");
         }
       }
@@ -62,32 +62,39 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
     checkSession();
 
     // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!mounted) return;
-      
-      console.log('Auth state changed:', event, session?.user?.id);
-      
-      if (event === 'SIGNED_OUT') {
-        setIsAuthenticated(false);
-        setIsLoading(false);
-        queryClient.clear();
-      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        if (session) {
-          setIsAuthenticated(true);
-          setIsLoading(false);
-          queryClient.invalidateQueries();
-        } else {
+    const setupAuthListener = async () => {
+      const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (!mounted) return;
+        
+        console.log('Auth state changed:', event, session?.user?.id);
+        
+        if (event === 'SIGNED_OUT') {
           setIsAuthenticated(false);
           setIsLoading(false);
+          queryClient.clear();
+        } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          if (session) {
+            setIsAuthenticated(true);
+            setIsLoading(false);
+            queryClient.invalidateQueries();
+          } else {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+            await clearAuthSession();
+          }
         }
-      }
-    });
+      });
+      
+      authListener = data;
+    };
+
+    setupAuthListener();
 
     // Cleanup function
     return () => {
       mounted = false;
-      if (subscription) {
-        subscription.unsubscribe();
+      if (authListener) {
+        authListener.subscription.unsubscribe();
       }
     };
   }, [queryClient]);

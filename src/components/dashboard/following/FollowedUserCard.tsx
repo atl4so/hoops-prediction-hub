@@ -38,19 +38,14 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
   const homeWinPercentage = calculatePercentage(user.home_winner_predictions_correct, user.home_winner_predictions_total);
   const awayWinPercentage = calculatePercentage(user.away_winner_predictions_correct, user.away_winner_predictions_total);
 
-  const handleStatsClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsOpen(!isOpen);
-  };
-
   return (
     <Card className="group hover:shadow-md transition-all duration-300 animate-fade-in">
-      <CardContent className="p-4 sm:p-5">
+      <CardContent className="p-5 sm:p-6">
         <div className="space-y-4">
-          <div className="flex items-center gap-3">
+          {/* Main row with avatar, name, and follow button */}
+          <div className="flex items-center gap-4">
             <Avatar 
-              className="h-10 w-10 sm:h-12 sm:w-12 ring-2 ring-primary/10 ring-offset-2 ring-offset-background transition-all duration-300 group-hover:ring-primary/20 shrink-0"
+              className="h-12 w-12 sm:h-14 sm:w-14 ring-2 ring-primary/10 ring-offset-2 ring-offset-background transition-all duration-300 group-hover:ring-primary/20 shrink-0"
               onClick={() => onUserClick({
                 id: user.id,
                 display_name: user.display_name
@@ -60,13 +55,13 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
                 <AvatarImage src={user.avatar_url} alt={user.display_name} />
               ) : null}
               <AvatarFallback>
-                <User className="h-5 w-5" />
+                <User className="h-6 w-6" />
               </AvatarFallback>
             </Avatar>
             
             <div className="flex-1 min-w-0">
               <p 
-                className="font-display font-semibold break-words cursor-pointer hover:text-primary transition-colors"
+                className="font-display font-semibold break-words cursor-pointer hover:text-primary transition-colors text-base sm:text-lg"
                 onClick={() => onUserClick({
                   id: user.id,
                   display_name: user.display_name
@@ -80,23 +75,21 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
               userId={user.id}
               isFollowing={isFollowing}
               onFollowChange={onFollowChange}
-              className="shrink-0 h-8 px-3 text-xs"
+              className="shrink-0 h-8 px-3 text-xs sm:text-sm"
             />
           </div>
 
+          {/* Collapsible stats section */}
           <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-            <CollapsibleTrigger 
-              className="w-full flex items-center justify-center py-1 text-muted-foreground hover:text-foreground transition-colors"
-              onClick={handleStatsClick}
-            >
+            <CollapsibleTrigger className="w-full flex items-center justify-center py-1 text-muted-foreground hover:text-foreground transition-colors">
               <ChevronDown className={`h-5 w-5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
             </CollapsibleTrigger>
-            <CollapsibleContent className="pt-2 space-y-3">
-              <div className="flex flex-wrap gap-2">
+            <CollapsibleContent className="pt-2 space-y-3 animate-accordion-down">
+              <div className="flex flex-wrap gap-3 justify-center">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" className="text-xs sm:text-sm">
                         {user.total_points} pts
                       </Badge>
                     </TooltipTrigger>
@@ -107,7 +100,7 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className="text-xs sm:text-sm">
                         {user.points_per_game?.toFixed(1)} PPG
                       </Badge>
                     </TooltipTrigger>
@@ -119,7 +112,7 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <Badge variant="secondary" className="text-xs">
+                        <Badge variant="secondary" className="text-xs sm:text-sm">
                           Winner: {winnerPercentage}%
                         </Badge>
                       </TooltipTrigger>
@@ -134,7 +127,7 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs sm:text-sm">
                           H/A: {homeWinPercentage}%/{awayWinPercentage}%
                         </Badge>
                       </TooltipTrigger>

@@ -22,7 +22,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { supabase } from "@/integrations/supabase/client";
 
 export function ProfileMenu() {
   const session = useSession();
@@ -34,25 +33,22 @@ export function ProfileMenu() {
 
   const handleLogout = async () => {
     try {
-      // Clear any local storage/session storage first
-      localStorage.clear();
-      sessionStorage.clear();
-
-      // Then attempt to sign out from Supabase
       const { error } = await supabase.auth.signOut();
-      
-      // If there's a session_not_found error, we can ignore it since we're logging out anyway
-      if (error && !error.message.includes('session_not_found')) {
-        console.error('Logout error:', error);
-        toast.error("Failed to log out. Please try again.");
+      if (error) {
+        if (error.message.includes('session_not_found')) {
+          localStorage.clear();
+          sessionStorage.clear();
+          navigate("/login");
+          return;
+        }
+        throw error;
       }
-
-      // Always navigate to login page
       navigate("/login");
     } catch (error) {
       console.error('Logout error:', error);
       toast.error("Failed to log out. Please try again.");
-      // Still navigate to login page even if there's an error
+      localStorage.clear();
+      sessionStorage.clear();
       navigate("/login");
     }
   };
@@ -68,7 +64,6 @@ export function ProfileMenu() {
     <>
       <DropdownMenu>
         <div className="flex items-center gap-4">
-          {/* Desktop Rank Display - Non-clickable */}
           <div className="hidden md:flex items-center gap-4 pointer-events-none">
             <TooltipProvider>
               <Tooltip>
@@ -103,7 +98,6 @@ export function ProfileMenu() {
             )}
           </div>
 
-          {/* Profile Button - Only this triggers the dropdown */}
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex items-center gap-2 h-auto py-1.5 px-2 rounded-full hover:bg-accent/50">
               <span className="hidden md:block text-sm font-medium">Hi, {profile?.display_name}</span>
@@ -132,7 +126,6 @@ export function ProfileMenu() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {/* Mobile Rank Display */}
           <div className="md:hidden px-2 py-1.5 space-y-2">
             <div className="flex items-center gap-2 text-sm bg-accent/50 px-2 py-1.5 rounded-lg">
               <Trophy className="h-4 w-4 text-yellow-500" />
