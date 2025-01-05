@@ -54,22 +54,27 @@ export function RoundSelector({ selectedRound, onRoundChange, className }: Round
       if (!rounds?.length || selectedRound) return;
 
       for (const round of rounds) {
-        // Query predictions and game results separately to avoid join issues
+        // First, get games for this round
+        const { data: games } = await supabase
+          .from('games')
+          .select('id')
+          .eq('round_id', round.id);
+
+        if (!games?.length) continue;
+
+        // Then, check if any of these games have results
+        const { data: gameResults } = await supabase
+          .from('game_results')
+          .select('game_id')
+          .in('game_id', games.map(g => g.id));
+
+        if (!gameResults?.length) continue;
+
+        // Finally, check if there are any predictions for these games
         const { data: predictions } = await supabase
           .from('predictions')
           .select('id')
-          .eq('game.round_id', round.id)
-          .in('game_id', 
-            supabase
-              .from('games')
-              .select('id')
-              .eq('round_id', round.id)
-              .in('id', 
-                supabase
-                  .from('game_results')
-                  .select('game_id')
-              )
-          )
+          .in('game_id', gameResults.map(gr => gr.game_id))
           .limit(1);
 
         if (predictions?.length) {
