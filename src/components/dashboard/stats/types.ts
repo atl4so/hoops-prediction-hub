@@ -11,10 +11,10 @@ export interface PredictionData {
     away_team: {
       name: string;
     };
-    game_results: {
+    game_results: Array<{
       home_score: number;
       away_score: number;
       is_final: boolean;
-    }[];
+    }>;
   };
 }

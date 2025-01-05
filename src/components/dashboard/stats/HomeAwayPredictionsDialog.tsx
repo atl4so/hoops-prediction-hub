@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PredictionsList } from "./home-away/PredictionsList";
 import { StatsOverview } from "./home-away/StatsOverview";
 import { DialogLayout, DialogContent as ScrollContent } from "@/components/shared/DialogLayout";
+import { PredictionData } from "./types";
 
 interface HomeAwayPredictionsDialogProps {
   isOpen: boolean;
@@ -57,7 +58,16 @@ export function HomeAwayPredictionsDialog({
         throw error;
       }
 
-      return data.filter(pred => pred.game.game_results[0].is_final);
+      // Transform the data to match PredictionData type
+      return data.filter(pred => pred.game.game_results[0].is_final).map(pred => ({
+        ...pred,
+        game: {
+          ...pred.game,
+          game_results: Array.isArray(pred.game.game_results) 
+            ? pred.game.game_results 
+            : [pred.game.game_results]
+        }
+      })) as PredictionData[];
     },
     enabled: isOpen && !!selectedRound,
   });
