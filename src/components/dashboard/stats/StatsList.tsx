@@ -79,17 +79,17 @@ export function StatsList({
       label: "Home/Away",
       value: (
         <div className="flex items-center justify-center gap-4">
-          <div className="flex items-center gap-1">
-            <Home className="h-4 w-4" />
-            <span>{homeWinnerPredictionsTotal > 0 ? Math.round((homeWinnerPredictionsCorrect / homeWinnerPredictionsTotal) * 100) : 0}</span>
+          <div className="flex flex-col items-center gap-1">
+            <Home className="h-4 w-4 text-primary" />
+            <span className="text-sm">{homeWinnerPredictionsTotal > 0 ? Math.round((homeWinnerPredictionsCorrect / homeWinnerPredictionsTotal) * 100) : 0}</span>
           </div>
-          <span>/</span>
-          <div className="flex items-center gap-1">
-            <Plane className="h-4 w-4" />
-            <span>{awayWinnerPredictionsTotal > 0 ? Math.round((awayWinnerPredictionsCorrect / awayWinnerPredictionsTotal) * 100) : 0}</span>
+          <div className="flex flex-col items-center gap-1">
+            <Plane className="h-4 w-4 text-primary" />
+            <span className="text-sm">{awayWinnerPredictionsTotal > 0 ? Math.round((awayWinnerPredictionsCorrect / awayWinnerPredictionsTotal) * 100) : 0}</span>
           </div>
         </div>
       ),
+      description: "Home and away prediction accuracy",
       onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
     },
     {
