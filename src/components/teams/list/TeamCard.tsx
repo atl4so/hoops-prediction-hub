@@ -1,19 +1,36 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Trophy, Medal, Star } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { Team } from "@/types/supabase";
 
 interface TeamCardProps {
   team: Team;
   stats: any;
   onClick: () => void;
+  rank?: number;
 }
 
-export function TeamCard({ team, stats, onClick }: TeamCardProps) {
+export function TeamCard({ team, stats, onClick, rank }: TeamCardProps) {
   const winRate = stats?.overall_success_rate || 0;
   const totalPredictions = stats?.total_predictions || 0;
   const winsPredicted = stats?.wins_predicted || 0;
   const lossesPredicted = stats?.losses_predicted || 0;
+
+  const getRankIcon = (rank: number | undefined) => {
+    if (!rank) return null;
+    switch (rank) {
+      case 1:
+        return <Trophy className="h-5 w-5 text-yellow-500" />;
+      case 2:
+        return <Medal className="h-5 w-5 text-gray-400" />;
+      case 3:
+        return <Medal className="h-5 w-5 text-amber-600" />;
+      default:
+        return rank <= 10 ? <Star className="h-5 w-5 text-primary/40" /> : null;
+    }
+  };
 
   return (
     <Button
@@ -24,6 +41,20 @@ export function TeamCard({ team, stats, onClick }: TeamCardProps) {
       <Card className="w-full overflow-hidden transition-all hover:shadow-lg hover:border-primary/20">
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
+            {rank && (
+              <div className="flex flex-col items-center justify-center min-w-[40px]">
+                {getRankIcon(rank)}
+                <span className={cn(
+                  "font-bold text-base mt-1",
+                  rank === 1 ? "text-yellow-500" :
+                  rank === 2 ? "text-gray-400" :
+                  rank === 3 ? "text-amber-600" :
+                  rank <= 10 ? "text-primary/70" : ""
+                )}>
+                  {rank}
+                </span>
+              </div>
+            )}
             <img
               src={team.logo_url}
               alt={`${team.name} logo`}

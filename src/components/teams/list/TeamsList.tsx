@@ -24,7 +24,6 @@ export function TeamsList({ teams, isLoading, onTeamClick, sortBy }: TeamsListPr
           throw error;
         }
         
-        console.log(`Stats for team ${team.name}:`, data[0]);
         return { teamId: team.id, ...data[0] };
       });
 
@@ -59,7 +58,7 @@ export function TeamsList({ teams, isLoading, onTeamClick, sortBy }: TeamsListPr
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {sortedTeams.map((team) => {
+      {sortedTeams.map((team, index) => {
         const stats = teamStats?.find(s => s.teamId === team.id);
         return (
           <TeamCard
@@ -67,6 +66,7 @@ export function TeamsList({ teams, isLoading, onTeamClick, sortBy }: TeamsListPr
             team={team}
             stats={stats}
             onClick={() => onTeamClick(team)}
+            rank={index + 1}
           />
         );
       })}
