@@ -437,6 +437,14 @@ export type Database = {
           unexpected_losses: number
           avg_upset_margin: number
           avg_loss_margin: number
+          margin_1_9_wins: number
+          margin_10_15_wins: number
+          margin_15plus_wins: number
+          margin_1_9_losses: number
+          margin_10_15_losses: number
+          margin_15plus_losses: number
+          home_games: number
+          away_games: number
         }[]
       }
       get_team_result_distribution: {
