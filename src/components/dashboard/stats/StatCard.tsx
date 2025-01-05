@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 interface StatCardProps {
   icon: LucideIcon;
   label: string;
-  value: string | number;
+  value: string | number | JSX.Element;
   description?: string;
   delay?: number;
   onClick?: () => void;
