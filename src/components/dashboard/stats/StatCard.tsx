@@ -8,6 +8,7 @@ interface StatCardProps {
   value: string | number;
   description?: string;
   delay?: number;
+  onClick?: () => void;
 }
 
 export function StatCard({ 
@@ -15,7 +16,8 @@ export function StatCard({
   label, 
   value, 
   description,
-  delay = 0
+  delay = 0,
+  onClick
 }: StatCardProps) {
   return (
     <Card 
@@ -23,12 +25,14 @@ export function StatCard({
         "group transition-all duration-300 hover:shadow-lg border-2",
         "hover:scale-[1.02] hover:-translate-y-0.5",
         "bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20",
-        "opacity-0" // Start invisible for animation
+        "opacity-0", // Start invisible for animation
+        onClick && "cursor-pointer"
       )}
       style={{
         animationDelay: `${delay * 0.1}s`,
         animation: 'fade-in 0.5s ease-out forwards'
       }}
+      onClick={onClick}
     >
       <CardContent className="p-4 sm:p-6">
         <div className="flex flex-col items-center text-center space-y-4">

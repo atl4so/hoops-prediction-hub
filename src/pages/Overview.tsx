@@ -58,6 +58,8 @@ export default function Overview() {
         lowestRoundPoints={userProfileData?.lowest_round_points}
         allTimeRank={userProfileData?.allTimeRank}
         currentRoundRank={currentRoundRank}
+        winnerPredictionsCorrect={userProfileData?.winner_predictions_correct}
+        winnerPredictionsTotal={userProfileData?.winner_predictions_total}
         userId={userId}
       />
     </div>

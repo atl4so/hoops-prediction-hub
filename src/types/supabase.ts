@@ -36,6 +36,8 @@ export interface UserProfile {
   lowest_game_points?: number;
   highest_round_points?: number;
   lowest_round_points?: number;
+  winner_predictions_correct?: number;
+  winner_predictions_total?: number;
 }
 
 export interface RoundRank {

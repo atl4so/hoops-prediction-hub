@@ -1,9 +1,10 @@
-import { Trophy, Target, TrendingUp, ArrowUp, ArrowDown, Crown, Medal } from "lucide-react";
+import { Trophy, Target, TrendingUp, ArrowUp, ArrowDown, Crown, Medal, Percent } from "lucide-react";
 import { StatCard } from "./StatCard";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
+import { WinnerPredictionsDialog } from "./WinnerPredictionsDialog";
 
 interface StatsListProps {
   totalPoints: number;
@@ -15,6 +16,9 @@ interface StatsListProps {
   lowestRoundPoints?: number | null;
   allTimeRank?: number | null;
   currentRoundRank?: { rank: number | null; isCurrent: boolean; roundName: string };
+  winnerPredictionsCorrect?: number;
+  winnerPredictionsTotal?: number;
+  userId?: string;
 }
 
 const formatRank = (rank: number | null | undefined) => {
@@ -34,9 +38,17 @@ export function StatsList({
   lowestRoundPoints,
   allTimeRank,
   currentRoundRank,
+  winnerPredictionsCorrect = 0,
+  winnerPredictionsTotal = 0,
+  userId,
 }: StatsListProps) {
   const [showAllCards, setShowAllCards] = useState(false);
+  const [showWinnerDialog, setShowWinnerDialog] = useState(false);
   const isMobile = useIsMobile();
+
+  const winnerPercentage = winnerPredictionsTotal > 0
+    ? Math.round((winnerPredictionsCorrect / winnerPredictionsTotal) * 100)
+    : 0;
 
   const allStats = [
     {
@@ -64,6 +76,13 @@ export function StatsList({
       description: "Average points earned per prediction"
     },
     {
+      icon: Percent,
+      label: "Winner Prediction %",
+      value: `${winnerPercentage}%`,
+      description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} games`,
+      onClick: userId ? () => setShowWinnerDialog(true) : undefined
+    },
+    {
       icon: TrendingUp,
       label: "Total Predictions",
       value: totalPredictions || 0,
@@ -80,12 +99,6 @@ export function StatsList({
       label: "Highest Round Points",
       value: highestRoundPoints || 0,
       description: "Best total points in a single round"
-    },
-    {
-      icon: ArrowDown,
-      label: "Lowest Round Points",
-      value: lowestRoundPoints || 0,
-      description: "Lowest total points in a round"
     }
   ];
 
@@ -106,6 +119,7 @@ export function StatsList({
             label={stat.label}
             value={stat.value}
             description={stat.description}
+            onClick={stat.onClick}
           />
         ))}
       </div>
@@ -117,6 +131,13 @@ export function StatsList({
         >
           {showAllCards ? "Show Less" : "Show More"}
         </Button>
+      )}
+      {userId && (
+        <WinnerPredictionsDialog
+          isOpen={showWinnerDialog}
+          onOpenChange={setShowWinnerDialog}
+          userId={userId}
+        />
       )}
     </div>
   );
