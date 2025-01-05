@@ -26,6 +26,7 @@ html, body {
   overflow: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: none;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
 }
 
 .container {
@@ -45,50 +46,67 @@ html, body {
 
 .card {
   padding: 2em;
-  border-radius: 1rem;
-  background-color: #FFF7ED;
+  border-radius: 1.25rem;
+  background: rgba(255, 247, 237, 0.8);
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(249, 115, 22, 0.1);
-  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.1), 0 2px 4px -1px rgba(249, 115, 22, 0.06);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(249, 115, 22, 0.15);
+  border-color: rgba(249, 115, 22, 0.2);
 }
 
 .game-card {
-  background-color: #FFF7ED;
+  background: rgba(255, 247, 237, 0.8);
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(249, 115, 22, 0.1);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  transition: all 0.3s ease;
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .game-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.1), 0 2px 4px -1px rgba(249, 115, 22, 0.06);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(249, 115, 22, 0.15);
+  border-color: rgba(249, 115, 22, 0.2);
 }
 
 .team-logo {
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   object-fit: contain;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+  transition: transform 0.3s ease;
+}
+
+.team-logo:hover {
+  transform: scale(1.05);
 }
 
 .prediction-button {
-  background-color: #F97316;
+  background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
   color: white;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  border-radius: 0.75rem;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
 }
 
 .prediction-button:hover {
-  background-color: #EA580C;
+  background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(249, 115, 22, 0.3);
 }
 
 .prediction-button:disabled {
-  background-color: #FDA4AF;
+  background: linear-gradient(135deg, #FDA4AF 0%, #FB7185 100%);
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
