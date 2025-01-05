@@ -35,7 +35,13 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
             display_name,
             avatar_url,
             total_points,
-            points_per_game
+            points_per_game,
+            winner_predictions_correct,
+            winner_predictions_total,
+            home_winner_predictions_correct,
+            home_winner_predictions_total,
+            away_winner_predictions_correct,
+            away_winner_predictions_total
           `)
           .ilike('display_name', `%${searchQuery}%`)
           .neq('id', user.id); // Exclude current user
@@ -68,7 +74,13 @@ export function FollowedUsersList({ searchQuery }: FollowedUsersListProps) {
               display_name,
               avatar_url,
               total_points,
-              points_per_game
+              points_per_game,
+              winner_predictions_correct,
+              winner_predictions_total,
+              home_winner_predictions_correct,
+              home_winner_predictions_total,
+              away_winner_predictions_correct,
+              away_winner_predictions_total
             )
           `)
           .eq("follower_id", user.id);

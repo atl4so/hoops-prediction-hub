@@ -96,7 +96,14 @@ export function LeaderboardRow({
         </TableCell>
 
         <TableCell className="text-right py-4 px-4">
-          <span className="font-bold text-base">{player.total_points}</span>
+          <div className="space-y-1">
+            <span className="font-bold text-base">{player.total_points}</span>
+            {isMobile && winnerPercentage > 0 && (
+              <p className="text-xs text-muted-foreground">
+                Winner: {winnerPercentage}%
+              </p>
+            )}
+          </div>
         </TableCell>
 
         <StatsDisplay
