@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,7 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Lock, Mail } from "lucide-react";
-import { normalizeEmail } from "@/utils/validation";
+import { clearAuthSession, loginWithEmail } from "@/utils/auth";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -21,26 +20,7 @@ const Login = () => {
   });
 
   useEffect(() => {
-    const clearSession = async () => {
-      try {
-        // Clear any existing session data
-        localStorage.removeItem('supabase.auth.token');
-        sessionStorage.clear();
-        
-        // Force sign out to clear any existing session
-        await supabase.auth.signOut({ scope: 'global' });
-        
-        // Double check session is cleared
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          await supabase.auth.signOut();
-        }
-      } catch (error) {
-        console.error('Session cleanup error:', error);
-      }
-    };
-
-    clearSession();
+    clearAuthSession();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -49,43 +29,17 @@ const Login = () => {
     setError(null);
 
     try {
-      // Ensure we're starting with a clean session
-      await supabase.auth.signOut();
-
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email: normalizeEmail(formData.email),
-        password: formData.password,
+      await loginWithEmail(formData.email, formData.password);
+      
+      toast({
+        title: "Welcome back!",
+        description: "You have successfully logged in.",
       });
-
-      if (signInError) {
-        let errorMessage = "Invalid email or password. Please check your credentials and try again.";
-        
-        if (signInError.message.includes("Email not confirmed")) {
-          errorMessage = "Please confirm your email address before logging in.";
-        }
-        
-        setError(errorMessage);
-        return;
-      }
-
-      if (data.user) {
-        // Verify the session was created successfully
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError || !session) {
-          setError("Failed to establish session. Please try again.");
-          return;
-        }
-
-        toast({
-          title: "Welcome back!",
-          description: "You have successfully logged in.",
-        });
-        navigate("/dashboard");
-      }
+      
+      navigate("/predict");
     } catch (error: any) {
       console.error("Login error:", error);
-      setError("An unexpected error occurred. Please try again.");
+      setError(error.message || "An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
