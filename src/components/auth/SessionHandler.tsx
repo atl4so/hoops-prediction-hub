@@ -20,10 +20,8 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
       try {
         console.log('Checking session...'); // Debug log
         
-        // Clear any stale session data first
         if (!mounted) return;
-        await clearAuthSession();
-        
+
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -31,6 +29,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
           if (mounted) {
             setIsAuthenticated(false);
             setIsLoading(false);
+            await clearAuthSession();
           }
           return;
         }
@@ -45,7 +44,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
         }
 
         // Verify the session is valid
-        const { data: user, error: userError } = await supabase.auth.getUser();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
         
         if (userError || !user) {
           console.error('User verification failed:', userError);
@@ -79,7 +78,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
       
       console.log('Auth state changed:', event, session?.user?.id);
       
-      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+      if (event === 'SIGNED_OUT') {
         setIsAuthenticated(false);
         queryClient.clear();
         await clearAuthSession();
