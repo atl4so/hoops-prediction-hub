@@ -1,7 +1,8 @@
-import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal, Percent, Home, ExternalLink } from "lucide-react";
+import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal, Home } from "lucide-react";
 import { StatsGrid } from "./StatsGrid";
 import { useState } from "react";
 import { WinnerPredictionsDialog } from "./WinnerPredictionsDialog";
+import { HomeAwayPredictionsDialog } from "./HomeAwayPredictionsDialog";
 
 interface StatsListProps {
   totalPoints: number;
@@ -42,6 +43,7 @@ export function StatsList({
   userId,
 }: StatsListProps) {
   const [showWinnerDialog, setShowWinnerDialog] = useState(false);
+  const [showHomeAwayDialog, setShowHomeAwayDialog] = useState(false);
 
   // Calculate percentages safely
   const winnerPercentage = winnerPredictionsTotal > 0
@@ -76,7 +78,7 @@ export function StatsList({
       description: `Your position in Round ${currentRoundRank?.roundName} leaderboard`,
     },
     {
-      icon: Percent,
+      icon: Target,
       label: "Winner Prediction %",
       value: `${winnerPercentage}%`,
       description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} games`,
@@ -84,15 +86,10 @@ export function StatsList({
     },
     {
       icon: Home,
-      label: "Home Winner %",
-      value: `${homeWinnerPercentage}%`,
-      description: `Correctly predicted ${homeWinnerPredictionsCorrect} home wins out of ${homeWinnerPredictionsTotal}`,
-    },
-    {
-      icon: ExternalLink,
-      label: "Away Winner %",
-      value: `${awayWinnerPercentage}%`,
-      description: `Correctly predicted ${awayWinnerPredictionsCorrect} away wins out of ${awayWinnerPredictionsTotal}`,
+      label: "Home/Away Winner %",
+      value: `${homeWinnerPercentage}% / ${awayWinnerPercentage}%`,
+      description: `Home: ${homeWinnerPredictionsCorrect}/${homeWinnerPredictionsTotal} | Away: ${awayWinnerPredictionsCorrect}/${awayWinnerPredictionsTotal}`,
+      onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
     },
     {
       icon: Target,
@@ -118,11 +115,18 @@ export function StatsList({
     <>
       <StatsGrid stats={stats} />
       {userId && (
-        <WinnerPredictionsDialog
-          isOpen={showWinnerDialog}
-          onOpenChange={setShowWinnerDialog}
-          userId={userId}
-        />
+        <>
+          <WinnerPredictionsDialog
+            isOpen={showWinnerDialog}
+            onOpenChange={setShowWinnerDialog}
+            userId={userId}
+          />
+          <HomeAwayPredictionsDialog
+            isOpen={showHomeAwayDialog}
+            onOpenChange={setShowHomeAwayDialog}
+            userId={userId}
+          />
+        </>
       )}
     </>
   );
