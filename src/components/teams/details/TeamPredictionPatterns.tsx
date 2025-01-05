@@ -28,14 +28,12 @@ export function TeamPredictionPatterns({ stats }: TeamPredictionPatternsProps) {
           value={stats?.underdog_wins || 0}
           description={`Average margin: ${formatMargin(stats?.avg_upset_margin)}`}
           highlight={true}
-          tooltip="Games won when less than 50% of users predicted a win. These are unexpected victories!"
         />
         <StatCard
           icon={Target}
           label="Unexpected Losses"
           value={stats?.unexpected_losses || 0}
           description={`Average margin: ${formatMargin(stats?.avg_loss_margin)}`}
-          tooltip="Games lost when more than 50% of users predicted a win. These are surprising defeats!"
         />
       </div>
 
@@ -48,11 +46,11 @@ export function TeamPredictionPatterns({ stats }: TeamPredictionPatternsProps) {
               <span className="font-medium">{calculatePercentage(stats?.underdog_wins || 0, stats?.total_games || 0)}</span>
             </div>
             <div className="flex justify-between items-center text-sm">
-              <span className="text-muted-foreground">Users who predicted against:</span>
-              <span className="font-medium">{Math.round(100 - (stats?.percentage_favoring_team || 0))}%</span>
+              <span className="text-muted-foreground">Users who predicted win:</span>
+              <span className="font-medium">{Math.round(stats?.percentage_favoring_team || 0)}%</span>
             </div>
             <div className="text-xs text-muted-foreground">
-              These wins occurred when less than 50% of users predicted victory
+              These are wins that occurred when less than 50% of users predicted this team would win
             </div>
           </div>
         </div>
@@ -65,11 +63,11 @@ export function TeamPredictionPatterns({ stats }: TeamPredictionPatternsProps) {
               <span className="font-medium">{calculatePercentage(stats?.unexpected_losses || 0, stats?.total_games || 0)}</span>
             </div>
             <div className="flex justify-between items-center text-sm">
-              <span className="text-muted-foreground">Users who predicted victory:</span>
+              <span className="text-muted-foreground">Users who predicted win:</span>
               <span className="font-medium">{Math.round(stats?.percentage_favoring_team || 0)}%</span>
             </div>
             <div className="text-xs text-muted-foreground">
-              These losses happened when more than 50% of users predicted victory
+              These are losses that happened when more than 50% of users predicted this team would win
             </div>
           </div>
         </div>
