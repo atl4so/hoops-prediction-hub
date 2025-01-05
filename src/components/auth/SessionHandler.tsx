@@ -3,7 +3,6 @@ import { QueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { clearAuthSession } from '@/utils/auth';
 import { toast } from "sonner";
-import type { AuthError } from '@supabase/supabase-js';
 
 interface SessionHandlerProps {
   children: React.ReactNode;
@@ -18,33 +17,14 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
     let mounted = true;
     let authListener: { subscription: { unsubscribe: () => void } } | null = null;
 
-    const handleSessionError = async (error?: AuthError) => {
-      console.log('Handling session error...', error);
-      if (!mounted) return;
-
-      setIsAuthenticated(false);
-      setIsLoading(false);
-      
-      try {
+    const handleSessionError = async () => {
+      console.log('Handling session error...');
+      if (mounted) {
+        setIsAuthenticated(false);
+        setIsLoading(false);
         await clearAuthSession();
         queryClient.clear();
         toast.error("Session expired. Please log in again.");
-      } catch (clearError) {
-        console.error('Error clearing session:', clearError);
-        // Even if clearing fails, we want to ensure the user is logged out in the UI
-        setIsAuthenticated(false);
-        setIsLoading(false);
-      }
-    };
-
-    const verifySession = async () => {
-      try {
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (userError) throw userError;
-        return !!user;
-      } catch (error) {
-        console.error('Session verification error:', error);
-        return false;
       }
     };
 
@@ -55,7 +35,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
         
         if (error) {
           console.error('Session error:', error);
-          await handleSessionError(error);
+          await handleSessionError();
           return;
         }
 
@@ -68,10 +48,10 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
           return;
         }
 
-        // Additional verification step
-        const isValid = await verifySession();
-        if (!isValid) {
-          console.error('Session verification failed');
+        // Verify the session is still valid
+        const { error: verifyError } = await supabase.auth.getUser();
+        if (verifyError) {
+          console.error('Session verification error:', verifyError);
           await handleSessionError();
           return;
         }
@@ -87,48 +67,37 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
       }
     };
 
+    // Initial session check
+    checkSession();
+
+    // Set up auth state change listener
     const setupAuthListener = async () => {
       const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
         if (!mounted) return;
         
         console.log('Auth state changed:', event, session?.user?.id);
         
-        switch (event) {
-          case 'SIGNED_OUT':
-            setIsAuthenticated(false);
+        if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+          setIsAuthenticated(false);
+          setIsLoading(false);
+          queryClient.clear();
+        } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          if (session) {
+            setIsAuthenticated(true);
             setIsLoading(false);
-            queryClient.clear();
-            break;
-          
-          case 'SIGNED_IN':
-          case 'TOKEN_REFRESHED':
-            if (session) {
-              const isValid = await verifySession();
-              if (isValid) {
-                setIsAuthenticated(true);
-                setIsLoading(false);
-                queryClient.invalidateQueries();
-              } else {
-                await handleSessionError();
-              }
-            } else {
-              await handleSessionError();
-            }
-            break;
-          
-          default:
-            // Handle other events if needed
-            break;
+            queryClient.invalidateQueries();
+          } else {
+            await handleSessionError();
+          }
         }
       });
       
       authListener = data;
     };
 
-    // Initial session check
-    checkSession();
     setupAuthListener();
 
+    // Cleanup function
     return () => {
       mounted = false;
       if (authListener) {
