@@ -28,7 +28,6 @@ export function ProfileMenu() {
       const { error } = await supabase.auth.signOut();
       if (error) {
         if (error.message.includes('session_not_found')) {
-          // If session is not found, clear local storage and redirect
           localStorage.clear();
           sessionStorage.clear();
           navigate("/login");
@@ -40,7 +39,6 @@ export function ProfileMenu() {
     } catch (error) {
       console.error('Logout error:', error);
       toast.error("Failed to log out. Please try again.");
-      // Force redirect to login on critical errors
       localStorage.clear();
       sessionStorage.clear();
       navigate("/login");
@@ -48,7 +46,6 @@ export function ProfileMenu() {
   };
 
   if (!session) {
-    // If no session, redirect to login
     navigate("/login");
     return null;
   }
@@ -71,7 +68,7 @@ export function ProfileMenu() {
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end" forceMount>
+        <DropdownMenuContent className="w-56 bg-white shadow-lg" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none">

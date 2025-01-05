@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { CollapsibleRoundSection } from "@/components/dashboard/CollapsibleRoundSection";
 import { Button } from "@/components/ui/button";
 import { LogIn } from "lucide-react";
-import { RoundSelector } from "@/components/ui/round-selector";
+import { RoundSelector } from "@/components/dashboard/predictions/RoundSelector";
 
 export default function MyPredictions() {
   const session = useSession();
@@ -59,7 +59,6 @@ export default function MyPredictions() {
           .eq("user_id", session.user.id)
           .order('created_at', { ascending: false });
 
-        // Add round filter if a round is selected
         if (selectedRound) {
           query.eq('game.round_id', selectedRound);
         }
@@ -68,8 +67,7 @@ export default function MyPredictions() {
 
         if (error) throw error;
 
-        // Transform the data to ensure game_results is always an array
-        const transformedPredictions = data.map(pred => ({
+        const transformedPredictions = (data || []).map(pred => ({
           id: pred.id,
           game: {
             ...pred.game,

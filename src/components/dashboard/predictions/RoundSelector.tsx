@@ -23,7 +23,7 @@ export function RoundSelector({ selectedRound, onRoundChange, className }: Round
       const { data, error } = await supabase
         .from("rounds")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data;
@@ -41,12 +41,14 @@ export function RoundSelector({ selectedRound, onRoundChange, className }: Round
 
   return (
     <Select value={selectedRound} onValueChange={onRoundChange}>
-      <SelectTrigger className={cn(className)}>
-        <SelectValue placeholder="Select a round" />
+      <SelectTrigger className={cn("w-full bg-white", className)}>
+        <SelectValue placeholder="Select a round">
+          {selectedRound && rounds.find(r => r.id === selectedRound)?.name}
+        </SelectValue>
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="bg-white shadow-lg border z-50">
         {rounds?.map((round) => (
-          <SelectItem key={round.id} value={round.id}>
+          <SelectItem key={round.id} value={round.id} className="cursor-pointer">
             Round {round.name}
           </SelectItem>
         ))}
