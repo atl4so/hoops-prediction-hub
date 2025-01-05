@@ -9,7 +9,7 @@ interface TeamOverviewProps {
 }
 
 export function TeamOverview({ stats, distribution }: TeamOverviewProps) {
-  const StatCard = ({ icon: Icon, label, value, predictions, tooltip, className = "" }) => (
+  const StatCard = ({ icon: Icon, label, value, gamesPlayed, tooltip, className = "" }) => (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
@@ -24,9 +24,9 @@ export function TeamOverview({ stats, distribution }: TeamOverviewProps) {
             <div>
               <p className="text-sm text-muted-foreground">{label}</p>
               <p className="text-xl font-bold">{value}</p>
-              {predictions && (
+              {gamesPlayed && (
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Based on {predictions} predictions
+                  Based on {gamesPlayed} games
                 </p>
               )}
             </div>
@@ -39,29 +39,47 @@ export function TeamOverview({ stats, distribution }: TeamOverviewProps) {
     </TooltipProvider>
   );
 
+  // Calculate success rates
+  const calculateSuccessRate = (wins: number, total: number) => {
+    if (!total) return "N/A";
+    return `${Math.round((wins / total) * 100)}%`;
+  };
+
+  const totalGames = stats?.total_games || 0;
+  const homeGames = stats?.home_games || 0;
+  const awayGames = stats?.away_games || 0;
+
+  // Calculate wins from the distribution data
+  const totalWins = distribution?.reduce((acc, curr) => {
+    return acc + (curr.win_percentage * totalGames / 100);
+  }, 0) || 0;
+
+  const homeWins = Math.round(totalWins * (stats?.home_success_rate || 0) / 100);
+  const awayWins = Math.round(totalWins * (stats?.away_success_rate || 0) / 100);
+
   return (
     <div className="space-y-6 py-4">
       <div className="grid gap-4 sm:grid-cols-3">
         <StatCard
           icon={Trophy}
           label="Overall Success"
-          value={`${stats?.overall_success_rate || 0}%`}
-          predictions={stats?.total_predictions}
-          tooltip="Percentage of users who correctly predicted this team's game results across all matches. This includes both home and away games."
+          value={calculateSuccessRate(totalWins, totalGames)}
+          gamesPlayed={totalGames}
+          tooltip={`Won ${Math.round(totalWins)} out of ${totalGames} games played`}
         />
         <StatCard
           icon={Home}
           label="Home Success"
-          value={stats?.home_success_rate === null ? "N/A" : `${stats?.home_success_rate || 0}%`}
-          predictions={stats?.home_games ? stats?.total_predictions / (stats?.home_games + stats?.away_games) * stats?.home_games : 0}
-          tooltip="Percentage of users who correctly predicted this team's home game results. Shows N/A if no home games have been played yet."
+          value={calculateSuccessRate(homeWins, homeGames)}
+          gamesPlayed={homeGames}
+          tooltip={`Won ${homeWins} out of ${homeGames} home games`}
         />
         <StatCard
           icon={Plane}
           label="Away Success"
-          value={stats?.away_success_rate === null ? "N/A" : `${stats?.away_success_rate || 0}%`}
-          predictions={stats?.away_games ? stats?.total_predictions / (stats?.home_games + stats?.away_games) * stats?.away_games : 0}
-          tooltip="Percentage of users who correctly predicted this team's away game results. Shows N/A if no away games have been played yet."
+          value={calculateSuccessRate(awayWins, awayGames)}
+          gamesPlayed={awayGames}
+          tooltip={`Won ${awayWins} out of ${awayGames} away games`}
         />
       </div>
 
