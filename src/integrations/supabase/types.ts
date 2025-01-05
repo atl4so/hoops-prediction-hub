@@ -186,6 +186,8 @@ export type Database = {
           is_admin: boolean | null
           lowest_game_points: number | null
           lowest_round_points: number | null
+          over_under_predictions_correct: number | null
+          over_under_predictions_total: number | null
           points_per_game: number | null
           total_points: number | null
           total_predictions: number | null
@@ -204,6 +206,8 @@ export type Database = {
           is_admin?: boolean | null
           lowest_game_points?: number | null
           lowest_round_points?: number | null
+          over_under_predictions_correct?: number | null
+          over_under_predictions_total?: number | null
           points_per_game?: number | null
           total_points?: number | null
           total_predictions?: number | null
@@ -222,6 +226,8 @@ export type Database = {
           is_admin?: boolean | null
           lowest_game_points?: number | null
           lowest_round_points?: number | null
+          over_under_predictions_correct?: number | null
+          over_under_predictions_total?: number | null
           points_per_game?: number | null
           total_points?: number | null
           total_predictions?: number | null

@@ -38,6 +38,8 @@ export interface UserProfile {
   lowest_round_points?: number;
   winner_predictions_correct?: number;
   winner_predictions_total?: number;
+  over_under_predictions_correct?: number;
+  over_under_predictions_total?: number;
 }
 
 export interface RoundRank {
@@ -59,6 +61,8 @@ export interface StatsListProps {
   currentRoundRank?: { rank: number | null; isCurrent: boolean; roundName: string };
   winnerPredictionsCorrect?: number;
   winnerPredictionsTotal?: number;
+  overUnderPredictionsCorrect?: number;
+  overUnderPredictionsTotal?: number;
   userId?: string;
 }
 

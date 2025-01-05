@@ -1,4 +1,4 @@
-import { Trophy, Target, TrendingUp, ArrowUp, ArrowDown, Crown, Medal, Percent } from "lucide-react";
+import { Trophy, Target, TrendingUp, ArrowUp, ArrowDown, Crown, Medal, Percent, Scale } from "lucide-react";
 import { StatCard } from "./StatCard";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,8 @@ interface StatsListProps {
   currentRoundRank?: { rank: number | null; isCurrent: boolean; roundName: string };
   winnerPredictionsCorrect?: number;
   winnerPredictionsTotal?: number;
+  overUnderPredictionsCorrect?: number;
+  overUnderPredictionsTotal?: number;
   userId?: string;
 }
 
@@ -40,6 +42,8 @@ export function StatsList({
   currentRoundRank,
   winnerPredictionsCorrect = 0,
   winnerPredictionsTotal = 0,
+  overUnderPredictionsCorrect = 0,
+  overUnderPredictionsTotal = 0,
   userId,
 }: StatsListProps) {
   const [showAllCards, setShowAllCards] = useState(false);
@@ -48,6 +52,10 @@ export function StatsList({
 
   const winnerPercentage = winnerPredictionsTotal > 0
     ? Math.round((winnerPredictionsCorrect / winnerPredictionsTotal) * 100)
+    : 0;
+
+  const overUnderPercentage = overUnderPredictionsTotal > 0
+    ? Math.round((overUnderPredictionsCorrect / overUnderPredictionsTotal) * 100)
     : 0;
 
   const allStats = [
@@ -75,6 +83,12 @@ export function StatsList({
       value: `${winnerPercentage}%`,
       description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} games`,
       onClick: userId ? () => setShowWinnerDialog(true) : undefined
+    },
+    {
+      icon: Scale,
+      label: "Over/Under %",
+      value: `${overUnderPercentage}%`,
+      description: `Correctly predicted ${overUnderPredictionsCorrect} over/under out of ${overUnderPredictionsTotal} games`,
     },
     {
       icon: Target,
