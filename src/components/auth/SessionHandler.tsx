@@ -20,17 +20,24 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
     const checkSession = async () => {
       try {
         console.log('Checking session...');
+        const { data: { session }, error } = await supabase.auth.getSession();
         
-        if (!mounted) return;
-
-        const session = await verifySession();
-        
-        if (!session) {
-          console.log('No valid session found');
+        if (error) {
+          console.error('Session error:', error);
           if (mounted) {
             setIsAuthenticated(false);
             setIsLoading(false);
             await clearAuthSession();
+            toast.error("Session error. Please try logging in again.");
+          }
+          return;
+        }
+
+        if (!session) {
+          console.log('No session found');
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsLoading(false);
           }
           return;
         }
@@ -65,23 +72,14 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
         setIsLoading(false);
         queryClient.clear();
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        try {
-          const validSession = await verifySession();
-          if (validSession) {
-            setIsAuthenticated(true);
-            setIsLoading(false);
-            queryClient.invalidateQueries();
-          } else {
-            setIsAuthenticated(false);
-            setIsLoading(false);
-            await clearAuthSession();
-          }
-        } catch (error) {
-          console.error('Session verification error:', error);
+        if (session) {
+          setIsAuthenticated(true);
+          setIsLoading(false);
+          queryClient.invalidateQueries();
+        } else {
           setIsAuthenticated(false);
           setIsLoading(false);
           await clearAuthSession();
-          toast.error("Session verification failed. Please try logging in again.");
         }
       }
     });
@@ -93,17 +91,14 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
     };
   }, [queryClient]);
 
-  console.log('SessionHandler state:', { isLoading, isAuthenticated });
-
-  // Return children immediately if not loading, regardless of authentication state
-  if (!isLoading) {
-    return <>{children}</>;
+  // Show loading spinner during initial load
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
-  // Show loading spinner only during initial load
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-    </div>
-  );
+  return <>{children}</>;
 };
