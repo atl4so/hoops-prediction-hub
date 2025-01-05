@@ -70,7 +70,7 @@ export function StatsList({
     {
       icon: Target,
       label: "Winner Prediction",
-      value: `${winnerPredictionsTotal > 0 ? Math.round((winnerPredictionsCorrect / winnerPredictionsTotal) * 100) : 0}%`,
+      value: `${winnerPredictionsCorrect}/${winnerPredictionsTotal}`,
       description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} games`,
       onClick: userId ? () => setShowWinnerDialog(true) : undefined
     },
@@ -81,11 +81,11 @@ export function StatsList({
         <div className="flex items-center justify-center gap-4">
           <div className="flex flex-col items-center gap-1">
             <Home className="h-4 w-4 text-primary" />
-            <span className="text-sm">{homeWinnerPredictionsTotal > 0 ? Math.round((homeWinnerPredictionsCorrect / homeWinnerPredictionsTotal) * 100) : 0}</span>
+            <span className="text-sm">{homeWinnerPredictionsCorrect}/{homeWinnerPredictionsTotal}</span>
           </div>
           <div className="flex flex-col items-center gap-1">
             <Plane className="h-4 w-4 text-primary" />
-            <span className="text-sm">{awayWinnerPredictionsTotal > 0 ? Math.round((awayWinnerPredictionsCorrect / awayWinnerPredictionsTotal) * 100) : 0}</span>
+            <span className="text-sm">{awayWinnerPredictionsCorrect}/{awayWinnerPredictionsTotal}</span>
           </div>
         </div>
       ),
