@@ -81,8 +81,8 @@ export function StatsList({
     {
       icon: Home,
       label: "Home/Away",
-      value: `${homeWinnerPredictionsCorrect}/${homeWinnerPredictionsTotal} | ${awayWinnerPredictionsCorrect}/${awayWinnerPredictionsTotal}`,
-      description: `Home: ${calculatePercentage(homeWinnerPredictionsCorrect, homeWinnerPredictionsTotal)}% | Away: ${calculatePercentage(awayWinnerPredictionsCorrect, awayWinnerPredictionsTotal)}%`,
+      value: `${calculatePercentage(homeWinnerPredictionsCorrect, homeWinnerPredictionsTotal)}/${calculatePercentage(awayWinnerPredictionsCorrect, awayWinnerPredictionsTotal)}%`,
+      description: `Home wins: ${homeWinnerPredictionsCorrect} of ${homeWinnerPredictionsTotal} | Away wins: ${awayWinnerPredictionsCorrect} of ${awayWinnerPredictionsTotal}`,
       onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
     },
     {
