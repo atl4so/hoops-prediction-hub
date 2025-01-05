@@ -1,8 +1,7 @@
-import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal, Home, Plane } from "lucide-react";
+import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal } from "lucide-react";
 import { StatsGrid } from "./StatsGrid";
 import { useState } from "react";
 import { WinnerPredictionsDialog } from "./WinnerPredictionsDialog";
-import { HomeAwayPredictionsDialog } from "./HomeAwayPredictionsDialog";
 import { cn } from "@/lib/utils";
 
 interface StatsListProps {
@@ -15,10 +14,6 @@ interface StatsListProps {
   currentRoundRank?: { rank: number | null; isCurrent: boolean; roundName: string };
   winnerPredictionsCorrect?: number;
   winnerPredictionsTotal?: number;
-  homeWinnerPredictionsCorrect?: number;
-  homeWinnerPredictionsTotal?: number;
-  awayWinnerPredictionsCorrect?: number;
-  awayWinnerPredictionsTotal?: number;
   userId?: string;
 }
 
@@ -39,14 +34,9 @@ export function StatsList({
   currentRoundRank,
   winnerPredictionsCorrect = 0,
   winnerPredictionsTotal = 0,
-  homeWinnerPredictionsCorrect = 0,
-  homeWinnerPredictionsTotal = 0,
-  awayWinnerPredictionsCorrect = 0,
-  awayWinnerPredictionsTotal = 0,
   userId,
 }: StatsListProps) {
   const [showWinnerDialog, setShowWinnerDialog] = useState(false);
-  const [showHomeAwayDialog, setShowHomeAwayDialog] = useState(false);
 
   const stats = [
     {
@@ -70,27 +60,9 @@ export function StatsList({
     {
       icon: Target,
       label: "Winner Prediction",
-      value: `${winnerPredictionsCorrect}/${winnerPredictionsTotal}`,
+      value: `${winnerPredictionsTotal > 0 ? Math.round((winnerPredictionsCorrect / winnerPredictionsTotal) * 100) : 0}%`,
       description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} games`,
       onClick: userId ? () => setShowWinnerDialog(true) : undefined
-    },
-    {
-      icon: Home,
-      label: "Home/Away",
-      value: (
-        <div className="flex items-center justify-center gap-4">
-          <div className="flex flex-col items-center gap-1">
-            <Home className="h-4 w-4 text-primary" />
-            <span className="text-sm">{homeWinnerPredictionsCorrect}/{homeWinnerPredictionsTotal}</span>
-          </div>
-          <div className="flex flex-col items-center gap-1">
-            <Plane className="h-4 w-4 text-primary" />
-            <span className="text-sm">{awayWinnerPredictionsCorrect}/{awayWinnerPredictionsTotal}</span>
-          </div>
-        </div>
-      ),
-      description: "Home and away prediction accuracy",
-      onClick: userId ? () => setShowHomeAwayDialog(true) : undefined
     },
     {
       icon: Target,
@@ -122,18 +94,11 @@ export function StatsList({
     <>
       <StatsGrid stats={stats} />
       {userId && (
-        <>
-          <WinnerPredictionsDialog
-            isOpen={showWinnerDialog}
-            onOpenChange={setShowWinnerDialog}
-            userId={userId}
-          />
-          <HomeAwayPredictionsDialog
-            isOpen={showHomeAwayDialog}
-            onOpenChange={setShowHomeAwayDialog}
-            userId={userId}
-          />
-        </>
+        <WinnerPredictionsDialog
+          isOpen={showWinnerDialog}
+          onOpenChange={setShowWinnerDialog}
+          userId={userId}
+        />
       )}
     </>
   );
