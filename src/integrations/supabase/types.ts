@@ -425,6 +425,7 @@ export type Database = {
           common_margin_range: string
           common_total_points_range: string
           last_game_result: Json
+          game_result: Json
         }[]
       }
       get_round_rankings: {
