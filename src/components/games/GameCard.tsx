@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { GameInfo } from "./GameInfo";
+import { GameInfo } from "@/components/dashboard/predictions/GameInfo";
 import { PredictionButton } from "./prediction/PredictionButton";
-import { PredictionDialog } from "./prediction/PredictionDialog";
+import { PredictionDialog } from "@/components/games/prediction/PredictionDialog";
 import { PredictionInsightsDialog } from "./prediction/insights/PredictionInsightsDialog";
 import { Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -49,9 +49,11 @@ export function GameCard({ game, userId, isAuthenticated, userPrediction }: Game
               gameId={game.id}
               userId={userId}
               isAuthenticated={isAuthenticated}
-              userPrediction={userPrediction}
+              prediction={userPrediction}
               gameDate={game.game_date}
               onPredictionClick={() => setShowPredictionDialog(true)}
+              homeTeam={game.home_team}
+              awayTeam={game.away_team}
             />
             
             <Button
