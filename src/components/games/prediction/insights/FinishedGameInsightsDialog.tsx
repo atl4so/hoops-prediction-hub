@@ -2,7 +2,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { FinishedGameStats } from "./FinishedGameStats";
-import { FinishedGamePredictions } from "./FinishedGamePredictions";
 
 interface FinishedGameInsightsDialogProps {
   isOpen: boolean;
@@ -29,7 +28,7 @@ export function FinishedGameInsightsDialog({
           prediction_home_score,
           prediction_away_score,
           points_earned,
-          profiles:user_id (
+          profiles (
             display_name,
             avatar_url
           )
@@ -63,10 +62,6 @@ export function FinishedGameInsightsDialog({
         ) : (
           <div className="space-y-6">
             <FinishedGameStats
-              predictions={predictions}
-              finalScore={finalScore}
-            />
-            <FinishedGamePredictions
               predictions={predictions}
               finalScore={finalScore}
             />
