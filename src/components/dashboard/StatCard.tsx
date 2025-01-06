@@ -8,8 +8,6 @@ interface StatCardProps {
   value: string | number;
   description?: string;
   highlight?: boolean;
-  onClick?: () => void;
-  descriptionHighlight?: string;
 }
 
 export function StatCard({ 
@@ -17,42 +15,32 @@ export function StatCard({
   label, 
   value, 
   description,
-  highlight = false,
-  onClick,
-  descriptionHighlight
+  highlight = false 
 }: StatCardProps) {
   return (
-    <Card 
-      className={cn(
-        "group transition-all duration-300",
-        "hover:scale-[1.02] hover:-translate-y-0.5",
-        "bg-[#FFF8F0]/95 backdrop-blur-sm border-neutral-200/30",
-        "shadow-[0_2px_10px_rgba(0,0,0,0.06)]",
-        onClick && "cursor-pointer hover:shadow-lg"
-      )}
-      onClick={onClick}
-    >
-      <CardContent className="p-6">
-        <div className="flex flex-col items-center text-center space-y-3">
+    <Card className={cn(
+      "group transition-all duration-300 hover:shadow-lg border-2",
+      "hover:scale-[1.02] hover:-translate-y-0.5",
+      highlight ? "bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20" : "hover:bg-accent/5",
+    )}>
+      <CardContent className="p-4 sm:p-6">
+        <div className="flex flex-col items-center text-center space-y-4">
           <div className={cn(
-            "rounded-xl p-3 transition-colors duration-300",
-            highlight ? "bg-primary text-primary-foreground" : "bg-orange-500 text-white"
+            "rounded-xl p-3 sm:p-4 transition-colors duration-300",
+            highlight 
+              ? "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground group-hover:from-primary/90 group-hover:to-primary/70" 
+              : "bg-muted group-hover:bg-muted/80"
           )}>
-            <Icon className="h-6 w-6" />
+            <Icon className="h-6 w-6 sm:h-8 sm:w-8" />
           </div>
-          <div className="space-y-1">
-            <p className="text-base text-black/60 font-medium">{label}</p>
-            <p className="text-3xl font-bold tracking-tight text-black">
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-muted-foreground">{label}</p>
+            <p className="text-2xl sm:text-3xl font-bold tracking-tight animate-fade-in">
               {value}
             </p>
             {description && (
-              <p className="text-sm text-black/50 max-w-[200px] mx-auto leading-relaxed">
+              <p className="text-xs sm:text-sm text-muted-foreground max-w-[200px] mx-auto leading-relaxed">
                 {description}
-                {descriptionHighlight && (
-                  <span className="block text-orange-500 text-xs mt-1 font-medium">
-                    {descriptionHighlight}
-                  </span>
-                )}
               </p>
             )}
           </div>

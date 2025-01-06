@@ -7,6 +7,7 @@ import { useCurrentRoundRank } from "@/components/dashboard/useCurrentRoundRank"
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardStats } from "@/components/dashboard/sections/DashboardStats";
+import { PageHeader } from "@/components/shared/PageHeader";
 
 export default function Overview() {
   const session = useSession();
@@ -42,15 +43,10 @@ export default function Overview() {
   }
 
   return (
-    <div className="container max-w-5xl mx-auto py-8 animate-fade-in space-y-8">
-      <section className="text-center space-y-3">
-        <h1 className="text-4xl font-bold tracking-tight text-black">
-          Overview
-        </h1>
-        <p className="text-lg text-black/60">
-          Track your performance and statistics
-        </p>
-      </section>
+    <div className="container max-w-5xl mx-auto py-8 animate-fade-in">
+      <PageHeader title="Overview">
+        <p className="text-muted-foreground">Track your performance and statistics</p>
+      </PageHeader>
       
       <DashboardStats
         totalPoints={userProfileData?.total_points || 0}

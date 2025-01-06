@@ -39,9 +39,10 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
   const awayWinPercentage = calculatePercentage(user.away_winner_predictions_correct, user.away_winner_predictions_total);
 
   return (
-    <Card className="group hover:shadow-md transition-all duration-300 animate-fade-in bg-white/80 backdrop-blur-sm border-neutral-200/50">
+    <Card className="group hover:shadow-md transition-all duration-300 animate-fade-in">
       <CardContent className="p-5 sm:p-6">
         <div className="space-y-4">
+          {/* Main row with avatar, name, and follow button */}
           <div className="flex items-center gap-4">
             <Avatar 
               className="h-12 w-12 sm:h-14 sm:w-14 ring-2 ring-primary/10 ring-offset-2 ring-offset-background transition-all duration-300 group-hover:ring-primary/20 shrink-0"
@@ -78,6 +79,7 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
             />
           </div>
 
+          {/* Collapsible stats section */}
           <Collapsible open={isOpen} onOpenChange={setIsOpen}>
             <CollapsibleTrigger className="w-full flex items-center justify-center py-1 text-muted-foreground hover:text-foreground transition-colors">
               <ChevronDown className={`h-5 w-5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
@@ -87,7 +89,7 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                      <Badge variant="secondary" className="text-xs sm:text-sm bg-white/50 backdrop-blur-sm">
+                      <Badge variant="secondary" className="text-xs sm:text-sm">
                         {user.total_points} pts
                       </Badge>
                     </TooltipTrigger>
@@ -98,7 +100,7 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                      <Badge variant="outline" className="text-xs sm:text-sm border-neutral-200/50">
+                      <Badge variant="outline" className="text-xs sm:text-sm">
                         {user.points_per_game?.toFixed(1)} PPG
                       </Badge>
                     </TooltipTrigger>
@@ -110,7 +112,7 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <Badge variant="secondary" className="text-xs sm:text-sm bg-white/50 backdrop-blur-sm">
+                        <Badge variant="secondary" className="text-xs sm:text-sm">
                           Winner: {winnerPercentage}%
                         </Badge>
                       </TooltipTrigger>
@@ -125,7 +127,7 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <Badge variant="outline" className="text-xs sm:text-sm border-neutral-200/50">
+                        <Badge variant="outline" className="text-xs sm:text-sm">
                           H/A: {homeWinPercentage}%/{awayWinPercentage}%
                         </Badge>
                       </TooltipTrigger>

@@ -49,7 +49,7 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
   };
 
   return (
-    <Card className="game-card w-full h-full flex flex-col bg-white/95 backdrop-blur-sm shadow-lg border-neutral-200/50 hover:shadow-xl transition-all duration-300">
+    <Card className="game-card w-full h-full flex flex-col">
       <CardContent className="p-6 flex-1 flex flex-col">
         <div className="flex flex-col h-full">
           <div className="text-center mb-4">
