@@ -1,76 +1,125 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-// Define Json type locally since it's not exported from supabase types
-type Json = string | number | boolean | null | { [key: string]: Json } | Json[];
-
 interface GameInsights {
   totalPredictions: number;
   homeWinPredictions: number;
   awayWinPredictions: number;
   avgHomeScore: number;
   avgAwayScore: number;
-  marginRange: string;
-  totalPointsRange: string;
-  commonMargin: string;
+  commonMarginRange: string;
+  commonTotalPointsRange: string;
   avgHomeWinMargin: number;
   avgAwayWinMargin: number;
 }
 
-interface RawGameInsights {
-  total_predictions: number;
-  home_win_predictions: number;
-  away_win_predictions: number;
-  avg_home_score: number;
-  avg_away_score: number;
-  common_margin_range: string;
-  common_total_points_range: string;
-  last_game_result: Json;
-  game_result: Json;
-  avg_home_win_margin: number;
-  avg_away_win_margin: number;
-}
-
 export function useGameInsights(gameId: string) {
   return useQuery({
-    queryKey: ['game-insights', gameId],
+    queryKey: ["game-insights", gameId],
     queryFn: async () => {
       console.log('Fetching insights for game:', gameId);
-      
-      const { data, error } = await supabase
-        .rpc('get_game_prediction_insights', {
-          game_id_param: gameId
-        });
+
+      const { data: predictions, error } = await supabase
+        .from("predictions")
+        .select(`
+          prediction_home_score,
+          prediction_away_score
+        `)
+        .eq("game_id", gameId);
 
       if (error) {
-        console.error('Error fetching game insights:', error);
+        console.error('Error fetching predictions:', error);
         throw error;
       }
 
-      console.log('Raw insights data:', data);
-
-      if (!data?.length) {
-        console.log('No insights found for game:', gameId);
+      if (!predictions?.length) {
+        console.log('No predictions found for game:', gameId);
         return null;
       }
 
-      const insights = data[0] as RawGameInsights;
+      console.log('Raw predictions data:', predictions);
+
+      // Calculate insights
+      const totalPredictions = predictions.length;
+      const homeWinPredictions = predictions.filter(
+        p => p.prediction_home_score > p.prediction_away_score
+      ).length;
+      const awayWinPredictions = predictions.filter(
+        p => p.prediction_away_score > p.prediction_home_score
+      ).length;
+
+      const avgHomeScore = Number((predictions.reduce(
+        (sum, p) => sum + p.prediction_home_score, 0
+      ) / totalPredictions).toFixed(1));
+
+      const avgAwayScore = Number((predictions.reduce(
+        (sum, p) => sum + p.prediction_away_score, 0
+      ) / totalPredictions).toFixed(1));
+
+      // Calculate margins
+      const margins = predictions.map(p => 
+        Math.abs(p.prediction_home_score - p.prediction_away_score)
+      );
+      const avgMargin = margins.reduce((sum, m) => sum + m, 0) / margins.length;
       
-      console.log('Processing insights:', insights);
+      const commonMarginRange = 
+        avgMargin <= 5 ? 'Close (1-5)' :
+        avgMargin <= 10 ? 'Moderate (6-10)' :
+        'Wide (10+)';
+
+      // Calculate total points range
+      const totalPoints = predictions.map(p => 
+        p.prediction_home_score + p.prediction_away_score
+      );
+      const avgTotal = totalPoints.reduce((sum, t) => sum + t, 0) / totalPoints.length;
+      
+      const commonTotalPointsRange = 
+        avgTotal < 150 ? 'Under 150' :
+        avgTotal < 165 ? '150-165' :
+        'Over 165';
+
+      // Calculate average margins for home/away wins
+      const homeWinMargins = predictions
+        .filter(p => p.prediction_home_score > p.prediction_away_score)
+        .map(p => p.prediction_home_score - p.prediction_away_score);
+      
+      const awayWinMargins = predictions
+        .filter(p => p.prediction_away_score > p.prediction_home_score)
+        .map(p => p.prediction_away_score - p.prediction_home_score);
+
+      const avgHomeWinMargin = homeWinMargins.length
+        ? Number((homeWinMargins.reduce((sum, m) => sum + m, 0) / homeWinMargins.length).toFixed(1))
+        : 0;
+
+      const avgAwayWinMargin = awayWinMargins.length
+        ? Number((awayWinMargins.reduce((sum, m) => sum + m, 0) / awayWinMargins.length).toFixed(1))
+        : 0;
+
+      console.log('Calculated insights:', {
+        totalPredictions,
+        homeWinPredictions,
+        awayWinPredictions,
+        avgHomeScore,
+        avgAwayScore,
+        commonMarginRange,
+        commonTotalPointsRange,
+        avgHomeWinMargin,
+        avgAwayWinMargin
+      });
 
       return {
-        totalPredictions: insights.total_predictions,
-        homeWinPredictions: insights.home_win_predictions,
-        awayWinPredictions: insights.away_win_predictions,
-        avgHomeScore: insights.avg_home_score,
-        avgAwayScore: insights.avg_away_score,
-        marginRange: insights.common_margin_range,
-        totalPointsRange: insights.common_total_points_range,
-        commonMargin: insights.common_margin_range,
-        avgHomeWinMargin: insights.avg_home_win_margin || 0,
-        avgAwayWinMargin: insights.avg_away_win_margin || 0,
-      } as GameInsights;
+        totalPredictions,
+        homeWinPredictions,
+        awayWinPredictions,
+        avgHomeScore,
+        avgAwayScore,
+        commonMarginRange,
+        commonTotalPointsRange,
+        avgHomeWinMargin,
+        avgAwayWinMargin
+      };
     },
-    enabled: !!gameId,
+    staleTime: 1000 * 30, // 30 seconds
+    refetchInterval: 1000 * 60 // Refetch every minute
   });
 }

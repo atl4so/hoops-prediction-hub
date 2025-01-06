@@ -76,14 +76,14 @@ export function PredictionInsightsDialog({
             awayWinPredictions={insights.awayWinPredictions}
             avgHomeScore={insights.avgHomeScore}
             avgAwayScore={insights.avgAwayScore}
-            commonMargin={insights.commonMargin}
+            commonMargin={insights.commonMarginRange}
             avgHomeWinMargin={insights.avgHomeWinMargin}
             avgAwayWinMargin={insights.avgAwayWinMargin}
           />
 
           <PredictionPatterns
-            marginRange={insights.marginRange}
-            totalPointsRange={insights.totalPointsRange}
+            marginRange={insights.commonMarginRange}
+            totalPointsRange={insights.commonTotalPointsRange}
           />
         </div>
       </DialogContent>
