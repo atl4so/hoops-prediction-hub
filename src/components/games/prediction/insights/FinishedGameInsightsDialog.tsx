@@ -78,7 +78,7 @@ export function FinishedGameInsightsDialog({
   const avgMargin = margins.length > 0 
     ? Math.round(margins.reduce((a, b) => a + b) / margins.length * 10) / 10
     : 0;
-  const commonMargin = `${avgMargin} points`;
+  const commonMargin = avgMargin.toString();  // Just the number, "points" is part of the label
 
   const totalPoints = predictions.map(p => p.prediction_home_score + p.prediction_away_score);
   const minTotal = Math.min(...totalPoints);
