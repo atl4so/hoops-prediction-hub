@@ -78,7 +78,19 @@ export function FinishedGameInsightsDialog({
   const avgMargin = margins.length > 0 
     ? Math.round(margins.reduce((a, b) => a + b) / margins.length * 10) / 10
     : 0;
-  const commonMargin = avgMargin.toString();  // Just the number, "points" is part of the label
+  const commonMargin = avgMargin.toString();
+
+  // Calculate average margins for home/away wins
+  const homeWinPreds = predictions.filter(p => p.prediction_home_score > p.prediction_away_score);
+  const awayWinPreds = predictions.filter(p => p.prediction_home_score < p.prediction_away_score);
+  
+  const avgHomeWinMargin = homeWinPreds.length > 0
+    ? Math.round(homeWinPreds.reduce((sum, p) => sum + (p.prediction_home_score - p.prediction_away_score), 0) / homeWinPreds.length * 10) / 10
+    : 0;
+    
+  const avgAwayWinMargin = awayWinPreds.length > 0
+    ? Math.round(awayWinPreds.reduce((sum, p) => sum + (p.prediction_away_score - p.prediction_home_score), 0) / awayWinPreds.length * 10) / 10
+    : 0;
 
   const totalPoints = predictions.map(p => p.prediction_home_score + p.prediction_away_score);
   const minTotal = Math.min(...totalPoints);
@@ -111,7 +123,9 @@ export function FinishedGameInsightsDialog({
               avgHomeScore,
               avgAwayScore,
               commonMargin,
-              totalPointsRange
+              totalPointsRange,
+              avgHomeWinMargin,
+              avgAwayWinMargin
             }}
             topPredictors={topPredictors}
           />

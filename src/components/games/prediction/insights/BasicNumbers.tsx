@@ -18,8 +18,8 @@ export function BasicNumbers({
   avgHomeScore,
   avgAwayScore,
   commonMargin,
-  avgHomeWinMargin,
-  avgAwayWinMargin,
+  avgHomeWinMargin = 0,
+  avgAwayWinMargin = 0,
 }: BasicNumbersProps) {
   const homeWinPercentage = ((homeWinPredictions / totalPredictions) * 100).toFixed(1);
   const awayWinPercentage = ((awayWinPredictions / totalPredictions) * 100).toFixed(1);
@@ -40,7 +40,7 @@ export function BasicNumbers({
             </div>
             <div className="flex justify-between items-center text-sm pl-4">
               <span className="text-muted-foreground">Avg Margin:</span>
-              <span className="font-medium">{avgHomeWinMargin.toFixed(1)} pts</span>
+              <span className="font-medium">{avgHomeWinMargin ? avgHomeWinMargin.toFixed(1) : '0'} pts</span>
             </div>
           </div>
           
@@ -51,7 +51,7 @@ export function BasicNumbers({
             </div>
             <div className="flex justify-between items-center text-sm pl-4">
               <span className="text-muted-foreground">Avg Margin:</span>
-              <span className="font-medium">{avgAwayWinMargin.toFixed(1)} pts</span>
+              <span className="font-medium">{avgAwayWinMargin ? avgAwayWinMargin.toFixed(1) : '0'} pts</span>
             </div>
           </div>
 
