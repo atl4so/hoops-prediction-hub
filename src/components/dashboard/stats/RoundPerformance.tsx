@@ -81,12 +81,14 @@ export function RoundPerformance({ userId }: RoundPerformanceProps) {
   });
 
   return (
-    <div className="p-6 bg-accent/5 rounded-lg border">
-      <h3 className="text-lg font-semibold mb-4">Round Performance</h3>
+    <div className="p-6 rounded-xl bg-[#FFF8F0]/95 backdrop-blur-sm border border-neutral-200/30 shadow-[0_2px_10px_rgba(0,0,0,0.06)]">
+      <h3 className="text-xl font-semibold mb-4 text-black">Round Performance</h3>
       <div className="space-y-4">
         <Select value={selectedRound} onValueChange={setSelectedRound}>
-          <SelectTrigger className="w-[200px] bg-white">
-            <SelectValue placeholder="Select a round" />
+          <SelectTrigger className="w-full bg-white/80 border-neutral-200/50">
+            <SelectValue placeholder="Select a round">
+              {selectedRound && rounds?.find(r => r.id === selectedRound)?.name}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent className="bg-white border shadow-md z-50">
             {rounds?.map((round) => (
@@ -103,13 +105,13 @@ export function RoundPerformance({ userId }: RoundPerformanceProps) {
 
         {selectedRound && (
           <div className="grid grid-cols-2 gap-4 animate-fade-in">
-            <div className="flex items-center gap-2 bg-background p-4 rounded-lg border">
-              <Target className="h-5 w-5 text-primary" />
+            <div className="flex items-center gap-3 bg-white/80 p-4 rounded-lg border border-neutral-200/50">
+              <Target className="h-5 w-5 text-orange-500" />
               <div>
-                <p className="text-sm text-muted-foreground">Points</p>
-                <p className="text-lg font-semibold">
+                <p className="text-sm text-black/60">Points</p>
+                <p className="text-lg font-semibold text-black">
                   {isLoadingRoundStats ? (
-                    <span className="text-muted-foreground">Loading...</span>
+                    <span className="text-black/40">Loading...</span>
                   ) : (
                     roundStats?.points || 0
                   )}
@@ -117,15 +119,15 @@ export function RoundPerformance({ userId }: RoundPerformanceProps) {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 bg-background p-4 rounded-lg border">
-              <Trophy className="h-5 w-5 text-primary" />
+            <div className="flex items-center gap-3 bg-white/80 p-4 rounded-lg border border-neutral-200/50">
+              <Trophy className="h-5 w-5 text-orange-500" />
               <div>
-                <p className="text-sm text-muted-foreground">Rank</p>
-                <p className="text-lg font-semibold">
+                <p className="text-sm text-black/60">Rank</p>
+                <p className="text-lg font-semibold text-black">
                   {isLoadingRoundStats ? (
-                    <span className="text-muted-foreground">Loading...</span>
+                    <span className="text-black/40">Loading...</span>
                   ) : roundStats?.rank ? (
-                    <>{roundStats.rank}<span className="text-sm text-muted-foreground">/{roundStats.totalParticipants}</span></>
+                    <>{roundStats.rank}<span className="text-sm text-black/40">/{roundStats.totalParticipants}</span></>
                   ) : (
                     "-"
                   )}
