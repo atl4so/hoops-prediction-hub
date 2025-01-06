@@ -11,6 +11,7 @@ interface PredictionButtonProps {
   isAuthenticated: boolean;
   gameDate: string;
   gameId: string;
+  userId?: string;
   prediction?: {
     prediction_home_score: number;
     prediction_away_score: number;
@@ -33,6 +34,7 @@ export function PredictionButton({
   isAuthenticated,
   gameDate,
   gameId,
+  userId,
   prediction,
   gameResult,
   homeTeam,
@@ -71,10 +73,6 @@ export function PredictionButton({
     setShowPredictionDialog(true);
   };
 
-  const handleViewInsights = () => {
-    setShowInsights(true);
-  };
-
   return (
     <div className="space-y-3">
       <Button 
@@ -91,7 +89,7 @@ export function PredictionButton({
       <Button 
         variant="outline" 
         className="w-full" 
-        onClick={handleViewInsights}
+        onClick={() => setShowInsights(true)}
       >
         <Eye className="w-4 h-4 mr-2" />
         {gameResult?.is_final ? "How Others Predicted" : "How Others Predict"}
@@ -102,6 +100,8 @@ export function PredictionButton({
         onOpenChange={setShowPredictionDialog}
         gameId={gameId}
         gameDate={gameDate}
+        homeTeam={homeTeam}
+        awayTeam={awayTeam}
       />
 
       {gameResult?.is_final ? (

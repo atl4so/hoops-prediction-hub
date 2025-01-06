@@ -24,11 +24,11 @@ export function useUpcomingGameInsights(gameId: string) {
           prediction_away_score
         `)
         .eq('game_id', gameId)
-        // Only get predictions for games that haven't started
         .not('game_id', 'in', (
           supabase
             .from('game_results')
             .select('game_id')
+            .eq('is_final', true)
         ));
 
       if (error) {
@@ -50,22 +50,13 @@ export function useUpcomingGameInsights(gameId: string) {
 
       // Calculate margin ranges
       const margins = predictions.map(p => Math.abs(p.prediction_home_score - p.prediction_away_score));
-      const marginRange = getMarginRange(Math.round(margins.reduce((a, b) => a + b) / margins.length));
+      const avgMargin = Math.round(margins.reduce((a, b) => a + b) / margins.length);
+      const marginRange = getMarginRange(avgMargin);
 
       // Calculate total points ranges
       const totalPoints = predictions.map(p => p.prediction_home_score + p.prediction_away_score);
       const avgTotalPoints = Math.round(totalPoints.reduce((a, b) => a + b) / totalPoints.length);
       const totalPointsRange = getTotalPointsRange(avgTotalPoints);
-
-      console.log('Processed upcoming game insights:', {
-        totalPredictions,
-        homeWinPredictions,
-        awayWinPredictions,
-        avgHomeScore,
-        avgAwayScore,
-        marginRange,
-        totalPointsRange
-      });
 
       return {
         totalPredictions,
@@ -78,7 +69,7 @@ export function useUpcomingGameInsights(gameId: string) {
       };
     },
     enabled: !!gameId,
-    refetchInterval: 30000 // Refetch every 30 seconds to get new predictions
+    refetchInterval: 30000 // Refetch every 30 seconds
   });
 }
 
