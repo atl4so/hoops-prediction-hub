@@ -24,51 +24,21 @@ export function MainLayout({ children }: MainLayoutProps) {
   });
 
   return (
-    <div className="min-h-screen flex flex-col w-full relative">
+    <div className="min-h-screen flex flex-col w-full relative overflow-hidden">
       {activeBackground?.url && (
         <div 
-          style={{ 
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            width: '100vw',
-            height: '100vh',
-            overflow: 'hidden',
-            pointerEvents: 'none',
+          className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none"
+          style={{
             zIndex: -1,
-            transform: 'translateZ(0)',
-            backfaceVisibility: 'hidden',
-            perspective: 1000,
-            willChange: 'transform',
           }}
         >
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'black',
-            }}
-          />
+          <div className="absolute inset-0 bg-black" />
           <img 
             src={activeBackground.url} 
             alt="Background" 
+            className="absolute w-full h-full object-cover"
             style={{ 
-              position: 'fixed',
-              top: '-20vh',
-              left: '-20vw',
-              width: '140vw',
-              height: '140vh',
-              objectFit: 'cover',
               opacity: activeBackground.opacity / 100,
-              pointerEvents: 'none',
-              transform: 'translateZ(0)',
-              backfaceVisibility: 'hidden',
-              willChange: 'transform',
             }}
           />
         </div>
