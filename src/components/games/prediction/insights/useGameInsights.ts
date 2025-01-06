@@ -41,20 +41,22 @@ export function useGameInsights(gameId: string) {
       const marginRange = Math.abs(avgHomeScore - avgAwayScore).toFixed(1);
       const commonMargin = `${marginRange} points`;
 
-      // Calculate average margin for home wins
-      const homeWinMargins = predictions
+      // Calculate average predicted margin for home win predictions
+      const homeWinPredictedMargins = predictions
         .filter(p => p.prediction_home_score > p.prediction_away_score)
         .map(p => p.prediction_home_score - p.prediction_away_score);
-      const avgHomeWinMargin = homeWinMargins.length > 0
-        ? (homeWinMargins.reduce((a, b) => a + b, 0) / homeWinMargins.length).toFixed(1)
+      
+      const avgHomeWinPredictedMargin = homeWinPredictedMargins.length > 0
+        ? (homeWinPredictedMargins.reduce((a, b) => a + b, 0) / homeWinPredictedMargins.length).toFixed(1)
         : "0.0";
 
-      // Calculate average margin for away wins
-      const awayWinMargins = predictions
+      // Calculate average predicted margin for away win predictions
+      const awayWinPredictedMargins = predictions
         .filter(p => p.prediction_home_score < p.prediction_away_score)
         .map(p => p.prediction_away_score - p.prediction_home_score);
-      const avgAwayWinMargin = awayWinMargins.length > 0
-        ? (awayWinMargins.reduce((a, b) => a + b, 0) / awayWinMargins.length).toFixed(1)
+      
+      const avgAwayWinPredictedMargin = awayWinPredictedMargins.length > 0
+        ? (awayWinPredictedMargins.reduce((a, b) => a + b, 0) / awayWinPredictedMargins.length).toFixed(1)
         : "0.0";
 
       // Calculate total points range
@@ -72,8 +74,8 @@ export function useGameInsights(gameId: string) {
         marginRange,
         totalPointsRange,
         commonMargin,
-        homeWinMargin: `${avgHomeWinMargin} points`,
-        awayWinMargin: `${avgAwayWinMargin} points`,
+        homeWinMargin: `${avgHomeWinPredictedMargin} points`,
+        awayWinMargin: `${avgAwayWinPredictedMargin} points`,
       };
     },
     enabled: !!gameId,

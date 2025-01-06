@@ -48,13 +48,13 @@ export function BasicNumbers({
             </div>
             {homeWinMargin && (
               <div className="flex justify-between items-center mt-2">
-                <span className="text-muted-foreground pl-4">• When Home Wins:</span>
+                <span className="text-muted-foreground pl-4">• Average Predicted Home Win By:</span>
                 <span className="font-semibold">{homeWinMargin}</span>
               </div>
             )}
             {awayWinMargin && (
               <div className="flex justify-between items-center mt-2">
-                <span className="text-muted-foreground pl-4">• When Away Wins:</span>
+                <span className="text-muted-foreground pl-4">• Average Predicted Away Win By:</span>
                 <span className="font-semibold">{awayWinMargin}</span>
               </div>
             )}
