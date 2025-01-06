@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Json } from "@/integrations/supabase/types";
 
 interface GameResult {
   home_score: number;
@@ -34,8 +35,46 @@ interface RawGameInsights {
   avg_away_score: number;
   common_margin_range: string;
   common_total_points_range: string;
-  last_game_result: LastGameResult | null;
-  game_result: GameResult | null;
+  last_game_result: Json;
+  game_result: Json;
+}
+
+function parseGameResult(json: Json): GameResult | null {
+  if (!json || typeof json !== 'object') return null;
+  const obj = json as Record<string, unknown>;
+  
+  if (
+    typeof obj.home_score === 'number' &&
+    typeof obj.away_score === 'number' &&
+    typeof obj.is_final === 'boolean'
+  ) {
+    return {
+      home_score: obj.home_score,
+      away_score: obj.away_score,
+      is_final: obj.is_final
+    };
+  }
+  return null;
+}
+
+function parseLastGameResult(json: Json): LastGameResult | null {
+  if (!json || typeof json !== 'object') return null;
+  const obj = json as Record<string, unknown>;
+  
+  if (
+    typeof obj.home_score === 'number' &&
+    typeof obj.away_score === 'number' &&
+    typeof obj.is_home === 'boolean' &&
+    typeof obj.game_date === 'string'
+  ) {
+    return {
+      home_score: obj.home_score,
+      away_score: obj.away_score,
+      is_home: obj.is_home,
+      game_date: obj.game_date
+    };
+  }
+  return null;
 }
 
 export function useGameInsights(gameId: string) {
@@ -64,8 +103,8 @@ export function useGameInsights(gameId: string) {
         avgAwayScore: Number(result.avg_away_score),
         marginRange: result.common_margin_range,
         totalPointsRange: result.common_total_points_range,
-        lastGameResult: result.last_game_result || undefined,
-        gameResult: result.game_result || undefined
+        lastGameResult: parseLastGameResult(result.last_game_result) || undefined,
+        gameResult: parseGameResult(result.game_result) || undefined
       };
     }
   });
