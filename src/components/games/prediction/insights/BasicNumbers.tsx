@@ -1,5 +1,4 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Target } from "lucide-react";
 
 interface BasicNumbersProps {
   totalPredictions: number;
@@ -35,9 +34,7 @@ export function BasicNumbers({
           </div>
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Average Predicted Score:</span>
-            <span className="font-semibold">
-              {avgHomeScore.toFixed(1)} - {avgAwayScore.toFixed(1)}
-            </span>
+            <span className="font-semibold">{`${avgHomeScore.toFixed(1)} - ${avgAwayScore.toFixed(1)}`}</span>
           </div>
         </div>
       </CardContent>
