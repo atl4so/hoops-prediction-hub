@@ -53,7 +53,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         <div 
           className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none"
           style={{
-            zIndex: 0,
+            zIndex: -1,
           }}
         >
           {/* Black overlay with fixed opacity */}
@@ -69,15 +69,13 @@ export function MainLayout({ children }: MainLayoutProps) {
           />
         </div>
       )}
-      <div className="relative z-10 flex flex-col min-h-screen">
-        <AppHeader />
-        <main className="flex-1 relative">
-          <div className="container mx-auto p-6">
-            {children}
-          </div>
-        </main>
-        <Footer />
-      </div>
+      <AppHeader />
+      <main className="flex-1 relative">
+        <div className="container mx-auto p-6">
+          {children}
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 }
