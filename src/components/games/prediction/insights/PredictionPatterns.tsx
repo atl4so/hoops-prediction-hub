@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowUpDown, Scale } from "lucide-react";
+import { Scale, Target } from "lucide-react";
 
 interface PredictionPatternsProps {
   marginRange: string;
@@ -11,29 +11,33 @@ export function PredictionPatterns({
   totalPointsRange,
 }: PredictionPatternsProps) {
   return (
-    <Card className="border-2 border-primary/10">
-      <CardContent className="p-4 space-y-4">
-        <h3 className="text-lg font-semibold text-primary/80 flex items-center gap-2">
-          <Scale className="h-5 w-5" />
-          Prediction Patterns
-        </h3>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center p-2 bg-accent/50 rounded-lg">
-            <div className="flex items-center gap-2">
-              <ArrowUpDown className="h-4 w-4 text-primary/60" />
-              <span className="text-muted-foreground">Average Margin</span>
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold">Prediction Patterns</h3>
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <div className="flex justify-center mb-2">
+                <Target className="w-5 h-5 text-primary/80" />
+              </div>
+              <p className="text-sm text-muted-foreground mb-1">Common Margin Range</p>
+              <p className="text-xl font-semibold">{marginRange}</p>
             </div>
-            <span className="font-semibold">{marginRange} points</span>
-          </div>
-          <div className="flex justify-between items-center p-2 bg-accent/50 rounded-lg">
-            <div className="flex items-center gap-2">
-              <Scale className="h-4 w-4 text-primary/60" />
-              <span className="text-muted-foreground">Total Points Range</span>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <div className="flex justify-center mb-2">
+                <Scale className="w-5 h-5 text-primary/80" />
+              </div>
+              <p className="text-sm text-muted-foreground mb-1">Total Points Range</p>
+              <p className="text-xl font-semibold">{totalPointsRange}</p>
             </div>
-            <span className="font-semibold">{totalPointsRange}</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }

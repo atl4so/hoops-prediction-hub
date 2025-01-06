@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, TrendingUp, ArrowRight } from "lucide-react";
+import { ArrowDown, ArrowUp, Minus } from "lucide-react";
 
 interface BasicNumbersProps {
   totalPredictions: number;
@@ -19,69 +19,77 @@ export function BasicNumbers({
   avgHomeScore,
   avgAwayScore,
   commonMargin,
-  avgHomeWinMargin = 0,
-  avgAwayWinMargin = 0,
+  avgHomeWinMargin,
+  avgAwayWinMargin
 }: BasicNumbersProps) {
-  const homeWinPercentage = ((homeWinPredictions / totalPredictions) * 100).toFixed(1);
-  const awayWinPercentage = ((awayWinPredictions / totalPredictions) * 100).toFixed(1);
+  const homeWinPercentage = Math.round((homeWinPredictions / totalPredictions) * 100);
+  const awayWinPercentage = Math.round((awayWinPredictions / totalPredictions) * 100);
+  const drawPercentage = 100 - homeWinPercentage - awayWinPercentage;
 
   return (
-    <Card className="border-2 border-primary/10">
-      <CardContent className="p-4 space-y-4">
-        <h3 className="text-lg font-semibold text-primary/80 flex items-center gap-2">
-          <Users className="h-5 w-5" />
-          Prediction Stats
-        </h3>
-        
-        <div className="space-y-3">
-          <div className="flex justify-between items-center p-2 bg-accent rounded-lg">
-            <span className="text-muted-foreground">Total Predictions</span>
-            <span className="font-semibold">{totalPredictions}</span>
-          </div>
-          
-          <div className="border-t pt-2 space-y-2">
-            <div className="flex justify-between items-center p-2 bg-accent/50 rounded-lg">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-primary/60" />
-                <span className="text-muted-foreground">Home Win Predictions</span>
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold">Basic Numbers</h3>
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground mb-2">Win Predictions</p>
+              <div className="flex justify-center items-center gap-4">
+                <div className="text-center">
+                  <ArrowUp className="w-4 h-4 text-green-500 mx-auto" />
+                  <p className="text-xl font-bold">{homeWinPercentage}%</p>
+                  <p className="text-xs text-muted-foreground">Home</p>
+                </div>
+                {drawPercentage > 0 && (
+                  <div className="text-center">
+                    <Minus className="w-4 h-4 text-orange-500 mx-auto" />
+                    <p className="text-xl font-bold">{drawPercentage}%</p>
+                    <p className="text-xs text-muted-foreground">Draw</p>
+                  </div>
+                )}
+                <div className="text-center">
+                  <ArrowDown className="w-4 h-4 text-red-500 mx-auto" />
+                  <p className="text-xl font-bold">{awayWinPercentage}%</p>
+                  <p className="text-xs text-muted-foreground">Away</p>
+                </div>
               </div>
-              <span className="font-semibold">{homeWinPercentage}%</span>
             </div>
-            <div className="flex justify-between items-center text-sm pl-8">
-              <span className="text-muted-foreground">Avg Margin</span>
-              <span className="font-medium">{avgHomeWinMargin ? avgHomeWinMargin.toFixed(1) : '0'} pts</span>
-            </div>
-          </div>
-          
-          <div className="border-t pt-2 space-y-2">
-            <div className="flex justify-between items-center p-2 bg-accent/50 rounded-lg">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-primary/60" />
-                <span className="text-muted-foreground">Away Win Predictions</span>
-              </div>
-              <span className="font-semibold">{awayWinPercentage}%</span>
-            </div>
-            <div className="flex justify-between items-center text-sm pl-8">
-              <span className="text-muted-foreground">Avg Margin</span>
-              <span className="font-medium">{avgAwayWinMargin ? avgAwayWinMargin.toFixed(1) : '0'} pts</span>
-            </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          <div className="border-t pt-2 space-y-2">
-            <div className="flex justify-between items-center p-2 bg-accent/50 rounded-lg">
-              <div className="flex items-center gap-2">
-                <ArrowRight className="h-4 w-4 text-primary/60" />
-                <span className="text-muted-foreground">Common Margin</span>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground mb-2">Average Score</p>
+              <p className="text-2xl font-bold">
+                {avgHomeScore} - {avgAwayScore}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Based on {totalPredictions} predictions
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground mb-2">Common Margin</p>
+              <p className="text-2xl font-bold">{commonMargin}</p>
+              <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
+                <div>
+                  <p className="text-muted-foreground">Home Wins</p>
+                  <p className="font-medium">+{avgHomeWinMargin}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Away Wins</p>
+                  <p className="font-medium">+{avgAwayWinMargin}</p>
+                </div>
               </div>
-              <span className="font-semibold">{commonMargin}</span>
             </div>
-            <div className="flex justify-between items-center p-2 bg-accent/50 rounded-lg">
-              <span className="text-muted-foreground whitespace-nowrap">Average Score</span>
-              <span className="font-semibold whitespace-nowrap">{`${avgHomeScore.toFixed(1)} - ${avgAwayScore.toFixed(1)}`}</span>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }
