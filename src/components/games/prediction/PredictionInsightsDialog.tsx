@@ -4,6 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { Json } from "@/integrations/supabase/types";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { ArrowDown, ArrowUp, Calendar, Home, Scale, Target } from "lucide-react";
 
 interface LastGameResult {
   home_score: number;
@@ -20,7 +23,7 @@ interface GameInsights {
   avg_away_score: number;
   common_margin_range: string;
   common_total_points_range: string;
-  last_game_result: LastGameResult;
+  last_game_result: LastGameResult | null;
 }
 
 interface PredictionInsightsDialogProps {
@@ -113,7 +116,7 @@ export function PredictionInsightsDialog({ isOpen, onOpenChange, gameId }: Predi
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>How Others Predict</DialogTitle>
+          <DialogTitle className="text-center">How Others Predict</DialogTitle>
         </DialogHeader>
 
         {isLoading ? (
@@ -125,52 +128,93 @@ export function PredictionInsightsDialog({ isOpen, onOpenChange, gameId }: Predi
         ) : insights ? (
           <div className="space-y-6">
             {/* Basic Numbers */}
-            <section className="space-y-2">
-              <h3 className="font-semibold text-sm text-muted-foreground">Basic Numbers</h3>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <div>Total Predictions:</div>
-                <div className="font-medium">{insights.total_predictions}</div>
-                <div>Home Win Predictions:</div>
-                <div className="font-medium">{insights.home_win_predictions}</div>
-                <div>Away Win Predictions:</div>
-                <div className="font-medium">{insights.away_win_predictions}</div>
-                <div>Average Score:</div>
-                <div className="font-medium">
-                  {insights.avg_home_score} - {insights.avg_away_score}
+            <Card className="bg-card border-2 border-primary/20">
+              <CardContent className="p-4 space-y-4">
+                <h3 className="font-semibold text-sm text-primary flex items-center gap-2">
+                  <Target className="h-4 w-4" />
+                  Prediction Overview
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground">Total Predictions</p>
+                    <p className="text-2xl font-bold text-primary">{insights.total_predictions}</p>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground">Average Score</p>
+                    <p className="text-2xl font-bold text-primary">
+                      {insights.avg_home_score} - {insights.avg_away_score}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </section>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2">
+                    <ArrowUp className="h-4 w-4 text-green-500" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Home Win</p>
+                      <p className="font-semibold">{insights.home_win_predictions}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ArrowDown className="h-4 w-4 text-red-500" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Away Win</p>
+                      <p className="font-semibold">{insights.away_win_predictions}</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Prediction Patterns */}
-            <section className="space-y-2">
-              <h3 className="font-semibold text-sm text-muted-foreground">Prediction Patterns</h3>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <div>Common Margin:</div>
-                <div className="font-medium">{insights.common_margin_range}</div>
-                <div>Total Points Range:</div>
-                <div className="font-medium">{insights.common_total_points_range}</div>
-              </div>
-            </section>
+            <Card className="bg-card border-2 border-primary/20">
+              <CardContent className="p-4 space-y-4">
+                <h3 className="font-semibold text-sm text-primary flex items-center gap-2">
+                  <Scale className="h-4 w-4" />
+                  Prediction Patterns
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">Common Margin</p>
+                    <p className="font-semibold">{insights.common_margin_range}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">Total Points</p>
+                    <p className="font-semibold">{insights.common_total_points_range}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Recent Game */}
             {insights.last_game_result && (
-              <section className="space-y-2">
-                <h3 className="font-semibold text-sm text-muted-foreground">Recent Game</h3>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div>Last Game:</div>
-                  <div className="font-medium">
-                    {insights.last_game_result.home_score} - {insights.last_game_result.away_score}
+              <Card className="bg-card border-2 border-primary/20">
+                <CardContent className="p-4 space-y-4">
+                  <h3 className="font-semibold text-sm text-primary flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    Recent Game
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">Score</p>
+                      <p className="font-semibold">
+                        {insights.last_game_result.home_score} - {insights.last_game_result.away_score}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">Played</p>
+                      <p className="font-semibold">
+                        {format(new Date(insights.last_game_result.game_date), 'MMM d, yyyy')}
+                      </p>
+                    </div>
+                    <div className="col-span-2 flex items-center gap-2">
+                      <Home className="h-4 w-4 text-primary" />
+                      <p className="text-sm">
+                        {insights.last_game_result.is_home ? 'Home' : 'Away'} Game
+                      </p>
+                    </div>
                   </div>
-                  <div>Played:</div>
-                  <div className="font-medium">
-                    {format(new Date(insights.last_game_result.game_date), 'MMM d, yyyy')}
-                  </div>
-                  <div>Position:</div>
-                  <div className="font-medium">
-                    {insights.last_game_result.is_home ? 'Home' : 'Away'}
-                  </div>
-                </div>
-              </section>
+                </CardContent>
+              </Card>
             )}
           </div>
         ) : null}
