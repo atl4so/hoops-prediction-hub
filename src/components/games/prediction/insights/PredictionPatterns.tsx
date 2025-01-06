@@ -18,7 +18,7 @@ export function PredictionPatterns({
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <ArrowUpDown className="h-4 w-4 text-primary/60" />
-              <span className="text-muted-foreground">Common Margin:</span>
+              <span className="text-muted-foreground">Average Margin:</span>
             </div>
             <span className="font-semibold">{marginRange} points</span>
           </div>

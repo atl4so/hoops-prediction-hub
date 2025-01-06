@@ -34,7 +34,7 @@ export function BasicNumbers({
             <span className="font-semibold">{awayWinPredictions}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Average Score:</span>
+            <span className="text-muted-foreground">Average Predicted Score:</span>
             <span className="font-semibold">
               {avgHomeScore.toFixed(1)} - {avgAwayScore.toFixed(1)}
             </span>
