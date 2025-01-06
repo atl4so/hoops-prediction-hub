@@ -35,12 +35,12 @@ export default function Predict() {
   return (
     <div className="container max-w-5xl mx-auto py-8 animate-fade-in space-y-6">
       <PageHeader title="Predict">
-        <p className="text-muted-foreground">Make your predictions for upcoming games</p>
+        <p>Make your predictions for upcoming games</p>
       </PageHeader>
 
-      <Alert variant="destructive" className="border-red-500">
+      <Alert variant="destructive" className="bg-white/95 backdrop-blur-sm border-red-500/50 shadow-lg">
         <AlertTriangle className="h-4 w-4" />
-        <AlertDescription className="font-medium">
+        <AlertDescription className="font-medium text-black/80">
           Important: Predictions must be submitted at least 1 hour before the game starts. Late predictions will not be accepted.
         </AlertDescription>
       </Alert>
