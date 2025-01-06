@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Json } from "@/types/supabase";
+
+// Define Json type locally since it's not exported from supabase types
+type Json = string | number | boolean | null | { [key: string]: Json } | Json[];
 
 interface GameInsights {
   totalPredictions: number;
