@@ -5,7 +5,10 @@ import { PredictionButton } from "./prediction/PredictionButton";
 import { PredictionDisplay } from "./PredictionDisplay";
 import { PointsBreakdownDialog } from "./PointsBreakdownDialog";
 import { CountdownTimer } from "./CountdownTimer";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { PredictionInsightsDialog } from "./prediction/PredictionInsightsDialog";
+import { Eye } from "lucide-react";
 
 interface GameCardProps {
   game: {
@@ -38,6 +41,7 @@ interface GameCardProps {
 
 export function GameCard({ game, isAuthenticated, userId, prediction }: GameCardProps) {
   const [showPointsBreakdown, setShowPointsBreakdown] = useState(false);
+  const [showInsights, setShowInsights] = useState(false);
 
   const gameResult = game.game_results?.[0];
   const isUpcoming = !gameResult && new Date(game.game_date) > new Date();
@@ -87,7 +91,7 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
             </div>
           )}
 
-          <div className="mt-6">
+          <div className="mt-6 space-y-3">
             <PredictionButton
               isAuthenticated={isAuthenticated}
               gameDate={game.game_date}
@@ -98,6 +102,15 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
               homeTeam={game.home_team}
               awayTeam={game.away_team}
             />
+            
+            <Button 
+              variant="outline" 
+              className="w-full" 
+              onClick={() => setShowInsights(true)}
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              How Others Predict
+            </Button>
           </div>
         </div>
       </CardContent>
@@ -117,6 +130,12 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
           points={prediction.points_earned}
         />
       )}
+
+      <PredictionInsightsDialog
+        isOpen={showInsights}
+        onOpenChange={setShowInsights}
+        gameId={game.id}
+      />
     </Card>
   );
 }

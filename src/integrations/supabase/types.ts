@@ -412,6 +412,21 @@ export type Database = {
         }
         Returns: undefined
       }
+      get_game_prediction_insights: {
+        Args: {
+          game_id_param: string
+        }
+        Returns: {
+          total_predictions: number
+          home_win_predictions: number
+          away_win_predictions: number
+          avg_home_score: number
+          avg_away_score: number
+          common_margin_range: string
+          common_total_points_range: string
+          last_game_result: Json
+        }[]
+      }
       get_round_rankings: {
         Args: {
           round_id: string
