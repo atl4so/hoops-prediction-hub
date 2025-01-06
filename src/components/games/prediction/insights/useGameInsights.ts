@@ -34,18 +34,13 @@ export function useGameInsights(gameId: string) {
       const avgHomeScore = predictions.reduce((acc, p) => acc + p.prediction_home_score, 0) / totalPredictions;
       const avgAwayScore = predictions.reduce((acc, p) => acc + p.prediction_away_score, 0) / totalPredictions;
 
-      // Calculate margins and total points for each prediction
-      const margins = predictions.map(p => Math.abs(p.prediction_home_score - p.prediction_away_score));
-      const totalPoints = predictions.map(p => p.prediction_home_score + p.prediction_away_score);
+      // Calculate the common margin from average scores
+      const marginRange = Math.abs(avgHomeScore - avgAwayScore).toFixed(1);
 
-      // Find min and max values
-      const minMargin = Math.min(...margins);
-      const maxMargin = Math.max(...margins);
+      // Calculate total points range
+      const totalPoints = predictions.map(p => p.prediction_home_score + p.prediction_away_score);
       const minTotal = Math.min(...totalPoints);
       const maxTotal = Math.max(...totalPoints);
-
-      // Determine ranges
-      const marginRange = `${minMargin}-${maxMargin} points`;
       const totalPointsRange = `${minTotal}-${maxTotal}`;
 
       return {

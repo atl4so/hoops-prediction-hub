@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Scale } from "lucide-react";
+import { ArrowsUpDown, Scale } from "lucide-react";
 
 interface PredictionPatternsProps {
   marginRange: string;
@@ -16,11 +16,17 @@ export function PredictionPatterns({
         <h3 className="font-semibold text-lg text-primary/80">Prediction Patterns</h3>
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Common Margin:</span>
-            <span className="font-semibold">{marginRange}</span>
+            <div className="flex items-center gap-2">
+              <ArrowsUpDown className="h-4 w-4 text-primary/60" />
+              <span className="text-muted-foreground">Common Margin:</span>
+            </div>
+            <span className="font-semibold">{marginRange} points</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Total Points Range:</span>
+            <div className="flex items-center gap-2">
+              <Scale className="h-4 w-4 text-primary/60" />
+              <span className="text-muted-foreground">Total Points Range:</span>
+            </div>
             <span className="font-semibold">{totalPointsRange}</span>
           </div>
         </div>
