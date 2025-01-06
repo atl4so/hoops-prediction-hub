@@ -111,7 +111,7 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
                 onClick={() => setShowInsights(true)}
               >
                 <Eye className="w-4 h-4 mr-2" />
-                How Others Predict
+                {gameResult ? "How Others Predicted" : "How Others Predict"}
               </Button>
             </div>
           </div>
