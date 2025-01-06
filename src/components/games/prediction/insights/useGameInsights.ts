@@ -10,50 +10,36 @@ interface GameInsights {
   marginRange: string;
   totalPointsRange: string;
   commonMargin: string;
+  avgHomeWinMargin: number;
+  avgAwayWinMargin: number;
 }
 
 export function useGameInsights(gameId: string) {
   return useQuery({
     queryKey: ['game-insights', gameId],
     queryFn: async () => {
-      const { data: predictions, error } = await supabase
-        .from('predictions')
-        .select(`
-          prediction_home_score,
-          prediction_away_score
-        `)
-        .eq('game_id', gameId);
+      const { data, error } = await supabase
+        .rpc('get_game_prediction_insights', {
+          game_id_param: gameId
+        });
 
       if (error) throw error;
-      if (!predictions?.length) return null;
+      if (!data) return null;
 
-      const totalPredictions = predictions.length;
-      const homeWinPredictions = predictions.filter(p => p.prediction_home_score > p.prediction_away_score).length;
-      const awayWinPredictions = predictions.filter(p => p.prediction_home_score < p.prediction_away_score).length;
-
-      // Calculate average scores
-      const avgHomeScore = predictions.reduce((acc, p) => acc + p.prediction_home_score, 0) / totalPredictions;
-      const avgAwayScore = predictions.reduce((acc, p) => acc + p.prediction_away_score, 0) / totalPredictions;
-
-      // Calculate the common margin from average scores
-      const marginRange = Math.abs(avgHomeScore - avgAwayScore).toFixed(1);
-      const commonMargin = `${marginRange} points`;
-
-      // Calculate total points range
-      const totalPoints = predictions.map(p => p.prediction_home_score + p.prediction_away_score);
-      const minTotal = Math.min(...totalPoints);
-      const maxTotal = Math.max(...totalPoints);
-      const totalPointsRange = `${minTotal}-${maxTotal}`;
+      const insights = data[0];
+      if (!insights) return null;
 
       return {
-        totalPredictions,
-        homeWinPredictions,
-        awayWinPredictions,
-        avgHomeScore,
-        avgAwayScore,
-        marginRange,
-        totalPointsRange,
-        commonMargin,
+        totalPredictions: insights.total_predictions,
+        homeWinPredictions: insights.home_win_predictions,
+        awayWinPredictions: insights.away_win_predictions,
+        avgHomeScore: insights.avg_home_score,
+        avgAwayScore: insights.avg_away_score,
+        marginRange: insights.common_margin_range,
+        totalPointsRange: insights.common_total_points_range,
+        commonMargin: `${insights.common_margin_range}`,
+        avgHomeWinMargin: insights.avg_home_win_margin || 0,
+        avgAwayWinMargin: insights.avg_away_win_margin || 0,
       };
     },
     enabled: !!gameId,

@@ -7,6 +7,8 @@ interface BasicNumbersProps {
   avgHomeScore: number;
   avgAwayScore: number;
   commonMargin: string;
+  avgHomeWinMargin: number;
+  avgAwayWinMargin: number;
 }
 
 export function BasicNumbers({
@@ -16,33 +18,52 @@ export function BasicNumbers({
   avgHomeScore,
   avgAwayScore,
   commonMargin,
+  avgHomeWinMargin,
+  avgAwayWinMargin,
 }: BasicNumbersProps) {
   const homeWinPercentage = ((homeWinPredictions / totalPredictions) * 100).toFixed(1);
   const awayWinPercentage = ((awayWinPredictions / totalPredictions) * 100).toFixed(1);
 
   return (
     <Card>
-      <CardContent className="p-4 space-y-3">
+      <CardContent className="p-4 space-y-4">
         <div className="space-y-3">
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Total Predictions:</span>
             <span className="font-semibold">{totalPredictions}</span>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Home Win Predictions:</span>
-            <span className="font-semibold">{homeWinPercentage}%</span>
+          
+          <div className="border-t pt-2">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-muted-foreground">Home Win Predictions:</span>
+              <span className="font-semibold">{homeWinPercentage}%</span>
+            </div>
+            <div className="flex justify-between items-center text-sm pl-4">
+              <span className="text-muted-foreground">Avg Margin:</span>
+              <span className="font-medium">{avgHomeWinMargin.toFixed(1)} pts</span>
+            </div>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Away Win Predictions:</span>
-            <span className="font-semibold">{awayWinPercentage}%</span>
+          
+          <div className="border-t pt-2">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-muted-foreground">Away Win Predictions:</span>
+              <span className="font-semibold">{awayWinPercentage}%</span>
+            </div>
+            <div className="flex justify-between items-center text-sm pl-4">
+              <span className="text-muted-foreground">Avg Margin:</span>
+              <span className="font-medium">{avgAwayWinMargin.toFixed(1)} pts</span>
+            </div>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Average Margin:</span>
-            <span className="font-semibold">{commonMargin}</span>
-          </div>
-          <div className="flex justify-between items-center flex-wrap">
-            <span className="text-muted-foreground whitespace-nowrap">Average Predicted Score:</span>
-            <span className="font-semibold whitespace-nowrap">{`${avgHomeScore.toFixed(1)} - ${avgAwayScore.toFixed(1)}`}</span>
+
+          <div className="border-t pt-2">
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground">Common Margin:</span>
+              <span className="font-semibold">{commonMargin}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground whitespace-nowrap">Average Score:</span>
+              <span className="font-semibold whitespace-nowrap">{`${avgHomeScore.toFixed(1)} - ${avgAwayScore.toFixed(1)}`}</span>
+            </div>
           </div>
         </div>
       </CardContent>
