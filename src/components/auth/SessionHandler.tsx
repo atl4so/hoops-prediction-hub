@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { QueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { clearAuthSession, verifySession } from '@/utils/auth';
+import { clearAuthSession } from '@/utils/auth';
 import { toast } from "sonner";
 
 interface SessionHandlerProps {
@@ -28,7 +28,10 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
             setIsAuthenticated(false);
             setIsLoading(false);
             await clearAuthSession();
-            toast.error("Session error. Please try logging in again.");
+            // Don't show error toast for refresh token errors as they're expected when session expires
+            if (!error.message.includes('refresh_token_not_found')) {
+              toast.error("Session error. Please try logging in again.");
+            }
           }
           return;
         }
@@ -58,21 +61,23 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
       }
     };
 
-    // Initial session check
     checkSession();
 
-    // Set up auth state change listener
     const setupAuthListener = async () => {
       const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
         if (!mounted) return;
         
         console.log('Auth state changed:', event, session?.user?.id);
         
-        if (event === 'SIGNED_OUT') {
+        if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
           setIsAuthenticated(false);
           setIsLoading(false);
           queryClient.clear();
-        } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          
+          if (event === 'TOKEN_REFRESHED' && !session) {
+            await clearAuthSession();
+          }
+        } else if (event === 'SIGNED_IN') {
           if (session) {
             setIsAuthenticated(true);
             setIsLoading(false);
@@ -90,7 +95,6 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
 
     setupAuthListener();
 
-    // Cleanup function
     return () => {
       mounted = false;
       if (authListener) {
