@@ -31,6 +31,8 @@ interface FinishedGameStatsProps {
   };
   topPredictors: Array<{
     points_earned: number | null;
+    prediction_home_score: number;
+    prediction_away_score: number;
     profiles: {
       display_name: string;
       avatar_url: string | null;
@@ -91,9 +93,14 @@ export function FinishedGameStats({ predictions, finalScore, basicStats, topPred
                         </span>
                       </div>
                     </div>
-                    <span className="font-semibold">
-                      {prediction.points_earned} pts
-                    </span>
+                    <div className="flex items-center gap-4">
+                      <span className="text-sm text-muted-foreground">
+                        {prediction.prediction_home_score} - {prediction.prediction_away_score}
+                      </span>
+                      <span className="font-semibold">
+                        {prediction.points_earned} pts
+                      </span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
