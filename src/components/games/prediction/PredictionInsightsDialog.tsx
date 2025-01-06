@@ -7,12 +7,17 @@ interface PredictionInsightsDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   gameId: string;
+  finalScore?: {
+    home: number;
+    away: number;
+  };
 }
 
 export function PredictionInsightsDialog({
   isOpen,
   onOpenChange,
-  gameId
+  gameId,
+  finalScore
 }: PredictionInsightsDialogProps) {
   const { data: insights, isLoading } = useGameInsights(gameId);
 
@@ -44,12 +49,12 @@ export function PredictionInsightsDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center mb-6">
-            How Others Predict
+          <DialogTitle className="text-xl font-bold">
+            Game Insights
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-4">
           <BasicNumbers
             totalPredictions={insights.totalPredictions}
             homeWinPredictions={insights.homeWinPredictions}
@@ -59,6 +64,7 @@ export function PredictionInsightsDialog({
             commonMargin={insights.commonMargin}
             homeWinMargin={insights.homeWinMargin}
             awayWinMargin={insights.awayWinMargin}
+            finalScore={finalScore}
           />
 
           <PredictionPatterns

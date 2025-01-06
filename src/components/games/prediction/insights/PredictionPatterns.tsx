@@ -11,21 +11,21 @@ export function PredictionPatterns({
   totalPointsRange,
 }: PredictionPatternsProps) {
   return (
-    <Card className="bg-card border-2 border-primary/20">
+    <Card className="bg-gradient-to-br from-orange-500/5 to-orange-500/10 border-orange-500/20">
       <CardContent className="p-4 space-y-4">
-        <h3 className="font-semibold text-lg text-primary/80">Prediction Patterns</h3>
+        <h3 className="font-semibold text-sm text-orange-500/80">Prediction Patterns</h3>
         <div className="space-y-3">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <ArrowUpDown className="h-4 w-4 text-primary/60" />
-              <span className="text-muted-foreground">Average Margin:</span>
+              <ArrowUpDown className="h-4 w-4 text-orange-500/60" />
+              <span className="text-sm text-muted-foreground">Average Margin</span>
             </div>
             <span className="font-semibold">{marginRange} points</span>
           </div>
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <Scale className="h-4 w-4 text-primary/60" />
-              <span className="text-muted-foreground">Total Points Range:</span>
+              <Scale className="h-4 w-4 text-orange-500/60" />
+              <span className="text-sm text-muted-foreground">Total Points Range</span>
             </div>
             <span className="font-semibold">{totalPointsRange}</span>
           </div>
