@@ -28,7 +28,7 @@ export function PredictionInsightsDialog({
     );
   }
 
-  if (!insights || insights.totalPredictions === 0) {
+  if (!insights) {
     return (
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent>
@@ -40,14 +40,12 @@ export function PredictionInsightsDialog({
     );
   }
 
-  const isFinished = insights.gameResult?.is_final;
-
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center mb-6">
-            {isFinished ? 'How Others Predicted' : 'How Others Predict'}
+            How Others Predict
           </DialogTitle>
         </DialogHeader>
 
@@ -58,13 +56,11 @@ export function PredictionInsightsDialog({
             awayWinPredictions={insights.awayWinPredictions}
             avgHomeScore={insights.avgHomeScore}
             avgAwayScore={insights.avgAwayScore}
-            gameResult={insights.gameResult}
           />
 
           <PredictionPatterns
             marginRange={insights.marginRange}
             totalPointsRange={insights.totalPointsRange}
-            gameResult={insights.gameResult}
           />
         </div>
       </DialogContent>

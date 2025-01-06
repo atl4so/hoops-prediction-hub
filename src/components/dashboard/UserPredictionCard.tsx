@@ -3,9 +3,6 @@ import { PointsBreakdownDialog } from "../games/PointsBreakdownDialog";
 import { useState } from "react";
 import { PredictionDisplay } from "../games/PredictionDisplay";
 import { GameInfo } from "./predictions/GameInfo";
-import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
-import { PredictionInsightsDialog } from "../games/prediction/PredictionInsightsDialog";
 
 interface UserPredictionCardProps {
   game: {
@@ -39,7 +36,6 @@ export function UserPredictionCard({
   isOwnPrediction = false
 }: UserPredictionCardProps) {
   const [showPointsBreakdown, setShowPointsBreakdown] = useState(false);
-  const [showInsights, setShowInsights] = useState(false);
   const gameResult = game.game_results?.[0];
 
   if (!prediction) {
@@ -58,7 +54,7 @@ export function UserPredictionCard({
         <CardContent className="p-4 sm:p-6">
           <div className="flex flex-col h-full space-y-4">
             <GameInfo game={game} prediction={prediction} />
-            <div className="w-full mt-auto space-y-3">
+            <div className="w-full mt-auto pt-2">
               <PredictionDisplay
                 homeScore={prediction.prediction_home_score}
                 awayScore={prediction.prediction_away_score}
@@ -66,14 +62,6 @@ export function UserPredictionCard({
                 onClick={handlePointsClick}
                 showBreakdownHint={!!gameResult && prediction.points_earned !== undefined}
               />
-              <Button 
-                variant="outline" 
-                className="w-full" 
-                onClick={() => setShowInsights(true)}
-              >
-                <Eye className="w-4 h-4 mr-2" />
-                How Others Predict
-              </Button>
             </div>
           </div>
         </CardContent>
@@ -95,12 +83,6 @@ export function UserPredictionCard({
           isOwnPrediction={isOwnPrediction}
         />
       )}
-
-      <PredictionInsightsDialog
-        isOpen={showInsights}
-        onOpenChange={setShowInsights}
-        gameId={game.id}
-      />
     </>
   );
 }
