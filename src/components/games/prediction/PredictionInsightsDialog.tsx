@@ -34,29 +34,77 @@ export function PredictionInsightsDialog({ isOpen, onOpenChange, gameId }: Predi
     queryKey: ['game-insights', gameId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .rpc('get_game_prediction_insights', { game_id_param: gameId });
+        .from('predictions')
+        .select(`
+          prediction_home_score,
+          prediction_away_score,
+          points_earned,
+          game:games (
+            id,
+            game_date,
+            home_team:teams!games_home_team_id_fkey (
+              id,
+              name
+            ),
+            away_team:teams!games_away_team_id_fkey (
+              id,
+              name
+            ),
+            game_results (
+              home_score,
+              away_score,
+              is_final
+            )
+          )
+        `)
+        .eq('game_id', gameId);
       
       if (error) throw error;
-      
-      // Transform the raw data to ensure type safety
-      const rawData = data[0] as {
-        total_predictions: number;
-        home_win_predictions: number;
-        away_win_predictions: number;
-        avg_home_score: number;
-        avg_away_score: number;
-        common_margin_range: string;
-        common_total_points_range: string;
-        last_game_result: Json;
-      };
 
-      // Transform the data to match our GameInsights type
-      const transformedData: GameInsights = {
-        ...rawData,
-        last_game_result: rawData.last_game_result as unknown as LastGameResult
-      };
+      // Calculate insights from predictions
+      const totalPredictions = data.length;
+      const homeWinPredictions = data.filter(p => p.prediction_home_score > p.prediction_away_score).length;
+      const awayWinPredictions = data.filter(p => p.prediction_home_score < p.prediction_away_score).length;
 
-      return transformedData;
+      // Calculate average scores
+      const avgHomeScore = data.reduce((acc, p) => acc + p.prediction_home_score, 0) / totalPredictions;
+      const avgAwayScore = data.reduce((acc, p) => acc + p.prediction_away_score, 0) / totalPredictions;
+
+      // Calculate margin ranges
+      const margins = data.map(p => Math.abs(p.prediction_home_score - p.prediction_away_score));
+      const commonMargin = margins.reduce((acc, margin) => {
+        if (margin <= 5) return 'Close (1-5)';
+        if (margin <= 10) return 'Moderate (6-10)';
+        return 'Wide (10+)';
+      }, 'Close (1-5)');
+
+      // Calculate total points ranges
+      const totalPoints = data.map(p => p.prediction_home_score + p.prediction_away_score);
+      const commonTotal = totalPoints.reduce((acc, total) => {
+        if (total < 150) return 'Under 150';
+        if (total < 165) return '150-165';
+        return 'Over 165';
+      }, 'Under 150');
+
+      // Get game result if available
+      const gameResult = data[0]?.game.game_results?.[0];
+      const lastGameResult = gameResult ? {
+        home_score: gameResult.home_score,
+        away_score: gameResult.away_score,
+        game_date: data[0].game.game_date,
+        is_home: true // Simplified for now
+      } : null;
+
+      return {
+        total_predictions: totalPredictions,
+        home_win_predictions: homeWinPredictions,
+        away_win_predictions: awayWinPredictions,
+        avg_home_score: Number(avgHomeScore.toFixed(1)),
+        avg_away_score: Number(avgAwayScore.toFixed(1)),
+        common_margin_range: commonMargin,
+        common_total_points_range: commonTotal,
+        last_game_result: lastGameResult
+      } as GameInsights;
     },
     enabled: isOpen
   });
