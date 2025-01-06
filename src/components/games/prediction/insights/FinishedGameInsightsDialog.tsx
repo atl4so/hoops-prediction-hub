@@ -1,9 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { FinishedGameStats } from "./FinishedGameStats";
-import { FinishedGamePredictions } from "./FinishedGamePredictions";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface FinishedGameInsightsDialogProps {
   isOpen: boolean;
@@ -96,41 +92,25 @@ export function FinishedGameInsightsDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center">
+          <DialogTitle className="text-2xl font-bold text-center mb-6">
             How Others Predicted
           </DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue="stats" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="stats">Statistics</TabsTrigger>
-            <TabsTrigger value="predictions">All Predictions</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="stats" className="space-y-6">
-            <FinishedGameStats
-              predictions={predictions}
-              finalScore={finalScore}
-              basicStats={{
-                totalPredictions,
-                homeWinPredictions,
-                awayWinPredictions,
-                avgHomeScore,
-                avgAwayScore,
-                commonMargin,
-                totalPointsRange
-              }}
-              topPredictors={topPredictors}
-            />
-          </TabsContent>
-
-          <TabsContent value="predictions">
-            <FinishedGamePredictions
-              predictions={predictions}
-              finalScore={finalScore}
-            />
-          </TabsContent>
-        </Tabs>
+        <FinishedGameStats
+          predictions={predictions}
+          finalScore={finalScore}
+          basicStats={{
+            totalPredictions,
+            homeWinPredictions,
+            awayWinPredictions,
+            avgHomeScore,
+            avgAwayScore,
+            commonMargin,
+            totalPointsRange
+          }}
+          topPredictors={topPredictors}
+        />
       </DialogContent>
     </Dialog>
   );

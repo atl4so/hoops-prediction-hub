@@ -43,6 +43,18 @@ interface FinishedGameStatsProps {
 export function FinishedGameStats({ predictions, finalScore, basicStats, topPredictors }: FinishedGameStatsProps) {
   return (
     <div className="space-y-6">
+      <Card className="bg-card border-2 border-primary/20">
+        <CardContent className="p-4 space-y-4">
+          <div className="flex items-center gap-2">
+            <Target className="h-5 w-5 text-primary/80" />
+            <h3 className="font-semibold text-lg text-primary/80">Final Result</h3>
+          </div>
+          <div className="text-center text-xl font-bold">
+            {finalScore.home} - {finalScore.away}
+          </div>
+        </CardContent>
+      </Card>
+
       <BasicNumbers
         totalPredictions={basicStats.totalPredictions}
         homeWinPredictions={basicStats.homeWinPredictions}
