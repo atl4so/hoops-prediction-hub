@@ -3,6 +3,7 @@ import { BasicNumbers } from "./insights/BasicNumbers";
 import { PredictionPatterns } from "./insights/PredictionPatterns";
 import { useGameInsights } from "./insights/useGameInsights";
 import { Loader2 } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface PredictionInsightsDialogProps {
   isOpen: boolean;
@@ -62,30 +63,32 @@ export function PredictionInsightsDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-h-[85vh]">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center mb-6">
+          <DialogTitle className="text-2xl font-bold text-center">
             How Others Predict
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
-          <BasicNumbers
-            totalPredictions={insights.totalPredictions}
-            homeWinPredictions={insights.homeWinPredictions}
-            awayWinPredictions={insights.awayWinPredictions}
-            avgHomeScore={insights.avgHomeScore}
-            avgAwayScore={insights.avgAwayScore}
-            commonMargin={insights.commonMarginRange}
-            avgHomeWinMargin={insights.avgHomeWinMargin}
-            avgAwayWinMargin={insights.avgAwayWinMargin}
-          />
+        <ScrollArea className="h-full max-h-[calc(85vh-120px)] pr-4">
+          <div className="space-y-6">
+            <BasicNumbers
+              totalPredictions={insights.totalPredictions}
+              homeWinPredictions={insights.homeWinPredictions}
+              awayWinPredictions={insights.awayWinPredictions}
+              avgHomeScore={insights.avgHomeScore}
+              avgAwayScore={insights.avgAwayScore}
+              commonMargin={insights.commonMarginRange}
+              avgHomeWinMargin={insights.avgHomeWinMargin}
+              avgAwayWinMargin={insights.avgAwayWinMargin}
+            />
 
-          <PredictionPatterns
-            marginRange={insights.commonMarginRange}
-            totalPointsRange={insights.commonTotalPointsRange}
-          />
-        </div>
+            <PredictionPatterns
+              marginRange={insights.commonMarginRange}
+              totalPointsRange={insights.commonTotalPointsRange}
+            />
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
