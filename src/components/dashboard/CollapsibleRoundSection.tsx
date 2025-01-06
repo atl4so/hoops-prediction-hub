@@ -123,12 +123,17 @@ export function CollapsibleRoundSection({
                   prediction={prediction.prediction}
                 />
               ) : (
-                <UserPredictionCard
-                  key={prediction.id}
-                  game={prediction.game}
-                  prediction={prediction.prediction}
-                  isOwnPrediction={true}
-                />
+                prediction.prediction && (
+                  <UserPredictionCard
+                    key={prediction.id}
+                    game={{
+                      ...prediction.game,
+                      game_results: prediction.game.game_results || []
+                    }}
+                    prediction={prediction.prediction}
+                    isOwnPrediction={true}
+                  />
+                )
               )
             ))}
           </div>
