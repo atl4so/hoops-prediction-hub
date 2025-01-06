@@ -3,7 +3,10 @@ import { BasicNumbers } from "./insights/BasicNumbers";
 import { PredictionPatterns } from "./insights/PredictionPatterns";
 import { useGameInsights } from "./insights/useGameInsights";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Scroll } from "lucide-react";
+import { Scroll, Trophy, User } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface PredictionInsightsDialogProps {
   isOpen: boolean;
@@ -84,6 +87,59 @@ export function PredictionInsightsDialog({
               marginRange={insights.marginRange}
               totalPointsRange={insights.totalPointsRange}
             />
+
+            {insights.topPredictors && insights.topPredictors.length > 0 && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-orange-500" />
+                  <h3 className="font-semibold text-lg">Top Predictors</h3>
+                </div>
+                <div className="space-y-3">
+                  {insights.topPredictors.map((prediction, index) => (
+                    <Card
+                      key={index}
+                      className={cn(
+                        "transition-colors",
+                        index === 0 ? "bg-yellow-500/10" :
+                        index === 1 ? "bg-gray-400/10" :
+                        index === 2 ? "bg-amber-600/10" : ""
+                      )}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-3">
+                              {index === 0 && <Trophy className="h-5 w-5 text-yellow-500" />}
+                              {index === 1 && <Trophy className="h-5 w-5 text-gray-400" />}
+                              {index === 2 && <Trophy className="h-5 w-5 text-amber-600" />}
+                              <Avatar className="h-6 w-6">
+                                {prediction.profiles.avatar_url ? (
+                                  <AvatarImage src={prediction.profiles.avatar_url} alt={prediction.profiles.display_name} />
+                                ) : null}
+                                <AvatarFallback>
+                                  <User className="h-4 w-4" />
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className="font-medium">
+                                {prediction.profiles.display_name}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <span className="text-sm text-muted-foreground">
+                              {prediction.prediction_home_score} - {prediction.prediction_away_score}
+                            </span>
+                            <span className="font-semibold">
+                              {prediction.points_earned} pts
+                            </span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </ScrollArea>
       </DialogContent>

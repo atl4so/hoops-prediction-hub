@@ -12,6 +12,15 @@ interface GameInsights {
   commonMargin: string;
   homeWinMargin: string;
   awayWinMargin: string;
+  topPredictors: Array<{
+    points_earned: number;
+    prediction_home_score: number;
+    prediction_away_score: number;
+    profiles: {
+      display_name: string;
+      avatar_url: string | null;
+    };
+  }>;
 }
 
 export function useGameInsights(gameId: string) {
@@ -22,9 +31,15 @@ export function useGameInsights(gameId: string) {
         .from('predictions')
         .select(`
           prediction_home_score,
-          prediction_away_score
+          prediction_away_score,
+          points_earned,
+          profiles (
+            display_name,
+            avatar_url
+          )
         `)
-        .eq('game_id', gameId);
+        .eq('game_id', gameId)
+        .order('points_earned', { ascending: false });
 
       if (error) throw error;
       if (!predictions?.length) return null;
@@ -65,6 +80,12 @@ export function useGameInsights(gameId: string) {
       const maxTotal = Math.max(...totalPoints);
       const totalPointsRange = `${minTotal}-${maxTotal}`;
 
+      // Get top 3 predictors
+      const topPredictors = predictions
+        .filter(p => p.points_earned !== null)
+        .sort((a, b) => (b.points_earned || 0) - (a.points_earned || 0))
+        .slice(0, 3);
+
       return {
         totalPredictions,
         homeWinPredictions,
@@ -76,6 +97,7 @@ export function useGameInsights(gameId: string) {
         commonMargin,
         homeWinMargin: `${avgHomeWinPredictedMargin} points`,
         awayWinMargin: `${avgAwayWinPredictedMargin} points`,
+        topPredictors,
       };
     },
     enabled: !!gameId,
