@@ -1,5 +1,5 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Target } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Users2, Home, Plane } from "lucide-react";
 
 interface BasicNumbersProps {
   totalPredictions: number;
@@ -7,6 +7,11 @@ interface BasicNumbersProps {
   awayWinPredictions: number;
   avgHomeScore: number;
   avgAwayScore: number;
+  gameResult?: {
+    home_score: number;
+    away_score: number;
+    is_final: boolean;
+  };
 }
 
 export function BasicNumbers({
@@ -15,32 +20,56 @@ export function BasicNumbers({
   awayWinPredictions,
   avgHomeScore,
   avgAwayScore,
+  gameResult
 }: BasicNumbersProps) {
+  const homeWinPercentage = Math.round((homeWinPredictions / totalPredictions) * 100);
+  const awayWinPercentage = Math.round((awayWinPredictions / totalPredictions) * 100);
+
   return (
-    <Card className="bg-card border-2 border-primary/20">
-      <CardContent className="p-4 space-y-4">
-        <h3 className="font-semibold text-lg text-primary/80">Basic Numbers</h3>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Total Predictions:</span>
-            <span className="font-semibold">{totalPredictions}</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Home Win Predictions:</span>
-            <span className="font-semibold">{homeWinPredictions}</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Away Win Predictions:</span>
-            <span className="font-semibold">{awayWinPredictions}</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Average Score:</span>
-            <span className="font-semibold">
-              {avgHomeScore.toFixed(1)} - {avgAwayScore.toFixed(1)}
-            </span>
-          </div>
+    <div className="space-y-4">
+      <Card className="p-4">
+        <div className="flex items-center gap-2 text-muted-foreground mb-2">
+          <Users2 className="w-4 h-4" />
+          <span className="text-sm font-medium">Predictions Overview</span>
         </div>
-      </CardContent>
-    </Card>
+        <p className="text-2xl font-bold">{totalPredictions}</p>
+        <p className="text-sm text-muted-foreground">total predictions</p>
+      </Card>
+
+      <div className="grid grid-cols-2 gap-4">
+        <Card className="p-4">
+          <div className="flex items-center gap-2 text-muted-foreground mb-2">
+            <Home className="w-4 h-4" />
+            <span className="text-sm font-medium">Home Win</span>
+          </div>
+          <p className="text-2xl font-bold">{homeWinPercentage}%</p>
+          <p className="text-sm text-muted-foreground">{homeWinPredictions} predictions</p>
+        </Card>
+
+        <Card className="p-4">
+          <div className="flex items-center gap-2 text-muted-foreground mb-2">
+            <Plane className="w-4 h-4" />
+            <span className="text-sm font-medium">Away Win</span>
+          </div>
+          <p className="text-2xl font-bold">{awayWinPercentage}%</p>
+          <p className="text-sm text-muted-foreground">{awayWinPredictions} predictions</p>
+        </Card>
+      </div>
+
+      <Card className="p-4">
+        <div className="space-y-2">
+          <p className="text-sm font-medium">Average Score Prediction</p>
+          <p className="text-2xl font-bold">{avgHomeScore}-{avgAwayScore}</p>
+          {gameResult?.is_final && (
+            <div className="mt-2 pt-2 border-t">
+              <p className="text-sm font-medium text-muted-foreground">Final Score</p>
+              <p className="text-xl font-semibold text-primary">
+                {gameResult.home_score}-{gameResult.away_score}
+              </p>
+            </div>
+          )}
+        </div>
+      </Card>
+    </div>
   );
 }

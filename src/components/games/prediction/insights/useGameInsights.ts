@@ -9,50 +9,45 @@ interface GameInsights {
   avgAwayScore: number;
   marginRange: string;
   totalPointsRange: string;
+  gameResult?: {
+    home_score: number;
+    away_score: number;
+    is_final: boolean;
+  };
 }
 
 export function useGameInsights(gameId: string) {
   return useQuery({
-    queryKey: ['game-insights', gameId],
-    queryFn: async () => {
-      const { data: predictions, error } = await supabase
-        .from('predictions')
-        .select(`
-          prediction_home_score,
-          prediction_away_score
-        `)
-        .eq('game_id', gameId);
+    queryKey: ['gameInsights', gameId],
+    queryFn: async (): Promise<GameInsights | null> => {
+      const { data, error } = await supabase
+        .rpc('get_game_prediction_insights', {
+          game_id_param: gameId
+        });
 
-      if (error) throw error;
-      if (!predictions?.length) return null;
+      if (error) {
+        console.error('Error fetching game insights:', error);
+        throw error;
+      }
 
-      const totalPredictions = predictions.length;
-      const homeWinPredictions = predictions.filter(p => p.prediction_home_score > p.prediction_away_score).length;
-      const awayWinPredictions = predictions.filter(p => p.prediction_home_score < p.prediction_away_score).length;
+      if (!data?.[0]) return null;
 
-      // Calculate average scores
-      const avgHomeScore = predictions.reduce((acc, p) => acc + p.prediction_home_score, 0) / totalPredictions;
-      const avgAwayScore = predictions.reduce((acc, p) => acc + p.prediction_away_score, 0) / totalPredictions;
-
-      // Calculate the common margin from average scores
-      const marginRange = Math.abs(avgHomeScore - avgAwayScore).toFixed(1);
-
-      // Calculate total points range
-      const totalPoints = predictions.map(p => p.prediction_home_score + p.prediction_away_score);
-      const minTotal = Math.min(...totalPoints);
-      const maxTotal = Math.max(...totalPoints);
-      const totalPointsRange = `${minTotal}-${maxTotal}`;
-
+      const result = data[0];
+      
       return {
-        totalPredictions,
-        homeWinPredictions,
-        awayWinPredictions,
-        avgHomeScore,
-        avgAwayScore,
-        marginRange,
-        totalPointsRange,
+        totalPredictions: Number(result.total_predictions),
+        homeWinPredictions: Number(result.home_win_predictions),
+        awayWinPredictions: Number(result.away_win_predictions),
+        avgHomeScore: Number(result.avg_home_score),
+        avgAwayScore: Number(result.avg_away_score),
+        marginRange: result.common_margin_range,
+        totalPointsRange: result.common_total_points_range,
+        gameResult: result.game_result ? {
+          home_score: result.game_result.home_score,
+          away_score: result.game_result.away_score,
+          is_final: result.game_result.is_final
+        } : undefined
       };
-    },
-    enabled: !!gameId,
+    }
   });
 }

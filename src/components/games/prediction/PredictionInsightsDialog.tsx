@@ -56,6 +56,7 @@ export function PredictionInsightsDialog({
             awayWinPredictions={insights.awayWinPredictions}
             avgHomeScore={insights.avgHomeScore}
             avgAwayScore={insights.avgAwayScore}
+            gameResult={insights.gameResult}
           />
 
           <PredictionPatterns
