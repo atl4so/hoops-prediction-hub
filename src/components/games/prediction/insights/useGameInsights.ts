@@ -10,17 +10,6 @@ interface GameInsights {
   marginRange: string;
   totalPointsRange: string;
   commonMargin: string;
-  homeWinMargin: string;
-  awayWinMargin: string;
-  topPredictors: Array<{
-    points_earned: number;
-    prediction_home_score: number;
-    prediction_away_score: number;
-    profiles: {
-      display_name: string;
-      avatar_url: string | null;
-    };
-  }>;
 }
 
 export function useGameInsights(gameId: string) {
@@ -31,15 +20,9 @@ export function useGameInsights(gameId: string) {
         .from('predictions')
         .select(`
           prediction_home_score,
-          prediction_away_score,
-          points_earned,
-          profiles (
-            display_name,
-            avatar_url
-          )
+          prediction_away_score
         `)
-        .eq('game_id', gameId)
-        .order('points_earned', { ascending: false });
+        .eq('game_id', gameId);
 
       if (error) throw error;
       if (!predictions?.length) return null;
@@ -56,35 +39,11 @@ export function useGameInsights(gameId: string) {
       const marginRange = Math.abs(avgHomeScore - avgAwayScore).toFixed(1);
       const commonMargin = `${marginRange} points`;
 
-      // Calculate average predicted margin for home win predictions
-      const homeWinPredictedMargins = predictions
-        .filter(p => p.prediction_home_score > p.prediction_away_score)
-        .map(p => p.prediction_home_score - p.prediction_away_score);
-      
-      const avgHomeWinPredictedMargin = homeWinPredictedMargins.length > 0
-        ? (homeWinPredictedMargins.reduce((a, b) => a + b, 0) / homeWinPredictedMargins.length).toFixed(1)
-        : "0.0";
-
-      // Calculate average predicted margin for away win predictions
-      const awayWinPredictedMargins = predictions
-        .filter(p => p.prediction_home_score < p.prediction_away_score)
-        .map(p => p.prediction_away_score - p.prediction_home_score);
-      
-      const avgAwayWinPredictedMargin = awayWinPredictedMargins.length > 0
-        ? (awayWinPredictedMargins.reduce((a, b) => a + b, 0) / awayWinPredictedMargins.length).toFixed(1)
-        : "0.0";
-
       // Calculate total points range
       const totalPoints = predictions.map(p => p.prediction_home_score + p.prediction_away_score);
       const minTotal = Math.min(...totalPoints);
       const maxTotal = Math.max(...totalPoints);
       const totalPointsRange = `${minTotal}-${maxTotal}`;
-
-      // Get top 3 predictors
-      const topPredictors = predictions
-        .filter(p => p.points_earned !== null)
-        .sort((a, b) => (b.points_earned || 0) - (a.points_earned || 0))
-        .slice(0, 3);
 
       return {
         totalPredictions,
@@ -95,9 +54,6 @@ export function useGameInsights(gameId: string) {
         marginRange,
         totalPointsRange,
         commonMargin,
-        homeWinMargin: `${avgHomeWinPredictedMargin} points`,
-        awayWinMargin: `${avgAwayWinPredictedMargin} points`,
-        topPredictors,
       };
     },
     enabled: !!gameId,
