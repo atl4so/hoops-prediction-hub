@@ -1,8 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { PointsBreakdownDialog } from "../games/PointsBreakdownDialog";
-import { useState } from "react";
-import { PredictionDisplay } from "../games/PredictionDisplay";
 import { GameInfo } from "./predictions/GameInfo";
+import { PredictionDisplay } from "@/components/games/PredictionDisplay";
+import { useState } from "react";
+import { PointsBreakdownDialog } from "@/components/games/PointsBreakdownDialog";
+import { Button } from "@/components/ui/button";
+import { Eye } from "lucide-react";
+import { FinishedGameInsightsDialog } from "@/components/games/prediction/insights/FinishedGameInsightsDialog";
 
 interface UserPredictionCardProps {
   game: {
@@ -16,45 +19,38 @@ interface UserPredictionCardProps {
       name: string;
       logo_url: string;
     };
-    game_results?: Array<{
+    game_results: Array<{
       home_score: number;
       away_score: number;
-      is_final?: boolean;
+      is_final: boolean;
     }>;
   };
   prediction: {
     prediction_home_score: number;
     prediction_away_score: number;
     points_earned?: number;
-  } | null;
+  };
   isOwnPrediction?: boolean;
 }
 
-export function UserPredictionCard({ 
-  game, 
-  prediction,
-  isOwnPrediction = false
-}: UserPredictionCardProps) {
+export function UserPredictionCard({ game, prediction, isOwnPrediction = false }: UserPredictionCardProps) {
   const [showPointsBreakdown, setShowPointsBreakdown] = useState(false);
-  const gameResult = game.game_results?.[0];
-
-  if (!prediction) {
-    return null;
-  }
+  const [showInsights, setShowInsights] = useState(false);
+  const gameResult = game.game_results[0];
 
   const handlePointsClick = () => {
-    if (gameResult && prediction?.points_earned !== undefined) {
+    if (gameResult && prediction.points_earned !== undefined) {
       setShowPointsBreakdown(true);
     }
   };
 
   return (
     <>
-      <Card className="hover:shadow-md transition-all duration-300 h-full">
-        <CardContent className="p-4 sm:p-6">
-          <div className="flex flex-col h-full space-y-4">
+      <Card className="hover:shadow-md transition-all duration-300">
+        <CardContent className="pt-6">
+          <div className="flex flex-col items-center">
             <GameInfo game={game} prediction={prediction} />
-            <div className="w-full mt-auto pt-2">
+            <div className="mt-4 space-y-3">
               <PredictionDisplay
                 homeScore={prediction.prediction_home_score}
                 awayScore={prediction.prediction_away_score}
@@ -62,6 +58,17 @@ export function UserPredictionCard({
                 onClick={handlePointsClick}
                 showBreakdownHint={!!gameResult && prediction.points_earned !== undefined}
               />
+              
+              {gameResult && (
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={() => setShowInsights(true)}
+                >
+                  <Eye className="w-4 h-4 mr-2" />
+                  How Others Predicted
+                </Button>
+              )}
             </div>
           </div>
         </CardContent>
@@ -80,7 +87,18 @@ export function UserPredictionCard({
             away_score: gameResult.away_score
           }}
           points={prediction.points_earned}
-          isOwnPrediction={isOwnPrediction}
+        />
+      )}
+
+      {gameResult && (
+        <FinishedGameInsightsDialog
+          isOpen={showInsights}
+          onOpenChange={setShowInsights}
+          gameId={game.id}
+          finalScore={{
+            home: gameResult.home_score,
+            away: gameResult.away_score
+          }}
         />
       )}
     </>
