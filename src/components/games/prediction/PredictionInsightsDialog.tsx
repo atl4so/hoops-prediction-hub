@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
+import { Json } from "@/integrations/supabase/types";
 
 interface LastGameResult {
   home_score: number;
@@ -36,7 +37,26 @@ export function PredictionInsightsDialog({ isOpen, onOpenChange, gameId }: Predi
         .rpc('get_game_prediction_insights', { game_id_param: gameId });
       
       if (error) throw error;
-      return data[0] as GameInsights; // Access the first element of the array with type assertion
+      
+      // Transform the raw data to ensure type safety
+      const rawData = data[0] as {
+        total_predictions: number;
+        home_win_predictions: number;
+        away_win_predictions: number;
+        avg_home_score: number;
+        avg_away_score: number;
+        common_margin_range: string;
+        common_total_points_range: string;
+        last_game_result: Json;
+      };
+
+      // Transform the data to match our GameInsights type
+      const transformedData: GameInsights = {
+        ...rawData,
+        last_game_result: rawData.last_game_result as LastGameResult
+      };
+
+      return transformedData;
     },
     enabled: isOpen
   });
