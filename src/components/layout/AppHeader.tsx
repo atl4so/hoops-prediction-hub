@@ -87,7 +87,7 @@ export function AppHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+    <header className="sticky top-0 z-50 w-full border-b border-neutral-200/50 bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
         <div className="flex items-center gap-6">
           {isAuthenticated && (
@@ -102,7 +102,7 @@ export function AppHeader() {
             to={isAuthenticated ? "/overview" : "/"} 
             className="flex items-center space-x-2 font-display"
           >
-            <span className="text-lg font-bold bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
+            <span className="text-lg font-bold text-black">
               euroleague.bet
             </span>
           </Link>

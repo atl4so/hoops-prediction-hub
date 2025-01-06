@@ -16,7 +16,7 @@ interface DesktopNavProps {
 
 export function DesktopNav({ menuItems, currentPath, isAuthenticated }: DesktopNavProps) {
   return (
-    <nav className="hidden md:flex items-center space-x-2 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full border border-border/50 shadow-sm">
+    <nav className="hidden md:flex items-center space-x-2 bg-background/60 backdrop-blur-md px-4 py-2 rounded-full border border-neutral-200/50 shadow-sm">
       {menuItems.map((item) => (
         <Button
           key={item.title}
