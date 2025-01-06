@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowDown, ArrowUp, Minus } from "lucide-react";
+import { Home, Plane } from "lucide-react";
 
 interface BasicNumbersProps {
   totalPredictions: number;
@@ -36,19 +36,19 @@ export function BasicNumbers({
               <p className="text-sm text-muted-foreground mb-2">Win Predictions</p>
               <div className="flex justify-center items-center gap-4">
                 <div className="text-center">
-                  <ArrowUp className="w-4 h-4 text-green-500 mx-auto" />
+                  <Home className="w-4 h-4 text-green-500 mx-auto" />
                   <p className="text-xl font-bold">{homeWinPercentage}%</p>
                   <p className="text-xs text-muted-foreground">Home</p>
                 </div>
                 {drawPercentage > 0 && (
                   <div className="text-center">
-                    <Minus className="w-4 h-4 text-orange-500 mx-auto" />
+                    <div className="w-4 h-4 mx-auto" />
                     <p className="text-xl font-bold">{drawPercentage}%</p>
                     <p className="text-xs text-muted-foreground">Draw</p>
                   </div>
                 )}
                 <div className="text-center">
-                  <ArrowDown className="w-4 h-4 text-red-500 mx-auto" />
+                  <Plane className="w-4 h-4 text-red-500 mx-auto" />
                   <p className="text-xl font-bold">{awayWinPercentage}%</p>
                   <p className="text-xs text-muted-foreground">Away</p>
                 </div>
