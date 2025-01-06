@@ -53,7 +53,7 @@ export function PredictionInsightsDialog({ isOpen, onOpenChange, gameId }: Predi
       // Transform the data to match our GameInsights type
       const transformedData: GameInsights = {
         ...rawData,
-        last_game_result: rawData.last_game_result as LastGameResult
+        last_game_result: rawData.last_game_result as unknown as LastGameResult
       };
 
       return transformedData;
