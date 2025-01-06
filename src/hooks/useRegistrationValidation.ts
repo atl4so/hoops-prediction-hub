@@ -3,65 +3,72 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const useRegistrationValidation = () => {
   const validateDisplayName = async (displayName: string): Promise<string | null> => {
-    // Check if display name is empty or only whitespace
-    if (!displayName || displayName.trim() === '') {
-      return "Display name is required";
-    }
-
-    // Check minimum length after trimming
-    if (displayName.trim().length < 3) {
-      return "Display name must be at least 3 characters long";
-    }
-    
     try {
-      const { data, error } = await supabase
+      // Check if display name is empty or only whitespace
+      const trimmedName = displayName.trim();
+      if (!trimmedName) {
+        return "Display name is required";
+      }
+
+      // Check minimum length after trimming
+      if (trimmedName.length < 3) {
+        return "Display name must be at least 3 characters long";
+      }
+
+      // Check for any existing display name that matches
+      const { data: existingProfiles, error } = await supabase
         .from('profiles')
-        .select('id')
-        .ilike('display_name', displayName.trim())
-        .maybeSingle();
+        .select('display_name')
+        .eq('display_name', trimmedName);
 
       if (error) {
         console.error('Error checking display name:', error);
-        return "Error checking display name availability";
+        throw new Error("Error checking display name availability");
       }
 
-      if (data) {
+      // Check if any profile exists with this name
+      if (existingProfiles && existingProfiles.length > 0) {
         return "This display name is already taken";
       }
 
+      // No match found, name is available
       return null;
     } catch (error) {
-      console.error('Error checking display name:', error);
-      return "Error checking display name availability";
+      console.error('Error in validateDisplayName:', error);
+      throw error;
     }
   };
 
   const validateRegistrationEmail = async (email: string): Promise<string | null> => {
-    const validationError = validateEmail(email);
-    if (validationError) {
-      return validationError;
-    }
-
     try {
-      const { data, error } = await supabase
+      // Basic email format validation
+      const validationError = validateEmail(email);
+      if (validationError) {
+        return validationError;
+      }
+
+      // Normalize email
+      const normalizedEmail = email.toLowerCase().trim();
+
+      // Check if email is already registered
+      const { data: existingProfiles, error } = await supabase
         .from('profiles')
-        .select('id')
-        .eq('email', email.toLowerCase())
-        .maybeSingle();
+        .select('email')
+        .eq('email', normalizedEmail);
 
       if (error) {
         console.error('Error checking email:', error);
-        return "Error checking email availability";
+        throw new Error("Error checking email availability");
       }
 
-      if (data) {
+      if (existingProfiles && existingProfiles.length > 0) {
         return "This email is already registered";
       }
 
       return null;
     } catch (error) {
-      console.error('Error checking email:', error);
-      return "Error checking email availability";
+      console.error('Error in validateRegistrationEmail:', error);
+      throw error;
     }
   };
 
