@@ -87,9 +87,9 @@ export function AppHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-neutral-200/50 bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
-        <div className="flex items-center gap-6">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 max-w-screen-2xl items-center justify-between">
+        <div className="flex items-center gap-4">
           {isAuthenticated && (
             <MobileMenu 
               menuItems={menuItems}
@@ -100,11 +100,9 @@ export function AppHeader() {
           
           <Link 
             to={isAuthenticated ? "/overview" : "/"} 
-            className="flex items-center space-x-2 font-display"
+            className="flex items-center space-x-2"
           >
-            <span className="text-lg font-bold text-black">
-              euroleague.bet
-            </span>
+            <span className="font-bold">euroleague.bet</span>
           </Link>
 
           {isAuthenticated && (
