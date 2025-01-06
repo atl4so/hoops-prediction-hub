@@ -7,6 +7,8 @@ interface BasicNumbersProps {
   avgHomeScore: number;
   avgAwayScore: number;
   commonMargin: string;
+  homeWinMargin?: string;
+  awayWinMargin?: string;
 }
 
 export function BasicNumbers({
@@ -16,6 +18,8 @@ export function BasicNumbers({
   avgHomeScore,
   avgAwayScore,
   commonMargin,
+  homeWinMargin,
+  awayWinMargin,
 }: BasicNumbersProps) {
   const homeWinPercentage = ((homeWinPredictions / totalPredictions) * 100).toFixed(1);
   const awayWinPercentage = ((awayWinPredictions / totalPredictions) * 100).toFixed(1);
@@ -40,6 +44,18 @@ export function BasicNumbers({
             <span className="text-muted-foreground">Average Margin:</span>
             <span className="font-semibold">{commonMargin}</span>
           </div>
+          {homeWinMargin && (
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground">Average Home Win Margin:</span>
+              <span className="font-semibold">{homeWinMargin}</span>
+            </div>
+          )}
+          {awayWinMargin && (
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground">Average Away Win Margin:</span>
+              <span className="font-semibold">{awayWinMargin}</span>
+            </div>
+          )}
           <div className="flex justify-between items-center flex-wrap">
             <span className="text-muted-foreground whitespace-nowrap">Average Predicted Score:</span>
             <span className="font-semibold whitespace-nowrap">{`${avgHomeScore.toFixed(1)} - ${avgAwayScore.toFixed(1)}`}</span>
