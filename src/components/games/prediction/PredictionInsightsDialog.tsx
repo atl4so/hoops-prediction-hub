@@ -18,7 +18,7 @@ export function PredictionInsightsDialog({ isOpen, onOpenChange, gameId }: Predi
         .rpc('get_game_prediction_insights', { game_id_param: gameId });
       
       if (error) throw error;
-      return data;
+      return data[0]; // Access the first element of the array
     },
     enabled: isOpen
   });
