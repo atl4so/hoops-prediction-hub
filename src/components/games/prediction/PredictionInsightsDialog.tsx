@@ -23,7 +23,7 @@ export function PredictionInsightsDialog({
         <DialogContent>
           <div className="flex flex-col items-center justify-center p-8">
             <Loader2 className="h-8 w-8 animate-spin text-primary/80" />
-            <p className="mt-2 text-sm text-muted-foreground">Loading predictions...</p>
+            <p className="mt-2 text-sm text-muted-foreground">Loading insights...</p>
           </div>
         </DialogContent>
       </Dialog>
@@ -35,7 +35,7 @@ export function PredictionInsightsDialog({
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-destructive">Error Loading Predictions</DialogTitle>
+            <DialogTitle className="text-destructive">Error Loading Insights</DialogTitle>
           </DialogHeader>
           <p className="text-center text-muted-foreground">
             There was an error loading the prediction insights. Please try again later.
@@ -65,7 +65,7 @@ export function PredictionInsightsDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center mb-6">
-            Current Prediction Trends
+            How Others Predict
           </DialogTitle>
         </DialogHeader>
 
@@ -76,6 +76,9 @@ export function PredictionInsightsDialog({
             awayWinPredictions={insights.awayWinPredictions}
             avgHomeScore={insights.avgHomeScore}
             avgAwayScore={insights.avgAwayScore}
+            commonMargin={insights.commonMargin}
+            avgHomeWinMargin={insights.avgHomeWinMargin}
+            avgAwayWinMargin={insights.avgAwayWinMargin}
           />
 
           <PredictionPatterns
