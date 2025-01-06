@@ -6,6 +6,7 @@ interface BasicNumbersProps {
   awayWinPredictions: number;
   avgHomeScore: number;
   avgAwayScore: number;
+  commonMargin: string;
 }
 
 export function BasicNumbers({
@@ -14,11 +15,14 @@ export function BasicNumbers({
   awayWinPredictions,
   avgHomeScore,
   avgAwayScore,
+  commonMargin,
 }: BasicNumbersProps) {
+  const homeWinPercentage = ((homeWinPredictions / totalPredictions) * 100).toFixed(1);
+  const awayWinPercentage = ((awayWinPredictions / totalPredictions) * 100).toFixed(1);
+
   return (
-    <Card className="bg-card border-2 border-primary/20">
-      <CardContent className="p-4 space-y-4">
-        <h3 className="font-semibold text-lg text-primary/80">Basic Numbers</h3>
+    <Card>
+      <CardContent className="p-4 space-y-3">
         <div className="space-y-3">
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Total Predictions:</span>
@@ -26,15 +30,19 @@ export function BasicNumbers({
           </div>
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Home Win Predictions:</span>
-            <span className="font-semibold">{homeWinPredictions}</span>
+            <span className="font-semibold">{homeWinPercentage}%</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Away Win Predictions:</span>
-            <span className="font-semibold">{awayWinPredictions}</span>
+            <span className="font-semibold">{awayWinPercentage}%</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Average Predicted Score:</span>
-            <span className="font-semibold">{`${avgHomeScore.toFixed(1)} - ${avgAwayScore.toFixed(1)}`}</span>
+            <span className="text-muted-foreground">Average Margin:</span>
+            <span className="font-semibold">{commonMargin}</span>
+          </div>
+          <div className="flex justify-between items-center flex-wrap">
+            <span className="text-muted-foreground whitespace-nowrap">Average Predicted Score:</span>
+            <span className="font-semibold whitespace-nowrap">{`${avgHomeScore.toFixed(1)} - ${avgAwayScore.toFixed(1)}`}</span>
           </div>
         </div>
       </CardContent>
