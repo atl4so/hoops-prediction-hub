@@ -47,9 +47,9 @@ export function useGameInsights(gameId: string) {
         awayWinPredictions: insights.away_win_predictions,
         avgHomeScore: insights.avg_home_score,
         avgAwayScore: insights.avg_away_score,
-        marginRange: insights.common_margin_range,
-        totalPointsRange: insights.common_total_points_range,
-        commonMargin: insights.common_margin_range,
+        marginRange: insights.common_margin,
+        totalPointsRange: insights.total_points_range,
+        commonMargin: insights.common_margin,
         avgHomeWinMargin: insights.avg_home_win_margin || 0,
         avgAwayWinMargin: insights.avg_away_win_margin || 0,
       };

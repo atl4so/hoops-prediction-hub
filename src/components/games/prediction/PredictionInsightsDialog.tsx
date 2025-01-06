@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { BasicNumbers } from "./insights/BasicNumbers";
 import { PredictionPatterns } from "./insights/PredictionPatterns";
 import { useGameInsights } from "./insights/useGameInsights";
+import { Loader2 } from "lucide-react";
 
 interface PredictionInsightsDialogProps {
   isOpen: boolean;
@@ -14,15 +15,31 @@ export function PredictionInsightsDialog({
   onOpenChange,
   gameId
 }: PredictionInsightsDialogProps) {
-  const { data: insights, isLoading } = useGameInsights(gameId);
+  const { data: insights, isLoading, error } = useGameInsights(gameId);
 
   if (isLoading) {
     return (
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent>
+          <div className="flex flex-col items-center justify-center p-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary/80" />
+            <p className="mt-2 text-sm text-muted-foreground">Loading insights...</p>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  if (error) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle>Loading insights...</DialogTitle>
+            <DialogTitle className="text-destructive">Error Loading Insights</DialogTitle>
           </DialogHeader>
+          <p className="text-center text-muted-foreground">
+            There was an error loading the prediction insights. Please try again later.
+          </p>
         </DialogContent>
       </Dialog>
     );
