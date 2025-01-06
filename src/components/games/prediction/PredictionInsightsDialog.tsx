@@ -45,7 +45,7 @@ export function PredictionInsightsDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center mb-6">
-            How Others Predict
+            {insights.gameResult?.is_final ? 'How Others Predicted' : 'How Others Predict'}
           </DialogTitle>
         </DialogHeader>
 
@@ -62,6 +62,7 @@ export function PredictionInsightsDialog({
           <PredictionPatterns
             marginRange={insights.marginRange}
             totalPointsRange={insights.totalPointsRange}
+            gameResult={insights.gameResult}
           />
         </div>
       </DialogContent>
