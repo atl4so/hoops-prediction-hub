@@ -42,11 +42,11 @@ export function useGameInsights(gameId: string) {
       console.log('Processing insights:', insights);
 
       return {
-        totalPredictions: insights.total_preds,
-        homeWinPredictions: insights.home_wins,
-        awayWinPredictions: insights.away_wins,
-        avgHomeScore: insights.avg_home,
-        avgAwayScore: insights.avg_away,
+        totalPredictions: insights.total_predictions,
+        homeWinPredictions: insights.home_win_predictions,
+        awayWinPredictions: insights.away_win_predictions,
+        avgHomeScore: insights.avg_home_score,
+        avgAwayScore: insights.avg_away_score,
         marginRange: insights.common_margin_range,
         totalPointsRange: insights.common_total_points_range,
         commonMargin: `${insights.common_margin_range}`,
