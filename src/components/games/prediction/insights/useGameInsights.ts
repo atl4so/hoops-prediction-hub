@@ -9,6 +9,12 @@ interface GameInsights {
   avgAwayScore: number;
   marginRange: string;
   totalPointsRange: string;
+  lastGameResult?: {
+    home_score: number;
+    away_score: number;
+    is_home: boolean;
+    game_date: string;
+  };
   gameResult?: {
     home_score: number;
     away_score: number;
@@ -42,11 +48,8 @@ export function useGameInsights(gameId: string) {
         avgAwayScore: Number(result.avg_away_score),
         marginRange: result.common_margin_range,
         totalPointsRange: result.common_total_points_range,
-        gameResult: result.game_result ? {
-          home_score: result.game_result.home_score,
-          away_score: result.game_result.away_score,
-          is_final: result.game_result.is_final
-        } : undefined
+        lastGameResult: result.last_game_result,
+        gameResult: result.game_result
       };
     }
   });
