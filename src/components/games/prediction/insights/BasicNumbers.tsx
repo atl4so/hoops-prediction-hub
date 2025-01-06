@@ -40,23 +40,27 @@ export function BasicNumbers({
             <span className="text-muted-foreground">Away Win Predictions:</span>
             <span className="font-semibold">{awayWinPercentage}%</span>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Average Margin:</span>
-            <span className="font-semibold">{commonMargin}</span>
+
+          <div className="pt-2 border-t">
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground">Overall Average Margin:</span>
+              <span className="font-semibold">{commonMargin}</span>
+            </div>
+            {homeWinMargin && (
+              <div className="flex justify-between items-center mt-2">
+                <span className="text-muted-foreground pl-4">• When Home Wins:</span>
+                <span className="font-semibold">{homeWinMargin}</span>
+              </div>
+            )}
+            {awayWinMargin && (
+              <div className="flex justify-between items-center mt-2">
+                <span className="text-muted-foreground pl-4">• When Away Wins:</span>
+                <span className="font-semibold">{awayWinMargin}</span>
+              </div>
+            )}
           </div>
-          {homeWinMargin && (
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Average Home Win Margin:</span>
-              <span className="font-semibold">{homeWinMargin}</span>
-            </div>
-          )}
-          {awayWinMargin && (
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Average Away Win Margin:</span>
-              <span className="font-semibold">{awayWinMargin}</span>
-            </div>
-          )}
-          <div className="flex justify-between items-center flex-wrap">
+
+          <div className="flex justify-between items-center flex-wrap pt-2 border-t">
             <span className="text-muted-foreground whitespace-nowrap">Average Predicted Score:</span>
             <span className="font-semibold whitespace-nowrap">{`${avgHomeScore.toFixed(1)} - ${avgAwayScore.toFixed(1)}`}</span>
           </div>
