@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Json } from "@/types/supabase";
 
 interface GameInsights {
   totalPredictions: number;
@@ -12,6 +13,20 @@ interface GameInsights {
   commonMargin: string;
   avgHomeWinMargin: number;
   avgAwayWinMargin: number;
+}
+
+interface RawGameInsights {
+  total_predictions: number;
+  home_win_predictions: number;
+  away_win_predictions: number;
+  avg_home_score: number;
+  avg_away_score: number;
+  common_margin_range: string;
+  common_total_points_range: string;
+  last_game_result: Json;
+  game_result: Json;
+  avg_home_win_margin: number;
+  avg_away_win_margin: number;
 }
 
 export function useGameInsights(gameId: string) {
@@ -37,7 +52,7 @@ export function useGameInsights(gameId: string) {
         return null;
       }
 
-      const insights = data[0];
+      const insights = data[0] as RawGameInsights;
       
       console.log('Processing insights:', insights);
 
@@ -52,7 +67,7 @@ export function useGameInsights(gameId: string) {
         commonMargin: insights.common_margin_range,
         avgHomeWinMargin: insights.avg_home_win_margin || 0,
         avgAwayWinMargin: insights.avg_away_win_margin || 0,
-      };
+      } as GameInsights;
     },
     enabled: !!gameId,
   });
