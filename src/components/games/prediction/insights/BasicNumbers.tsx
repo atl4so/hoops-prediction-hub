@@ -36,7 +36,7 @@ export function BasicNumbers({
               <p className="text-sm text-muted-foreground mb-2">Win Predictions</p>
               <div className="flex justify-center items-center gap-4">
                 <div className="text-center">
-                  <Home className="w-4 h-4 text-green-500 mx-auto" />
+                  <Home className="w-4 h-4 text-primary mx-auto" />
                   <p className="text-xl font-bold">{homeWinPercentage}%</p>
                   <p className="text-xs text-muted-foreground">Home</p>
                 </div>
@@ -48,7 +48,7 @@ export function BasicNumbers({
                   </div>
                 )}
                 <div className="text-center">
-                  <Plane className="w-4 h-4 text-red-500 mx-auto" />
+                  <Plane className="w-4 h-4 text-primary mx-auto" />
                   <p className="text-xl font-bold">{awayWinPercentage}%</p>
                   <p className="text-xs text-muted-foreground">Away</p>
                 </div>
