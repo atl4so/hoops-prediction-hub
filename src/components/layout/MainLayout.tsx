@@ -3,13 +3,14 @@ import { AppHeader } from "./AppHeader";
 import { Footer } from "./Footer";
 import { supabase } from "@/integrations/supabase/client";
 import type { BackgroundSetting } from "@/types/supabase";
+import { useEffect } from "react";
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
 export function MainLayout({ children }: MainLayoutProps) {
-  const { data: activeBackground } = useQuery({
+  const { data: activeBackground, refetch } = useQuery({
     queryKey: ["active-background"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -22,6 +23,29 @@ export function MainLayout({ children }: MainLayoutProps) {
       return data as BackgroundSetting | null;
     },
   });
+
+  // Subscribe to changes in background_settings table
+  useEffect(() => {
+    const channel = supabase
+      .channel('background_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'background_settings'
+        },
+        () => {
+          // Refetch the active background when any changes occur
+          refetch();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [refetch]);
 
   return (
     <div className="min-h-screen flex flex-col w-full relative overflow-hidden">
