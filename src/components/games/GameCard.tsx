@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { GameInfo } from "@/components/dashboard/predictions/GameInfo";
 import { PredictionButton } from "./prediction/PredictionButton";
-import { PredictionDialog } from "@/components/games/prediction/PredictionDialog";
+import { PredictionDialog } from "@/components/predictions/PredictionDialog";
 import { PredictionInsightsDialog } from "./prediction/insights/PredictionInsightsDialog";
 import { Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -27,14 +27,14 @@ interface GameCardProps {
   };
   userId?: string;
   isAuthenticated: boolean;
-  userPrediction?: {
+  prediction?: {
     prediction_home_score: number;
     prediction_away_score: number;
     points_earned?: number;
   } | null;
 }
 
-export function GameCard({ game, userId, isAuthenticated, userPrediction }: GameCardProps) {
+export function GameCard({ game, userId, isAuthenticated, prediction }: GameCardProps) {
   const [showPredictionDialog, setShowPredictionDialog] = useState(false);
   const [showInsightsDialog, setShowInsightsDialog] = useState(false);
 
@@ -42,14 +42,14 @@ export function GameCard({ game, userId, isAuthenticated, userPrediction }: Game
     <>
       <Card className="hover:shadow-md transition-all duration-300">
         <CardContent className="pt-6">
-          <GameInfo game={game} prediction={userPrediction} />
+          <GameInfo game={game} prediction={prediction} />
           
           <div className="mt-6 space-y-3">
             <PredictionButton
               gameId={game.id}
               userId={userId}
               isAuthenticated={isAuthenticated}
-              prediction={userPrediction}
+              prediction={prediction}
               gameDate={game.game_date}
               onPrediction={() => setShowPredictionDialog(true)}
               homeTeam={game.home_team}
