@@ -51,7 +51,7 @@ export function GameCard({ game, userId, isAuthenticated, userPrediction }: Game
               isAuthenticated={isAuthenticated}
               prediction={userPrediction}
               gameDate={game.game_date}
-              onPredictionClick={() => setShowPredictionDialog(true)}
+              onPrediction={() => setShowPredictionDialog(true)}
               homeTeam={game.home_team}
               awayTeam={game.away_team}
             />
