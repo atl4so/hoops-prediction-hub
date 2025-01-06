@@ -64,14 +64,14 @@ export function ProfileMenu() {
     <>
       <DropdownMenu>
         <div className="flex items-center gap-4">
-          <div className="hidden md:flex items-center gap-4 pointer-events-none">
+          <div className="hidden md:flex items-center gap-2 pointer-events-none">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-2 bg-accent/50 px-3 py-1.5 rounded-full">
-                    <Trophy className="h-4 w-4 text-yellow-500" />
-                    <span className="text-muted-foreground font-medium">ATR:</span>
-                    <span className="font-semibold text-foreground">{profile?.allTimeRank || '-'}</span>
+                  <div className="flex items-center gap-1.5 bg-yellow-500/10 px-2.5 py-1 rounded-md border border-yellow-500/20">
+                    <Trophy className="h-3.5 w-3.5 text-yellow-500" />
+                    <span className="text-yellow-600/70 text-sm font-medium">ATR:</span>
+                    <span className="font-semibold text-yellow-700">{profile?.allTimeRank || '-'}</span>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -84,10 +84,10 @@ export function ProfileMenu() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="flex items-center gap-2 bg-accent/50 px-3 py-1.5 rounded-full">
-                      <ListOrdered className="h-4 w-4 text-blue-500" />
-                      <span className="text-muted-foreground font-medium">Round {currentRoundRank.roundName}:</span>
-                      <span className="font-semibold text-foreground">{currentRoundRank.rank || '-'}</span>
+                    <div className="flex items-center gap-1.5 bg-blue-500/10 px-2.5 py-1 rounded-md border border-blue-500/20">
+                      <ListOrdered className="h-3.5 w-3.5 text-blue-500" />
+                      <span className="text-blue-600/70 text-sm font-medium">R{currentRoundRank.roundName}:</span>
+                      <span className="font-semibold text-blue-700">{currentRoundRank.rank || '-'}</span>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -135,7 +135,7 @@ export function ProfileMenu() {
             {currentRoundRank && (
               <div className="flex items-center gap-2 text-sm bg-accent/50 px-2 py-1.5 rounded-lg">
                 <ListOrdered className="h-4 w-4 text-blue-500" />
-                <span className="text-muted-foreground font-medium">Round {currentRoundRank.roundName}:</span>
+                <span className="text-muted-foreground font-medium">R{currentRoundRank.roundName}:</span>
                 <span className="font-semibold">{currentRoundRank.rank || '-'}</span>
               </div>
             )}
