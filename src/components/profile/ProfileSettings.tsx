@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -8,9 +8,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { AvatarUpload } from "./AvatarUpload";
-import { DeleteAccountDialog } from "./DeleteAccountDialog";
 import { supabase } from "@/integrations/supabase/client";
 
 interface ProfileSettingsProps {
@@ -21,25 +19,22 @@ interface ProfileSettingsProps {
 
 export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettingsProps) {
   const [isUploading, setIsUploading] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleAvatarChange = async (file: File | null) => {
-    if (!profile?.id) {
-      toast.error('Profile not found');
-      return;
-    }
+    if (!profile?.id) return;
 
     setIsUploading(true);
     try {
-      // Handle existing avatar removal
+      // Delete existing avatar if it exists and we're either removing or replacing it
       if (profile.avatar_url) {
-        const urlPath = new URL(profile.avatar_url).pathname;
-        const filePath = urlPath.split('/avatars/')[1];
-        if (filePath) {
-          await supabase.storage.from('avatars').remove([filePath]);
+        const oldPath = profile.avatar_url.split('/').pop();
+        if (oldPath) {
+          await supabase.storage.from('avatars').remove([oldPath]);
         }
       }
 
+      // If file is null, we're just removing the avatar
       if (!file) {
         const { error: updateError } = await supabase
           .from('profiles')
@@ -48,27 +43,27 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
 
         if (updateError) throw updateError;
         
+        queryClient.invalidateQueries({ queryKey: ['userProfile'] });
         toast.success('Profile picture removed successfully');
         return;
       }
 
+      // Upload new avatar
       const fileExt = file.name.split('.').pop();
       const filePath = `${profile.id}-${Date.now()}.${fileExt}`;
       
-      // Upload file with correct content type
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file, {
-          contentType: file.type,
-          upsert: true
-        });
+        .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
+      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
 
+      // Update profile
       const { error: updateError } = await supabase
         .from('profiles')
         .update({ avatar_url: publicUrl })
@@ -76,6 +71,7 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
 
       if (updateError) throw updateError;
 
+      queryClient.invalidateQueries({ queryKey: ['userProfile'] });
       toast.success('Profile picture updated successfully');
     } catch (error: any) {
       console.error('Error updating avatar:', error);
@@ -86,40 +82,23 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
   };
 
   return (
-    <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Profile Settings</DialogTitle>
-            <DialogDescription>
-              Manage your profile settings and account preferences
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <AvatarUpload
-              currentAvatarUrl={profile?.avatar_url}
-              onAvatarChange={handleAvatarChange}
-              isUploading={isUploading}
-              displayName={profile?.display_name}
-            />
-            <div className="pt-4">
-              <Button 
-                variant="destructive" 
-                onClick={() => setShowDeleteConfirm(true)}
-                className="w-full"
-              >
-                Delete Account
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <DeleteAccountDialog 
-        open={showDeleteConfirm} 
-        onOpenChange={setShowDeleteConfirm}
-        profile={profile}
-      />
-    </>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Profile Settings</DialogTitle>
+          <DialogDescription>
+            Manage your profile settings and account preferences
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <AvatarUpload
+            currentAvatarUrl={profile?.avatar_url}
+            onAvatarChange={handleAvatarChange}
+            isUploading={isUploading}
+            displayName={profile?.display_name}
+          />
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
