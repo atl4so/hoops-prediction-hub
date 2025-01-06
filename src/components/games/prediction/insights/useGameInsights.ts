@@ -48,16 +48,16 @@ export function useGameInsights(gameId: string) {
       })) || [];
 
       return {
-        totalPredictions: insights.total_predictions,
-        homeWinPredictions: insights.home_win_predictions,
-        awayWinPredictions: insights.away_win_predictions,
-        avgHomeScore: insights.avg_home_score,
-        avgAwayScore: insights.avg_away_score,
+        totalPredictions: insights.total_preds,
+        homeWinPredictions: insights.home_wins,
+        awayWinPredictions: insights.away_wins,
+        avgHomeScore: insights.avg_home,
+        avgAwayScore: insights.avg_away,
         commonMargin: insights.common_margin_range,
         marginRange: insights.common_margin_range,
         totalPointsRange: insights.common_total_points_range,
-        avgHomeWinMargin: insights.avg_home_win_margin,
-        avgAwayWinMargin: insights.avg_away_win_margin,
+        avgHomeWinMargin: insights.home_win_margin || 0,
+        avgAwayWinMargin: insights.away_win_margin || 0,
         topPredictors
       };
     },
