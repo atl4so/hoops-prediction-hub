@@ -1,13 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { supabase } from "@/integrations/supabase/client";
-import { FinishedGameStats } from "./FinishedGameStats";
+import { BasicNumbers } from "./BasicNumbers";
+import { PredictionPatterns } from "./PredictionPatterns";
+import { useGameInsights } from "./useGameInsights";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Trophy, Medal } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface FinishedGameInsightsDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   gameId: string;
-  finalScore: {
+  finalScore?: {
     home: number;
     away: number;
   };
@@ -17,118 +21,116 @@ export function FinishedGameInsightsDialog({
   isOpen,
   onOpenChange,
   gameId,
-  finalScore,
+  finalScore
 }: FinishedGameInsightsDialogProps) {
-  const { data: predictions, isLoading } = useQuery({
-    queryKey: ["finished-game-predictions", gameId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("predictions")
-        .select(`
-          prediction_home_score,
-          prediction_away_score,
-          points_earned,
-          profiles (
-            display_name,
-            avatar_url
-          )
-        `)
-        .eq("game_id", gameId)
-        .order("points_earned", { ascending: false });
-
-      if (error) throw error;
-      return data;
-    },
-    enabled: isOpen,
-  });
+  const { data: insights, isLoading } = useGameInsights(gameId);
 
   if (isLoading) {
     return (
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Loading predictions...</DialogTitle>
+            <DialogTitle>Loading insights...</DialogTitle>
           </DialogHeader>
         </DialogContent>
       </Dialog>
     );
   }
 
-  if (!predictions?.length) {
+  if (!insights) {
     return (
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>No predictions found</DialogTitle>
+            <DialogTitle>No predictions yet</DialogTitle>
           </DialogHeader>
         </DialogContent>
       </Dialog>
     );
   }
 
-  // Calculate basic stats
-  const totalPredictions = predictions.length;
-  const homeWinPredictions = predictions.filter(p => p.prediction_home_score > p.prediction_away_score).length;
-  const awayWinPredictions = predictions.filter(p => p.prediction_home_score < p.prediction_away_score).length;
-  const avgHomeScore = Math.round(predictions.reduce((sum, p) => sum + p.prediction_home_score, 0) / totalPredictions * 10) / 10;
-  const avgAwayScore = Math.round(predictions.reduce((sum, p) => sum + p.prediction_away_score, 0) / totalPredictions * 10) / 10;
-
-  // Calculate prediction patterns
-  const margins = predictions.map(p => Math.abs(p.prediction_home_score - p.prediction_away_score));
-  const avgMargin = margins.length > 0 
-    ? Math.round(margins.reduce((a, b) => a + b) / margins.length * 10) / 10
-    : 0;
-  const commonMargin = avgMargin.toString();
-
-  // Calculate average margins for home/away wins
-  const homeWinPreds = predictions.filter(p => p.prediction_home_score > p.prediction_away_score);
-  const awayWinPreds = predictions.filter(p => p.prediction_home_score < p.prediction_away_score);
-  
-  const avgHomeWinMargin = homeWinPreds.length > 0
-    ? Math.round(homeWinPreds.reduce((sum, p) => sum + (p.prediction_home_score - p.prediction_away_score), 0) / homeWinPreds.length * 10) / 10
-    : 0;
-    
-  const avgAwayWinMargin = awayWinPreds.length > 0
-    ? Math.round(awayWinPreds.reduce((sum, p) => sum + (p.prediction_away_score - p.prediction_home_score), 0) / awayWinPreds.length * 10) / 10
-    : 0;
-
-  const totalPoints = predictions.map(p => p.prediction_home_score + p.prediction_away_score);
-  const minTotal = Math.min(...totalPoints);
-  const maxTotal = Math.max(...totalPoints);
-  const totalPointsRange = totalPoints.length > 0 ? `${minTotal}-${maxTotal}` : "N/A";
-
-  // Get top 3 predictors
-  const topPredictors = predictions
-    .filter(p => p.points_earned !== null)
-    .sort((a, b) => (b.points_earned || 0) - (a.points_earned || 0))
-    .slice(0, 3);
+  const getRankIcon = (rank: number) => {
+    switch (rank) {
+      case 1:
+        return <Trophy className="h-5 w-5 text-yellow-500" />;
+      case 2:
+        return <Medal className="h-5 w-5 text-gray-400" />;
+      case 3:
+        return <Medal className="h-5 w-5 text-amber-600" />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl h-[90vh] flex flex-col">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center mb-6">
-            Game Insights
+          <DialogTitle className="text-2xl font-bold text-center">
+            Prediction Insights
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto pr-2 space-y-6">
-          <FinishedGameStats
-            predictions={predictions}
-            finalScore={finalScore}
-            basicStats={{
-              totalPredictions,
-              homeWinPredictions,
-              awayWinPredictions,
-              avgHomeScore,
-              avgAwayScore,
-              commonMargin,
-              totalPointsRange,
-              avgHomeWinMargin,
-              avgAwayWinMargin
-            }}
-            topPredictors={topPredictors}
-          />
+        <div className="space-y-6">
+          {/* Basic Stats Section */}
+          <Card>
+            <CardContent className="p-4">
+              <h3 className="text-lg font-semibold mb-4">Overall Statistics</h3>
+              <BasicNumbers
+                totalPredictions={insights.totalPredictions}
+                homeWinPredictions={insights.homeWinPredictions}
+                awayWinPredictions={insights.awayWinPredictions}
+                avgHomeScore={insights.avgHomeScore}
+                avgAwayScore={insights.avgAwayScore}
+                commonMargin={insights.commonMargin}
+                avgHomeWinMargin={insights.avgHomeWinMargin}
+                avgAwayWinMargin={insights.avgAwayWinMargin}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Top Predictors Section */}
+          {insights.topPredictors && insights.topPredictors.length > 0 && (
+            <Card>
+              <CardContent className="p-4">
+                <h3 className="text-lg font-semibold mb-4">Top Predictors</h3>
+                <div className="space-y-3">
+                  {insights.topPredictors.slice(0, 3).map((predictor, index) => (
+                    <div key={predictor.id} className="flex items-center justify-between p-2 rounded-lg bg-accent/50">
+                      <div className="flex items-center gap-2">
+                        {getRankIcon(index + 1)}
+                        <span className="font-medium">{predictor.displayName}</span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <span className={cn(
+                          "text-sm px-2 py-1 rounded",
+                          predictor.points > 30 ? "bg-green-100 text-green-700" :
+                          predictor.points > 20 ? "bg-blue-100 text-blue-700" :
+                          "bg-orange-100 text-orange-700"
+                        )}>
+                          {predictor.points} pts
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          {predictor.prediction.home} - {predictor.prediction.away}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Patterns Section */}
+          <Card>
+            <CardContent className="p-4">
+              <h3 className="text-lg font-semibold mb-4">Prediction Patterns</h3>
+              <PredictionPatterns
+                marginRange={insights.marginRange}
+                totalPointsRange={insights.totalPointsRange}
+              />
+            </CardContent>
+          </Card>
         </div>
       </DialogContent>
     </Dialog>
