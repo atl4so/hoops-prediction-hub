@@ -9,7 +9,6 @@ interface GameInsights {
   avgAwayScore: number;
   marginRange: string;
   totalPointsRange: string;
-  commonMargin: string;
 }
 
 export function useGameInsights(gameId: string) {
@@ -37,7 +36,6 @@ export function useGameInsights(gameId: string) {
 
       // Calculate the common margin from average scores
       const marginRange = Math.abs(avgHomeScore - avgAwayScore).toFixed(1);
-      const commonMargin = `${marginRange} points`;
 
       // Calculate total points range
       const totalPoints = predictions.map(p => p.prediction_home_score + p.prediction_away_score);
@@ -53,7 +51,6 @@ export function useGameInsights(gameId: string) {
         avgAwayScore,
         marginRange,
         totalPointsRange,
-        commonMargin,
       };
     },
     enabled: !!gameId,

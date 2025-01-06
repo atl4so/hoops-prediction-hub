@@ -61,7 +61,6 @@ export function FinishedGameStats({ predictions, finalScore, basicStats, topPred
         awayWinPredictions={basicStats.awayWinPredictions}
         avgHomeScore={basicStats.avgHomeScore}
         avgAwayScore={basicStats.avgAwayScore}
-        commonMargin={basicStats.commonMargin}
       />
 
       <PredictionPatterns
