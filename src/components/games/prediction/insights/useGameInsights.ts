@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-// Define Json type locally since it's not exported from supabase types
+// Define local Json type since it's not exported from supabase types
 type Json = string | number | boolean | null | { [key: string]: Json } | Json[];
 
 interface GameInsights {
@@ -15,20 +15,8 @@ interface GameInsights {
   commonMargin: string;
   avgHomeWinMargin: number;
   avgAwayWinMargin: number;
-}
-
-interface RawGameInsights {
-  total_predictions: number;
-  home_win_predictions: number;
-  away_win_predictions: number;
-  avg_home_score: number;
-  avg_away_score: number;
-  common_margin_range: string;
-  common_total_points_range: string;
-  last_game_result: Json;
-  game_result: Json;
-  avg_home_win_margin: number;
-  avg_away_win_margin: number;
+  lastGameResult?: Json;
+  gameResult?: Json;
 }
 
 export function useGameInsights(gameId: string) {
@@ -54,10 +42,8 @@ export function useGameInsights(gameId: string) {
         return null;
       }
 
-      const insights = data[0] as RawGameInsights;
+      const insights = data[0];
       
-      console.log('Processing insights:', insights);
-
       return {
         totalPredictions: insights.total_predictions,
         homeWinPredictions: insights.home_win_predictions,
@@ -69,6 +55,8 @@ export function useGameInsights(gameId: string) {
         commonMargin: insights.common_margin_range,
         avgHomeWinMargin: insights.avg_home_win_margin || 0,
         avgAwayWinMargin: insights.avg_away_win_margin || 0,
+        lastGameResult: insights.last_game_result,
+        gameResult: insights.game_result
       } as GameInsights;
     },
     enabled: !!gameId,

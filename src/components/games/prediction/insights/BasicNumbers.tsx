@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowDown, ArrowUp, Minus } from "lucide-react";
+import { Users, TrendingUp, Target } from "lucide-react";
 
 interface BasicNumbersProps {
   totalPredictions: number;
@@ -22,74 +22,56 @@ export function BasicNumbers({
   avgHomeWinMargin,
   avgAwayWinMargin
 }: BasicNumbersProps) {
-  const homeWinPercentage = Math.round((homeWinPredictions / totalPredictions) * 100);
-  const awayWinPercentage = Math.round((awayWinPredictions / totalPredictions) * 100);
-  const drawPercentage = 100 - homeWinPercentage - awayWinPercentage;
+  const homeWinPercentage = Math.round((homeWinPredictions / totalPredictions) * 100) || 0;
+  const awayWinPercentage = Math.round((awayWinPredictions / totalPredictions) * 100) || 0;
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Basic Numbers</h3>
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-2">Win Predictions</p>
-              <div className="flex justify-center items-center gap-4">
-                <div className="text-center">
-                  <ArrowUp className="w-4 h-4 text-green-500 mx-auto" />
-                  <p className="text-xl font-bold">{homeWinPercentage}%</p>
-                  <p className="text-xs text-muted-foreground">Home</p>
-                </div>
-                {drawPercentage > 0 && (
-                  <div className="text-center">
-                    <Minus className="w-4 h-4 text-orange-500 mx-auto" />
-                    <p className="text-xl font-bold">{drawPercentage}%</p>
-                    <p className="text-xs text-muted-foreground">Draw</p>
-                  </div>
-                )}
-                <div className="text-center">
-                  <ArrowDown className="w-4 h-4 text-red-500 mx-auto" />
-                  <p className="text-xl font-bold">{awayWinPercentage}%</p>
-                  <p className="text-xs text-muted-foreground">Away</p>
-                </div>
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Users className="h-5 w-5 text-primary/80" />
+            <h3 className="font-semibold">Prediction Overview</h3>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <p className="text-sm text-muted-foreground">Total Predictions</p>
+              <p className="text-2xl font-bold">{totalPredictions}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Win Predictions</p>
+              <div className="flex gap-2 text-sm">
+                <span>Home: {homeWinPercentage}%</span>
+                <span>Away: {awayWinPercentage}%</span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
+      </Card>
 
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-2">Average Score</p>
-              <p className="text-2xl font-bold">
-                {avgHomeScore} - {avgAwayScore}
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Based on {totalPredictions} predictions
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-center gap-2 mb-4">
+            <TrendingUp className="h-5 w-5 text-primary/80" />
+            <h3 className="font-semibold">Score Predictions</h3>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <p className="text-sm text-muted-foreground">Average Score</p>
+              <p className="text-lg">
+                {avgHomeScore.toFixed(1)} - {avgAwayScore.toFixed(1)}
               </p>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-2">Common Margin</p>
-              <p className="text-2xl font-bold">{commonMargin}</p>
-              <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
-                <div>
-                  <p className="text-muted-foreground">Home Wins</p>
-                  <p className="font-medium">+{avgHomeWinMargin}</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Away Wins</p>
-                  <p className="font-medium">+{avgAwayWinMargin}</p>
-                </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Win Margins</p>
+              <div className="text-sm">
+                <p>Home: {avgHomeWinMargin.toFixed(1)} pts</p>
+                <p>Away: {avgAwayWinMargin.toFixed(1)} pts</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

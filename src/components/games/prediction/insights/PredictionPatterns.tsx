@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Scale, Target } from "lucide-react";
+import { ChartBar } from "lucide-react";
 
 interface PredictionPatternsProps {
   marginRange: string;
@@ -8,36 +8,26 @@ interface PredictionPatternsProps {
 
 export function PredictionPatterns({
   marginRange,
-  totalPointsRange,
+  totalPointsRange
 }: PredictionPatternsProps) {
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Prediction Patterns</h3>
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="flex justify-center mb-2">
-                <Target className="w-5 h-5 text-primary/80" />
-              </div>
-              <p className="text-sm text-muted-foreground mb-1">Common Margin Range</p>
-              <p className="text-xl font-semibold">{marginRange}</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="flex justify-center mb-2">
-                <Scale className="w-5 h-5 text-primary/80" />
-              </div>
-              <p className="text-sm text-muted-foreground mb-1">Total Points Range</p>
-              <p className="text-xl font-semibold">{totalPointsRange}</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+    <Card>
+      <CardContent className="pt-6">
+        <div className="flex items-center gap-2 mb-4">
+          <ChartBar className="h-5 w-5 text-primary/80" />
+          <h3 className="font-semibold">Prediction Patterns</h3>
+        </div>
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm text-muted-foreground">Most Common Margin</p>
+            <p className="text-lg font-medium">{marginRange}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">Total Points Range</p>
+            <p className="text-lg font-medium">{totalPointsRange}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
