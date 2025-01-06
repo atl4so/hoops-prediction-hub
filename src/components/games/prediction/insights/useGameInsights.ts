@@ -6,10 +6,17 @@ export function useGameInsights(gameId: string) {
     queryKey: ["game-insights", gameId],
     queryFn: async () => {
       // Fetch basic insights
-      const { data: insights, error } = await supabase
+      const { data: insightsData, error } = await supabase
         .rpc('get_game_prediction_insights', { game_id_param: gameId });
 
       if (error) throw error;
+
+      // Get the first (and only) row from the insights array
+      const insights = insightsData[0];
+
+      if (!insights) {
+        throw new Error("No insights found");
+      }
 
       // Fetch top predictors with their predictions
       const { data: predictions } = await supabase
