@@ -35,6 +35,9 @@ export function PredictionInsightsDialog({
           <DialogHeader>
             <DialogTitle>No predictions yet</DialogTitle>
           </DialogHeader>
+          <p className="text-center text-muted-foreground">
+            Be the first to make a prediction for this game!
+          </p>
         </DialogContent>
       </Dialog>
     );
