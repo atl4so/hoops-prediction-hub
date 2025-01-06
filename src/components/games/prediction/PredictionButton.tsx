@@ -1,11 +1,8 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
-import { PredictionDialog } from "@/components/predictions/PredictionDialog";
-import { PredictionInsightsDialog } from "./PredictionInsightsDialog";
-import { FinishedGameInsightsDialog } from "./insights/FinishedGameInsightsDialog";
+import { subHours, isBefore } from "date-fns";
+import { toast } from "sonner";
+import { PredictionForm } from "./PredictionForm";
+import { usePredictionState } from "./usePredictionState";
 
 interface PredictionButtonProps {
   isAuthenticated: boolean;
@@ -23,35 +20,56 @@ interface PredictionButtonProps {
     is_final: boolean;
   };
   homeTeam: {
-    id: string;
     name: string;
-    logo_url: string;
   };
   awayTeam: {
-    id: string;
     name: string;
-    logo_url: string;
   };
 }
 
-export function PredictionButton({
-  isAuthenticated,
-  gameDate,
-  gameId,
+export function PredictionButton({ 
+  isAuthenticated, 
+  gameDate, 
+  gameId, 
   userId,
-  prediction,
+  prediction: initialPrediction,
   gameResult,
   homeTeam,
   awayTeam
 }: PredictionButtonProps) {
-  const navigate = useNavigate();
-  const [showPredictionDialog, setShowPredictionDialog] = useState(false);
-  const [showInsights, setShowInsights] = useState(false);
+  const {
+    showForm,
+    setShowForm,
+    isSubmitting,
+    prediction,
+    submitPrediction
+  } = usePredictionState(gameId, userId, initialPrediction);
 
-  const handlePredictionClick = () => {
+  const isPredictionAllowed = () => {
+    if (gameResult?.is_final || prediction) {
+      return false;
+    }
+
+    const gameDateObj = new Date(gameDate);
+    const now = new Date();
+    const oneHourBefore = subHours(gameDateObj, 1);
+    
+    return isBefore(now, oneHourBefore);
+  };
+
+  const getButtonText = () => {
+    if (prediction) {
+      return "Prediction Submitted";
+    }
+    if (gameResult?.is_final) {
+      return "Game Completed";
+    }
+    return isPredictionAllowed() ? "Make Prediction" : "Predictions Closed";
+  };
+
+  const handleClick = () => {
     if (!isAuthenticated) {
       toast.error("Please log in to make predictions");
-      navigate("/login");
       return;
     }
 
@@ -65,64 +83,31 @@ export function PredictionButton({
       return;
     }
 
-    const gameDateObj = new Date(gameDate);
-    const now = new Date();
-    const oneHourBefore = new Date(gameDateObj.getTime() - (60 * 60 * 1000));
-    
-    if (now >= oneHourBefore) {
+    if (!isPredictionAllowed()) {
       toast.error("Predictions are closed 1 hour before the game starts");
       return;
     }
 
-    setShowPredictionDialog(true);
+    setShowForm(true);
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       <Button 
-        variant="default"
-        className="w-full" 
-        onClick={handlePredictionClick}
-        disabled={!!prediction || !!gameResult?.is_final}
+        onClick={handleClick}
+        className="w-full shadow-sm transition-all duration-300"
+        disabled={!isPredictionAllowed() || !!prediction}
       >
-        {prediction ? "Prediction Submitted" : 
-         gameResult?.is_final ? "Game Completed" : 
-         "Make Prediction"}
-      </Button>
-      
-      <Button 
-        variant="outline" 
-        className="w-full" 
-        onClick={() => setShowInsights(true)}
-      >
-        <Eye className="w-4 h-4 mr-2" />
-        {gameResult?.is_final ? "How Others Predicted" : "How Others Predict"}
+        {getButtonText()}
       </Button>
 
-      <PredictionDialog
-        isOpen={showPredictionDialog}
-        onOpenChange={setShowPredictionDialog}
-        gameId={gameId}
-        gameDate={gameDate}
-        homeTeam={homeTeam}
-        awayTeam={awayTeam}
-      />
-
-      {gameResult?.is_final ? (
-        <FinishedGameInsightsDialog
-          isOpen={showInsights}
-          onOpenChange={setShowInsights}
-          gameId={gameId}
-          finalScore={{
-            home: gameResult.home_score,
-            away: gameResult.away_score
-          }}
-        />
-      ) : (
-        <PredictionInsightsDialog
-          isOpen={showInsights}
-          onOpenChange={setShowInsights}
-          gameId={gameId}
+      {showForm && isPredictionAllowed() && !prediction && (
+        <PredictionForm
+          homeTeam={homeTeam}
+          awayTeam={awayTeam}
+          onSubmit={submitPrediction}
+          onCancel={() => setShowForm(false)}
+          isSubmitting={isSubmitting}
         />
       )}
     </div>
