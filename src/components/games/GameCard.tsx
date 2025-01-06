@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { PredictionInsightsDialog } from "./prediction/PredictionInsightsDialog";
 import { Eye } from "lucide-react";
+import { FinishedGameInsightsDialog } from "./prediction/insights/FinishedGameInsightsDialog";
 
 interface GameCardProps {
   game: {
@@ -53,67 +54,69 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
   };
 
   return (
-    <Card className="game-card w-full h-full flex flex-col">
-      <CardContent className="p-6 flex-1 flex flex-col">
-        <div className="flex flex-col h-full">
-          <div className="text-center mb-4">
-            <GameDateTime date={game.game_date} />
-            {isUpcoming && (
-              <div className="text-primary text-sm mt-2">
-                <CountdownTimer gameDate={game.game_date} />
-              </div>
-            )}
-          </div>
-          
-          <div className="grid grid-cols-3 gap-4 items-center flex-1">
-            <TeamDisplay
-              align="right"
-              team={game.home_team}
-            />
-            <div className="text-center text-xl font-bold">
-              vs
+    <>
+      <Card className="game-card w-full h-full flex flex-col">
+        <CardContent className="p-6 flex-1 flex flex-col">
+          <div className="flex flex-col h-full">
+            <div className="text-center mb-4">
+              <GameDateTime date={game.game_date} />
+              {isUpcoming && (
+                <div className="text-primary text-sm mt-2">
+                  <CountdownTimer gameDate={game.game_date} />
+                </div>
+              )}
             </div>
-            <TeamDisplay
-              align="left"
-              team={game.away_team}
-            />
-          </div>
-
-          {prediction && (
-            <div className="mt-6">
-              <PredictionDisplay
-                homeScore={prediction.prediction_home_score}
-                awayScore={prediction.prediction_away_score}
-                pointsEarned={prediction.points_earned}
-                onClick={handlePointsClick}
-                showBreakdownHint={!!gameResult && prediction.points_earned !== undefined}
+            
+            <div className="grid grid-cols-3 gap-4 items-center flex-1">
+              <TeamDisplay
+                align="right"
+                team={game.home_team}
+              />
+              <div className="text-center text-xl font-bold">
+                vs
+              </div>
+              <TeamDisplay
+                align="left"
+                team={game.away_team}
               />
             </div>
-          )}
 
-          <div className="mt-6 space-y-3">
-            <PredictionButton
-              isAuthenticated={isAuthenticated}
-              gameDate={game.game_date}
-              gameId={game.id}
-              userId={userId}
-              prediction={prediction}
-              gameResult={gameResult}
-              homeTeam={game.home_team}
-              awayTeam={game.away_team}
-            />
-            
-            <Button 
-              variant="outline" 
-              className="w-full" 
-              onClick={() => setShowInsights(true)}
-            >
-              <Eye className="w-4 h-4 mr-2" />
-              How Others Predict
-            </Button>
+            {prediction && (
+              <div className="mt-6">
+                <PredictionDisplay
+                  homeScore={prediction.prediction_home_score}
+                  awayScore={prediction.prediction_away_score}
+                  pointsEarned={prediction.points_earned}
+                  onClick={handlePointsClick}
+                  showBreakdownHint={!!gameResult && prediction.points_earned !== undefined}
+                />
+              </div>
+            )}
+
+            <div className="mt-6 space-y-3">
+              <PredictionButton
+                isAuthenticated={isAuthenticated}
+                gameDate={game.game_date}
+                gameId={game.id}
+                userId={userId}
+                prediction={prediction}
+                gameResult={gameResult}
+                homeTeam={game.home_team}
+                awayTeam={game.away_team}
+              />
+              
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                onClick={() => setShowInsights(true)}
+              >
+                <Eye className="w-4 h-4 mr-2" />
+                How Others Predict
+              </Button>
+            </div>
           </div>
-        </div>
-      </CardContent>
+        </CardContent>
+      </Card>
 
       {prediction?.points_earned !== undefined && gameResult && (
         <PointsBreakdownDialog
@@ -131,11 +134,23 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
         />
       )}
 
-      <PredictionInsightsDialog
-        isOpen={showInsights}
-        onOpenChange={setShowInsights}
-        gameId={game.id}
-      />
-    </Card>
+      {isUpcoming ? (
+        <PredictionInsightsDialog
+          isOpen={showInsights}
+          onOpenChange={setShowInsights}
+          gameId={game.id}
+        />
+      ) : gameResult && (
+        <FinishedGameInsightsDialog
+          isOpen={showInsights}
+          onOpenChange={setShowInsights}
+          gameId={game.id}
+          finalScore={{
+            home: gameResult.home_score,
+            away: gameResult.away_score
+          }}
+        />
+      )}
+    </>
   );
 }
