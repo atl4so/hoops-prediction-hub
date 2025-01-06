@@ -31,9 +31,10 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
 
     setIsUploading(true);
     try {
+      // Handle existing avatar removal
       if (profile.avatar_url) {
         const urlPath = new URL(profile.avatar_url).pathname;
-        const filePath = urlPath.split('/public/avatars/')[1];
+        const filePath = urlPath.split('/avatars/')[1];
         if (filePath) {
           await supabase.storage.from('avatars').remove([filePath]);
         }
@@ -54,9 +55,13 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
       const fileExt = file.name.split('.').pop();
       const filePath = `${profile.id}-${Date.now()}.${fileExt}`;
       
+      // Upload file with correct content type
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          contentType: file.type,
+          upsert: true
+        });
 
       if (uploadError) throw uploadError;
 
