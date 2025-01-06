@@ -23,10 +23,14 @@ interface PredictionButtonProps {
     is_final: boolean;
   };
   homeTeam: {
+    id: string;
     name: string;
+    logo_url: string;
   };
   awayTeam: {
+    id: string;
     name: string;
+    logo_url: string;
   };
 }
 
