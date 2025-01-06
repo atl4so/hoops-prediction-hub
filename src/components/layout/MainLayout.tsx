@@ -56,7 +56,9 @@ export function MainLayout({ children }: MainLayoutProps) {
             zIndex: -1,
           }}
         >
-          <div className="absolute inset-0 bg-black" />
+          {/* Black overlay with fixed opacity */}
+          <div className="absolute inset-0 bg-black opacity-40" />
+          {/* Background image with adjustable opacity */}
           <img 
             src={activeBackground.url} 
             alt="Background" 
