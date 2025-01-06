@@ -2,6 +2,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { FinishedGameStats } from "./FinishedGameStats";
+import { FinishedGamePredictions } from "./FinishedGamePredictions";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface FinishedGameInsightsDialogProps {
   isOpen: boolean;
@@ -42,6 +44,54 @@ export function FinishedGameInsightsDialog({
     enabled: isOpen,
   });
 
+  if (isLoading) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Loading predictions...</DialogTitle>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  if (!predictions?.length) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>No predictions found</DialogTitle>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // Calculate basic stats
+  const totalPredictions = predictions.length;
+  const homeWinPredictions = predictions.filter(p => p.prediction_home_score > p.prediction_away_score).length;
+  const awayWinPredictions = predictions.filter(p => p.prediction_home_score < p.prediction_away_score).length;
+  const avgHomeScore = Math.round(predictions.reduce((sum, p) => sum + p.prediction_home_score, 0) / totalPredictions * 10) / 10;
+  const avgAwayScore = Math.round(predictions.reduce((sum, p) => sum + p.prediction_away_score, 0) / totalPredictions * 10) / 10;
+
+  // Calculate prediction patterns
+  const margins = predictions.map(p => Math.abs(p.prediction_home_score - p.prediction_away_score));
+  const commonMargin = margins.length > 0 
+    ? `${Math.round(margins.reduce((a, b) => a + b) / margins.length * 10) / 10} points` 
+    : "N/A";
+
+  const totalPoints = predictions.map(p => p.prediction_home_score + p.prediction_away_score);
+  const minTotal = Math.min(...totalPoints);
+  const maxTotal = Math.max(...totalPoints);
+  const totalPointsRange = totalPoints.length > 0 ? `${minTotal}-${maxTotal}` : "N/A";
+
+  // Get top 3 predictors
+  const topPredictors = predictions
+    .filter(p => p.points_earned !== null)
+    .sort((a, b) => (b.points_earned || 0) - (a.points_earned || 0))
+    .slice(0, 3);
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
@@ -51,22 +101,36 @@ export function FinishedGameInsightsDialog({
           </DialogTitle>
         </DialogHeader>
 
-        {isLoading ? (
-          <div className="py-8 text-center text-muted-foreground">
-            Loading predictions...
-          </div>
-        ) : !predictions?.length ? (
-          <div className="py-8 text-center text-muted-foreground">
-            No predictions found for this game
-          </div>
-        ) : (
-          <div className="space-y-6">
+        <Tabs defaultValue="stats" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="stats">Statistics</TabsTrigger>
+            <TabsTrigger value="predictions">All Predictions</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="stats" className="space-y-6">
             <FinishedGameStats
               predictions={predictions}
               finalScore={finalScore}
+              basicStats={{
+                totalPredictions,
+                homeWinPredictions,
+                awayWinPredictions,
+                avgHomeScore,
+                avgAwayScore,
+                commonMargin,
+                totalPointsRange
+              }}
+              topPredictors={topPredictors}
             />
-          </div>
-        )}
+          </TabsContent>
+
+          <TabsContent value="predictions">
+            <FinishedGamePredictions
+              predictions={predictions}
+              finalScore={finalScore}
+            />
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );
