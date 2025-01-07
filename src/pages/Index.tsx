@@ -40,6 +40,11 @@ const Index = () => {
                     className="w-6 h-6 inline-block filter invert"
                   />
                   Start Your Prediction Journey
+                  <img 
+                    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+PHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIGZpbGw9Im5vbmUiLz48cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLW1pdGVybGltaXQ9IjEwIiBzdHJva2Utd2lkdGg9IjMyIiBkPSJNNDQ4IDI1NmMwLTEwNi04Ni0xOTItMTkyLTE5MlM2NCAxNTAgNjQgMjU2czg2IDE5MiAxOTIgMTkyczE5Mi04NiAxOTItMTkyWiIvPjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMzIiIGQ9Ik0zNjggMTkyTDI1Ni4xMyAzMjBsLTQ3Ljk1LTQ4bS0xNi4yMyA0OEwxNDQgMjcybTE2MS43MS04MGwtNTEuNTUgNTkiLz48L3N2Zz4=" 
+                    alt="Target" 
+                    className="w-6 h-6 inline-block filter invert"
+                  />
                 </span>
               </Button>
 
