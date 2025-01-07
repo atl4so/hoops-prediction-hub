@@ -8,6 +8,7 @@ import { TeamsList } from "@/components/admin/TeamsList";
 import { GameResults } from "@/components/admin/GameResults";
 import { AdminStats } from "@/components/admin/stats/AdminStats";
 import { BackgroundSettings } from "@/components/admin/BackgroundSettings";
+import { BasketballAnalyst } from "@/components/admin/analyst/BasketballAnalyst";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Admin = () => {
@@ -36,7 +37,7 @@ const Admin = () => {
       <AdminStats />
       <div className="card p-6">
         <Tabs defaultValue="games" className="space-y-6">
-          <TabsList className="grid grid-cols-5 w-full bg-accent">
+          <TabsList className="grid grid-cols-6 w-full bg-accent">
             <TabsTrigger 
               value="games"
               className="data-[state=active]:bg-primary data-[state=active]:text-white"
@@ -67,6 +68,12 @@ const Admin = () => {
             >
               Background
             </TabsTrigger>
+            <TabsTrigger 
+              value="analyst"
+              className="data-[state=active]:bg-primary data-[state=active]:text-white"
+            >
+              AI Analyst
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="games" className="space-y-4">
             <GameManager />
@@ -82,6 +89,9 @@ const Admin = () => {
           </TabsContent>
           <TabsContent value="background" className="space-y-4">
             <BackgroundSettings />
+          </TabsContent>
+          <TabsContent value="analyst" className="space-y-4">
+            <BasketballAnalyst />
           </TabsContent>
         </Tabs>
       </div>
