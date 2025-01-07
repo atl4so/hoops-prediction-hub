@@ -39,68 +39,72 @@ const Admin = () => {
       <AdminStats />
       <div className="card p-6">
         <Tabs defaultValue="games" className="space-y-6">
-          <TabsList 
-            className={`${
-              isMobile 
-                ? 'grid grid-cols-2 gap-2' 
-                : 'grid grid-cols-6'
-            } w-full bg-accent`}
-          >
-            <TabsTrigger 
-              value="games"
-              className="data-[state=active]:bg-primary data-[state=active]:text-white"
+          <div className="relative z-50 bg-background pb-4">
+            <TabsList 
+              className={`${
+                isMobile 
+                  ? 'grid grid-cols-2 gap-2 sticky top-0' 
+                  : 'grid grid-cols-6'
+              } w-full bg-accent`}
             >
-              Games
-            </TabsTrigger>
-            <TabsTrigger 
-              value="rounds"
-              className="data-[state=active]:bg-primary data-[state=active]:text-white"
-            >
-              Rounds
-            </TabsTrigger>
-            <TabsTrigger 
-              value="teams"
-              className="data-[state=active]:bg-primary data-[state=active]:text-white"
-            >
-              Teams
-            </TabsTrigger>
-            <TabsTrigger 
-              value="results"
-              className="data-[state=active]:bg-primary data-[state=active]:text-white"
-            >
-              Results
-            </TabsTrigger>
-            <TabsTrigger 
-              value="background"
-              className="data-[state=active]:bg-primary data-[state=active]:text-white"
-            >
-              Background
-            </TabsTrigger>
-            <TabsTrigger 
-              value="analyst"
-              className="data-[state=active]:bg-primary data-[state=active]:text-white"
-            >
-              AI Analyst
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="games" className="space-y-4">
-            <GameManager />
-          </TabsContent>
-          <TabsContent value="rounds" className="space-y-4">
-            <RoundManager />
-          </TabsContent>
-          <TabsContent value="teams" className="space-y-4">
-            <TeamsList />
-          </TabsContent>
-          <TabsContent value="results" className="space-y-4">
-            <GameResults />
-          </TabsContent>
-          <TabsContent value="background" className="space-y-4">
-            <BackgroundSettings />
-          </TabsContent>
-          <TabsContent value="analyst" className="space-y-4">
-            <BasketballAnalyst />
-          </TabsContent>
+              <TabsTrigger 
+                value="games"
+                className="data-[state=active]:bg-primary data-[state=active]:text-white"
+              >
+                Games
+              </TabsTrigger>
+              <TabsTrigger 
+                value="rounds"
+                className="data-[state=active]:bg-primary data-[state=active]:text-white"
+              >
+                Rounds
+              </TabsTrigger>
+              <TabsTrigger 
+                value="teams"
+                className="data-[state=active]:bg-primary data-[state=active]:text-white"
+              >
+                Teams
+              </TabsTrigger>
+              <TabsTrigger 
+                value="results"
+                className="data-[state=active]:bg-primary data-[state=active]:text-white"
+              >
+                Results
+              </TabsTrigger>
+              <TabsTrigger 
+                value="background"
+                className="data-[state=active]:bg-primary data-[state=active]:text-white"
+              >
+                Background
+              </TabsTrigger>
+              <TabsTrigger 
+                value="analyst"
+                className="data-[state=active]:bg-primary data-[state=active]:text-white"
+              >
+                AI Analyst
+              </TabsTrigger>
+            </TabsList>
+          </div>
+          <div className="relative z-10">
+            <TabsContent value="games" className="space-y-4">
+              <GameManager />
+            </TabsContent>
+            <TabsContent value="rounds" className="space-y-4">
+              <RoundManager />
+            </TabsContent>
+            <TabsContent value="teams" className="space-y-4">
+              <TeamsList />
+            </TabsContent>
+            <TabsContent value="results" className="space-y-4">
+              <GameResults />
+            </TabsContent>
+            <TabsContent value="background" className="space-y-4">
+              <BackgroundSettings />
+            </TabsContent>
+            <TabsContent value="analyst" className="space-y-4">
+              <BasketballAnalyst />
+            </TabsContent>
+          </div>
         </Tabs>
       </div>
     </div>
