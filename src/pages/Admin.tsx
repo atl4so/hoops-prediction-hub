@@ -10,10 +10,12 @@ import { AdminStats } from "@/components/admin/stats/AdminStats";
 import { BackgroundSettings } from "@/components/admin/BackgroundSettings";
 import { BasketballAnalyst } from "@/components/admin/analyst/BasketballAnalyst";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Admin = () => {
   const session = useSession();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!session) {
@@ -37,7 +39,13 @@ const Admin = () => {
       <AdminStats />
       <div className="card p-6">
         <Tabs defaultValue="games" className="space-y-6">
-          <TabsList className="grid grid-cols-6 w-full bg-accent">
+          <TabsList 
+            className={`${
+              isMobile 
+                ? 'grid grid-cols-2 gap-2' 
+                : 'grid grid-cols-6'
+            } w-full bg-accent`}
+          >
             <TabsTrigger 
               value="games"
               className="data-[state=active]:bg-primary data-[state=active]:text-white"
