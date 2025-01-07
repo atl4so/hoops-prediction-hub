@@ -39,11 +39,11 @@ const Admin = () => {
       <AdminStats />
       <div className="card p-6">
         <Tabs defaultValue="games" className="space-y-6">
-          <div className="relative z-50 bg-background pb-4">
+          <div className="sticky top-0 z-50 bg-background pb-4">
             <TabsList 
               className={`${
                 isMobile 
-                  ? 'grid grid-cols-2 gap-2 sticky top-0' 
+                  ? 'grid grid-cols-3 gap-2' 
                   : 'grid grid-cols-6'
               } w-full bg-accent`}
             >
@@ -75,17 +75,17 @@ const Admin = () => {
                 value="background"
                 className="data-[state=active]:bg-primary data-[state=active]:text-white"
               >
-                Background
+                BG
               </TabsTrigger>
               <TabsTrigger 
                 value="analyst"
                 className="data-[state=active]:bg-primary data-[state=active]:text-white"
               >
-                AI Analyst
+                AI
               </TabsTrigger>
             </TabsList>
           </div>
-          <div className="relative z-10">
+          <div className="relative mt-16 md:mt-0">
             <TabsContent value="games" className="space-y-4">
               <GameManager />
             </TabsContent>
