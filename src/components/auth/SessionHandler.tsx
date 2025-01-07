@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { QueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { clearAuthSession } from '@/utils/auth';
+import { clearAuthSession, verifySession } from '@/utils/auth';
 import { toast } from "sonner";
 
 interface SessionHandlerProps {
@@ -28,12 +28,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
             setIsAuthenticated(false);
             setIsLoading(false);
             await clearAuthSession();
-            if (error.message.includes('refresh_token_not_found')) {
-              console.log('Session expired, clearing auth state');
-              await supabase.auth.signOut();
-            } else {
-              toast.error("Session error. Please try logging in again.");
-            }
+            toast.error("Session error. Please try logging in again.");
           }
           return;
         }
@@ -73,11 +68,11 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
         
         console.log('Auth state changed:', event, session?.user?.id);
         
-        if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+        if (event === 'SIGNED_OUT') {
           setIsAuthenticated(false);
           setIsLoading(false);
           queryClient.clear();
-        } else if (event === 'SIGNED_IN') {
+        } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
           if (session) {
             setIsAuthenticated(true);
             setIsLoading(false);

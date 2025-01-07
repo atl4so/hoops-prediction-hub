@@ -12,44 +12,23 @@ import Rules from "@/pages/Rules";
 import Terms from "@/pages/Terms";
 import MyPredictions from "@/pages/MyPredictions";
 import Teams from "@/pages/Teams";
-import { useSession } from "@supabase/auth-helpers-react";
 
 export const AppRoutes = () => {
-  const session = useSession();
-  const isAuthenticated = !!session;
-
   return (
     <MainLayout>
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<RegisterForm />} />
+        <Route path="/overview" element={<Overview />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/predict" element={<Predict />} />
+        <Route path="/following" element={<Following />} />
+        <Route path="/my-predictions" element={<MyPredictions />} />
         <Route path="/teams" element={<Teams />} />
         <Route path="/rules" element={<Rules />} />
         <Route path="/terms" element={<Terms />} />
-        
-        {/* Protected routes */}
-        <Route
-          path="/overview"
-          element={isAuthenticated ? <Overview /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/admin"
-          element={isAuthenticated ? <Admin /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/leaderboard"
-          element={isAuthenticated ? <Leaderboard /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/following"
-          element={isAuthenticated ? <Following /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/my-predictions"
-          element={isAuthenticated ? <MyPredictions /> : <Navigate to="/login" />}
-        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </MainLayout>

@@ -1,43 +1,39 @@
-import { Target, Shield, Scale, Users, Trophy } from "lucide-react";
+import { LayoutDashboard, Trophy, Target, Users2, ScrollText, Scale, Shield } from "lucide-react";
 
 export const navigationItems = [
   {
-    title: "My Predictions",
-    href: "/my-predictions",
-    icon: Target,
-    public: false
+    title: "Overview",
+    href: "/overview",
+    icon: LayoutDashboard,
   },
-  {
-    title: "Following",
-    href: "/following",
-    icon: Users,
-    public: false
-  },
-  {
-    title: "Leaderboard",
-    href: "/leaderboard",
-    icon: Trophy,
-    public: false
-  }
-];
-
-export const publicItems = [
   {
     title: "Predict",
     href: "/predict",
     icon: Target,
-    public: true
+  },
+  {
+    title: "My Predictions",
+    href: "/my-predictions",
+    icon: ScrollText,
+  },
+  {
+    title: "Following",
+    href: "/following",
+    icon: Users2,
   },
   {
     title: "Teams",
     href: "/teams",
     icon: Shield,
-    public: true
+  },
+  {
+    title: "Leaderboard",
+    href: "/leaderboard",
+    icon: Trophy,
   },
   {
     title: "Rules",
     href: "/rules",
     icon: Scale,
-    public: true
-  }
+  },
 ];

@@ -4,21 +4,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { MobileMenu } from "./MobileMenu";
 import { DesktopNav } from "./DesktopNav";
-import { navigationItems, publicItems } from "./NavigationItems";
+import { navigationItems } from "./NavigationItems";
 import { ProfileMenu } from "../profile/ProfileMenu";
 import { Settings } from "lucide-react";
 
 export function AppHeader() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [menuItems, setMenuItems] = useState(publicItems);
+  const [menuItems, setMenuItems] = useState([]);
   const navigate = useNavigate();
   const { toast } = useToast();
   const location = useLocation();
 
   useEffect(() => {
     const loadNavItems = async () => {
+      let items = [...navigationItems];
       if (isAuthenticated) {
-        let items = [...navigationItems];
         const { data: { user } } = await supabase.auth.getUser();
         if (user?.email === 'likasvy@gmail.com') {
           items = [
@@ -27,14 +27,29 @@ export function AppHeader() {
               title: "Admin",
               href: "/admin",
               icon: Settings,
-              public: false
             },
           ];
         }
-        setMenuItems(items);
       } else {
-        setMenuItems(publicItems);
+        items = [
+          {
+            title: "Home",
+            href: "/",
+            icon: navigationItems[0].icon,
+          },
+          {
+            title: "Leaderboard",
+            href: "/leaderboard",
+            icon: navigationItems[4].icon,
+          },
+          {
+            title: "Rules",
+            href: "/rules",
+            icon: navigationItems[5].icon,
+          },
+        ];
       }
+      setMenuItems(items);
     };
 
     loadNavItems();
@@ -67,6 +82,10 @@ export function AppHeader() {
     }
   };
 
+  if (location.pathname === "/" && !isAuthenticated) {
+    return null;
+  }
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 max-w-screen-2xl items-center">
@@ -86,12 +105,14 @@ export function AppHeader() {
             <span className="font-bold text-lg">euroleague.bet</span>
           </Link>
 
-          <DesktopNav 
-            menuItems={menuItems}
-            authenticatedItems={[]}
-            currentPath={location.pathname}
-            isAuthenticated={isAuthenticated}
-          />
+          {isAuthenticated && (
+            <DesktopNav 
+              menuItems={menuItems}
+              currentPath={location.pathname}
+              isAuthenticated={isAuthenticated}
+              onLogout={handleLogout}
+            />
+          )}
         </div>
 
         <div className="flex items-center justify-end">

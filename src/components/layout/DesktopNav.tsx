@@ -1,27 +1,23 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LucideProps } from "lucide-react";
 
 interface NavigationItem {
   title: string;
   href: string;
-  icon: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>>;
-  public: boolean;
+  icon: React.ComponentType<{ className?: string }>;
 }
 
 interface DesktopNavProps {
   menuItems: NavigationItem[];
-  authenticatedItems: NavigationItem[];
   currentPath: string;
   isAuthenticated: boolean;
+  onLogout: () => void;
 }
 
-export function DesktopNav({ menuItems, authenticatedItems, currentPath, isAuthenticated }: DesktopNavProps) {
-  const displayItems = isAuthenticated ? [...menuItems, ...authenticatedItems] : menuItems;
-
+export function DesktopNav({ menuItems, currentPath, isAuthenticated }: DesktopNavProps) {
   return (
     <nav className="hidden md:flex items-center space-x-1 bg-background/50 backdrop-blur-sm px-4 py-1.5 rounded-full border border-border/50 shadow-sm">
-      {displayItems.map((item) => (
+      {menuItems.map((item) => (
         <Button
           key={item.title}
           variant={currentPath === item.href ? "secondary" : "ghost"}
