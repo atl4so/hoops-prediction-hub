@@ -5,13 +5,13 @@ interface NavigationItem {
   title: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
+  public: boolean;
 }
 
 interface DesktopNavProps {
   menuItems: NavigationItem[];
   currentPath: string;
   isAuthenticated: boolean;
-  onLogout: () => void;
 }
 
 export function DesktopNav({ menuItems, currentPath, isAuthenticated }: DesktopNavProps) {
@@ -30,7 +30,7 @@ export function DesktopNav({ menuItems, currentPath, isAuthenticated }: DesktopN
             }`}
         >
           <Link 
-            to={item.href} 
+            to={!isAuthenticated && !item.public ? "/login" : item.href}
             className="flex items-center gap-2 relative group"
           >
             <item.icon className={`h-4 w-4 transition-colors duration-200 

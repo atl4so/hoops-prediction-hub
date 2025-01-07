@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { subHours, isBefore } from "date-fns";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { PredictionForm } from "./PredictionForm";
 import { usePredictionState } from "./usePredictionState";
@@ -37,6 +38,7 @@ export function PredictionButton({
   homeTeam,
   awayTeam
 }: PredictionButtonProps) {
+  const navigate = useNavigate();
   const {
     showForm,
     setShowForm,
@@ -58,6 +60,9 @@ export function PredictionButton({
   };
 
   const getButtonText = () => {
+    if (!isAuthenticated) {
+      return "Log in to Predict";
+    }
     if (prediction) {
       return "Prediction Submitted";
     }
@@ -69,7 +74,7 @@ export function PredictionButton({
 
   const handleClick = () => {
     if (!isAuthenticated) {
-      toast.error("Please log in to make predictions");
+      navigate("/login");
       return;
     }
 
@@ -96,7 +101,7 @@ export function PredictionButton({
       <Button 
         onClick={handleClick}
         className="w-full shadow-sm transition-all duration-300"
-        disabled={!isPredictionAllowed() || !!prediction}
+        disabled={isAuthenticated && (!isPredictionAllowed() || !!prediction)}
       >
         {getButtonText()}
       </Button>

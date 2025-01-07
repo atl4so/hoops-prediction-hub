@@ -27,27 +27,12 @@ export function AppHeader() {
               title: "Admin",
               href: "/admin",
               icon: Settings,
+              public: false
             },
           ];
         }
       } else {
-        items = [
-          {
-            title: "Home",
-            href: "/",
-            icon: navigationItems[0].icon,
-          },
-          {
-            title: "Leaderboard",
-            href: "/leaderboard",
-            icon: navigationItems[4].icon,
-          },
-          {
-            title: "Rules",
-            href: "/rules",
-            icon: navigationItems[5].icon,
-          },
-        ];
+        items = items.filter(item => item.public);
       }
       setMenuItems(items);
     };
@@ -82,10 +67,6 @@ export function AppHeader() {
     }
   };
 
-  if (location.pathname === "/" && !isAuthenticated) {
-    return null;
-  }
-
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 max-w-screen-2xl items-center">
@@ -105,14 +86,11 @@ export function AppHeader() {
             <span className="font-bold text-lg">euroleague.bet</span>
           </Link>
 
-          {isAuthenticated && (
-            <DesktopNav 
-              menuItems={menuItems}
-              currentPath={location.pathname}
-              isAuthenticated={isAuthenticated}
-              onLogout={handleLogout}
-            />
-          )}
+          <DesktopNav 
+            menuItems={menuItems}
+            currentPath={location.pathname}
+            isAuthenticated={isAuthenticated}
+          />
         </div>
 
         <div className="flex items-center justify-end">
