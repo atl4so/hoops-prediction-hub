@@ -46,7 +46,7 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
           )
         `)
         .eq('user_id', userId)
-        .not('points_earned', 'is', null);
+        .not('game.game_results', 'is', null);
 
       if (!predictions) return [];
 
@@ -61,9 +61,8 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
         
         if (!homeTeam || !awayTeam) return;
 
-        // Only track predictions where user predicted a team to win AND they actually won
+        // Track home team predictions
         if (prediction.prediction_home_score > prediction.prediction_away_score) {
-          // User predicted home team to win
           if (!teamStats.has(homeTeam.id)) {
             teamStats.set(homeTeam.id, { 
               success: 0, 
@@ -79,8 +78,8 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
           }
         }
 
+        // Track away team predictions
         if (prediction.prediction_away_score > prediction.prediction_home_score) {
-          // User predicted away team to win
           if (!teamStats.has(awayTeam.id)) {
             teamStats.set(awayTeam.id, { 
               success: 0, 
@@ -103,11 +102,11 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
           team_id,
           team_name: stats.name,
           logo_url: stats.logo_url,
-          success_rate: (stats.success / stats.total) * 100,
+          success_rate: stats.total > 0 ? (stats.success / stats.total) * 100 : 0,
           total_predictions: stats.total
         }))
         .filter(team => team.total_predictions >= 1)
-        .sort((a, b) => b.success_rate - a.success_rate)
+        .sort((a, b) => b.success_rate - a.success_rate || b.total_predictions - a.total_predictions)
         .slice(0, 3);
 
       return teamsArray;
