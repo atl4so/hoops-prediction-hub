@@ -66,14 +66,28 @@ export function UserPredictionCard({
       // Clone the card content
       const cardContent = document.createElement("div");
       cardContent.className = "relative";
-      cardContent.innerHTML = `
-        <div class="flex flex-col items-center">
-          ${document.querySelector(`[data-game-id="${game.id}"]`)?.innerHTML || ""}
-          <div class="absolute bottom-2 right-2 text-xs text-gray-400">
-            Predicted by @${userName}
+      
+      // Get the original content but exclude the "How Others Predicted" button
+      const originalContent = document.querySelector(`[data-game-id="${game.id}"]`);
+      if (originalContent) {
+        const clonedContent = originalContent.cloneNode(true) as HTMLElement;
+        
+        // Remove the "How Others Predicted" button if it exists
+        const insightsButton = clonedContent.querySelector('[data-insights-button]');
+        if (insightsButton) {
+          insightsButton.remove();
+        }
+        
+        cardContent.innerHTML = `
+          <div class="flex flex-col items-center">
+            ${clonedContent.innerHTML}
+            <div class="absolute bottom-2 right-2 text-xs text-gray-400">
+              Predicted by @${userName}
+            </div>
           </div>
-        </div>
-      `;
+        `;
+      }
+      
       tempDiv.appendChild(cardContent);
 
       // Capture the screenshot
@@ -143,6 +157,7 @@ export function UserPredictionCard({
                   variant="outline" 
                   className="w-full" 
                   onClick={() => setShowInsights(true)}
+                  data-insights-button
                 >
                   <Eye className="w-4 h-4 mr-2" />
                   How Others Predicted
