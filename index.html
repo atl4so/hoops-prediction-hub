@@ -26,39 +26,19 @@
     <meta property="twitter:description" content="Join the ultimate Euroleague basketball prediction community. Make predictions, compete with friends, and climb the leaderboard!">
     <meta property="twitter:image" content="/og-image.png">
 
-    <!-- Preload critical fonts -->
+    <!-- Fonts -->
     <link 
-      rel="preload" 
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
-      as="style"
-    >
-    <link 
-      rel="preload" 
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
-      as="style"
-    >
-    <link 
-      rel="stylesheet" 
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
-      media="print"
-      onload="this.media='all'"
-    >
-    <link 
-      rel="stylesheet" 
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
-      media="print"
-      onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
     >
     
-    <!-- Defer non-critical Google Tag Manager -->
+    <!-- Google Tag Manager -->
     <script defer src="https://www.googletagmanager.com/gtag/js?id=G-K4Q4STQNNY"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-K4Q4STQNNY', {
-        send_page_view: false
-      });
+      gtag('config', 'G-K4Q4STQNNY');
     </script>
 
     <!-- Structured Data -->
@@ -79,6 +59,8 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- Lovable Script -->
+    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
