@@ -28,6 +28,12 @@ const Login = () => {
     setIsLoading(true);
     setError(null);
 
+    if (!formData.email || !formData.password) {
+      setError('Email and password are required');
+      setIsLoading(false);
+      return;
+    }
+
     try {
       await loginWithEmail(formData.email, formData.password);
       toast.success("Welcome back!", {

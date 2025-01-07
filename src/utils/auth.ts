@@ -40,16 +40,23 @@ export const verifySession = async () => {
 
 export const loginWithEmail = async (email: string, password: string) => {
   try {
+    if (!email || !password) {
+      throw new Error('Email and password are required');
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email.toLowerCase().trim(),
-      password,
+      password: password.trim()
     });
 
     if (error) {
       if (error instanceof AuthApiError) {
         switch (error.status) {
           case 400:
-            throw new Error('Invalid email or password. Please check your credentials and try again.');
+            if (error.message.includes('Invalid login credentials')) {
+              throw new Error('Invalid email or password. Please check your credentials and try again.');
+            }
+            throw new Error(error.message);
           case 422:
             throw new Error('Email format is invalid. Please enter a valid email address.');
           default:
@@ -66,16 +73,19 @@ export const loginWithEmail = async (email: string, password: string) => {
   }
 };
 
-export const getErrorMessage = (error: Error | AuthError) => {
+export const getErrorMessage = (error: Error | AuthError): string => {
   if (error instanceof AuthApiError) {
     switch (error.status) {
       case 400:
-        return 'Invalid email or password. Please check your credentials and try again.';
+        if (error.message.includes('Invalid login credentials')) {
+          return 'Invalid email or password. Please check your credentials and try again.';
+        }
+        return error.message;
       case 422:
         return 'Email format is invalid. Please enter a valid email address.';
       default:
         return error.message;
     }
   }
-  return error.message;
+  return error.message || 'An unexpected error occurred. Please try again.';
 };
