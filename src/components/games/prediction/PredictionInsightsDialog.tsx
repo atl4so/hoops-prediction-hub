@@ -88,7 +88,7 @@ export function PredictionInsightsDialog({
 
             <PredictionPatterns
               marginRange={insights.commonMarginRange}
-              totalPointsRange={insights.commonTotalPointsRange}
+              totalPointsRange={insights.totalPointsRange}
             />
           </div>
         </ScrollArea>
