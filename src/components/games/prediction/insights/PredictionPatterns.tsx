@@ -10,6 +10,9 @@ export function PredictionPatterns({
   marginRange,
   totalPointsRange,
 }: PredictionPatternsProps) {
+  // Add console.log to help debug the values
+  console.log('PredictionPatterns received totalPointsRange:', totalPointsRange);
+  
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Prediction Patterns</h3>

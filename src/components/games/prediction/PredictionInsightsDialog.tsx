@@ -18,6 +18,9 @@ export function PredictionInsightsDialog({
 }: PredictionInsightsDialogProps) {
   const { data: insights, isLoading, error } = useGameInsights(gameId);
 
+  // Add console.log to help debug the values
+  console.log('PredictionInsightsDialog insights:', insights);
+
   if (isLoading) {
     return (
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
