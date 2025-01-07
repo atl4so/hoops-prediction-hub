@@ -4,6 +4,8 @@ import { GamesList } from "@/components/games/GamesList";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function Predict() {
   const session = useSession();
@@ -17,8 +19,8 @@ export default function Predict() {
 
   return (
     <div className="container max-w-5xl mx-auto py-8 animate-fade-in space-y-6">
-      <PageHeader title="Predict">
-        <p className="text-muted-foreground">Make your predictions for upcoming games</p>
+      <PageHeader title="Predict Euroleague Games">
+        <p className="text-muted-foreground">Make your predictions for upcoming Euroleague basketball games</p>
       </PageHeader>
 
       <Alert variant="destructive" className="border-red-500">
@@ -28,7 +30,34 @@ export default function Predict() {
         </AlertDescription>
       </Alert>
 
-      <GamesList userId={userId} isAuthenticated={!!session} />
+      <Card className="bg-muted/50">
+        <CardContent className="p-6">
+          <h2 className="text-xl font-semibold mb-4">Quick Links</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Link to="/teams" className="text-primary hover:underline">
+              View All Teams
+            </Link>
+            <Link to="/rules" className="text-primary hover:underline">
+              Prediction Rules
+            </Link>
+            {session && (
+              <>
+                <Link to="/my-predictions" className="text-primary hover:underline">
+                  My Predictions
+                </Link>
+                <Link to="/following" className="text-primary hover:underline">
+                  Following Feed
+                </Link>
+              </>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <section>
+        <h2 className="text-2xl font-semibold mb-6">Available Games</h2>
+        <GamesList userId={userId} isAuthenticated={!!session} />
+      </section>
     </div>
   );
 }
