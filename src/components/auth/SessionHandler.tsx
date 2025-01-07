@@ -49,7 +49,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
           if (mounted) {
             setIsAuthenticated(false);
             setIsLoading(false);
-            await clearAuthSession();
+            // Don't call clearAuthSession here since session is already invalid
           }
           return;
         }
@@ -94,12 +94,11 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
             } else {
               setIsAuthenticated(false);
               setIsLoading(false);
-              await clearAuthSession();
+              // Don't call clearAuthSession here since we're handling a sign-in event
             }
           } else {
             setIsAuthenticated(false);
             setIsLoading(false);
-            await clearAuthSession();
           }
         }
       });

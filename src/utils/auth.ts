@@ -6,7 +6,7 @@ export const clearAuthSession = async () => {
     localStorage.removeItem('supabase.auth.token');
     sessionStorage.clear();
     
-    // Then attempt to sign out from Supabase
+    // Then attempt to sign out from Supabase with local scope only
     try {
       await supabase.auth.signOut({ scope: 'local' });
     } catch (error) {
@@ -15,7 +15,7 @@ export const clearAuthSession = async () => {
     }
   } catch (error) {
     console.error('Session cleanup error:', error);
-    throw error;
+    // Don't throw the error to prevent cascading failures
   }
 };
 
@@ -33,19 +33,8 @@ export const verifySession = async () => {
       return false;
     }
 
-    // Verify the session is still valid by making a test request
-    const { error: testError } = await supabase
-      .from('profiles')
-      .select('id')
-      .limit(1)
-      .single();
-
-    if (testError && testError.code === 'PGRST301') {
-      console.error('Session invalid:', testError);
-      return false;
-    }
-
-    return true;
+    // Simple session check without making additional requests
+    return session.expires_at ? new Date(session.expires_at * 1000) > new Date() : false;
   } catch (error) {
     console.error('Session verification error:', error);
     return false;
