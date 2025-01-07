@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { X } from "lucide-react";
+import { Facebook, X } from "lucide-react";
 
 export function Footer() {
   return (
@@ -10,17 +10,28 @@ export function Footer() {
             © {new Date().getFullYear()} euroleague.bet - All rights reserved
           </div>
           <div className="flex items-center gap-4">
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-muted-foreground flex items-center gap-2">
               Follow us:
-              <a 
-                href="https://twitter.com/beteuroleague" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center ml-2 hover:text-primary transition-colors"
-                aria-label="Follow us on X (formerly Twitter)"
-              >
-                <X className="h-4 w-4" />
-              </a>
+              <div className="flex items-center gap-2">
+                <a 
+                  href="https://www.facebook.com/profile.php?id=61571329508012" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center hover:text-primary transition-colors"
+                  aria-label="Follow us on Facebook"
+                >
+                  <Facebook className="h-5 w-5" />
+                </a>
+                <a 
+                  href="https://twitter.com/beteuroleague" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center hover:text-primary transition-colors"
+                  aria-label="Follow us on X (formerly Twitter)"
+                >
+                  <X className="h-5 w-5" strokeWidth={2} />
+                </a>
+              </div>
             </div>
             <Link to="/terms" className="text-sm hover:text-primary transition-colors">
               Terms
