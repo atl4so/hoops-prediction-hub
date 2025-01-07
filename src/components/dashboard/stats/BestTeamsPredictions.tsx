@@ -20,98 +20,42 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
   const { data: bestTeams, isLoading } = useQuery({
     queryKey: ['userBestTeams', userId],
     queryFn: async () => {
-      const { data: predictions } = await supabase
-        .from('predictions')
+      const { data: teamStats, error } = await supabase
+        .from('team_prediction_stats')
         .select(`
-          prediction_home_score,
-          prediction_away_score,
-          game:games (
-            home_team_id,
-            away_team_id,
-            home_team:teams!games_home_team_id_fkey (
-              id,
-              name,
-              logo_url
-            ),
-            away_team:teams!games_away_team_id_fkey (
-              id,
-              name,
-              logo_url
-            ),
-            game_results (
-              home_score,
-              away_score,
-              is_final
-            )
+          team_id,
+          wins_predicted,
+          wins_correct,
+          team:teams!team_prediction_stats_team_id_fkey (
+            name,
+            logo_url
           )
         `)
-        .eq('user_id', userId);
+        .eq('user_id', userId)
+        .gt('wins_predicted', 0);
 
-      if (!predictions) return [];
+      if (error) {
+        console.error('Error fetching team stats:', error);
+        return [];
+      }
 
-      const teamStats = new Map<string, { success: number; total: number; name: string; logo_url: string }>();
+      if (!teamStats) return [];
 
-      predictions.forEach(prediction => {
-        if (!prediction.game?.game_results?.[0]?.is_final) return;
-        
-        const homeTeam = prediction.game.home_team;
-        const awayTeam = prediction.game.away_team;
-        const gameResult = prediction.game.game_results[0];
-        
-        if (!homeTeam || !awayTeam) return;
-
-        // Track when user predicts home team to win
-        if (prediction.prediction_home_score > prediction.prediction_away_score) {
-          if (!teamStats.has(homeTeam.id)) {
-            teamStats.set(homeTeam.id, { 
-              success: 0, 
-              total: 0, 
-              name: homeTeam.name, 
-              logo_url: homeTeam.logo_url 
-            });
-          }
-          const stats = teamStats.get(homeTeam.id)!;
-          stats.total++;
-          // Check if prediction was correct (home team actually won)
-          if (gameResult.home_score > gameResult.away_score) {
-            stats.success++;
-          }
-        }
-
-        // Track when user predicts away team to win
-        if (prediction.prediction_away_score > prediction.prediction_home_score) {
-          if (!teamStats.has(awayTeam.id)) {
-            teamStats.set(awayTeam.id, { 
-              success: 0, 
-              total: 0, 
-              name: awayTeam.name, 
-              logo_url: awayTeam.logo_url 
-            });
-          }
-          const stats = teamStats.get(awayTeam.id)!;
-          stats.total++;
-          // Check if prediction was correct (away team actually won)
-          if (gameResult.away_score > gameResult.home_score) {
-            stats.success++;
-          }
-        }
-      });
-
-      // Convert to array and calculate success rates
-      const teamsArray: TeamPredictionStats[] = Array.from(teamStats.entries())
-        .map(([team_id, stats]) => ({
-          team_id,
-          team_name: stats.name,
-          logo_url: stats.logo_url,
-          success_rate: stats.total > 0 ? (stats.success / stats.total) * 100 : 0,
-          total_predictions: stats.total
+      const processedStats: TeamPredictionStats[] = teamStats
+        .map(stat => ({
+          team_id: stat.team_id,
+          team_name: stat.team.name,
+          logo_url: stat.team.logo_url,
+          success_rate: stat.wins_predicted > 0 
+            ? (stat.wins_correct / stat.wins_predicted) * 100 
+            : 0,
+          total_predictions: stat.wins_predicted
         }))
-        .filter(team => team.total_predictions >= 1)
         .sort((a, b) => b.success_rate - a.success_rate || b.total_predictions - a.total_predictions)
         .slice(0, 3);
 
-      console.log('Best teams calculated:', teamsArray);
-      return teamsArray;
+      console.log('Best teams calculated:', processedStats);
+      return processedStats;
     },
     enabled: !!userId && !!session
   });

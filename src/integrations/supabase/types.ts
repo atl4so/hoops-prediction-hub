@@ -276,6 +276,51 @@ export type Database = {
         }
         Relationships: []
       }
+      team_prediction_stats: {
+        Row: {
+          created_at: string | null
+          id: string
+          team_id: string | null
+          updated_at: string | null
+          user_id: string | null
+          wins_correct: number | null
+          wins_predicted: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          team_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          wins_correct?: number | null
+          wins_predicted?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          team_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          wins_correct?: number | null
+          wins_predicted?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_prediction_stats_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_prediction_stats_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       teams: {
         Row: {
           created_at: string
