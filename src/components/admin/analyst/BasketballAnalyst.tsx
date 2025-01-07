@@ -1,104 +1,72 @@
 import { useState } from "react";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Send } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { fetchDatabaseContext } from "./useAnalystData";
-import { DatabaseContext } from "./types";
+import { Card } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { fetchDatabaseSchema, analyzeGameTrends, getTeamStats } from "./useAnalystData";
+import type { Game, Predictor, TeamStats } from "./types";
 
 export function BasketballAnalyst() {
-  const [query, setQuery] = useState("");
-  const [analysis, setAnalysis] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
+  const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
 
-  const handleAnalyze = async () => {
-    if (!query.trim()) {
-      toast.error("Please enter a query");
-      return;
-    }
+  const { data: schemaData, isLoading } = useQuery({
+    queryKey: ["analyst-data"],
+    queryFn: fetchDatabaseSchema
+  });
 
-    setIsLoading(true);
-    try {
-      const context = await fetchDatabaseContext();
-      const { data, error } = await supabase.functions.invoke('basketball-analyst', {
-        body: { query, context }
+  const { data: selectedGameData } = useQuery({
+    queryKey: ["game-analysis", selectedGameId],
+    queryFn: () => selectedGameId ? analyzeGameTrends(selectedGameId) : null,
+    enabled: !!selectedGameId
+  });
+
+  if (isLoading) {
+    return <div>Loading analysis...</div>;
+  }
+
+  const { upcomingGames, completedGames, topPredictors } = schemaData || {};
+
+  const generateAnalysis = () => {
+    let analysis = "Based on the database analysis:\n\n";
+
+    // Analyze upcoming games
+    if (upcomingGames?.length) {
+      analysis += "Upcoming Games:\n";
+      upcomingGames.forEach((game: Game) => {
+        analysis += `- ${game.home_team.name} vs ${game.away_team.name} on ${new Date(game.game_date).toLocaleDateString()}\n`;
       });
-
-      if (error) throw error;
-      setAnalysis(data.analysis);
-    } catch (error) {
-      console.error('Error analyzing:', error);
-      toast.error("Failed to analyze. Please try again.");
-    } finally {
-      setIsLoading(false);
     }
+
+    // Analyze completed games
+    if (completedGames?.length) {
+      analysis += "\nRecent Results:\n";
+      completedGames.forEach((game: Game) => {
+        const result = game.game_results?.[0];
+        if (result) {
+          analysis += `- ${game.home_team.name} ${result.home_score} - ${result.away_score} ${game.away_team.name}\n`;
+          const predictions = game.predictions || [];
+          const avgPoints = predictions.reduce((sum, p) => sum + (p.points_earned || 0), 0) / predictions.length;
+          analysis += `  Average prediction points: ${avgPoints.toFixed(1)}\n`;
+        }
+      });
+    }
+
+    // Analyze top predictors
+    if (topPredictors?.length) {
+      analysis += "\nTop Predictors:\n";
+      topPredictors.forEach((predictor: Predictor) => {
+        const winRate = (predictor.winner_predictions_correct / predictor.winner_predictions_total * 100).toFixed(1);
+        analysis += `- ${predictor.display_name}: ${predictor.points_per_game.toFixed(1)} PPG, ${winRate}% winner accuracy\n`;
+      });
+    }
+
+    return analysis;
   };
 
-  const exampleQueries = [
-    "analyze upcoming games and their prediction patterns",
-    "compare prediction accuracy between home and away games",
-    "identify trends in completed games from the last round",
-    "analyze the most successful predictors' strategies",
-    "show prediction distribution for next week's games"
-  ];
-
   return (
-    <div className="space-y-6 p-4">
-      <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-4">
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Ask your basketball analyst:</label>
-            <Textarea
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => {
-                if (!query && !isTyping) {
-                  setIsTyping(true);
-                }
-              }}
-              onBlur={() => setIsTyping(false)}
-              placeholder="Ask about games, predictions, trends, or request specific analysis..."
-              className="min-h-[100px]"
-            />
-          </div>
-          <Button 
-            onClick={handleAnalyze} 
-            disabled={isLoading || !query.trim()}
-            className="w-full sm:w-auto"
-          >
-            <Send className="w-4 h-4 mr-2" />
-            Analyze
-          </Button>
-        </div>
-
-        {!isTyping && !query && (
-          <div className="mt-4">
-            <p className="text-sm text-muted-foreground mb-2">Example queries:</p>
-            <div className="flex flex-wrap gap-2">
-              {exampleQueries.map((q, i) => (
-                <Button
-                  key={i}
-                  variant="outline"
-                  size="sm"
-                  className="text-xs whitespace-normal h-auto text-left"
-                  onClick={() => setQuery(q)}
-                >
-                  {q}
-                </Button>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {analysis && (
-        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-4">
-          <h3 className="font-semibold mb-2">Analysis:</h3>
-          <div className="whitespace-pre-wrap">{analysis}</div>
-        </div>
-      )}
-    </div>
+    <Card className="p-6">
+      <h2 className="text-2xl font-bold mb-4">Basketball Analyst</h2>
+      <pre className="whitespace-pre-wrap font-mono text-sm">
+        {generateAnalysis()}
+      </pre>
+    </Card>
   );
 }
