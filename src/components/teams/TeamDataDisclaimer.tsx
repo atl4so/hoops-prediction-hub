@@ -28,10 +28,10 @@ export function TeamDataDisclaimer() {
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-[500px] mx-4">
+        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto mx-2 w-[calc(100%-1rem)] p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle className="text-base sm:text-lg font-semibold flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-red-500" />
+              <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
               Important Notice About Team Statistics
             </DialogTitle>
           </DialogHeader>
