@@ -35,13 +35,13 @@ export default {
         ring: "hsl(var(--ring))",
         background: {
           DEFAULT: "#F5F5F7",
-          dark: "#1A1F2C",
+          dark: "#0F1117", // Darker background
         },
         foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "#F97316",
           foreground: "hsl(var(--primary-foreground))",
-          dark: "#22C55E",
+          dark: "#22C55E", // Vibrant green for dark mode
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -55,17 +55,17 @@ export default {
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "#64748B",
-          dark: "#8E9196",
+          dark: "#94A3B8", // Lighter muted text for better contrast
         },
         accent: {
           DEFAULT: "#FFF7ED",
           foreground: "hsl(var(--accent-foreground))",
-          dark: "#F2FCE2",
+          dark: "#0F172A", // Darker accent
         },
         card: {
           DEFAULT: "#FFF7ED",
           foreground: "hsl(var(--card-foreground))",
-          dark: "#222222",
+          dark: "#1a1f2c", // Darker card background
         },
       },
       borderRadius: {
