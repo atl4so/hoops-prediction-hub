@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { TeamPredictor } from "./types";
+import { UserDisplayName } from "@/components/users/UserDisplayName";
 
 interface TeamTopPredictorsProps {
   teamId: string;
@@ -94,12 +95,11 @@ export function TeamTopPredictors({ teamId }: TeamTopPredictorsProps) {
                       <User className="h-4 w-4 sm:h-5 sm:w-5" />
                     </AvatarFallback>
                   </Avatar>
-                  <div>
-                    <p className="font-medium text-sm sm:text-base">{predictor.display_name}</p>
-                    <p className="text-xs sm:text-sm text-muted-foreground">
-                      {predictor.correct_predictions}/{predictor.total_predictions} predictions
-                    </p>
-                  </div>
+                  <UserDisplayName
+                    userId={predictor.user_id}
+                    displayName={predictor.display_name}
+                    className="text-sm sm:text-base"
+                  />
                 </div>
                 <p className="text-base sm:text-xl font-semibold whitespace-nowrap">
                   {predictor.correct_predictions}/{predictor.total_predictions}

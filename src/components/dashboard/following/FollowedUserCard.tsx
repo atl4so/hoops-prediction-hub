@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState } from "react";
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { UserDisplayName } from "@/components/users/UserDisplayName";
 
 interface FollowedUserCardProps {
   user: {
@@ -42,7 +43,6 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
     <Card className="group hover:shadow-md transition-all duration-300 animate-fade-in">
       <CardContent className="p-5 sm:p-6">
         <div className="space-y-4">
-          {/* Main row with avatar, name, and follow button */}
           <div className="flex items-center gap-4">
             <Avatar 
               className="h-12 w-12 sm:h-14 sm:w-14 ring-2 ring-primary/10 ring-offset-2 ring-offset-background transition-all duration-300 group-hover:ring-primary/20 shrink-0"
@@ -60,15 +60,15 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
             </Avatar>
             
             <div className="flex-1 min-w-0">
-              <p 
-                className="font-display font-semibold break-words cursor-pointer hover:text-primary transition-colors text-base sm:text-lg"
+              <UserDisplayName
+                userId={user.id}
+                displayName={user.display_name}
+                className="cursor-pointer hover:text-primary transition-colors text-base sm:text-lg"
                 onClick={() => onUserClick({
                   id: user.id,
                   display_name: user.display_name
                 })}
-              >
-                {user.display_name}
-              </p>
+              />
             </div>
 
             <FollowButton
