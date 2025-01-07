@@ -29,13 +29,13 @@ export function TeamDataDisclaimer() {
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto mx-2 w-[calc(100%-1rem)] p-4 sm:p-6">
-          <DialogHeader>
+          <DialogHeader className="pr-6">
             <DialogTitle className="text-base sm:text-lg font-semibold flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
               Important Notice About Team Statistics
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 text-muted-foreground text-sm sm:text-base">
+          <div className="space-y-4 text-muted-foreground text-sm sm:text-base pr-2">
             <p>
               Please note that euroleague.bet started operating from Round 19 of the season.
             </p>
