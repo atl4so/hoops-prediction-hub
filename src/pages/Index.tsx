@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@supabase/auth-helpers-react";
-import { Lock, User, TrendingUp } from "lucide-react";
+import { Lock, User } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -28,16 +28,15 @@ const Index = () => {
           
           {!session && (
             <div className="flex flex-col gap-4 items-center justify-center mt-6 w-full max-w-sm mx-auto px-4">
-              {/* Main Predict Button */}
+              {/* Main Predict Button with new styling */}
               <Button
                 onClick={() => navigate("/predict")}
                 size="lg"
-                className="w-full py-6 bg-gradient-to-r from-primary via-primary/90 to-primary hover:from-primary/90 hover:to-primary transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl animate-bounce-slow group relative overflow-hidden"
+                className="w-full py-6 bg-gradient-to-r from-[#0EA5E9] via-[#2563EB] to-[#4F46E5] hover:from-[#0284C7] hover:to-[#4338CA] transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl animate-bounce-slow group relative overflow-hidden"
               >
                 <div className="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition-colors duration-300" />
-                <span className="relative flex items-center justify-center gap-2 text-lg font-semibold tracking-wide">
-                  <TrendingUp className="w-5 h-5" />
-                  Make Your Predictions Now!
+                <span className="relative text-lg font-bold tracking-wide">
+                  🎯 Become The Next Prediction Legend! 🏆
                 </span>
               </Button>
 
