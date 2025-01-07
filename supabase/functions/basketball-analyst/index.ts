@@ -21,19 +21,20 @@ serve(async (req) => {
     console.log('Received query:', query);
     console.log('Context:', context);
 
-    // Create a comprehensive prompt that includes database context
-    const prompt = `You are an expert basketball data analyst and sports journalist specializing in Euroleague basketball. 
-    You have access to the following database tables and their relationships:
+    // Create a prompt that focuses on game statistics and patterns rather than user data
+    const prompt = `You are an expert basketball data analyst specializing in Euroleague basketball statistics. 
+    You have access to the following database structure and statistics:
     
     ${context.schema}
     
-    Current data summary:
+    Current statistics:
     ${context.summary}
     
     Based on this data, please ${query}
     
+    Focus on game patterns, scoring trends, and statistical insights. Do not reference specific users or make claims about individual predictors.
     Provide your analysis in a clear, professional manner. Include specific numbers and statistics when relevant.
-    If you're making predictions or identifying patterns, explain your reasoning.`;
+    If you're identifying patterns, explain your reasoning using the available game data.`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;

@@ -38,14 +38,13 @@ export function BasketballAnalyst() {
     return {
       schema: `
         - Games table tracks matches with home and away teams
-        - Predictions table stores user predictions for games
+        - Predictions table stores predictions for games
         - Game results table stores final scores
-        - Profiles table contains user information and statistics
         - Rounds table organizes games into competition rounds
         - Teams table stores team information
       `,
       summary: `
-        Database currently contains:
+        Database statistics:
         - ${gamesCount.count} total games
         - ${predictionsCount.count} predictions made
         - ${usersCount.count} registered users
@@ -89,11 +88,11 @@ export function BasketballAnalyst() {
   };
 
   const exampleQueries = [
-    "analyze prediction accuracy trends across different rounds",
-    "identify patterns in home team vs away team performance",
-    "create a social media post about the most successful predictors",
-    "generate a report about upcoming games based on historical data",
-    "analyze which teams are most difficult to predict correctly"
+    "analyze scoring patterns in recent games",
+    "identify trends in home team vs away team performance",
+    "analyze the most common winning margins",
+    "generate insights about high-scoring vs low-scoring games",
+    "analyze which game factors correlate with close matches"
   ];
 
   return (
@@ -109,7 +108,7 @@ export function BasketballAnalyst() {
                 setIsTyping(true);
               }}
               onBlur={() => setIsTyping(false)}
-              placeholder="Ask about predictions, patterns, statistics, or request a specific analysis..."
+              placeholder="Ask about game patterns, statistics, or request specific analysis..."
               className="min-h-[100px]"
             />
           </div>
