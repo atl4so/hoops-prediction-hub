@@ -40,11 +40,6 @@ const Index = () => {
                     className="w-6 h-6 inline-block filter invert"
                   />
                   Start Your Prediction Journey
-                  <img 
-                    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDQ4IDQ4Ij48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9Im5vbmUiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iNCI+PHBhdGggZD0iTTE4IDhIMTFDMTAuNDQ3NyA4IDEwIDguNDQ3NzIgMTAgOVY0M0MxMCA0My41NTIzIDEwLjQ0NzcgNDQgMTEgNDRIMzlDMzkuNTUyMyA0NCA0MCA0My41NTIzIDQwIDQzVjlDNDAgOC40NDc3MiAzOS41NTIzIDggMzkgOEgzMiIvPjxwYXRoIGZpbGw9IiMyZjg4ZmYiIGQ9Ik0xOCAxM1Y4SDIxLjk1MDVDMjEuOTc3OCA4IDIyIDcuOTc3ODQgMjIgNy45NTA1VjZDMjIgNC4zNDMxNSAyMy4zNDMxIDMgMjUgM0MyNi42NTY5IDMgMjggNC4zNDMxNSAyOCA2VjcuOTUwNUMyOCA3Ljk3Nzg0IDI4LjAyMjIgOCAyOC4wNDk1IDhIMzJWMTNDMzIgMTMuNTUyMyAzMS41NTIzIDE0IDMxIDE0SDE5QzE4LjQ0NzcgMTQgMTggMTMuNTUyMyAxOCAxM1oiLz48L2c+PC9zdmc+" 
-                    alt="Clipboard" 
-                    className="w-8 h-8 inline-block filter invert"
-                  />
                 </span>
               </Button>
 
