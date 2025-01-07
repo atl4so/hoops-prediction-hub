@@ -1,5 +1,5 @@
 .glass-morphism {
-  @apply bg-white/10 backdrop-blur-md border border-white/20;
+  @apply bg-white/10 dark:bg-black/10 backdrop-blur-md border border-white/20 dark:border-white/10;
 }
 
 .neo-blur {
@@ -37,8 +37,31 @@
   animation: titleGradient 8s ease infinite;
 }
 
+.dark .animate-title-gradient {
+  background: linear-gradient(to right, #22C55E, #0EA5E9);
+}
+
 @keyframes titleGradient {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+/* Dark mode dropdown styles */
+.dark [data-radix-popper-content-wrapper] {
+  @apply bg-background-dark border-border/10;
+}
+
+/* Dark mode card styles */
+.dark .card-hover {
+  @apply hover:bg-card-dark/60 transition-colors;
+}
+
+/* Dark mode button styles */
+.dark .button-primary {
+  @apply bg-primary-dark text-white hover:bg-primary-dark/90;
+}
+
+.dark .button-secondary {
+  @apply bg-secondary-dark text-white hover:bg-secondary-dark/90;
 }
