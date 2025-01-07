@@ -7,7 +7,6 @@ import { DesktopNav } from "./DesktopNav";
 import { navigationItems } from "./NavigationItems";
 import { ProfileMenu } from "../profile/ProfileMenu";
 import { Settings } from "lucide-react";
-import { ThemeToggle } from "../theme/ThemeToggle";
 
 export function AppHeader() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -69,34 +68,31 @@ export function AppHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:bg-background-dark/95 dark:border-border/10">
-      <div className="container flex h-14 max-w-screen-2xl items-center px-4">
-        <div className="flex flex-1 items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <MobileMenu 
-              menuItems={menuItems}
-              isAuthenticated={isAuthenticated}
-              onLogout={handleLogout}
-            />
-            
-            <Link 
-              to={isAuthenticated ? "/overview" : "/"} 
-              className="flex items-center space-x-2"
-            >
-              <span className="font-bold text-lg dark:text-white">euroleague.bet</span>
-            </Link>
-          </div>
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 max-w-screen-2xl items-center">
+        <div className="flex flex-1 items-center gap-6">
+          <MobileMenu 
+            menuItems={menuItems}
+            isAuthenticated={isAuthenticated}
+            onLogout={handleLogout}
+          />
+          
+          <Link 
+            to={isAuthenticated ? "/overview" : "/"} 
+            className="flex items-center space-x-2"
+          >
+            <span className="font-bold text-lg">euroleague.bet</span>
+          </Link>
 
           <DesktopNav 
             menuItems={menuItems}
             currentPath={location.pathname}
             isAuthenticated={isAuthenticated}
           />
+        </div>
 
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            {isAuthenticated && <ProfileMenu />}
-          </div>
+        <div className="flex items-center justify-end">
+          {isAuthenticated && <ProfileMenu />}
         </div>
       </div>
     </header>
