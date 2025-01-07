@@ -71,13 +71,11 @@ export function AppHeader() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 max-w-screen-2xl items-center">
         <div className="flex flex-1 items-center gap-6">
-          {isAuthenticated && (
-            <MobileMenu 
-              menuItems={menuItems}
-              isAuthenticated={isAuthenticated}
-              onLogout={handleLogout}
-            />
-          )}
+          <MobileMenu 
+            menuItems={menuItems}
+            isAuthenticated={isAuthenticated}
+            onLogout={handleLogout}
+          />
           
           <Link 
             to={isAuthenticated ? "/overview" : "/"} 

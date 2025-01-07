@@ -21,10 +21,6 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ menuItems, isAuthenticated, onLogout }: MobileMenuProps) {
-  if (!isAuthenticated) {
-    return null;
-  }
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -42,9 +38,17 @@ export function MobileMenu({ menuItems, isAuthenticated, onLogout }: MobileMenuP
             </Link>
           </DropdownMenuItem>
         ))}
-        <DropdownMenuItem onClick={onLogout} className="text-red-500">
-          Logout
-        </DropdownMenuItem>
+        {isAuthenticated ? (
+          <DropdownMenuItem onClick={onLogout} className="text-red-500">
+            Logout
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem asChild>
+            <Link to="/login" className="text-primary">
+              Login
+            </Link>
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
