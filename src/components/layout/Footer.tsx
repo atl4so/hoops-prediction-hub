@@ -26,7 +26,7 @@ export function Footer() {
                   href="https://twitter.com/beteuroleague" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="inline-flex items-center hover:text-primary transition-colors"
+                  className="inline-flex items-center hover:text-primary transition-colors text-muted-foreground"
                   aria-label="Follow us on X (formerly Twitter)"
                 >
                   <img 
