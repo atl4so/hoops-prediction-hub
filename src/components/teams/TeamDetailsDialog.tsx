@@ -61,7 +61,7 @@ export function TeamDetailsDialog({ team, open, onOpenChange }: TeamDetailsDialo
 
           <div className="flex-1 overflow-y-auto">
             <TabsContent value="overview" className="mt-0 h-full">
-              <TeamOverview stats={stats} distribution={distribution} teamId={team.id} />
+              <TeamOverview stats={stats} distribution={distribution} />
             </TabsContent>
 
             <TabsContent value="patterns" className="mt-0 h-full">

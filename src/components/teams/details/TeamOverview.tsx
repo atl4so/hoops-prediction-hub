@@ -1,44 +1,85 @@
-import { TeamPredictionPatterns } from "./TeamPredictionPatterns";
-import { TeamTopPredictors } from "./TeamTopPredictors";
-import { BestTeamsPredictions } from "./BestTeamsPredictions";
+import { Trophy, Target, TrendingUp, TrendingDown, Home, ExternalLink } from "lucide-react";
+import { StatCard } from "@/components/dashboard/stats/StatCard";
 
 interface TeamOverviewProps {
-  stats: {
-    total_games: number;
-    total_predictions: number;
-    overall_success_rate: number;
-    home_success_rate: number;
-    away_success_rate: number;
-    underdog_wins: number;
-    unexpected_losses: number;
-    avg_upset_margin: number;
-    avg_loss_margin: number;
-    margin_1_9_wins: number;
-    margin_10_15_wins: number;
-    margin_15plus_wins: number;
-    margin_1_9_losses: number;
-    margin_10_15_losses: number;
-    margin_15plus_losses: number;
-    home_games: number;
-    away_games: number;
-    percentage_favoring_team: number;
-    wins_predicted: number;
-    losses_predicted: number;
-  } | null;
-  distribution: {
-    margin_range: string;
-    win_percentage: number;
-    loss_percentage: number;
-  }[] | null;
-  teamId: string;
+  stats: any;
+  distribution: any[];
 }
 
-export function TeamOverview({ stats, distribution, teamId }: TeamOverviewProps) {
+export function TeamOverview({ stats, distribution }: TeamOverviewProps) {
   return (
-    <div className="space-y-8 animate-fade-in">
-      <BestTeamsPredictions teams={[]} />
-      <TeamPredictionPatterns stats={stats} />
-      <TeamTopPredictors teamId={teamId} />
+    <div className="space-y-6">
+      {/* Win/Loss Predictions */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <StatCard
+          icon={TrendingUp}
+          label="Total Wins Predicted"
+          value={stats?.wins_predicted || 0}
+          description={`${Math.round((stats?.wins_predicted / stats?.total_predictions) * 100 || 0)}% of all predictions`}
+        />
+        <StatCard
+          icon={TrendingDown}
+          label="Total Losses Predicted"
+          value={stats?.losses_predicted || 0}
+          description={`${Math.round((stats?.losses_predicted / stats?.total_predictions) * 100 || 0)}% of all predictions`}
+        />
+      </div>
+
+      {/* Overall Win Rate */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <StatCard
+          icon={Trophy}
+          label="Overall Win Rate"
+          value={`${Math.round(stats?.overall_success_rate || 0)}%`}
+          description={`${stats?.total_games || 0} games played`}
+        />
+        <StatCard
+          icon={Target}
+          label="Percentage Favoring Team"
+          value={`${Math.round(stats?.percentage_favoring_team || 0)}%`}
+          description={`${stats?.total_predictions || 0} total predictions`}
+        />
+      </div>
+
+      {/* Home/Away Win Rates */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <StatCard
+          icon={Home}
+          label="Home Win Rate"
+          value={`${Math.round(stats?.home_success_rate || 0)}%`}
+          description={`${stats?.home_games || 0} home games`}
+        />
+        <StatCard
+          icon={ExternalLink}
+          label="Away Win Rate"
+          value={`${Math.round(stats?.away_success_rate || 0)}%`}
+          description={`${stats?.away_games || 0} away games`}
+        />
+      </div>
+
+      {distribution && distribution.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="text-sm font-medium text-muted-foreground">Result Distribution</h3>
+          <div className="space-y-2">
+            {distribution.map((item, index) => (
+              <div key={index} className="space-y-1">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">{item.margin_range}</span>
+                  <span className="font-medium">
+                    W: {item.win_percentage}% / L: {item.loss_percentage}%
+                  </span>
+                </div>
+                <div className="h-2 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full bg-primary"
+                    style={{ width: `${item.win_percentage}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
