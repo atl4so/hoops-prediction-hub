@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TeamsList } from "@/components/teams/list/TeamsList";
 import { TeamDetailsDialog } from "@/components/teams/TeamDetailsDialog";
+import { TeamDataDisclaimer } from "@/components/teams/TeamDataDisclaimer";
 import type { Team } from "@/types/supabase";
 
 type SortOption = "predictions" | "success" | "upsets" | "wins" | "losses";
@@ -36,6 +37,8 @@ export default function Teams() {
   return (
     <div className="space-y-6 animate-fade-in">
       <PageHeader title="Teams" />
+      
+      <TeamDataDisclaimer />
       
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center relative z-50">
         <div className="relative flex-1">
