@@ -8,9 +8,6 @@ import { Eye, Share2 } from "lucide-react";
 import { FinishedGameInsightsDialog } from "@/components/games/prediction/insights/FinishedGameInsightsDialog";
 import html2canvas from "html2canvas";
 import { toast } from "sonner";
-import { ScreenshotContainer } from "./predictions/screenshot/ScreenshotContainer";
-import { ScoreDisplay } from "./predictions/screenshot/ScoreDisplay";
-import { TeamDisplay } from "./predictions/screenshot/TeamDisplay";
 
 interface UserPredictionCardProps {
   game: {
@@ -57,34 +54,82 @@ export function UserPredictionCard({
 
   const handleShare = async () => {
     try {
+      // Create a temporary container with proper styling
       const tempDiv = document.createElement("div");
+      tempDiv.style.position = "absolute";
+      tempDiv.style.left = "-9999px";
+      tempDiv.style.backgroundColor = "#ffffff";
+      tempDiv.style.padding = "32px";
+      tempDiv.style.borderRadius = "12px";
+      tempDiv.style.width = "400px"; // Fixed width for consistency
+      tempDiv.style.boxSizing = "border-box";
       document.body.appendChild(tempDiv);
 
-      const ScreenshotContent = () => (
-        <ScreenshotContainer>
-          <div className="space-y-4">
-            <time className="block text-center text-lg text-gray-600">
-              {new Date(game.game_date).toLocaleDateString()}
-            </time>
-            <div className="grid grid-cols-3 gap-4 items-center">
-              <TeamDisplay name={game.home_team.name} logoUrl={game.home_team.logo_url} />
-              <ScoreDisplay 
-                homeScore={gameResult.home_score} 
-                awayScore={gameResult.away_score} 
-              />
-              <TeamDisplay name={game.away_team.name} logoUrl={game.away_team.logo_url} />
-            </div>
-          </div>
-        </ScreenshotContainer>
-      );
-
-      // Render the content
-      const root = document.createElement('div');
-      tempDiv.appendChild(root);
+      // Create the card content
+      const cardContent = document.createElement("div");
+      cardContent.className = "relative";
       
-      // Capture the screenshot
+      const originalContent = document.querySelector(`[data-game-id="${game.id}"]`);
+      if (originalContent) {
+        const clonedContent = originalContent.cloneNode(true) as HTMLElement;
+        
+        // Remove elements we don't want in the screenshot
+        const insightsButton = clonedContent.querySelector('[data-insights-button]');
+        const pointsBreakdown = clonedContent.querySelector('[data-points-breakdown]');
+        const pointsInfo = clonedContent.querySelector('[data-points-info]');
+        
+        if (insightsButton) insightsButton.remove();
+        if (pointsBreakdown) pointsBreakdown.remove();
+        if (pointsInfo) pointsInfo.remove();
+        
+        // Enhance styling for the screenshot
+        const teamLogos = clonedContent.querySelectorAll('img');
+        teamLogos.forEach(logo => {
+          (logo as HTMLElement).style.width = "80px";
+          (logo as HTMLElement).style.height = "80px";
+          (logo as HTMLElement).style.objectFit = "contain";
+        });
+
+        const teamNames = clonedContent.querySelectorAll('.line-clamp-2');
+        teamNames.forEach(name => {
+          (name as HTMLElement).style.fontSize = "16px";
+          (name as HTMLElement).style.lineHeight = "1.4";
+          (name as HTMLElement).style.marginTop = "12px";
+          (name as HTMLElement).style.fontWeight = "500";
+          (name as HTMLElement).style.color = "#1a1a1a";
+          (name as HTMLElement).style.textAlign = "center";
+          (name as HTMLElement).style.minHeight = "auto";
+          (name as HTMLElement).style.height = "auto";
+          (name as HTMLElement).className = name.className.replace('line-clamp-2', '');
+        });
+
+        // Style the score/prediction display
+        const scoreElements = clonedContent.querySelectorAll('.text-lg, .text-xl');
+        scoreElements.forEach(score => {
+          (score as HTMLElement).style.fontSize = "24px";
+          (score as HTMLElement).style.fontWeight = "600";
+          (score as HTMLElement).style.color = "#1a1a1a";
+          (score as HTMLElement).style.margin = "16px 0";
+        });
+
+        // Style the date/time
+        const dateElements = clonedContent.querySelectorAll('time');
+        dateElements.forEach(date => {
+          (date as HTMLElement).style.fontSize = "18px";
+          (date as HTMLElement).style.color = "#4b5563";
+          (date as HTMLElement).style.marginBottom = "16px";
+          (date as HTMLElement).style.display = "block";
+          (date as HTMLElement).style.textAlign = "center";
+        });
+        
+        cardContent.innerHTML = clonedContent.innerHTML;
+      }
+      
+      tempDiv.appendChild(cardContent);
+
+      // Capture the screenshot with improved quality
       const canvas = await html2canvas(tempDiv, {
-        scale: 3,
+        scale: 3, // Increased for better quality
         backgroundColor: "#ffffff",
         logging: false,
         useCORS: true,
