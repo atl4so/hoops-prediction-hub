@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { LucideProps } from "lucide-react";
 
 interface NavigationItem {
   title: string;
   href: string;
-  icon: React.ComponentType<{ className?: string }>;
-  public?: boolean;
+  icon: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>>;
+  public: boolean;
 }
 
 interface DesktopNavProps {

@@ -1,4 +1,4 @@
-import { Target, Shield, Scale } from "lucide-react";
+import { Target, Shield, Scale, Users, Trophy } from "lucide-react";
 
 export const navigationItems = [
   {
@@ -26,15 +26,18 @@ export const authenticatedItems = [
     title: "My Predictions",
     href: "/my-predictions",
     icon: Target,
+    public: false
   },
   {
     title: "Following",
     href: "/following",
-    icon: Users2,
+    icon: Users,
+    public: false
   },
   {
     title: "Leaderboard",
     href: "/leaderboard",
     icon: Trophy,
+    public: false
   }
 ];
