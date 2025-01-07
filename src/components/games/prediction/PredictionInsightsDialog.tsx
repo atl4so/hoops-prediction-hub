@@ -1,9 +1,12 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { BasicNumbers } from "./insights/BasicNumbers";
 import { PredictionPatterns } from "./insights/PredictionPatterns";
 import { useGameInsights } from "./insights/useGameInsights";
 import { Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { PredictionInsightsHeader } from "./insights/PredictionInsightsHeader";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PredictionInsightsDialogProps {
   isOpen: boolean;
@@ -16,10 +19,34 @@ export function PredictionInsightsDialog({
   onOpenChange,
   gameId
 }: PredictionInsightsDialogProps) {
-  const { data: insights, isLoading, error } = useGameInsights(gameId);
+  const { data: insights, isLoading: insightsLoading, error: insightsError } = useGameInsights(gameId);
+  
+  const { data: game, isLoading: gameLoading } = useQuery({
+    queryKey: ['game', gameId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('games')
+        .select(`
+          id,
+          home_team:teams!games_home_team_id_fkey (
+            name,
+            logo_url
+          ),
+          away_team:teams!games_away_team_id_fkey (
+            name,
+            logo_url
+          )
+        `)
+        .eq('id', gameId)
+        .single();
 
-  // Add console.log to help debug the values
-  console.log('PredictionInsightsDialog insights:', insights);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!gameId
+  });
+
+  const isLoading = insightsLoading || gameLoading;
 
   if (isLoading) {
     return (
@@ -34,16 +61,13 @@ export function PredictionInsightsDialog({
     );
   }
 
-  if (error) {
+  if (insightsError || !game) {
     return (
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="text-destructive">Error Loading Insights</DialogTitle>
-          </DialogHeader>
-          <p className="text-center text-muted-foreground">
+          <div className="text-center text-muted-foreground">
             There was an error loading the prediction insights. Please try again later.
-          </p>
+          </div>
         </DialogContent>
       </Dialog>
     );
@@ -53,12 +77,9 @@ export function PredictionInsightsDialog({
     return (
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>No predictions yet</DialogTitle>
-          </DialogHeader>
-          <p className="text-center text-muted-foreground">
+          <div className="text-center text-muted-foreground">
             Be the first to make a prediction for this game!
-          </p>
+          </div>
         </DialogContent>
       </Dialog>
     );
@@ -67,11 +88,10 @@ export function PredictionInsightsDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[85vh]">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center">
-            How Others Predict
-          </DialogTitle>
-        </DialogHeader>
+        <PredictionInsightsHeader
+          homeTeam={game.home_team}
+          awayTeam={game.away_team}
+        />
 
         <ScrollArea className="h-full max-h-[calc(85vh-120px)] pr-4">
           <div className="space-y-6">
