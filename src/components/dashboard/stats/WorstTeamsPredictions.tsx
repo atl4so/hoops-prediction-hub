@@ -49,9 +49,7 @@ export function WorstTeamsPredictions({ userId }: { userId: string }) {
             team_id: stat.team_id,
             team_name: stat.team.name,
             logo_url: stat.team.logo_url,
-            failure_rate: stat.wins_predicted > 0 
-              ? (incorrect / stat.wins_predicted) * 100 
-              : 0,
+            failure_rate: incorrect > 0 ? (incorrect / stat.wins_predicted) * 100 : 0,
             total_predictions: stat.wins_predicted,
             incorrect_predictions: incorrect
           };
@@ -100,7 +98,7 @@ export function WorstTeamsPredictions({ userId }: { userId: string }) {
                   {Math.round(team.failure_rate)}%
                 </p>
                 <p className="text-[10px] sm:text-xs text-muted-foreground">
-                  {team.total_predictions} pred.
+                  {team.incorrect_predictions} wrong
                 </p>
               </div>
             </div>
