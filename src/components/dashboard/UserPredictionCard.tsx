@@ -67,20 +67,19 @@ export function UserPredictionCard({
       const cardContent = document.createElement("div");
       cardContent.className = "relative";
       
-      // Get the original content but exclude buttons
+      // Get the original content but exclude buttons and points
       const originalContent = document.querySelector(`[data-game-id="${game.id}"]`);
       if (originalContent) {
         const clonedContent = originalContent.cloneNode(true) as HTMLElement;
         
-        // Remove the "How Others Predicted" button and points breakdown if they exist
+        // Remove buttons and points information
         const insightsButton = clonedContent.querySelector('[data-insights-button]');
         const pointsBreakdown = clonedContent.querySelector('[data-points-breakdown]');
-        if (insightsButton) {
-          insightsButton.remove();
-        }
-        if (pointsBreakdown) {
-          pointsBreakdown.remove();
-        }
+        const pointsInfo = clonedContent.querySelector('[data-points-info]');
+        
+        if (insightsButton) insightsButton.remove();
+        if (pointsBreakdown) pointsBreakdown.remove();
+        if (pointsInfo) pointsInfo.remove();
         
         // Add custom styles to ensure team names are fully visible
         const teamNames = clonedContent.querySelectorAll('.line-clamp-2');
@@ -93,14 +92,7 @@ export function UserPredictionCard({
           (name as HTMLElement).style.overflow = "hidden";
         });
         
-        cardContent.innerHTML = `
-          <div class="flex flex-col items-center">
-            ${clonedContent.innerHTML}
-            <div class="absolute bottom-2 right-2 text-xs text-gray-400">
-              Predicted by @${userName}
-            </div>
-          </div>
-        `;
+        cardContent.innerHTML = clonedContent.innerHTML;
       }
       
       tempDiv.appendChild(cardContent);

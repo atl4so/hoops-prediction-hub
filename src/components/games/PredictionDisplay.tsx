@@ -31,7 +31,7 @@ export function PredictionDisplay({
         {homeScore} - {awayScore}
       </p>
       {pointsEarned !== undefined && (
-        <div className="space-y-1">
+        <div className="space-y-1" data-points-info>
           <div className="flex items-center justify-center gap-1.5 text-primary">
             <span className="font-medium">Points: {pointsEarned}</span>
             {showBreakdownHint && (
