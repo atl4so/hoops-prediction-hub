@@ -24,6 +24,8 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
         .from('predictions')
         .select(`
           points_earned,
+          prediction_home_score,
+          prediction_away_score,
           game:games (
             home_team_id,
             away_team_id,
@@ -36,6 +38,11 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
               id,
               name,
               logo_url
+            ),
+            game_results (
+              home_score,
+              away_score,
+              is_final
             )
           )
         `)
@@ -47,38 +54,47 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
       const teamStats = new Map<string, { success: number; total: number; name: string; logo_url: string }>();
 
       predictions.forEach(prediction => {
-        if (!prediction.game) return;
+        if (!prediction.game?.game_results?.[0]) return;
         
         const homeTeam = prediction.game.home_team;
         const awayTeam = prediction.game.away_team;
+        const gameResult = prediction.game.game_results[0];
         
         if (!homeTeam || !awayTeam) return;
 
-        // Process home team stats
-        if (!teamStats.has(homeTeam.id)) {
-          teamStats.set(homeTeam.id, { 
-            success: 0, 
-            total: 0, 
-            name: homeTeam.name, 
-            logo_url: homeTeam.logo_url 
-          });
+        // Check if user predicted home team to win and they won
+        if (prediction.prediction_home_score > prediction.prediction_away_score) {
+          if (!teamStats.has(homeTeam.id)) {
+            teamStats.set(homeTeam.id, { 
+              success: 0, 
+              total: 0, 
+              name: homeTeam.name, 
+              logo_url: homeTeam.logo_url 
+            });
+          }
+          const stats = teamStats.get(homeTeam.id)!;
+          stats.total++;
+          if (gameResult.home_score > gameResult.away_score) {
+            stats.success++;
+          }
         }
-        const homeStats = teamStats.get(homeTeam.id)!;
-        homeStats.total++;
-        if (prediction.points_earned > 0) homeStats.success++;
 
-        // Process away team stats
-        if (!teamStats.has(awayTeam.id)) {
-          teamStats.set(awayTeam.id, { 
-            success: 0, 
-            total: 0, 
-            name: awayTeam.name, 
-            logo_url: awayTeam.logo_url 
-          });
+        // Check if user predicted away team to win and they won
+        if (prediction.prediction_away_score > prediction.prediction_home_score) {
+          if (!teamStats.has(awayTeam.id)) {
+            teamStats.set(awayTeam.id, { 
+              success: 0, 
+              total: 0, 
+              name: awayTeam.name, 
+              logo_url: awayTeam.logo_url 
+            });
+          }
+          const stats = teamStats.get(awayTeam.id)!;
+          stats.total++;
+          if (gameResult.away_score > gameResult.home_score) {
+            stats.success++;
+          }
         }
-        const awayStats = teamStats.get(awayTeam.id)!;
-        awayStats.total++;
-        if (prediction.points_earned > 0) awayStats.success++;
       });
 
       // Convert to array and calculate success rates
