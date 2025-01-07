@@ -42,6 +42,18 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
           return;
         }
 
+        // Verify session is still valid
+        const isValid = await verifySession();
+        if (!isValid) {
+          console.log('Session invalid');
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+            await clearAuthSession();
+          }
+          return;
+        }
+
         console.log('Valid session found:', session.user.id);
         if (mounted) {
           setIsAuthenticated(true);
@@ -74,9 +86,16 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
           queryClient.clear();
         } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
           if (session) {
-            setIsAuthenticated(true);
-            setIsLoading(false);
-            queryClient.invalidateQueries();
+            const isValid = await verifySession();
+            if (isValid) {
+              setIsAuthenticated(true);
+              setIsLoading(false);
+              queryClient.invalidateQueries();
+            } else {
+              setIsAuthenticated(false);
+              setIsLoading(false);
+              await clearAuthSession();
+            }
           } else {
             setIsAuthenticated(false);
             setIsLoading(false);
