@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { AuthError, AuthApiError } from '@supabase/supabase-js';
 
 export const clearAuthSession = async () => {
   try {
@@ -8,7 +9,6 @@ export const clearAuthSession = async () => {
       throw error;
     }
     
-    // Clear any local storage items
     localStorage.removeItem('supabase.auth.token');
     sessionStorage.clear();
   } catch (error) {
@@ -41,12 +41,21 @@ export const verifySession = async () => {
 export const loginWithEmail = async (email: string, password: string) => {
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
-      email,
+      email: email.toLowerCase().trim(),
       password,
     });
 
     if (error) {
-      console.error('Login error:', error);
+      if (error instanceof AuthApiError) {
+        switch (error.status) {
+          case 400:
+            throw new Error('Invalid email or password. Please check your credentials and try again.');
+          case 422:
+            throw new Error('Email format is invalid. Please enter a valid email address.');
+          default:
+            throw new Error(error.message);
+        }
+      }
       throw error;
     }
 
@@ -55,4 +64,18 @@ export const loginWithEmail = async (email: string, password: string) => {
     console.error('Login error:', error);
     throw error;
   }
+};
+
+export const getErrorMessage = (error: Error | AuthError) => {
+  if (error instanceof AuthApiError) {
+    switch (error.status) {
+      case 400:
+        return 'Invalid email or password. Please check your credentials and try again.';
+      case 422:
+        return 'Email format is invalid. Please enter a valid email address.';
+      default:
+        return error.message;
+    }
+  }
+  return error.message;
 };

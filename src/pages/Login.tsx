@@ -3,15 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Lock, Mail } from "lucide-react";
-import { clearAuthSession, loginWithEmail } from "@/utils/auth";
+import { clearAuthSession, loginWithEmail, getErrorMessage } from "@/utils/auth";
+import { AuthError } from "@supabase/supabase-js";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -30,19 +30,22 @@ const Login = () => {
 
     try {
       await loginWithEmail(formData.email, formData.password);
-      
-      toast({
-        title: "Welcome back!",
+      toast.success("Welcome back!", {
         description: "You have successfully logged in.",
       });
-      
       navigate("/predict");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Login error:", error);
-      setError(error.message || "An unexpected error occurred. Please try again.");
+      setError(getErrorMessage(error as AuthError));
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setError(null);
+    setFormData(prev => ({ ...prev, [id]: value }));
   };
 
   return (
@@ -70,10 +73,7 @@ const Login = () => {
                   type="email"
                   placeholder="Enter your email"
                   value={formData.email}
-                  onChange={(e) => {
-                    setError(null);
-                    setFormData({ ...formData, email: e.target.value });
-                  }}
+                  onChange={handleInputChange}
                   required
                   className="pl-10"
                 />
@@ -88,10 +88,7 @@ const Login = () => {
                   type="password"
                   placeholder="Enter your password"
                   value={formData.password}
-                  onChange={(e) => {
-                    setError(null);
-                    setFormData({ ...formData, password: e.target.value });
-                  }}
+                  onChange={handleInputChange}
                   required
                   className="pl-10"
                 />
