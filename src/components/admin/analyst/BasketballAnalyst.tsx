@@ -9,12 +9,10 @@ interface GameResult {
   home_score: number;
   away_score: number;
   game: {
+    id: string;
     home_team: { name: string };
     away_team: { name: string };
   };
-  predictions: Array<{
-    points_earned: number | null;
-  }>;
 }
 
 export function BasketballAnalyst() {
@@ -37,7 +35,7 @@ export function BasketballAnalyst() {
       supabase.from('rounds').select('*', { count: 'exact', head: true })
     ]);
 
-    // Get upcoming games
+    // Get upcoming games (games without results)
     const { data: upcomingGames } = await supabase
       .from('games')
       .select(`
@@ -46,27 +44,43 @@ export function BasketballAnalyst() {
         home_team:teams!games_home_team_id_fkey (name),
         away_team:teams!games_away_team_id_fkey (name)
       `)
-      .is('game_results', null)  // Changed to get games without results
+      .not('id', 'in', (
+        supabase
+          .from('game_results')
+          .select('game_id')
+      ))
       .order('game_date', { ascending: true })
       .limit(5);
 
-    // Get recent completed games with results and prediction stats
+    // Get recent completed games with results
     const { data: recentResults } = await supabase
       .from('game_results')
       .select(`
         home_score,
         away_score,
         game:games (
+          id,
           home_team:teams!games_home_team_id_fkey (name),
           away_team:teams!games_away_team_id_fkey (name)
-        ),
-        predictions (
-          points_earned
         )
       `)
       .eq('is_final', true)
       .order('created_at', { ascending: false })
       .limit(5) as { data: GameResult[] | null };
+
+    // Get predictions for completed games
+    const predictionsData = recentResults ? await Promise.all(
+      recentResults.map(async (result) => {
+        const { data: predictions } = await supabase
+          .from('predictions')
+          .select('points_earned')
+          .eq('game_id', result.game.id);
+        return {
+          gameId: result.game.id,
+          predictions: predictions || []
+        };
+      })
+    ) : [];
 
     // Get top predictors
     const { data: topPredictors } = await supabase
@@ -91,10 +105,11 @@ export function BasketballAnalyst() {
         ).join('\n')}
 
         Recent Completed Games:
-        ${recentResults?.map(r => {
-          const predictionCount = r.predictions?.length || 0;
+        ${recentResults?.map((r, index) => {
+          const gamePredictions = predictionsData[index]?.predictions || [];
+          const predictionCount = gamePredictions.length;
           const avgPoints = predictionCount > 0 
-            ? r.predictions.reduce((sum, p) => sum + (p.points_earned || 0), 0) / predictionCount 
+            ? gamePredictions.reduce((sum, p) => sum + (p.points_earned || 0), 0) / predictionCount 
             : 0;
           return `${r.game.home_team.name} ${r.home_score} - ${r.away_score} ${r.game.away_team.name} (${predictionCount} predictions, avg ${avgPoints.toFixed(1)} points)`;
         }).join('\n')}
@@ -195,4 +210,4 @@ export function BasketballAnalyst() {
       )}
     </div>
   );
-}
+};
