@@ -7,7 +7,6 @@ export default {
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
   ],
-  darkMode: ["class"],
   prefix: "",
   theme: {
     container: {
@@ -33,14 +32,10 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: {
-          DEFAULT: "hsl(var(--background))",
-          dark: "#1A1F2C",
-        },
+        background: "#F5F5F7",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#10B981",
-          dark: "#059669",
+          DEFAULT: "#F97316",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
@@ -56,13 +51,11 @@ export default {
           foreground: "#64748B",
         },
         accent: {
-          DEFAULT: "#F0FDF4",
-          dark: "#064E3B",
+          DEFAULT: "#FFF7ED",
           foreground: "hsl(var(--accent-foreground))",
         },
         card: {
-          DEFAULT: "#FFFFFF",
-          dark: "#222222",
+          DEFAULT: "#FFF7ED",
           foreground: "hsl(var(--card-foreground))",
         },
       },
