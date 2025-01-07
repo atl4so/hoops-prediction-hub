@@ -27,3 +27,41 @@ html, body {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
 }
+
+/* Dark mode styles */
+.dark {
+  color-scheme: dark;
+}
+
+.dark body {
+  background-color: #1A1F2C;
+  color: #ffffff;
+}
+
+/* Glass effect utilities */
+.glass-morphism {
+  @apply backdrop-blur-xl bg-white/5 dark:bg-black/5 border border-white/20 dark:border-white/10;
+}
+
+.neo-blur {
+  @apply backdrop-blur-sm bg-white/30 dark:bg-black/30;
+}
+
+/* Dropdown menu styles */
+.dropdown-content {
+  @apply z-50 bg-white dark:bg-background-dark border border-border/50 shadow-lg rounded-lg overflow-hidden;
+}
+
+/* Card styles */
+.card {
+  @apply bg-card dark:bg-card-dark border border-border/50 dark:border-white/10 shadow-sm hover:shadow-md transition-all duration-300;
+}
+
+/* Button styles */
+.btn-primary {
+  @apply bg-primary hover:bg-primary-dark text-white transition-colors duration-200;
+}
+
+.btn-secondary {
+  @apply bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-colors duration-200;
+}
