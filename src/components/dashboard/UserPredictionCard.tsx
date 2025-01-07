@@ -67,15 +67,19 @@ export function UserPredictionCard({
       const cardContent = document.createElement("div");
       cardContent.className = "relative";
       
-      // Get the original content but exclude the "How Others Predicted" button
+      // Get the original content but exclude buttons
       const originalContent = document.querySelector(`[data-game-id="${game.id}"]`);
       if (originalContent) {
         const clonedContent = originalContent.cloneNode(true) as HTMLElement;
         
-        // Remove the "How Others Predicted" button if it exists
+        // Remove the "How Others Predicted" button and points breakdown if they exist
         const insightsButton = clonedContent.querySelector('[data-insights-button]');
+        const pointsBreakdown = clonedContent.querySelector('[data-points-breakdown]');
         if (insightsButton) {
           insightsButton.remove();
+        }
+        if (pointsBreakdown) {
+          pointsBreakdown.remove();
         }
         
         // Add custom styles to ensure team names are fully visible
@@ -161,6 +165,7 @@ export function UserPredictionCard({
                 pointsEarned={prediction.points_earned}
                 onClick={handlePointsClick}
                 showBreakdownHint={!!gameResult && prediction.points_earned !== undefined}
+                data-points-breakdown
               />
               
               {gameResult && (
