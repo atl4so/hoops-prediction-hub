@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export async function fetchDatabaseSchema() {
   // Fetch upcoming games (games without results)
-  const upcomingGames = await supabase
+  const { data: upcomingGames } = await supabase
     .from('games')
     .select(`
       id,
@@ -16,17 +16,12 @@ export async function fetchDatabaseSchema() {
         name
       )
     `)
-    .not(
-      'id', 'in',
-      supabase
-        .from('game_results')
-        .select('game_id')
-    )
+    .is('game_results', null)
     .order('game_date', { ascending: true })
     .limit(5);
 
   // Fetch recent completed games with results and predictions
-  const completedGames = await supabase
+  const { data: completedGames } = await supabase
     .from('games')
     .select(`
       id,
@@ -53,12 +48,12 @@ export async function fetchDatabaseSchema() {
         )
       )
     `)
-    .eq('game_results.is_final', true)
+    .not('game_results', 'is', null)
     .order('game_date', { ascending: false })
     .limit(5);
 
   // Fetch top predictors
-  const topPredictors = await supabase
+  const { data: topPredictors } = await supabase
     .from('profiles')
     .select(`
       id,
@@ -73,9 +68,9 @@ export async function fetchDatabaseSchema() {
     .limit(5);
 
   return {
-    upcomingGames: upcomingGames.data || [],
-    completedGames: completedGames.data || [],
-    topPredictors: topPredictors.data || []
+    upcomingGames: upcomingGames || [],
+    completedGames: completedGames || [],
+    topPredictors: topPredictors || []
   };
 }
 

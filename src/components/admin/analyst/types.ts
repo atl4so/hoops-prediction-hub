@@ -23,7 +23,7 @@ export interface Game {
   game_date: string;
   home_team: TeamBasicInfo;
   away_team: TeamBasicInfo;
-  game_results?: GameResult[];
+  game_results: GameResult[];
   predictions?: GamePrediction[];
 }
 

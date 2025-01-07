@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDatabaseSchema, analyzeGameTrends, getTeamStats } from "./useAnalystData";
-import type { Game, Predictor, TeamStats } from "./types";
+import type { Game, Predictor } from "./types";
 
 export function BasketballAnalyst() {
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
