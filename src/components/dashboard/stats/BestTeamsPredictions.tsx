@@ -129,9 +129,6 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
                 </div>
               </div>
               <div className="mt-2 text-center">
-                <p className="font-semibold text-xs sm:text-sm truncate max-w-[80px] sm:max-w-[120px]">
-                  {team.team_name}
-                </p>
                 <p className="text-xs text-muted-foreground">
                   {Math.round(team.success_rate)}%
                 </p>
