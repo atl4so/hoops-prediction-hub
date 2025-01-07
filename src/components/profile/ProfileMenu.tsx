@@ -63,7 +63,7 @@ export function ProfileMenu() {
             className="relative h-10 w-fit rounded-full px-2 md:pr-4 hover:bg-accent transition-colors"
           >
             <div className="flex items-center gap-2">
-              <div className="relative">
+              <div className="relative flex-shrink-0">
                 <Avatar className="h-8 w-8 ring-2 ring-offset-2 ring-offset-background transition-all hover:ring-primary">
                   <AvatarImage
                     src={profile?.avatar_url}
@@ -79,7 +79,7 @@ export function ProfileMenu() {
                   <span className="relative inline-flex h-3 w-3 rounded-full bg-primary"></span>
                 </span>
               </div>
-              <span className="hidden md:inline-flex text-sm font-medium">
+              <span className="hidden md:inline-flex text-sm font-medium truncate max-w-[100px]">
                 {profile?.display_name || "User"}
               </span>
             </div>
@@ -90,9 +90,9 @@ export function ProfileMenu() {
           align="end"
           sideOffset={8}
           style={{
-            maxHeight: "calc(100vh - 80px)", // Ensure menu doesn't exceed viewport height
+            maxHeight: "calc(100vh - 80px)",
             overflowY: "auto",
-            zIndex: 50 // Ensure dropdown appears above other elements
+            zIndex: 50
           }}
         >
           <div className="flex items-center justify-between gap-2 p-2">
