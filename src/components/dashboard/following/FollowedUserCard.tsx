@@ -1,12 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { FollowButton } from "@/components/users/FollowButton";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, ChevronDown } from "lucide-react";
+import { User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState } from "react";
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { UserDisplayName } from "@/components/users/UserDisplayName";
+import { CustomAvatar } from "@/components/ui/custom-avatar";
 
 interface FollowedUserCardProps {
   user: {
@@ -44,20 +44,17 @@ export function FollowedUserCard({ user, onUserClick, onFollowChange, isFollowin
       <CardContent className="p-5 sm:p-6">
         <div className="space-y-4">
           <div className="flex items-center gap-4">
-            <Avatar 
-              className="h-12 w-12 sm:h-14 sm:w-14 ring-2 ring-primary/10 ring-offset-2 ring-offset-background transition-all duration-300 group-hover:ring-primary/20 shrink-0"
+            <CustomAvatar 
+              url={user.avatar_url}
+              fallback={user.display_name}
+              showOnlineStatus
+              isOnline={false} // This will be dynamic once we implement presence
+              className="cursor-pointer"
               onClick={() => onUserClick({
                 id: user.id,
                 display_name: user.display_name
               })}
-            >
-              {user.avatar_url ? (
-                <AvatarImage src={user.avatar_url} alt={user.display_name} />
-              ) : null}
-              <AvatarFallback>
-                <User className="h-6 w-6" />
-              </AvatarFallback>
-            </Avatar>
+            />
             
             <div className="flex-1 min-w-0">
               <UserDisplayName
