@@ -9,6 +9,7 @@ interface CustomAvatarProps {
   size?: "sm" | "md" | "lg";
   showOnlineStatus?: boolean;
   isOnline?: boolean;
+  onClick?: () => void;
 }
 
 export function CustomAvatar({ 
@@ -17,7 +18,8 @@ export function CustomAvatar({
   className,
   size = "md",
   showOnlineStatus = false,
-  isOnline = false
+  isOnline = false,
+  onClick
 }: CustomAvatarProps) {
   const sizeClasses = {
     sm: "h-8 w-8",
@@ -32,7 +34,7 @@ export function CustomAvatar({
   };
 
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block" onClick={onClick}>
       <Avatar className={cn(sizeClasses[size], "ring-2 ring-primary/10 ring-offset-2 ring-offset-background", className)}>
         {url ? (
           <AvatarImage src={url} alt={fallback || "User avatar"} />

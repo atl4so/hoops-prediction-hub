@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { FollowButton } from "@/components/users/FollowButton";
-import { User } from "lucide-react";
+import { User, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState } from "react";
