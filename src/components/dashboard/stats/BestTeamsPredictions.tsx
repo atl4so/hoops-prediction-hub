@@ -45,15 +45,14 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
             )
           )
         `)
-        .eq('user_id', userId)
-        .not('game.game_results', 'is', null);
+        .eq('user_id', userId);
 
       if (!predictions) return [];
 
       const teamStats = new Map<string, { success: number; total: number; name: string; logo_url: string }>();
 
       predictions.forEach(prediction => {
-        if (!prediction.game?.game_results?.[0]) return;
+        if (!prediction.game?.game_results?.[0]?.is_final) return;
         
         const homeTeam = prediction.game.home_team;
         const awayTeam = prediction.game.away_team;
@@ -61,7 +60,7 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
         
         if (!homeTeam || !awayTeam) return;
 
-        // Track home team predictions
+        // Track when user predicts home team to win
         if (prediction.prediction_home_score > prediction.prediction_away_score) {
           if (!teamStats.has(homeTeam.id)) {
             teamStats.set(homeTeam.id, { 
@@ -73,12 +72,13 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
           }
           const stats = teamStats.get(homeTeam.id)!;
           stats.total++;
+          // Check if prediction was correct (home team actually won)
           if (gameResult.home_score > gameResult.away_score) {
             stats.success++;
           }
         }
 
-        // Track away team predictions
+        // Track when user predicts away team to win
         if (prediction.prediction_away_score > prediction.prediction_home_score) {
           if (!teamStats.has(awayTeam.id)) {
             teamStats.set(awayTeam.id, { 
@@ -90,6 +90,7 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
           }
           const stats = teamStats.get(awayTeam.id)!;
           stats.total++;
+          // Check if prediction was correct (away team actually won)
           if (gameResult.away_score > gameResult.home_score) {
             stats.success++;
           }
@@ -109,6 +110,7 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
         .sort((a, b) => b.success_rate - a.success_rate || b.total_predictions - a.total_predictions)
         .slice(0, 3);
 
+      console.log('Best teams calculated:', teamsArray);
       return teamsArray;
     },
     enabled: !!userId && !!session
