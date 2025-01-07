@@ -2,20 +2,18 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const clearAuthSession = async () => {
   try {
-    // First clear local storage and session storage
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Error clearing session:', error);
+      throw error;
+    }
+    
+    // Clear any local storage items
     localStorage.removeItem('supabase.auth.token');
     sessionStorage.clear();
-    
-    // Then attempt to sign out from Supabase with local scope only
-    try {
-      await supabase.auth.signOut({ scope: 'local' });
-    } catch (error) {
-      console.error('Supabase signout error:', error);
-      // Continue with cleanup even if signout fails
-    }
   } catch (error) {
     console.error('Session cleanup error:', error);
-    // Don't throw the error to prevent cascading failures
+    throw error;
   }
 };
 
@@ -25,19 +23,18 @@ export const verifySession = async () => {
     
     if (error) {
       console.error('Session verification error:', error);
-      return false;
+      return null;
     }
     
     if (!session) {
       console.log('No active session found');
-      return false;
+      return null;
     }
 
-    // Simple session check without making additional requests
-    return session.expires_at ? new Date(session.expires_at * 1000) > new Date() : false;
+    return session;
   } catch (error) {
     console.error('Session verification error:', error);
-    return false;
+    return null;
   }
 };
 

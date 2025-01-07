@@ -8,10 +8,9 @@ interface UserDisplayNameProps {
   displayName: string;
   className?: string;
   showStatus?: boolean;
-  onClick?: () => void;
 }
 
-export function UserDisplayName({ userId, displayName, className, showStatus = true, onClick }: UserDisplayNameProps) {
+export function UserDisplayName({ userId, displayName, className, showStatus = true }: UserDisplayNameProps) {
   const [isOnline, setIsOnline] = useState(false);
 
   useEffect(() => {
@@ -46,12 +45,7 @@ export function UserDisplayName({ userId, displayName, className, showStatus = t
   }, [userId]);
 
   return (
-    <div 
-      className={cn("flex items-center gap-1.5", className)}
-      onClick={onClick}
-      role={onClick ? "button" : undefined}
-      style={onClick ? { cursor: 'pointer' } : undefined}
-    >
+    <div className={cn("flex items-center gap-1.5", className)}>
       <span className="font-medium">{displayName}</span>
       {showStatus && (
         <Circle
