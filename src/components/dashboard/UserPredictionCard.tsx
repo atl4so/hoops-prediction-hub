@@ -8,6 +8,9 @@ import { Eye, Share2 } from "lucide-react";
 import { FinishedGameInsightsDialog } from "@/components/games/prediction/insights/FinishedGameInsightsDialog";
 import html2canvas from "html2canvas";
 import { toast } from "sonner";
+import { ScreenshotContainer } from "./predictions/screenshot/ScreenshotContainer";
+import { ScoreDisplay } from "./predictions/screenshot/ScoreDisplay";
+import { TeamDisplay } from "./predictions/screenshot/TeamDisplay";
 
 interface UserPredictionCardProps {
   game: {
@@ -54,119 +57,32 @@ export function UserPredictionCard({
 
   const handleShare = async () => {
     try {
-      // Create a temporary container with proper styling
       const tempDiv = document.createElement("div");
-      tempDiv.style.position = "absolute";
-      tempDiv.style.left = "-9999px";
-      tempDiv.style.padding = "32px";
-      tempDiv.style.width = "400px"; // Fixed width for consistency
-      tempDiv.style.boxSizing = "border-box";
-      tempDiv.style.backgroundColor = "#ffffff";
-      tempDiv.style.borderRadius = "12px";
-      tempDiv.style.border = "2px solid #F97316";
-      tempDiv.style.boxShadow = "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)";
-      tempDiv.style.background = "linear-gradient(to bottom right, #FFF7ED, #FFFFFF)";
       document.body.appendChild(tempDiv);
 
-      // Create the card content
-      const cardContent = document.createElement("div");
-      cardContent.className = "relative";
+      const ScreenshotContent = () => (
+        <ScreenshotContainer>
+          <div className="space-y-4">
+            <time className="block text-center text-lg text-gray-600">
+              {new Date(game.game_date).toLocaleDateString()}
+            </time>
+            <div className="grid grid-cols-3 gap-4 items-center">
+              <TeamDisplay name={game.home_team.name} logoUrl={game.home_team.logo_url} />
+              <ScoreDisplay 
+                homeScore={gameResult.home_score} 
+                awayScore={gameResult.away_score} 
+              />
+              <TeamDisplay name={game.away_team.name} logoUrl={game.away_team.logo_url} />
+            </div>
+          </div>
+        </ScreenshotContainer>
+      );
+
+      // Render the content
+      const root = document.createElement('div');
+      tempDiv.appendChild(root);
       
-      const originalContent = document.querySelector(`[data-game-id="${game.id}"]`);
-      if (originalContent) {
-        const clonedContent = originalContent.cloneNode(true) as HTMLElement;
-        
-        // Remove elements we don't want in the screenshot
-        const insightsButton = clonedContent.querySelector('[data-insights-button]');
-        const pointsBreakdown = clonedContent.querySelector('[data-points-breakdown]');
-        const pointsInfo = clonedContent.querySelector('[data-points-info]');
-        
-        if (insightsButton) insightsButton.remove();
-        if (pointsBreakdown) pointsBreakdown.remove();
-        if (pointsInfo) pointsInfo.remove();
-        
-        // Enhance styling for the screenshot
-        const teamLogos = clonedContent.querySelectorAll('img');
-        teamLogos.forEach(logo => {
-          (logo as HTMLElement).style.width = "80px";
-          (logo as HTMLElement).style.height = "80px";
-          (logo as HTMLElement).style.objectFit = "contain";
-        });
-
-        const teamNames = clonedContent.querySelectorAll('.line-clamp-2');
-        teamNames.forEach(name => {
-          (name as HTMLElement).style.fontSize = "16px";
-          (name as HTMLElement).style.lineHeight = "1.4";
-          (name as HTMLElement).style.marginTop = "12px";
-          (name as HTMLElement).style.fontWeight = "500";
-          (name as HTMLElement).style.color = "#1a1a1a";
-          (name as HTMLElement).style.textAlign = "center";
-          (name as HTMLElement).style.minHeight = "auto";
-          (name as HTMLElement).style.height = "auto";
-          (name as HTMLElement).className = name.className.replace('line-clamp-2', '');
-        });
-
-        // Style the score/prediction display with winner highlighting
-        const scoreElements = clonedContent.querySelectorAll('.text-lg, .text-xl');
-        scoreElements.forEach(score => {
-          const [homeScore, awayScore] = score.innerHTML.split('-').map(s => parseInt(s.trim()));
-          const scoreContainer = document.createElement('div');
-          scoreContainer.style.display = 'inline-flex';
-          scoreContainer.style.alignItems = 'center';
-          scoreContainer.style.gap = '8px';
-          scoreContainer.style.margin = '16px 0';
-          scoreContainer.style.whiteSpace = 'nowrap';
-          
-          // Create home score span
-          const homeSpan = document.createElement('span');
-          homeSpan.style.padding = '8px 16px';
-          homeSpan.style.fontSize = '24px';
-          homeSpan.style.fontWeight = '600';
-          homeSpan.style.borderRadius = '8px';
-          if (homeScore > awayScore) {
-            homeSpan.style.backgroundColor = '#F97316';
-            homeSpan.style.color = '#FFFFFF';
-          } else {
-            homeSpan.style.backgroundColor = '#FFF7ED';
-            homeSpan.style.color = '#1a1a1a';
-          }
-          homeSpan.textContent = homeScore.toString();
-          
-          // Create separator
-          const separator = document.createElement('span');
-          separator.style.fontSize = '24px';
-          separator.style.fontWeight = '600';
-          separator.style.color = '#1a1a1a';
-          separator.textContent = '-';
-          
-          // Create away score span
-          const awaySpan = document.createElement('span');
-          awaySpan.style.padding = '8px 16px';
-          awaySpan.style.fontSize = '24px';
-          awaySpan.style.fontWeight = '600';
-          awaySpan.style.borderRadius = '8px';
-          if (awayScore > homeScore) {
-            awaySpan.style.backgroundColor = '#F97316';
-            awaySpan.style.color = '#FFFFFF';
-          } else {
-            awaySpan.style.backgroundColor = '#FFF7ED';
-            awaySpan.style.color = '#1a1a1a';
-          }
-          awaySpan.textContent = awayScore.toString();
-          
-          scoreContainer.appendChild(homeSpan);
-          scoreContainer.appendChild(separator);
-          scoreContainer.appendChild(awaySpan);
-          
-          score.parentNode?.replaceChild(scoreContainer, score);
-        });
-
-        cardContent.innerHTML = clonedContent.innerHTML;
-      }
-      
-      tempDiv.appendChild(cardContent);
-
-      // Capture the screenshot with improved quality
+      // Capture the screenshot
       const canvas = await html2canvas(tempDiv, {
         scale: 3,
         backgroundColor: "#ffffff",
