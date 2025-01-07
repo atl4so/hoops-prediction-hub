@@ -40,12 +40,12 @@ export function RoundSelector({ selectedRound, onRoundChange, className }: Round
 
   return (
     <Select value={selectedRound} onValueChange={onRoundChange}>
-      <SelectTrigger className={cn("w-full bg-white relative z-20", className)}>
+      <SelectTrigger className={cn("w-full bg-white shadow-sm", className)}>
         <SelectValue placeholder="Select a round">
           {selectedRound && rounds.find(r => r.id === selectedRound)?.name}
         </SelectValue>
       </SelectTrigger>
-      <SelectContent className="bg-white shadow-lg border z-[200]">
+      <SelectContent className="bg-white shadow-lg border z-50">
         {rounds?.map((round) => (
           <SelectItem key={round.id} value={round.id} className="cursor-pointer">
             Round {round.name}

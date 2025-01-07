@@ -27,22 +27,3 @@ html, body {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
 }
-
-/* Add styles for proper z-index layering */
-.select-content {
-  z-index: 100;
-}
-
-.tabs-container {
-  position: relative;
-  z-index: 1;
-}
-
-.tab-content {
-  position: relative;
-  z-index: 10;
-}
-
-.dropdown-content {
-  z-index: 50;
-}

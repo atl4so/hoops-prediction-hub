@@ -111,12 +111,12 @@ export function GameCreateForm() {
   });
 
   return (
-    <div className="grid gap-4 relative isolate">
+    <div className="grid gap-4">
       <Select value={selectedRound} onValueChange={setSelectedRound}>
-        <SelectTrigger className="bg-white relative z-20">
+        <SelectTrigger>
           <SelectValue placeholder="Select Round" />
         </SelectTrigger>
-        <SelectContent className="bg-white z-[200]">
+        <SelectContent>
           {rounds?.map((round) => (
             <SelectItem key={round.id} value={round.id}>
               {round.name}
@@ -126,10 +126,10 @@ export function GameCreateForm() {
       </Select>
 
       <Select value={homeTeam} onValueChange={setHomeTeam}>
-        <SelectTrigger className="bg-white relative z-20">
+        <SelectTrigger>
           <SelectValue placeholder="Select Home Team" />
         </SelectTrigger>
-        <SelectContent className="bg-white z-[200]">
+        <SelectContent>
           {teams?.map((team) => (
             <SelectItem key={team.id} value={team.id}>
               {team.name}
@@ -139,10 +139,10 @@ export function GameCreateForm() {
       </Select>
 
       <Select value={awayTeam} onValueChange={setAwayTeam}>
-        <SelectTrigger className="bg-white relative z-20">
+        <SelectTrigger>
           <SelectValue placeholder="Select Away Team" />
         </SelectTrigger>
-        <SelectContent className="bg-white z-[200]">
+        <SelectContent>
           {teams?.map((team) => (
             <SelectItem key={team.id} value={team.id}>
               {team.name}
@@ -157,7 +157,7 @@ export function GameCreateForm() {
             <Button
               variant="outline"
               className={cn(
-                "justify-start text-left font-normal bg-white relative z-20",
+                "justify-start text-left font-normal",
                 !gameDate && "text-muted-foreground"
               )}
             >
@@ -165,7 +165,7 @@ export function GameCreateForm() {
               {gameDate ? format(gameDate, "PPP") : "Game Date"}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 z-[200]">
+          <PopoverContent className="w-auto p-0">
             <Calendar
               mode="single"
               selected={gameDate}
@@ -180,13 +180,11 @@ export function GameCreateForm() {
             type="time"
             value={gameTime}
             onChange={(e) => setGameTime(e.target.value)}
-            className="w-full bg-white"
+            className="w-full"
           />
         </div>
       </div>
-      <Button onClick={() => createGame.mutate()} className="bg-primary hover:bg-primary/90">
-        Create Game
-      </Button>
+      <Button onClick={() => createGame.mutate()}>Create Game</Button>
     </div>
   );
 }
