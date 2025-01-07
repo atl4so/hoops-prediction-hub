@@ -115,8 +115,9 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
     enabled: !!userId && !!session
   });
 
-  if (isLoading || !bestTeams?.length) return null;
+  if (isLoading) return null;
 
+  // Remove the length check to always show the component
   return (
     <Card className="bg-accent/5">
       <CardHeader className="py-3">
@@ -127,7 +128,7 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
       </CardHeader>
       <CardContent className="py-2">
         <div className="grid grid-cols-3 gap-2">
-          {bestTeams.map((team, index) => (
+          {bestTeams?.map((team, index) => (
             <div 
               key={team.team_id}
               className="flex flex-col items-center p-2 rounded-lg bg-accent/5 hover:bg-accent/10 transition-colors"
