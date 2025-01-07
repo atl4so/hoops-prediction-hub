@@ -7,7 +7,6 @@ import { RankDisplay } from "./components/RankDisplay";
 import { PlayerInfo } from "./components/PlayerInfo";
 import { StatsDisplay } from "./components/StatsDisplay";
 import { PlayerDetailsDialog } from "./components/PlayerDetailsDialog";
-import { UserDisplayName } from "@/components/users/UserDisplayName";
 
 interface LeaderboardRowProps {
   player: {
@@ -90,17 +89,10 @@ export function LeaderboardRow({
         </TableCell>
 
         <TableCell className="py-4">
-          <div className="flex items-center gap-3">
-            <PlayerInfo 
-              displayName={player.display_name}
-              avatarUrl={player.avatar_url}
-            />
-            <UserDisplayName
-              userId={player.user_id}
-              displayName={player.display_name}
-              className="ml-3"
-            />
-          </div>
+          <PlayerInfo 
+            displayName={player.display_name}
+            avatarUrl={player.avatar_url}
+          />
         </TableCell>
 
         <TableCell className="text-right py-4 px-4">
