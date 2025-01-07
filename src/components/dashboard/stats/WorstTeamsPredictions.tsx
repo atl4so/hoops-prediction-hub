@@ -11,6 +11,7 @@ interface TeamPredictionStats {
   logo_url: string;
   failure_rate: number;
   total_predictions: number;
+  incorrect_predictions: number;
 }
 
 export function WorstTeamsPredictions({ userId }: { userId: string }) {
@@ -32,7 +33,7 @@ export function WorstTeamsPredictions({ userId }: { userId: string }) {
           )
         `)
         .eq('user_id', userId)
-        .gt('wins_predicted', 0); // Changed from 2 to 0 to require at least 1 prediction
+        .gt('wins_predicted', 0);
 
       if (error) {
         console.error('Error fetching team stats:', error);
@@ -42,15 +43,20 @@ export function WorstTeamsPredictions({ userId }: { userId: string }) {
       if (!teamStats) return [];
 
       const processedStats: TeamPredictionStats[] = teamStats
-        .map(stat => ({
-          team_id: stat.team_id,
-          team_name: stat.team.name,
-          logo_url: stat.team.logo_url,
-          failure_rate: stat.wins_predicted > 0 
-            ? ((stat.wins_predicted - stat.wins_correct) / stat.wins_predicted) * 100 
-            : 0,
-          total_predictions: stat.wins_predicted
-        }))
+        .map(stat => {
+          const incorrect = stat.wins_predicted - stat.wins_correct;
+          return {
+            team_id: stat.team_id,
+            team_name: stat.team.name,
+            logo_url: stat.team.logo_url,
+            failure_rate: stat.wins_predicted > 0 
+              ? (incorrect / stat.wins_predicted) * 100 
+              : 0,
+            total_predictions: stat.wins_predicted,
+            incorrect_predictions: incorrect
+          };
+        })
+        .filter(stat => stat.incorrect_predictions > 0) // Only include teams with incorrect predictions
         .sort((a, b) => b.failure_rate - a.failure_rate || b.total_predictions - a.total_predictions)
         .slice(0, 3);
 
@@ -60,7 +66,7 @@ export function WorstTeamsPredictions({ userId }: { userId: string }) {
     enabled: !!userId && !!session
   });
 
-  if (isLoading) return null;
+  if (isLoading || !worstTeams?.length) return null;
 
   return (
     <Card className="bg-accent/5">

@@ -11,6 +11,7 @@ interface TeamPredictionStats {
   logo_url: string;
   success_rate: number;
   total_predictions: number;
+  correct_predictions: number;
 }
 
 export function BestTeamsPredictions({ userId }: { userId: string }) {
@@ -32,7 +33,8 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
           )
         `)
         .eq('user_id', userId)
-        .gt('wins_predicted', 0);
+        .gt('wins_predicted', 0)
+        .gt('wins_correct', 0); // Only show teams with at least 1 correct prediction
 
       if (error) {
         console.error('Error fetching team stats:', error);
@@ -49,8 +51,10 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
           success_rate: stat.wins_predicted > 0 
             ? (stat.wins_correct / stat.wins_predicted) * 100 
             : 0,
-          total_predictions: stat.wins_predicted
+          total_predictions: stat.wins_predicted,
+          correct_predictions: stat.wins_correct
         }))
+        .filter(stat => stat.correct_predictions > 0) // Only include teams with correct predictions
         .sort((a, b) => b.success_rate - a.success_rate || b.total_predictions - a.total_predictions)
         .slice(0, 3);
 
@@ -60,7 +64,7 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
     enabled: !!userId && !!session
   });
 
-  if (isLoading) return null;
+  if (isLoading || !bestTeams?.length) return null;
 
   return (
     <Card className="bg-accent/5">
