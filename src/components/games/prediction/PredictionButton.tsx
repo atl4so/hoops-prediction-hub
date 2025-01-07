@@ -59,19 +59,6 @@ export function PredictionButton({
     return isBefore(now, oneHourBefore);
   };
 
-  const getButtonText = () => {
-    if (!isAuthenticated) {
-      return "Log in to Predict";
-    }
-    if (prediction) {
-      return "Prediction Submitted";
-    }
-    if (gameResult?.is_final) {
-      return "Game Completed";
-    }
-    return isPredictionAllowed() ? "Make Prediction" : "Predictions Closed";
-  };
-
   const handleClick = () => {
     if (!isAuthenticated) {
       navigate("/login");
@@ -94,6 +81,19 @@ export function PredictionButton({
     }
 
     setShowForm(true);
+  };
+
+  const getButtonText = () => {
+    if (!isAuthenticated) {
+      return "Log in to Predict";
+    }
+    if (prediction) {
+      return "Prediction Submitted";
+    }
+    if (gameResult?.is_final) {
+      return "Game Completed";
+    }
+    return isPredictionAllowed() ? "Make Prediction" : "Predictions Closed";
   };
 
   return (

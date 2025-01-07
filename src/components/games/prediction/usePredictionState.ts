@@ -21,7 +21,6 @@ export function usePredictionState(gameId: string, userId?: string, initialPredi
     setIsSubmitting(true);
 
     try {
-      // Check if prediction already exists
       const { data: existingPrediction } = await supabase
         .from("predictions")
         .select("id")
@@ -48,13 +47,11 @@ export function usePredictionState(gameId: string, userId?: string, initialPredi
 
       if (error) throw error;
 
-      // Update local state immediately
       setPrediction({
         prediction_home_score: homeScore,
         prediction_away_score: awayScore
       });
 
-      // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ['prediction', gameId, userId] });
       queryClient.invalidateQueries({ queryKey: ['userPredictions'] });
       queryClient.invalidateQueries({ queryKey: ['games'] });

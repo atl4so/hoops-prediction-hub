@@ -29,8 +29,8 @@ export function PredictionForm({
   return (
     <form onSubmit={handleSubmit} className="p-4 border rounded-lg bg-background shadow-sm space-y-4">
       <div className="grid grid-cols-2 gap-4">
-        <div className="flex flex-col space-y-2">
-          <Label htmlFor="homeScore" className="text-center">{homeTeam.name}</Label>
+        <div className="space-y-2">
+          <Label htmlFor="homeScore">{homeTeam.name}</Label>
           <Input
             id="homeScore"
             type="number"
@@ -39,11 +39,10 @@ export function PredictionForm({
             onChange={(e) => setHomeScore(e.target.value)}
             placeholder="Score"
             required
-            className="text-center"
           />
         </div>
-        <div className="flex flex-col space-y-2">
-          <Label htmlFor="awayScore" className="text-center">{awayTeam.name}</Label>
+        <div className="space-y-2">
+          <Label htmlFor="awayScore">{awayTeam.name}</Label>
           <Input
             id="awayScore"
             type="number"
@@ -52,7 +51,6 @@ export function PredictionForm({
             onChange={(e) => setAwayScore(e.target.value)}
             placeholder="Score"
             required
-            className="text-center"
           />
         </div>
       </div>
