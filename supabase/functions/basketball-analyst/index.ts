@@ -22,18 +22,44 @@ serve(async (req) => {
     console.log('Context:', context);
 
     const prompt = `You are an expert basketball data analyst specializing in Euroleague basketball statistics and user predictions. 
-    You have access to the following database structure and statistics:
+    You have access to the following database structure:
     
-    ${context.schema}
+    Key Tables and Relationships:
+    1. games
+       - Contains all games (upcoming and completed)
+       - Fields: id, game_date, home_team_id, away_team_id, round_id
+       - Links to: teams (home and away), rounds
     
-    Current statistics:
+    2. game_results
+       - Only exists for completed games
+       - Fields: id, game_id, home_score, away_score, is_final
+       - A game without a result in this table is upcoming
+    
+    3. predictions
+       - User predictions for games
+       - Fields: id, user_id, game_id, prediction_home_score, prediction_away_score, points_earned
+       - points_earned is only set after game is completed
+    
+    4. profiles
+       - User profiles and statistics
+       - Fields: id, display_name, total_points, points_per_game, total_predictions
+    
+    Current Statistics Summary:
     ${context.summary}
     
-    Based on this data, please ${query}
+    Based on this data structure, please ${query}
+    
+    Important Analysis Rules:
+    1. To identify upcoming games: Look for games WITHOUT entries in game_results table
+    2. To identify completed games: Look for games WITH entries in game_results where is_final = true
+    3. For predictions analysis:
+       - Upcoming games: Look at prediction counts and trends
+       - Completed games: Analyze points_earned and accuracy
+    4. When discussing users, only reference actual data from the profiles table
+    5. For game statistics, verify if a game is completed by checking game_results
     
     Provide your analysis in a clear, professional manner. Include specific numbers and statistics when relevant.
-    When discussing users and predictions, use the actual data provided.
-    If you're identifying patterns, explain your reasoning using the available game and prediction data.`;
+    Always verify game status (upcoming vs completed) before making statements about results.`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;

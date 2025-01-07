@@ -1,37 +1,58 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Card } from "@/components/ui/card";
-import { Loader2, Send } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Send } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export function BasketballAnalyst() {
   const [query, setQuery] = useState("");
+  const [analysis, setAnalysis] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
-  const getDatabaseContext = async () => {
-    // Get relevant database statistics
-    const [gamesCount, predictionsCount, usersCount, roundsCount] = await Promise.all([
+  const fetchDatabaseContext = async () => {
+    // Get database statistics
+    const [
+      { count: gamesCount },
+      { count: predictionsCount },
+      { count: resultsCount },
+      { count: roundsCount }
+    ] = await Promise.all([
       supabase.from('games').select('*', { count: 'exact', head: true }),
       supabase.from('predictions').select('*', { count: 'exact', head: true }),
-      supabase.from('profiles').select('*', { count: 'exact', head: true }),
+      supabase.from('game_results').select('*', { count: 'exact', head: true }),
       supabase.from('rounds').select('*', { count: 'exact', head: true })
     ]);
 
-    // Get recent game results with predictions
+    // Get upcoming games
+    const { data: upcomingGames } = await supabase
+      .from('games')
+      .select(`
+        id,
+        game_date,
+        home_team:teams!games_home_team_id_fkey (name),
+        away_team:teams!games_away_team_id_fkey (name)
+      `)
+      .not('game_results', 'is', null)
+      .order('game_date', { ascending: true })
+      .limit(5);
+
+    // Get recent completed games with results and prediction stats
     const { data: recentResults } = await supabase
       .from('game_results')
       .select(`
+        home_score,
+        away_score,
         game:games (
-          game_date,
           home_team:teams!games_home_team_id_fkey (name),
           away_team:teams!games_away_team_id_fkey (name)
         ),
-        home_score,
-        away_score
+        predictions:predictions (
+          points_earned
+        )
       `)
+      .eq('is_final', true)
       .order('created_at', { ascending: false })
       .limit(5);
 
@@ -44,26 +65,27 @@ export function BasketballAnalyst() {
 
     return {
       schema: `
-        - Games table tracks matches with home and away teams
-        - Predictions table stores predictions for games
-        - Game results table stores final scores
-        - Profiles table tracks user statistics and performance
-        - Rounds table organizes games into competition rounds
-        - Teams table stores team information
+        Database Overview:
+        - ${gamesCount} total games
+        - ${resultsCount} completed games with results
+        - ${gamesCount - resultsCount} upcoming games
+        - ${predictionsCount} total predictions
+        - ${roundsCount} rounds
       `,
       summary: `
-        Database statistics:
-        - ${gamesCount.count} total games
-        - ${predictionsCount.count} predictions made
-        - ${usersCount.count} registered users
-        - ${roundsCount.count} competition rounds
-        
-        Recent game results:
-        ${recentResults?.map(r => 
-          `${r.game.home_team.name} ${r.home_score} - ${r.away_score} ${r.game.away_team.name}`
+        Upcoming Games:
+        ${upcomingGames?.map(g => 
+          `${g.home_team.name} vs ${g.away_team.name} (${new Date(g.game_date).toLocaleDateString()})`
         ).join('\n')}
 
-        Top predictors:
+        Recent Completed Games:
+        ${recentResults?.map(r => {
+          const predictionCount = r.predictions?.length || 0;
+          const avgPoints = r.predictions?.reduce((sum, p) => sum + (p.points_earned || 0), 0) / predictionCount || 0;
+          return `${r.game.home_team.name} ${r.home_score} - ${r.away_score} ${r.game.away_team.name} (${predictionCount} predictions, avg ${avgPoints.toFixed(1)} points)`;
+        }).join('\n')}
+
+        Top Predictors:
         ${topPredictors?.map(p => 
           `${p.display_name}: ${p.total_points} points (${p.points_per_game.toFixed(1)} PPG)`
         ).join('\n')}
@@ -71,110 +93,91 @@ export function BasketballAnalyst() {
     };
   };
 
-  const analyzeData = useMutation({
-    mutationFn: async (query: string) => {
-      const context = await getDatabaseContext();
-      
-      const response = await supabase.functions.invoke('basketball-analyst', {
+  const handleAnalyze = async () => {
+    if (!query.trim()) {
+      toast.error("Please enter a query");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const context = await fetchDatabaseContext();
+      const { data, error } = await supabase.functions.invoke('basketball-analyst', {
         body: { query, context }
       });
 
-      if (response.error) throw response.error;
-      return response.data;
-    },
-    onSuccess: (data) => {
-      setResponse(data.analysis);
-    },
-    onError: (error) => {
-      console.error('Analysis error:', error);
-      toast.error("Failed to analyze data. Please try again.");
+      if (error) throw error;
+      setAnalysis(data.analysis);
+    } catch (error) {
+      console.error('Error analyzing:', error);
+      toast.error("Failed to analyze. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
-  });
-
-  const [response, setResponse] = useState<string>("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim()) return;
-    
-    analyzeData.mutate(query);
   };
 
   const exampleQueries = [
-    "analyze prediction accuracy trends across different rounds",
-    "identify patterns in home team vs away team performance",
-    "analyze the most successful predictors and their strategies",
-    "generate insights about high-scoring vs low-scoring games",
-    "analyze which teams are most difficult to predict correctly"
+    "analyze upcoming games and their prediction patterns",
+    "compare prediction accuracy between home and away games",
+    "identify trends in completed games from the last round",
+    "analyze the most successful predictors' strategies",
+    "show prediction distribution for next week's games"
   ];
 
   return (
-    <div className="space-y-6">
-      <Card className="p-6">
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="space-y-6 p-4">
+      <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-4">
+        <div className="space-y-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Ask your basketball analyst:</label>
             <Textarea
               value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                setIsTyping(true);
+              onChange={(e) => setQuery(e.target.value)}
+              onFocus={() => {
+                if (!query && !isTyping) {
+                  setIsTyping(true);
+                }
               }}
               onBlur={() => setIsTyping(false)}
-              placeholder="Ask about predictions, patterns, statistics, or request specific analysis..."
+              placeholder="Ask about games, predictions, trends, or request specific analysis..."
               className="min-h-[100px]"
             />
           </div>
+          <Button 
+            onClick={handleAnalyze} 
+            disabled={isLoading || !query.trim()}
+            className="w-full sm:w-auto"
+          >
+            <Send className="w-4 h-4 mr-2" />
+            Analyze
+          </Button>
+        </div>
 
-          <div className="flex justify-end">
-            <Button 
-              type="submit" 
-              disabled={analyzeData.isPending || !query.trim()}
-              className="flex items-center gap-2"
-            >
-              {analyzeData.isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Analyzing...
-                </>
-              ) : (
-                <>
-                  <Send className="h-4 w-4" />
-                  Analyze
-                </>
-              )}
-            </Button>
+        {!isTyping && !query && (
+          <div className="mt-4">
+            <p className="text-sm text-muted-foreground mb-2">Example queries:</p>
+            <div className="flex flex-wrap gap-2">
+              {exampleQueries.map((q, i) => (
+                <Button
+                  key={i}
+                  variant="outline"
+                  size="sm"
+                  className="text-xs whitespace-normal h-auto text-left"
+                  onClick={() => setQuery(q)}
+                >
+                  {q}
+                </Button>
+              ))}
+            </div>
           </div>
-        </form>
-      </Card>
+        )}
+      </div>
 
-      {!isTyping && !response && (
-        <Card className="p-6">
-          <h3 className="text-sm font-medium mb-3">Example queries:</h3>
-          <div className="space-y-2">
-            {exampleQueries.map((example, index) => (
-              <Button
-                key={index}
-                variant="ghost"
-                className="w-full justify-start text-left whitespace-normal h-auto py-3 px-4 text-sm leading-tight"
-                onClick={() => setQuery(example)}
-              >
-                {example}
-              </Button>
-            ))}
-          </div>
-        </Card>
-      )}
-
-      {response && (
-        <Card className="p-6">
-          <h3 className="text-sm font-medium mb-3">Analysis:</h3>
-          <div className="prose prose-sm max-w-none">
-            {response.split('\n').map((paragraph, index) => (
-              <p key={index} className="mb-4">{paragraph}</p>
-            ))}
-          </div>
-        </Card>
+      {analysis && (
+        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-4">
+          <h3 className="font-semibold mb-2">Analysis:</h3>
+          <div className="whitespace-pre-wrap">{analysis}</div>
+        </div>
       )}
     </div>
   );
