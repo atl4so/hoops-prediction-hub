@@ -90,7 +90,7 @@ export function AppHeader() {
               loading="eager"
               fetchPriority="high"
             />
-            <span className="font-bold text-lg">euroleague.bet</span>
+            <span className="font-bold text-lg">Euroleague.bet</span>
           </Link>
 
           <DesktopNav 

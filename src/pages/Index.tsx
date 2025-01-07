@@ -18,11 +18,11 @@ const Index = () => {
       <div className="w-full px-4 sm:px-6 flex flex-col items-center justify-center min-h-[80vh] max-w-3xl mx-auto">
         <div className="text-center space-y-6 md:space-y-8 w-full">
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-relaxed font-display text-foreground">
-            euroleague.bet
+            Euroleague.bet
           </h1>
 
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed px-4">
-            Join the ultimate Euroleague basketball prediction community. Test your knowledge, compete with friends, and climb the leaderboard!
+            Track your Euroleague basketball predictions, analyze game insights, and see how others are predicting. Join our thriving community to test your knowledge, compete with friends, and climb the leaderboard!
           </p>
           
           {!session && (
@@ -87,8 +87,8 @@ const Index = () => {
               <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <span className="text-xl font-bold text-white">2</span>
               </div>
-              <h3 className="font-semibold text-foreground">Earn Points</h3>
-              <p className="text-sm text-muted-foreground">Get points based on prediction accuracy</p>
+              <h3 className="font-semibold text-foreground">Track & Analyze</h3>
+              <p className="text-sm text-muted-foreground">Get insights and track your prediction accuracy</p>
             </div>
             
             <div className="card space-y-3 p-6 rounded-2xl bg-card hover:shadow-xl transition-all duration-200 border border-primary/10 hover:border-primary/20">
