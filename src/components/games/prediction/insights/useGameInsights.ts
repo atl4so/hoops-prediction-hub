@@ -120,6 +120,7 @@ export function useGameInsights(gameId: string) {
       };
     },
     staleTime: 1000 * 30, // 30 seconds
-    refetchInterval: 1000 * 60 // Refetch every minute
+    refetchInterval: 1000 * 60, // Refetch every minute
+    retry: 3
   });
 }
