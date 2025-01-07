@@ -23,7 +23,6 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
       const { data: predictions } = await supabase
         .from('predictions')
         .select(`
-          points_earned,
           prediction_home_score,
           prediction_away_score,
           game:games (
@@ -62,8 +61,9 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
         
         if (!homeTeam || !awayTeam) return;
 
-        // Check if user predicted home team to win and they won
+        // Only track predictions where user predicted a team to win AND they actually won
         if (prediction.prediction_home_score > prediction.prediction_away_score) {
+          // User predicted home team to win
           if (!teamStats.has(homeTeam.id)) {
             teamStats.set(homeTeam.id, { 
               success: 0, 
@@ -79,8 +79,8 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
           }
         }
 
-        // Check if user predicted away team to win and they won
         if (prediction.prediction_away_score > prediction.prediction_home_score) {
+          // User predicted away team to win
           if (!teamStats.has(awayTeam.id)) {
             teamStats.set(awayTeam.id, { 
               success: 0, 
@@ -117,7 +117,6 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
 
   if (isLoading) return null;
 
-  // Remove the length check to always show the component
   return (
     <Card className="bg-accent/5">
       <CardHeader className="py-3">
