@@ -4,13 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { MobileMenu } from "./MobileMenu";
 import { DesktopNav } from "./DesktopNav";
-import { navigationItems, authenticatedItems } from "./NavigationItems";
+import { navigationItems, publicItems } from "./NavigationItems";
 import { ProfileMenu } from "../profile/ProfileMenu";
 import { Settings } from "lucide-react";
 
 export function AppHeader() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [menuItems, setMenuItems] = useState(navigationItems);
+  const [menuItems, setMenuItems] = useState(publicItems);
   const navigate = useNavigate();
   const { toast } = useToast();
   const location = useLocation();
@@ -31,8 +31,10 @@ export function AppHeader() {
             },
           ];
         }
+        setMenuItems(items);
+      } else {
+        setMenuItems(publicItems);
       }
-      setMenuItems(items);
     };
 
     loadNavItems();
@@ -86,7 +88,7 @@ export function AppHeader() {
 
           <DesktopNav 
             menuItems={menuItems}
-            authenticatedItems={authenticatedItems}
+            authenticatedItems={[]}
             currentPath={location.pathname}
             isAuthenticated={isAuthenticated}
           />
