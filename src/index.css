@@ -1,2 +1,103 @@
 @import './styles/base.css';
 @import './styles/utilities.css';
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 24 95% 53%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 24 95% 53%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 224 25% 13%;
+    --foreground: 0 0% 98%;
+    --card: 224 25% 15%;
+    --card-foreground: 0 0% 98%;
+    --popover: 224 25% 13%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 142 70% 45%;
+    --primary-foreground: 144 80% 10%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 142 70% 45%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  .glass-effect {
+    @apply bg-white/10 dark:bg-black/10 backdrop-blur-md border border-white/20 dark:border-white/10;
+  }
+
+  .card-gradient {
+    @apply bg-gradient-to-br from-card to-secondary/80 dark:from-background-dark dark:to-card-dark/80 backdrop-blur-sm;
+  }
+
+  /* Dark mode specific styles */
+  .dark .dropdown-content {
+    @apply bg-background-dark border-border/10;
+  }
+
+  .dark .dialog-content {
+    @apply bg-background-dark border-border/10;
+  }
+
+  .dark .popover-content {
+    @apply bg-background-dark border-border/10;
+  }
+
+  .dark .button-primary {
+    @apply bg-primary-dark text-white hover:bg-primary-dark/90;
+  }
+
+  .dark .button-secondary {
+    @apply bg-secondary-dark text-white hover:bg-secondary-dark/90;
+  }
+
+  /* Improved contrast for text in dark mode */
+  .dark .text-muted-foreground {
+    @apply text-muted-dark;
+  }
+
+  /* Better visibility for cards in dark mode */
+  .dark .card {
+    @apply bg-card-dark border-border/10;
+  }
+
+  /* Improved contrast for inputs in dark mode */
+  .dark input,
+  .dark select,
+  .dark textarea {
+    @apply bg-background-dark border-border/10 text-foreground;
+  }
+}
