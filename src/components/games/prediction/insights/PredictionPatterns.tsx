@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Scale, Target } from "lucide-react";
+import { Scale, Target, Calculator } from "lucide-react";
 
 interface PredictionPatternsProps {
   marginRange: string;
@@ -10,8 +10,9 @@ export function PredictionPatterns({
   marginRange,
   totalPointsRange,
 }: PredictionPatternsProps) {
-  // Add console.log to help debug the values
-  console.log('PredictionPatterns received totalPointsRange:', totalPointsRange);
+  // Calculate average from the range
+  const [min, max] = totalPointsRange.split('-').map(Number);
+  const avgTotalPoints = Math.round((min + max) / 2);
   
   return (
     <div className="space-y-4">
@@ -31,12 +32,18 @@ export function PredictionPatterns({
 
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center">
+            <div className="text-center space-y-3">
               <div className="flex justify-center mb-2">
                 <Scale className="w-5 h-5 text-primary/80" />
               </div>
-              <p className="text-sm text-muted-foreground mb-1">Total Points Range</p>
-              <p className="text-xl font-semibold">{totalPointsRange}</p>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Total Points Range</p>
+                <p className="text-xl font-semibold">{totalPointsRange}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Average Total</p>
+                <p className="text-lg font-medium text-primary">{avgTotalPoints}</p>
+              </div>
             </div>
           </CardContent>
         </Card>
