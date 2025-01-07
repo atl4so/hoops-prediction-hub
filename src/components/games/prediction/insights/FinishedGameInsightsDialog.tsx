@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { FinishedGameStats } from "./FinishedGameStats";
-import { TeamDisplay } from "@/components/games/TeamDisplay";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { GameInsightsHeader } from "./GameInsightsHeader";
 
 interface FinishedGameInsightsDialogProps {
   isOpen: boolean;
@@ -21,8 +20,6 @@ export function FinishedGameInsightsDialog({
   gameId,
   finalScore,
 }: FinishedGameInsightsDialogProps) {
-  const isMobile = useIsMobile();
-
   const { data: gameDetails } = useQuery({
     queryKey: ["game-details", gameId],
     queryFn: async () => {
@@ -74,9 +71,7 @@ export function FinishedGameInsightsDialog({
     return (
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Loading predictions...</DialogTitle>
-          </DialogHeader>
+          <div className="text-center py-4">Loading predictions...</div>
         </DialogContent>
       </Dialog>
     );
@@ -86,9 +81,7 @@ export function FinishedGameInsightsDialog({
     return (
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>No predictions found</DialogTitle>
-          </DialogHeader>
+          <div className="text-center py-4">No predictions found</div>
         </DialogContent>
       </Dialog>
     );
@@ -97,26 +90,11 @@ export function FinishedGameInsightsDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl h-[90vh] flex flex-col">
-        <DialogHeader>
-          <div className="flex items-center justify-center gap-2 sm:gap-4 mb-2 sm:mb-4">
-            <TeamDisplay 
-              team={gameDetails.home_team} 
-              className={isMobile ? "w-12" : "w-16"}
-              imageClassName="w-8 h-8 sm:w-12 sm:h-12"
-            />
-            <div className="text-lg sm:text-2xl font-bold">
-              {finalScore.home} - {finalScore.away}
-            </div>
-            <TeamDisplay 
-              team={gameDetails.away_team} 
-              className={isMobile ? "w-12" : "w-16"}
-              imageClassName="w-8 h-8 sm:w-12 sm:h-12"
-            />
-          </div>
-          <DialogTitle className="text-xl sm:text-2xl font-bold text-center">
-            Game Insights
-          </DialogTitle>
-        </DialogHeader>
+        <GameInsightsHeader 
+          homeTeam={gameDetails.home_team}
+          awayTeam={gameDetails.away_team}
+          finalScore={finalScore}
+        />
 
         <div className="flex-1 overflow-y-auto pr-2 space-y-6">
           <FinishedGameStats
