@@ -58,11 +58,15 @@ export function UserPredictionCard({
       const tempDiv = document.createElement("div");
       tempDiv.style.position = "absolute";
       tempDiv.style.left = "-9999px";
-      tempDiv.style.backgroundColor = "#ffffff";
       tempDiv.style.padding = "32px";
-      tempDiv.style.borderRadius = "12px";
       tempDiv.style.width = "400px"; // Fixed width for consistency
       tempDiv.style.boxSizing = "border-box";
+      // Add card-like styling just for the screenshot
+      tempDiv.style.backgroundColor = "#ffffff";
+      tempDiv.style.borderRadius = "12px";
+      tempDiv.style.border = "2px solid #F97316";
+      tempDiv.style.boxShadow = "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)";
+      tempDiv.style.background = "linear-gradient(to bottom right, #FFF7ED, #FFFFFF)";
       document.body.appendChild(tempDiv);
 
       // Create the card content
@@ -103,25 +107,19 @@ export function UserPredictionCard({
           (name as HTMLElement).className = name.className.replace('line-clamp-2', '');
         });
 
-        // Style the score/prediction display
+        // Style the score/prediction display with card-like appearance
         const scoreElements = clonedContent.querySelectorAll('.text-lg, .text-xl');
         scoreElements.forEach(score => {
           (score as HTMLElement).style.fontSize = "24px";
           (score as HTMLElement).style.fontWeight = "600";
           (score as HTMLElement).style.color = "#1a1a1a";
           (score as HTMLElement).style.margin = "16px 0";
+          (score as HTMLElement).style.padding = "8px 16px";
+          (score as HTMLElement).style.backgroundColor = "#FFF7ED";
+          (score as HTMLElement).style.borderRadius = "8px";
+          (score as HTMLElement).style.border = "1px solid rgba(249, 115, 22, 0.2)";
         });
 
-        // Style the date/time
-        const dateElements = clonedContent.querySelectorAll('time');
-        dateElements.forEach(date => {
-          (date as HTMLElement).style.fontSize = "18px";
-          (date as HTMLElement).style.color = "#4b5563";
-          (date as HTMLElement).style.marginBottom = "16px";
-          (date as HTMLElement).style.display = "block";
-          (date as HTMLElement).style.textAlign = "center";
-        });
-        
         cardContent.innerHTML = clonedContent.innerHTML;
       }
       
