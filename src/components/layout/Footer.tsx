@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Facebook, X } from "lucide-react";
+import { Facebook } from "lucide-react";
 
 export function Footer() {
   return (
@@ -29,7 +29,11 @@ export function Footer() {
                   className="inline-flex items-center hover:text-primary transition-colors"
                   aria-label="Follow us on X (formerly Twitter)"
                 >
-                  <X className="h-5 w-5" strokeWidth={2} />
+                  <img 
+                    src="https://cdn.cms-twdigitalassets.com/content/dam/about-twitter/x/brand-toolkit/logo-black.png.twimg.768.png" 
+                    alt="X (formerly Twitter)" 
+                    className="h-4 w-4" 
+                  />
                 </a>
               </div>
             </div>
