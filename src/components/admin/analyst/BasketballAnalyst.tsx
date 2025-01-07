@@ -144,7 +144,7 @@ export function BasketballAnalyst() {
               <Button
                 key={index}
                 variant="ghost"
-                className="w-full justify-start text-left"
+                className="w-full justify-start text-left whitespace-normal h-auto py-3 px-4 text-sm leading-tight"
                 onClick={() => setQuery(example)}
               >
                 {example}
