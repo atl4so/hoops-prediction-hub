@@ -1,5 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { GameCard } from "./GameCard";
 import { SkeletonList } from "./list/SkeletonList";
 import { EmptyState } from "./list/EmptyState";

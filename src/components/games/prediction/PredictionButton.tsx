@@ -1,7 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { subHours, isBefore } from "date-fns";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { PredictionForm } from "./PredictionForm";
 import { usePredictionState } from "./usePredictionState";
 
@@ -54,9 +52,9 @@ export function PredictionButton({
 
     const gameDateObj = new Date(gameDate);
     const now = new Date();
-    const oneHourBefore = subHours(gameDateObj, 1);
+    const oneHourBefore = new Date(gameDateObj.getTime() - (60 * 60 * 1000));
     
-    return isBefore(now, oneHourBefore);
+    return now < oneHourBefore;
   };
 
   const handleClick = () => {
@@ -66,17 +64,14 @@ export function PredictionButton({
     }
 
     if (prediction) {
-      toast.error("You have already made a prediction for this game");
       return;
     }
 
     if (gameResult?.is_final) {
-      toast.error("This game has ended and predictions are closed");
       return;
     }
 
     if (!isPredictionAllowed()) {
-      toast.error("Predictions are closed 1 hour before the game starts");
       return;
     }
 
