@@ -61,7 +61,6 @@ export function UserPredictionCard({
       tempDiv.style.padding = "32px";
       tempDiv.style.width = "400px"; // Fixed width for consistency
       tempDiv.style.boxSizing = "border-box";
-      // Add card-like styling just for the screenshot
       tempDiv.style.backgroundColor = "#ffffff";
       tempDiv.style.borderRadius = "12px";
       tempDiv.style.border = "2px solid #F97316";
@@ -107,21 +106,58 @@ export function UserPredictionCard({
           (name as HTMLElement).className = name.className.replace('line-clamp-2', '');
         });
 
-        // Style the score/prediction display with card-like appearance and inline layout
+        // Style the score/prediction display with winner highlighting
         const scoreElements = clonedContent.querySelectorAll('.text-lg, .text-xl');
         scoreElements.forEach(score => {
+          const [homeScore, awayScore] = score.innerHTML.split('-').map(s => parseInt(s.trim()));
           const scoreContainer = document.createElement('div');
-          scoreContainer.style.display = 'inline-block';
-          scoreContainer.style.fontSize = "24px";
-          scoreContainer.style.fontWeight = "600";
-          scoreContainer.style.color = "#1a1a1a";
-          scoreContainer.style.margin = "16px 0";
-          scoreContainer.style.padding = "8px 16px";
-          scoreContainer.style.backgroundColor = "#FFF7ED";
-          scoreContainer.style.borderRadius = "8px";
-          scoreContainer.style.border = "1px solid rgba(249, 115, 22, 0.2)";
-          scoreContainer.style.whiteSpace = "nowrap";
-          scoreContainer.innerHTML = score.innerHTML.replace('-', ' - '); // Add spaces around the dash
+          scoreContainer.style.display = 'inline-flex';
+          scoreContainer.style.alignItems = 'center';
+          scoreContainer.style.gap = '8px';
+          scoreContainer.style.margin = '16px 0';
+          scoreContainer.style.whiteSpace = 'nowrap';
+          
+          // Create home score span
+          const homeSpan = document.createElement('span');
+          homeSpan.style.padding = '8px 16px';
+          homeSpan.style.fontSize = '24px';
+          homeSpan.style.fontWeight = '600';
+          homeSpan.style.borderRadius = '8px';
+          if (homeScore > awayScore) {
+            homeSpan.style.backgroundColor = '#F97316';
+            homeSpan.style.color = '#FFFFFF';
+          } else {
+            homeSpan.style.backgroundColor = '#FFF7ED';
+            homeSpan.style.color = '#1a1a1a';
+          }
+          homeSpan.textContent = homeScore.toString();
+          
+          // Create separator
+          const separator = document.createElement('span');
+          separator.style.fontSize = '24px';
+          separator.style.fontWeight = '600';
+          separator.style.color = '#1a1a1a';
+          separator.textContent = '-';
+          
+          // Create away score span
+          const awaySpan = document.createElement('span');
+          awaySpan.style.padding = '8px 16px';
+          awaySpan.style.fontSize = '24px';
+          awaySpan.style.fontWeight = '600';
+          awaySpan.style.borderRadius = '8px';
+          if (awayScore > homeScore) {
+            awaySpan.style.backgroundColor = '#F97316';
+            awaySpan.style.color = '#FFFFFF';
+          } else {
+            awaySpan.style.backgroundColor = '#FFF7ED';
+            awaySpan.style.color = '#1a1a1a';
+          }
+          awaySpan.textContent = awayScore.toString();
+          
+          scoreContainer.appendChild(homeSpan);
+          scoreContainer.appendChild(separator);
+          scoreContainer.appendChild(awaySpan);
+          
           score.parentNode?.replaceChild(scoreContainer, score);
         });
 
@@ -132,7 +168,7 @@ export function UserPredictionCard({
 
       // Capture the screenshot with improved quality
       const canvas = await html2canvas(tempDiv, {
-        scale: 3, // Increased for better quality
+        scale: 3,
         backgroundColor: "#ffffff",
         logging: false,
         useCORS: true,
