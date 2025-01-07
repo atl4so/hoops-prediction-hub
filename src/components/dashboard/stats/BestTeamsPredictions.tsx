@@ -90,9 +90,9 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
           success_rate: (stats.success / stats.total) * 100,
           total_predictions: stats.total
         }))
-        .filter(team => team.total_predictions >= 1) // Changed from 3 to 1
+        .filter(team => team.total_predictions >= 1)
         .sort((a, b) => b.success_rate - a.success_rate)
-        .slice(0, 3); // Get top 3 teams
+        .slice(0, 3);
 
       return teamsArray;
     },
@@ -102,19 +102,19 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
   if (isLoading || !bestTeams?.length) return null;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Trophy className="h-5 w-5 text-primary" />
+    <Card className="bg-accent/5">
+      <CardHeader className="py-3">
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Trophy className="h-4 w-4 text-primary" />
           Your Best Teams
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <CardContent className="py-2">
+        <div className="grid grid-cols-3 gap-2">
           {bestTeams.map((team, index) => (
             <div 
               key={team.team_id}
-              className="flex flex-col items-center p-4 rounded-lg bg-accent/5 hover:bg-accent/10 transition-colors"
+              className="flex flex-col items-center p-2 rounded-lg bg-accent/5 hover:bg-accent/10 transition-colors"
             >
               <div className="relative">
                 <TeamDisplay
@@ -122,19 +122,21 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
                     name: team.team_name,
                     logo_url: team.logo_url
                   }}
-                  imageClassName="w-20 h-20"
+                  imageClassName="w-12 h-12 sm:w-16 sm:h-16"
                 />
-                <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold">
+                <div className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-xs sm:text-sm">
                   {index + 1}
                 </div>
               </div>
-              <div className="mt-4 text-center">
-                <p className="font-semibold text-lg">{team.team_name}</p>
-                <p className="text-sm text-muted-foreground">
-                  Success rate: {team.success_rate.toFixed(1)}%
+              <div className="mt-2 text-center">
+                <p className="font-semibold text-xs sm:text-sm truncate max-w-[80px] sm:max-w-[120px]">
+                  {team.team_name}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {team.total_predictions} predictions
+                  {team.success_rate.toFixed(1)}%
+                </p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">
+                  {team.total_predictions} pred.
                 </p>
               </div>
             </div>
