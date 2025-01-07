@@ -5,6 +5,18 @@ import { Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+interface GameResult {
+  home_score: number;
+  away_score: number;
+  game: {
+    home_team: { name: string };
+    away_team: { name: string };
+  };
+  predictions: Array<{
+    points_earned: number | null;
+  }>;
+}
+
 export function BasketballAnalyst() {
   const [query, setQuery] = useState("");
   const [analysis, setAnalysis] = useState("");
@@ -34,7 +46,7 @@ export function BasketballAnalyst() {
         home_team:teams!games_home_team_id_fkey (name),
         away_team:teams!games_away_team_id_fkey (name)
       `)
-      .not('game_results', 'is', null)
+      .is('game_results', null)  // Changed to get games without results
       .order('game_date', { ascending: true })
       .limit(5);
 
@@ -48,13 +60,13 @@ export function BasketballAnalyst() {
           home_team:teams!games_home_team_id_fkey (name),
           away_team:teams!games_away_team_id_fkey (name)
         ),
-        predictions:predictions (
+        predictions (
           points_earned
         )
       `)
       .eq('is_final', true)
       .order('created_at', { ascending: false })
-      .limit(5);
+      .limit(5) as { data: GameResult[] | null };
 
     // Get top predictors
     const { data: topPredictors } = await supabase
@@ -81,7 +93,9 @@ export function BasketballAnalyst() {
         Recent Completed Games:
         ${recentResults?.map(r => {
           const predictionCount = r.predictions?.length || 0;
-          const avgPoints = r.predictions?.reduce((sum, p) => sum + (p.points_earned || 0), 0) / predictionCount || 0;
+          const avgPoints = predictionCount > 0 
+            ? r.predictions.reduce((sum, p) => sum + (p.points_earned || 0), 0) / predictionCount 
+            : 0;
           return `${r.game.home_team.name} ${r.home_score} - ${r.away_score} ${r.game.away_team.name} (${predictionCount} predictions, avg ${avgPoints.toFixed(1)} points)`;
         }).join('\n')}
 
