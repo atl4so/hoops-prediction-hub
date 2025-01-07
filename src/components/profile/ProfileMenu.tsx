@@ -14,14 +14,8 @@ import { Button } from "@/components/ui/button";
 import { ProfileSettings } from "./ProfileSettings";
 import { useUserProfile } from "@/components/dashboard/UserProfile";
 import { useCurrentRoundRank } from "@/components/dashboard/useCurrentRoundRank";
-import { Loader2, Trophy, ListOrdered, Settings, LogOut } from "lucide-react";
+import { Loader2, Trophy, Settings, LogOut } from "lucide-react";
 import { toast } from "sonner";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 export function ProfileMenu() {
   const session = useSession();
@@ -91,7 +85,16 @@ export function ProfileMenu() {
             </div>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-[280px] p-2" align="end">
+        <DropdownMenuContent 
+          className="w-[280px] p-2" 
+          align="end"
+          sideOffset={8}
+          style={{
+            maxHeight: "calc(100vh - 80px)", // Ensure menu doesn't exceed viewport height
+            overflowY: "auto",
+            zIndex: 50 // Ensure dropdown appears above other elements
+          }}
+        >
           <div className="flex items-center justify-between gap-2 p-2">
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none">
