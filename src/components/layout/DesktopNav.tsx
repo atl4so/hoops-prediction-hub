@@ -5,19 +5,22 @@ interface NavigationItem {
   title: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
+  public?: boolean;
 }
 
 interface DesktopNavProps {
   menuItems: NavigationItem[];
+  authenticatedItems: NavigationItem[];
   currentPath: string;
   isAuthenticated: boolean;
-  onLogout: () => void;
 }
 
-export function DesktopNav({ menuItems, currentPath, isAuthenticated }: DesktopNavProps) {
+export function DesktopNav({ menuItems, authenticatedItems, currentPath, isAuthenticated }: DesktopNavProps) {
+  const displayItems = isAuthenticated ? [...menuItems, ...authenticatedItems] : menuItems;
+
   return (
     <nav className="hidden md:flex items-center space-x-1 bg-background/50 backdrop-blur-sm px-4 py-1.5 rounded-full border border-border/50 shadow-sm">
-      {menuItems.map((item) => (
+      {displayItems.map((item) => (
         <Button
           key={item.title}
           variant={currentPath === item.href ? "secondary" : "ghost"}

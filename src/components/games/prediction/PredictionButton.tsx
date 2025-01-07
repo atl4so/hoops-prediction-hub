@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { subHours, isBefore } from "date-fns";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 import { PredictionForm } from "./PredictionForm";
 import { usePredictionState } from "./usePredictionState";
+import { LogIn } from "lucide-react";
 
 interface PredictionButtonProps {
   isAuthenticated: boolean;
@@ -37,6 +39,7 @@ export function PredictionButton({
   homeTeam,
   awayTeam
 }: PredictionButtonProps) {
+  const navigate = useNavigate();
   const {
     showForm,
     setShowForm,
@@ -57,19 +60,9 @@ export function PredictionButton({
     return isBefore(now, oneHourBefore);
   };
 
-  const getButtonText = () => {
-    if (prediction) {
-      return "Prediction Submitted";
-    }
-    if (gameResult?.is_final) {
-      return "Game Completed";
-    }
-    return isPredictionAllowed() ? "Make Prediction" : "Predictions Closed";
-  };
-
   const handleClick = () => {
     if (!isAuthenticated) {
-      toast.error("Please log in to make predictions");
+      navigate("/login");
       return;
     }
 
@@ -91,13 +84,27 @@ export function PredictionButton({
     setShowForm(true);
   };
 
+  const getButtonText = () => {
+    if (!isAuthenticated) {
+      return "Log in to Predict";
+    }
+    if (prediction) {
+      return "Prediction Submitted";
+    }
+    if (gameResult?.is_final) {
+      return "Game Completed";
+    }
+    return isPredictionAllowed() ? "Make Prediction" : "Predictions Closed";
+  };
+
   return (
     <div className="space-y-2">
       <Button 
         onClick={handleClick}
         className="w-full shadow-sm transition-all duration-300"
-        disabled={!isPredictionAllowed() || !!prediction}
+        disabled={!isPredictionAllowed() && isAuthenticated}
       >
+        {!isAuthenticated && <LogIn className="w-4 h-4 mr-2" />}
         {getButtonText()}
       </Button>
 
