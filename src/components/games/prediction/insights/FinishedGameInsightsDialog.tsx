@@ -98,20 +98,22 @@ export function FinishedGameInsightsDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl h-[90vh] flex flex-col">
         <DialogHeader>
-          <div className="flex items-center justify-center gap-4 mb-4">
+          <div className="flex items-center justify-center gap-2 sm:gap-4 mb-2 sm:mb-4">
             <TeamDisplay 
               team={gameDetails.home_team} 
-              className={isMobile ? "w-16" : "w-24"}
+              className={isMobile ? "w-12" : "w-16"}
+              imageClassName="w-8 h-8 sm:w-12 sm:h-12"
             />
-            <div className="text-2xl font-bold">
+            <div className="text-lg sm:text-2xl font-bold">
               {finalScore.home} - {finalScore.away}
             </div>
             <TeamDisplay 
               team={gameDetails.away_team} 
-              className={isMobile ? "w-16" : "w-24"}
+              className={isMobile ? "w-12" : "w-16"}
+              imageClassName="w-8 h-8 sm:w-12 sm:h-12"
             />
           </div>
-          <DialogTitle className="text-2xl font-bold text-center">
+          <DialogTitle className="text-xl sm:text-2xl font-bold text-center">
             Game Insights
           </DialogTitle>
         </DialogHeader>
