@@ -26,19 +26,29 @@
     <meta property="twitter:description" content="Join the ultimate Euroleague basketball prediction community. Make predictions, compete with friends, and climb the leaderboard!">
     <meta property="twitter:image" content="/og-image.png">
 
-    <!-- Preload fonts -->
+    <!-- Preload critical fonts -->
     <link 
       rel="preload" 
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
       as="style"
-      onload="this.onload=null;this.rel='stylesheet'"
     >
-    <noscript>
-      <link 
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
-        rel="stylesheet"
-      >
-    </noscript>
+    <link 
+      rel="preload" 
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
+      as="style"
+    >
+    <link 
+      rel="stylesheet" 
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      media="print"
+      onload="this.media='all'"
+    >
+    <link 
+      rel="stylesheet" 
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
+      media="print"
+      onload="this.media='all'"
+    >
     
     <!-- Defer non-critical Google Tag Manager -->
     <script defer src="https://www.googletagmanager.com/gtag/js?id=G-K4Q4STQNNY"></script>
@@ -47,7 +57,7 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-K4Q4STQNNY', {
-        send_page_view: false // Defer page views until after critical content loads
+        send_page_view: false
       });
     </script>
 
