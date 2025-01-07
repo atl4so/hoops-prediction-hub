@@ -107,17 +107,22 @@ export function UserPredictionCard({
           (name as HTMLElement).className = name.className.replace('line-clamp-2', '');
         });
 
-        // Style the score/prediction display with card-like appearance
+        // Style the score/prediction display with card-like appearance and inline layout
         const scoreElements = clonedContent.querySelectorAll('.text-lg, .text-xl');
         scoreElements.forEach(score => {
-          (score as HTMLElement).style.fontSize = "24px";
-          (score as HTMLElement).style.fontWeight = "600";
-          (score as HTMLElement).style.color = "#1a1a1a";
-          (score as HTMLElement).style.margin = "16px 0";
-          (score as HTMLElement).style.padding = "8px 16px";
-          (score as HTMLElement).style.backgroundColor = "#FFF7ED";
-          (score as HTMLElement).style.borderRadius = "8px";
-          (score as HTMLElement).style.border = "1px solid rgba(249, 115, 22, 0.2)";
+          const scoreContainer = document.createElement('div');
+          scoreContainer.style.display = 'inline-block';
+          scoreContainer.style.fontSize = "24px";
+          scoreContainer.style.fontWeight = "600";
+          scoreContainer.style.color = "#1a1a1a";
+          scoreContainer.style.margin = "16px 0";
+          scoreContainer.style.padding = "8px 16px";
+          scoreContainer.style.backgroundColor = "#FFF7ED";
+          scoreContainer.style.borderRadius = "8px";
+          scoreContainer.style.border = "1px solid rgba(249, 115, 22, 0.2)";
+          scoreContainer.style.whiteSpace = "nowrap";
+          scoreContainer.innerHTML = score.innerHTML.replace('-', ' - '); // Add spaces around the dash
+          score.parentNode?.replaceChild(scoreContainer, score);
         });
 
         cardContent.innerHTML = clonedContent.innerHTML;
