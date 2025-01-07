@@ -42,9 +42,10 @@ export function BasketballAnalyst() {
         const result = game.game_results?.[0];
         if (result) {
           analysis += `- ${game.home_team.name} ${result.home_score} - ${result.away_score} ${game.away_team.name}\n`;
-          const predictions = game.predictions || [];
-          const avgPoints = predictions.reduce((sum, p) => sum + (p.points_earned || 0), 0) / predictions.length;
-          analysis += `  Average prediction points: ${avgPoints.toFixed(1)}\n`;
+          if (game.predictions && game.predictions.length > 0) {
+            const avgPoints = game.predictions.reduce((sum, p) => sum + (p.points_earned || 0), 0) / game.predictions.length;
+            analysis += `  Average prediction points: ${avgPoints.toFixed(1)}\n`;
+          }
         }
       });
     }
