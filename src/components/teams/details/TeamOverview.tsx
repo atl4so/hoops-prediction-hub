@@ -1,45 +1,44 @@
-import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { TeamPredictionPatterns } from "./TeamPredictionPatterns";
 import { TeamTopPredictors } from "./TeamTopPredictors";
 import { BestTeamsPredictions } from "./BestTeamsPredictions";
 
-export function TeamOverview() {
-  const { teamId } = useParams();
+interface TeamOverviewProps {
+  stats: {
+    total_games: number;
+    total_predictions: number;
+    overall_success_rate: number;
+    home_success_rate: number;
+    away_success_rate: number;
+    underdog_wins: number;
+    unexpected_losses: number;
+    avg_upset_margin: number;
+    avg_loss_margin: number;
+    margin_1_9_wins: number;
+    margin_10_15_wins: number;
+    margin_15plus_wins: number;
+    margin_1_9_losses: number;
+    margin_10_15_losses: number;
+    margin_15plus_losses: number;
+    home_games: number;
+    away_games: number;
+    percentage_favoring_team: number;
+    wins_predicted: number;
+    losses_predicted: number;
+  } | null;
+  distribution: {
+    margin_range: string;
+    win_percentage: number;
+    loss_percentage: number;
+  }[] | null;
+  teamId: string;
+}
 
-  const { data: bestTeams } = useQuery({
-    queryKey: ['best-teams-predictions', teamId],
-    queryFn: async () => {
-      console.log('Fetching best teams predictions...');
-      const { data: teams, error } = await supabase
-        .rpc('get_team_top_predictors', { 
-          team_id_param: teamId,
-          min_games: 3 
-        });
-
-      if (error) {
-        console.error('Error fetching best teams:', error);
-        throw error;
-      }
-
-      return teams.map(team => ({
-        team: {
-          name: team.display_name,
-          logo_url: team.avatar_url
-        },
-        success_rate: Number(team.success_rate),
-        total_predictions: Number(team.total_predictions)
-      })).slice(0, 3);
-    },
-    enabled: !!teamId
-  });
-
+export function TeamOverview({ stats, distribution, teamId }: TeamOverviewProps) {
   return (
     <div className="space-y-8 animate-fade-in">
-      <BestTeamsPredictions teams={bestTeams || []} />
-      <TeamPredictionPatterns />
-      <TeamTopPredictors />
+      <BestTeamsPredictions teams={[]} />
+      <TeamPredictionPatterns stats={stats} />
+      <TeamTopPredictors teamId={teamId} />
     </div>
   );
 }
