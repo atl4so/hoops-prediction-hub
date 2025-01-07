@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@supabase/auth-helpers-react";
-import { Lock, User } from "lucide-react";
+import { Lock, User, TrendingUp } from "lucide-react";
 
 const Index = () => {
   console.log('Index page rendering'); // Debug log
@@ -28,25 +28,40 @@ const Index = () => {
         </p>
         
         {!session && (
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+          <div className="flex flex-col gap-6 items-center justify-center mt-8">
+            {/* New Predict Button with Animation */}
             <Button
-              onClick={() => navigate("/login")}
-              variant="default"
+              onClick={() => navigate("/predict")}
               size="lg"
-              className="min-w-[120px] bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 font-medium tracking-wide shadow-lg hover:shadow-xl transition-all duration-200"
+              className="group relative overflow-hidden px-8 py-6 bg-gradient-to-r from-primary via-primary/90 to-primary hover:from-primary/90 hover:to-primary transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl animate-bounce-slow"
             >
-              <User className="w-4 h-4 mr-2" />
-              Login
+              <div className="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition-colors duration-300" />
+              <span className="relative flex items-center gap-2 text-lg font-semibold tracking-wide">
+                <TrendingUp className="w-5 h-5" />
+                Make Your Predictions Now!
+              </span>
             </Button>
-            <Button
-              onClick={() => navigate("/register")}
-              variant="outline"
-              size="lg"
-              className="min-w-[120px] border-2 border-primary/20 hover:border-primary/30 hover:bg-primary/5 font-medium tracking-wide shadow-lg hover:shadow-xl transition-all duration-200"
-            >
-              <Lock className="w-4 h-4 mr-2" />
-              Register
-            </Button>
+
+            <div className="flex flex-row gap-4 mt-4">
+              <Button
+                onClick={() => navigate("/login")}
+                variant="default"
+                size="lg"
+                className="min-w-[120px] bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 font-medium tracking-wide shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                <User className="w-4 h-4 mr-2" />
+                Login
+              </Button>
+              <Button
+                onClick={() => navigate("/register")}
+                variant="outline"
+                size="lg"
+                className="min-w-[120px] border-2 border-primary/20 hover:border-primary/30 hover:bg-primary/5 font-medium tracking-wide shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                <Lock className="w-4 h-4 mr-2" />
+                Register
+              </Button>
+            </div>
           </div>
         )}
       </div>
