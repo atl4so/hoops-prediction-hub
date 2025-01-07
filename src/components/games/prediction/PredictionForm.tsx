@@ -1,12 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
 
 interface PredictionFormProps {
-  homeTeam: { name: string };
-  awayTeam: { name: string };
-  onSubmit: (homeScore: number, awayScore: number) => void;
+  homeTeam: {
+    name: string;
+  };
+  awayTeam: {
+    name: string;
+  };
+  homeScore: string;
+  awayScore: string;
+  onHomeScoreChange: (value: string) => void;
+  onAwayScoreChange: (value: string) => void;
+  onSubmit: (e: React.FormEvent) => void;
   onCancel: () => void;
   isSubmitting: boolean;
 }
@@ -14,20 +21,16 @@ interface PredictionFormProps {
 export function PredictionForm({
   homeTeam,
   awayTeam,
+  homeScore,
+  awayScore,
+  onHomeScoreChange,
+  onAwayScoreChange,
   onSubmit,
   onCancel,
   isSubmitting
 }: PredictionFormProps) {
-  const [homeScore, setHomeScore] = useState("");
-  const [awayScore, setAwayScore] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(Number(homeScore), Number(awayScore));
-  };
-
   return (
-    <form onSubmit={handleSubmit} className="p-4 border rounded-lg bg-background shadow-sm space-y-4">
+    <form onSubmit={onSubmit} className="p-4 border rounded-lg bg-background shadow-sm space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="homeScore">{homeTeam.name}</Label>
@@ -36,7 +39,7 @@ export function PredictionForm({
             type="number"
             min="0"
             value={homeScore}
-            onChange={(e) => setHomeScore(e.target.value)}
+            onChange={(e) => onHomeScoreChange(e.target.value)}
             placeholder="Score"
             required
           />
@@ -48,7 +51,7 @@ export function PredictionForm({
             type="number"
             min="0"
             value={awayScore}
-            onChange={(e) => setAwayScore(e.target.value)}
+            onChange={(e) => onAwayScoreChange(e.target.value)}
             placeholder="Score"
             required
           />
