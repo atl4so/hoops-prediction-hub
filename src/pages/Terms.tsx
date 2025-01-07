@@ -9,7 +9,7 @@ export default function Terms() {
         className="mb-8"
       >
         <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
-          Important information about using euroleague.bet
+          Important information about using Euroleague.bet
         </p>
       </PageHeader>
       

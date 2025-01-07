@@ -35,7 +35,7 @@ export function Footer() {
       <div className="container mx-auto py-6 px-4">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} euroleague.bet - All rights reserved
+            © {new Date().getFullYear()} Euroleague.bet - All rights reserved
           </div>
           <div className="flex items-center gap-4">
             <div className="text-sm text-muted-foreground flex items-center gap-2">
