@@ -17,8 +17,8 @@ export function AppHeader() {
 
   useEffect(() => {
     const loadNavItems = async () => {
-      let items = [...navigationItems];
       if (isAuthenticated) {
+        let items = [...navigationItems];
         const { data: { user } } = await supabase.auth.getUser();
         if (user?.email === 'likasvy@gmail.com') {
           items = [
