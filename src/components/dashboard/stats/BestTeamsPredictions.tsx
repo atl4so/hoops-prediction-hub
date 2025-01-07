@@ -90,7 +90,7 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
           success_rate: (stats.success / stats.total) * 100,
           total_predictions: stats.total
         }))
-        .filter(team => team.total_predictions >= 3) // Only include teams with at least 3 predictions
+        .filter(team => team.total_predictions >= 1) // Changed from 3 to 1
         .sort((a, b) => b.success_rate - a.success_rate)
         .slice(0, 3); // Get top 3 teams
 
