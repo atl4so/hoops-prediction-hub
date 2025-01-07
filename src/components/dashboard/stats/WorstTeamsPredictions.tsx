@@ -32,7 +32,7 @@ export function WorstTeamsPredictions({ userId }: { userId: string }) {
           )
         `)
         .eq('user_id', userId)
-        .gt('wins_predicted', 2); // Minimum 3 predictions to be considered
+        .gt('wins_predicted', 0); // Changed from 2 to 0 to require at least 1 prediction
 
       if (error) {
         console.error('Error fetching team stats:', error);
