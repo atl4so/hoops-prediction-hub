@@ -28,14 +28,14 @@ const Index = () => {
           
           {!session && (
             <div className="flex flex-col gap-4 items-center justify-center mt-6 w-full max-w-sm mx-auto px-4">
-              {/* Main Predict Button */}
+              {/* Main Predict Button - Updated with new color scheme and padding */}
               <Button
                 onClick={() => navigate("/predict")}
                 size="lg"
-                className="w-full py-6 bg-gradient-to-r from-primary via-primary/90 to-primary hover:from-primary/90 hover:to-primary transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl animate-bounce-slow group relative overflow-hidden"
+                className="w-full py-6 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl animate-bounce-slow group relative overflow-hidden"
               >
                 <div className="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition-colors duration-300" />
-                <span className="relative flex items-center justify-center gap-2 text-lg font-semibold tracking-wide">
+                <span className="relative flex items-center justify-center gap-3 text-lg font-semibold tracking-wide text-white px-2">
                   <TrendingUp className="w-5 h-5" />
                   Make Your Predictions Now!
                 </span>
@@ -47,7 +47,7 @@ const Index = () => {
                   onClick={() => navigate("/login")}
                   variant="default"
                   size="lg"
-                  className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 font-medium tracking-wide shadow-md hover:shadow-lg transition-all duration-200"
+                  className="w-full bg-primary hover:bg-primary/90 font-medium tracking-wide shadow-md hover:shadow-lg transition-all duration-200"
                 >
                   <User className="w-4 h-4 mr-2" />
                   Login
@@ -72,7 +72,7 @@ const Index = () => {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="card space-y-3 p-6 rounded-2xl bg-card hover:shadow-xl transition-all duration-200 border border-primary/10 hover:border-primary/20">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <span className="text-xl font-bold text-white">1</span>
               </div>
               <h3 className="font-semibold text-foreground">Make Predictions</h3>
@@ -80,7 +80,7 @@ const Index = () => {
             </div>
             
             <div className="card space-y-3 p-6 rounded-2xl bg-card hover:shadow-xl transition-all duration-200 border border-primary/10 hover:border-primary/20">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <span className="text-xl font-bold text-white">2</span>
               </div>
               <h3 className="font-semibold text-foreground">Earn Points</h3>
@@ -88,7 +88,7 @@ const Index = () => {
             </div>
             
             <div className="card space-y-3 p-6 rounded-2xl bg-card hover:shadow-xl transition-all duration-200 border border-primary/10 hover:border-primary/20">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <span className="text-xl font-bold text-white">3</span>
               </div>
               <h3 className="font-semibold text-foreground">Compete & Win</h3>
