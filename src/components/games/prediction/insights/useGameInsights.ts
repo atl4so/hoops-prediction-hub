@@ -8,7 +8,7 @@ interface GameInsights {
   avgHomeScore: number;
   avgAwayScore: number;
   commonMarginRange: string;
-  commonTotalPointsRange: string;
+  totalPointsRange: string;
   avgHomeWinMargin: number;
   avgAwayWinMargin: number;
 }
@@ -71,12 +71,9 @@ export function useGameInsights(gameId: string) {
       const totalPoints = predictions.map(p => 
         p.prediction_home_score + p.prediction_away_score
       );
-      const avgTotal = totalPoints.reduce((sum, t) => sum + t, 0) / totalPoints.length;
-      
-      const commonTotalPointsRange = 
-        avgTotal < 150 ? 'Under 150' :
-        avgTotal < 165 ? '150-165' :
-        'Over 165';
+      const minTotal = Math.min(...totalPoints);
+      const maxTotal = Math.max(...totalPoints);
+      const totalPointsRange = `${minTotal}-${maxTotal}`;
 
       // Calculate average margins for home/away wins
       const homeWinMargins = predictions
@@ -102,7 +99,7 @@ export function useGameInsights(gameId: string) {
         avgHomeScore,
         avgAwayScore,
         commonMarginRange,
-        commonTotalPointsRange,
+        totalPointsRange,
         avgHomeWinMargin,
         avgAwayWinMargin
       });
@@ -114,7 +111,7 @@ export function useGameInsights(gameId: string) {
         avgHomeScore,
         avgAwayScore,
         commonMarginRange,
-        commonTotalPointsRange,
+        totalPointsRange,
         avgHomeWinMargin,
         avgAwayWinMargin
       };
