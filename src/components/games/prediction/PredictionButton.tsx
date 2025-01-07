@@ -33,7 +33,7 @@ export function PredictionButton({
   gameDate, 
   gameId, 
   userId,
-  prediction: initialPrediction,
+  prediction,
   gameResult,
   homeTeam,
   awayTeam
@@ -43,9 +43,9 @@ export function PredictionButton({
     showForm,
     setShowForm,
     isSubmitting,
-    prediction,
+    prediction: localPrediction,
     submitPrediction
-  } = usePredictionState(gameId, userId, initialPrediction);
+  } = usePredictionState(gameId, userId, prediction);
 
   const isPredictionAllowed = () => {
     if (gameResult?.is_final || prediction) {

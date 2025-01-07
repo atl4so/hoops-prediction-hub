@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useSession } from "@supabase/auth-helpers-react";
 import { GameCard } from "./GameCard";
 import { SkeletonList } from "./list/SkeletonList";
 import { EmptyState } from "./list/EmptyState";
@@ -13,9 +12,7 @@ interface GamesListProps {
 }
 
 export function GamesList({ isAuthenticated, userId }: GamesListProps) {
-  const session = useSession();
   useGamesSubscription();
-
   const { data: games, isLoading } = useGamesData(userId);
 
   if (isLoading) {
