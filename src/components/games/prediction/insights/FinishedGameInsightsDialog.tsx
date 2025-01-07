@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { FinishedGameStats } from "./FinishedGameStats";
+import { TeamDisplay } from "@/components/games/TeamDisplay";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface FinishedGameInsightsDialogProps {
   isOpen: boolean;
@@ -19,6 +21,32 @@ export function FinishedGameInsightsDialog({
   gameId,
   finalScore,
 }: FinishedGameInsightsDialogProps) {
+  const isMobile = useIsMobile();
+
+  const { data: gameDetails } = useQuery({
+    queryKey: ["game-details", gameId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("games")
+        .select(`
+          home_team:teams!games_home_team_id_fkey (
+            name,
+            logo_url
+          ),
+          away_team:teams!games_away_team_id_fkey (
+            name,
+            logo_url
+          )
+        `)
+        .eq("id", gameId)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: isOpen,
+  });
+
   const { data: predictions, isLoading } = useQuery({
     queryKey: ["finished-game-predictions", gameId],
     queryFn: async () => {
@@ -42,7 +70,7 @@ export function FinishedGameInsightsDialog({
     enabled: isOpen,
   });
 
-  if (isLoading) {
+  if (isLoading || !gameDetails) {
     return (
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent>
@@ -66,48 +94,24 @@ export function FinishedGameInsightsDialog({
     );
   }
 
-  // Calculate basic stats
-  const totalPredictions = predictions.length;
-  const homeWinPredictions = predictions.filter(p => p.prediction_home_score > p.prediction_away_score).length;
-  const awayWinPredictions = predictions.filter(p => p.prediction_home_score < p.prediction_away_score).length;
-  const avgHomeScore = Math.round(predictions.reduce((sum, p) => sum + p.prediction_home_score, 0) / totalPredictions * 10) / 10;
-  const avgAwayScore = Math.round(predictions.reduce((sum, p) => sum + p.prediction_away_score, 0) / totalPredictions * 10) / 10;
-
-  // Calculate prediction patterns
-  const margins = predictions.map(p => Math.abs(p.prediction_home_score - p.prediction_away_score));
-  const avgMargin = margins.length > 0 
-    ? Math.round(margins.reduce((a, b) => a + b) / margins.length * 10) / 10
-    : 0;
-  const commonMargin = avgMargin.toString();
-
-  // Calculate average margins for home/away wins
-  const homeWinPreds = predictions.filter(p => p.prediction_home_score > p.prediction_away_score);
-  const awayWinPreds = predictions.filter(p => p.prediction_home_score < p.prediction_away_score);
-  
-  const avgHomeWinMargin = homeWinPreds.length > 0
-    ? Math.round(homeWinPreds.reduce((sum, p) => sum + (p.prediction_home_score - p.prediction_away_score), 0) / homeWinPreds.length * 10) / 10
-    : 0;
-    
-  const avgAwayWinMargin = awayWinPreds.length > 0
-    ? Math.round(awayWinPreds.reduce((sum, p) => sum + (p.prediction_away_score - p.prediction_home_score), 0) / awayWinPreds.length * 10) / 10
-    : 0;
-
-  const totalPoints = predictions.map(p => p.prediction_home_score + p.prediction_away_score);
-  const minTotal = Math.min(...totalPoints);
-  const maxTotal = Math.max(...totalPoints);
-  const totalPointsRange = totalPoints.length > 0 ? `${minTotal}-${maxTotal}` : "N/A";
-
-  // Get top 3 predictors
-  const topPredictors = predictions
-    .filter(p => p.points_earned !== null)
-    .sort((a, b) => (b.points_earned || 0) - (a.points_earned || 0))
-    .slice(0, 3);
-
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center mb-6">
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <TeamDisplay 
+              team={gameDetails.home_team} 
+              className={isMobile ? "w-16" : "w-24"}
+            />
+            <div className="text-2xl font-bold">
+              {finalScore.home} - {finalScore.away}
+            </div>
+            <TeamDisplay 
+              team={gameDetails.away_team} 
+              className={isMobile ? "w-16" : "w-24"}
+            />
+          </div>
+          <DialogTitle className="text-2xl font-bold text-center">
             Game Insights
           </DialogTitle>
         </DialogHeader>
@@ -117,17 +121,28 @@ export function FinishedGameInsightsDialog({
             predictions={predictions}
             finalScore={finalScore}
             basicStats={{
-              totalPredictions,
-              homeWinPredictions,
-              awayWinPredictions,
-              avgHomeScore,
-              avgAwayScore,
-              commonMargin,
-              totalPointsRange,
-              avgHomeWinMargin,
-              avgAwayWinMargin
+              totalPredictions: predictions.length,
+              homeWinPredictions: predictions.filter(p => p.prediction_home_score > p.prediction_away_score).length,
+              awayWinPredictions: predictions.filter(p => p.prediction_home_score < p.prediction_away_score).length,
+              avgHomeScore: Math.round(predictions.reduce((sum, p) => sum + p.prediction_home_score, 0) / predictions.length * 10) / 10,
+              avgAwayScore: Math.round(predictions.reduce((sum, p) => sum + p.prediction_away_score, 0) / predictions.length * 10) / 10,
+              commonMargin: predictions.length > 0 ? Math.round(predictions.reduce((sum, p) => sum + Math.abs(p.prediction_home_score - p.prediction_away_score), 0) / predictions.length).toString() : "N/A",
+              totalPointsRange: predictions.length > 0 ? `${Math.min(...predictions.map(p => p.prediction_home_score + p.prediction_away_score))}-${Math.max(...predictions.map(p => p.prediction_home_score + p.prediction_away_score))}` : "N/A",
+              avgHomeWinMargin: predictions.filter(p => p.prediction_home_score > p.prediction_away_score).length > 0
+                ? Math.round(predictions.filter(p => p.prediction_home_score > p.prediction_away_score)
+                    .reduce((sum, p) => sum + (p.prediction_home_score - p.prediction_away_score), 0) / 
+                    predictions.filter(p => p.prediction_home_score > p.prediction_away_score).length * 10) / 10
+                : 0,
+              avgAwayWinMargin: predictions.filter(p => p.prediction_home_score < p.prediction_away_score).length > 0
+                ? Math.round(predictions.filter(p => p.prediction_home_score < p.prediction_away_score)
+                    .reduce((sum, p) => sum + (p.prediction_away_score - p.prediction_home_score), 0) / 
+                    predictions.filter(p => p.prediction_home_score < p.prediction_away_score).length * 10) / 10
+                : 0
             }}
-            topPredictors={topPredictors}
+            topPredictors={predictions
+              .filter(p => p.points_earned !== null)
+              .sort((a, b) => (b.points_earned || 0) - (a.points_earned || 0))
+              .slice(0, 3)}
           />
         </div>
       </DialogContent>
