@@ -78,6 +78,17 @@ export function UserPredictionCard({
           insightsButton.remove();
         }
         
+        // Add custom styles to ensure team names are fully visible
+        const teamNames = clonedContent.querySelectorAll('.line-clamp-2');
+        teamNames.forEach(name => {
+          (name as HTMLElement).style.lineHeight = "1.2";
+          (name as HTMLElement).style.minHeight = "2.4em";
+          (name as HTMLElement).style.display = "-webkit-box";
+          (name as HTMLElement).style.webkitLineClamp = "2";
+          (name as HTMLElement).style.webkitBoxOrient = "vertical";
+          (name as HTMLElement).style.overflow = "hidden";
+        });
+        
         cardContent.innerHTML = `
           <div class="flex flex-col items-center">
             ${clonedContent.innerHTML}
