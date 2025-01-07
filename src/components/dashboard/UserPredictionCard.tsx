@@ -54,25 +54,26 @@ export function UserPredictionCard({
 
   const handleShare = async () => {
     try {
-      // Create a temporary container
+      // Create a temporary container with proper styling
       const tempDiv = document.createElement("div");
       tempDiv.style.position = "absolute";
       tempDiv.style.left = "-9999px";
       tempDiv.style.backgroundColor = "#ffffff";
-      tempDiv.style.padding = "16px";
-      tempDiv.style.borderRadius = "8px";
+      tempDiv.style.padding = "32px";
+      tempDiv.style.borderRadius = "12px";
+      tempDiv.style.width = "400px"; // Fixed width for consistency
+      tempDiv.style.boxSizing = "border-box";
       document.body.appendChild(tempDiv);
 
-      // Clone the card content
+      // Create the card content
       const cardContent = document.createElement("div");
       cardContent.className = "relative";
       
-      // Get the original content but exclude buttons and points
       const originalContent = document.querySelector(`[data-game-id="${game.id}"]`);
       if (originalContent) {
         const clonedContent = originalContent.cloneNode(true) as HTMLElement;
         
-        // Remove buttons and points information
+        // Remove elements we don't want in the screenshot
         const insightsButton = clonedContent.querySelector('[data-insights-button]');
         const pointsBreakdown = clonedContent.querySelector('[data-points-breakdown]');
         const pointsInfo = clonedContent.querySelector('[data-points-info]');
@@ -81,15 +82,44 @@ export function UserPredictionCard({
         if (pointsBreakdown) pointsBreakdown.remove();
         if (pointsInfo) pointsInfo.remove();
         
-        // Add custom styles to ensure team names are fully visible
+        // Enhance styling for the screenshot
+        const teamLogos = clonedContent.querySelectorAll('img');
+        teamLogos.forEach(logo => {
+          (logo as HTMLElement).style.width = "80px";
+          (logo as HTMLElement).style.height = "80px";
+          (logo as HTMLElement).style.objectFit = "contain";
+        });
+
         const teamNames = clonedContent.querySelectorAll('.line-clamp-2');
         teamNames.forEach(name => {
-          (name as HTMLElement).style.lineHeight = "1.2";
-          (name as HTMLElement).style.minHeight = "2.4em";
-          (name as HTMLElement).style.display = "-webkit-box";
-          (name as HTMLElement).style.webkitLineClamp = "2";
-          (name as HTMLElement).style.webkitBoxOrient = "vertical";
-          (name as HTMLElement).style.overflow = "hidden";
+          (name as HTMLElement).style.fontSize = "16px";
+          (name as HTMLElement).style.lineHeight = "1.4";
+          (name as HTMLElement).style.marginTop = "12px";
+          (name as HTMLElement).style.fontWeight = "500";
+          (name as HTMLElement).style.color = "#1a1a1a";
+          (name as HTMLElement).style.textAlign = "center";
+          (name as HTMLElement).style.minHeight = "auto";
+          (name as HTMLElement).style.height = "auto";
+          (name as HTMLElement).className = name.className.replace('line-clamp-2', '');
+        });
+
+        // Style the score/prediction display
+        const scoreElements = clonedContent.querySelectorAll('.text-lg, .text-xl');
+        scoreElements.forEach(score => {
+          (score as HTMLElement).style.fontSize = "24px";
+          (score as HTMLElement).style.fontWeight = "600";
+          (score as HTMLElement).style.color = "#1a1a1a";
+          (score as HTMLElement).style.margin = "16px 0";
+        });
+
+        // Style the date/time
+        const dateElements = clonedContent.querySelectorAll('time');
+        dateElements.forEach(date => {
+          (date as HTMLElement).style.fontSize = "18px";
+          (date as HTMLElement).style.color = "#4b5563";
+          (date as HTMLElement).style.marginBottom = "16px";
+          (date as HTMLElement).style.display = "block";
+          (date as HTMLElement).style.textAlign = "center";
         });
         
         cardContent.innerHTML = clonedContent.innerHTML;
@@ -97,12 +127,13 @@ export function UserPredictionCard({
       
       tempDiv.appendChild(cardContent);
 
-      // Capture the screenshot
+      // Capture the screenshot with improved quality
       const canvas = await html2canvas(tempDiv, {
-        scale: 2,
+        scale: 3, // Increased for better quality
         backgroundColor: "#ffffff",
         logging: false,
         useCORS: true,
+        allowTaint: true,
       });
 
       // Clean up
