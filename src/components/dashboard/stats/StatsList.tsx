@@ -62,6 +62,7 @@ export function StatsList({
       label: "Total Points",
       value: totalPoints || 0,
       description: "Your cumulative points from all predictions",
+      highlight: true
     },
     {
       icon: Crown,
@@ -84,9 +85,9 @@ export function StatsList({
     },
     {
       icon: ArrowLeftRight,
-      label: "Home/Away",
+      label: "Home/Away Success",
       value: `${homePercentage}/${awayPercentage}%`,
-      description: `${homeWinnerPredictionsCorrect}/${homeWinnerPredictionsTotal} | ${awayWinnerPredictionsCorrect}/${awayWinnerPredictionsTotal}`,
+      description: `Home: ${homeWinnerPredictionsCorrect}/${homeWinnerPredictionsTotal} | Away: ${awayWinnerPredictionsCorrect}/${awayWinnerPredictionsTotal}`,
       onClick: userId ? () => setShowHomeAwayDialog(true) : undefined,
       descriptionIcons: {
         firstIcon: Home,
@@ -109,13 +110,13 @@ export function StatsList({
       icon: ArrowUp,
       label: "Best Game",
       value: highestGamePoints || 0,
-      description: "Best performance in a single game"
+      description: "Highest points earned in a single game"
     },
     {
       icon: ArrowUp,
       label: "Best Round",
       value: highestRoundPoints || 0,
-      description: "Best performance in a single round"
+      description: "Highest points earned in a single round"
     }
   ];
 
