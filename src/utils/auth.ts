@@ -1,5 +1,4 @@
 import { supabase } from "@/integrations/supabase/client";
-import { AuthError, AuthApiError } from '@supabase/supabase-js';
 
 export const clearAuthSession = async () => {
   try {
@@ -9,6 +8,7 @@ export const clearAuthSession = async () => {
       throw error;
     }
     
+    // Clear any local storage items
     localStorage.removeItem('supabase.auth.token');
     sessionStorage.clear();
   } catch (error) {
@@ -40,29 +40,13 @@ export const verifySession = async () => {
 
 export const loginWithEmail = async (email: string, password: string) => {
   try {
-    if (!email || !password) {
-      throw new Error('Email and password are required');
-    }
-
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: email.toLowerCase().trim(),
-      password: password.trim()
+      email,
+      password,
     });
 
     if (error) {
-      if (error instanceof AuthApiError) {
-        switch (error.status) {
-          case 400:
-            if (error.message.includes('Invalid login credentials')) {
-              throw new Error('Invalid email or password. Please check your credentials and try again.');
-            }
-            throw new Error(error.message);
-          case 422:
-            throw new Error('Email format is invalid. Please enter a valid email address.');
-          default:
-            throw new Error(error.message);
-        }
-      }
+      console.error('Login error:', error);
       throw error;
     }
 
@@ -71,21 +55,4 @@ export const loginWithEmail = async (email: string, password: string) => {
     console.error('Login error:', error);
     throw error;
   }
-};
-
-export const getErrorMessage = (error: Error | AuthError): string => {
-  if (error instanceof AuthApiError) {
-    switch (error.status) {
-      case 400:
-        if (error.message.includes('Invalid login credentials')) {
-          return 'Invalid email or password. Please check your credentials and try again.';
-        }
-        return error.message;
-      case 422:
-        return 'Email format is invalid. Please enter a valid email address.';
-      default:
-        return error.message;
-    }
-  }
-  return error.message || 'An unexpected error occurred. Please try again.';
 };
