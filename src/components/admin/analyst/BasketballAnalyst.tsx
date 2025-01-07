@@ -20,7 +20,7 @@ export function BasketballAnalyst() {
       supabase.from('rounds').select('*', { count: 'exact', head: true })
     ]);
 
-    // Get recent game results
+    // Get recent game results with predictions
     const { data: recentResults } = await supabase
       .from('game_results')
       .select(`
@@ -35,11 +35,19 @@ export function BasketballAnalyst() {
       .order('created_at', { ascending: false })
       .limit(5);
 
+    // Get top predictors
+    const { data: topPredictors } = await supabase
+      .from('profiles')
+      .select('display_name, total_points, points_per_game')
+      .order('total_points', { ascending: false })
+      .limit(5);
+
     return {
       schema: `
         - Games table tracks matches with home and away teams
         - Predictions table stores predictions for games
         - Game results table stores final scores
+        - Profiles table tracks user statistics and performance
         - Rounds table organizes games into competition rounds
         - Teams table stores team information
       `,
@@ -53,6 +61,11 @@ export function BasketballAnalyst() {
         Recent game results:
         ${recentResults?.map(r => 
           `${r.game.home_team.name} ${r.home_score} - ${r.away_score} ${r.game.away_team.name}`
+        ).join('\n')}
+
+        Top predictors:
+        ${topPredictors?.map(p => 
+          `${p.display_name}: ${p.total_points} points (${p.points_per_game.toFixed(1)} PPG)`
         ).join('\n')}
       `
     };
@@ -88,11 +101,11 @@ export function BasketballAnalyst() {
   };
 
   const exampleQueries = [
-    "analyze scoring patterns in recent games",
-    "identify trends in home team vs away team performance",
-    "analyze the most common winning margins",
+    "analyze prediction accuracy trends across different rounds",
+    "identify patterns in home team vs away team performance",
+    "analyze the most successful predictors and their strategies",
     "generate insights about high-scoring vs low-scoring games",
-    "analyze which game factors correlate with close matches"
+    "analyze which teams are most difficult to predict correctly"
   ];
 
   return (
@@ -108,7 +121,7 @@ export function BasketballAnalyst() {
                 setIsTyping(true);
               }}
               onBlur={() => setIsTyping(false)}
-              placeholder="Ask about game patterns, statistics, or request specific analysis..."
+              placeholder="Ask about predictions, patterns, statistics, or request specific analysis..."
               className="min-h-[100px]"
             />
           </div>
