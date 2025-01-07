@@ -133,7 +133,7 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
                   {team.team_name}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {team.success_rate.toFixed(1)}%
+                  {Math.round(team.success_rate)}%
                 </p>
                 <p className="text-[10px] sm:text-xs text-muted-foreground">
                   {team.total_predictions} pred.
