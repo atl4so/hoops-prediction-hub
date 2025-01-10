@@ -39,7 +39,7 @@ export function GameResultsList() {
         throw new Error("Please fill in all fields");
       }
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('game_results')
         .update({
           home_score: parseInt(homeScore),
@@ -47,9 +47,12 @@ export function GameResultsList() {
           updated_at: new Date().toISOString(),
           is_final: true
         })
-        .eq('id', editingResult.id);
+        .eq('id', editingResult.id)
+        .select('*')
+        .single();
 
       if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       toast({ 
