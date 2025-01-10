@@ -45,7 +45,8 @@ export function GameResultsList() {
           updated_at: new Date().toISOString(),
           is_final: true
         })
-        .eq('id', editingResult.id);
+        .eq('id', editingResult.id)
+        .select();
 
       if (error) {
         console.error('Error updating game result:', error);
