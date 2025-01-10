@@ -34,6 +34,7 @@ export function GameResultsList() {
           home_score: parseInt(homeScore),
           away_score: parseInt(awayScore),
           updated_at: new Date().toISOString(),
+          is_final: true
         })
         .eq('id', editingResult.id);
 
