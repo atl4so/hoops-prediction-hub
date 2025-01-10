@@ -28,6 +28,8 @@ export function GameResultsList() {
 
   const updateResult = useMutation({
     mutationFn: async () => {
+      console.log('Updating game result:', editingResult?.id);
+      
       const { data: session } = await supabase.auth.getSession();
       if (!session?.session?.user || session.session.user.email !== 'likasvy@gmail.com') {
         throw new Error('Unauthorized');
@@ -45,13 +47,9 @@ export function GameResultsList() {
           updated_at: new Date().toISOString(),
           is_final: true
         })
-        .eq('id', editingResult.id)
-        .select();
+        .eq('id', editingResult.id);
 
-      if (error) {
-        console.error('Error updating game result:', error);
-        throw error;
-      }
+      if (error) throw error;
     },
     onSuccess: () => {
       toast({ 

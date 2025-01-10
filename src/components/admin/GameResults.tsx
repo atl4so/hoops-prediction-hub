@@ -25,30 +25,56 @@ export function GameResults() {
       homeScore: string; 
       awayScore: string; 
     }) => {
+      console.log('Submitting game result:', { gameId, homeScore, awayScore });
+      
       const { data: session } = await supabase.auth.getSession();
       if (!session?.session?.user || session.session.user.email !== 'likasvy@gmail.com') {
         throw new Error('Unauthorized');
       }
 
-      // Insert new result
-      const { data, error } = await supabase
+      // Check if result already exists
+      const { data: existingResult } = await supabase
         .from('game_results')
-        .insert([
-          {
-            game_id: gameId,
+        .select('id')
+        .eq('game_id', gameId)
+        .maybeSingle();
+
+      let result;
+      if (existingResult) {
+        // Update existing result
+        const { data, error } = await supabase
+          .from('game_results')
+          .update({
             home_score: parseInt(homeScore),
             away_score: parseInt(awayScore),
-            is_final: true
-          }
-        ])
-        .select();
+            is_final: true,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingResult.id)
+          .select();
 
-      if (error) {
-        console.error('Error submitting game result:', error);
-        throw error;
+        if (error) throw error;
+        result = data;
+      } else {
+        // Insert new result
+        const { data, error } = await supabase
+          .from('game_results')
+          .insert([
+            {
+              game_id: gameId,
+              home_score: parseInt(homeScore),
+              away_score: parseInt(awayScore),
+              is_final: true
+            }
+          ])
+          .select();
+
+        if (error) throw error;
+        result = data;
       }
 
-      return data;
+      console.log('Game result submitted successfully:', result);
+      return result;
     },
     onMutate: () => {
       setIsPending(true);
