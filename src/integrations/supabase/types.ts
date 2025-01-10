@@ -181,6 +181,7 @@ export type Database = {
           away_winner_predictions_total: number | null
           created_at: string
           display_name: string
+          efficiency_rating: number | null
           email: string
           highest_game_points: number | null
           highest_round_points: number | null
@@ -193,8 +194,10 @@ export type Database = {
           over_under_predictions_correct: number | null
           over_under_predictions_total: number | null
           points_per_game: number | null
+          risk_taking_index: number | null
           total_points: number | null
           total_predictions: number | null
+          underdog_prediction_rate: number | null
           updated_at: string
           winner_predictions_correct: number | null
           winner_predictions_total: number | null
@@ -205,6 +208,7 @@ export type Database = {
           away_winner_predictions_total?: number | null
           created_at?: string
           display_name: string
+          efficiency_rating?: number | null
           email: string
           highest_game_points?: number | null
           highest_round_points?: number | null
@@ -217,8 +221,10 @@ export type Database = {
           over_under_predictions_correct?: number | null
           over_under_predictions_total?: number | null
           points_per_game?: number | null
+          risk_taking_index?: number | null
           total_points?: number | null
           total_predictions?: number | null
+          underdog_prediction_rate?: number | null
           updated_at?: string
           winner_predictions_correct?: number | null
           winner_predictions_total?: number | null
@@ -229,6 +235,7 @@ export type Database = {
           away_winner_predictions_total?: number | null
           created_at?: string
           display_name?: string
+          efficiency_rating?: number | null
           email?: string
           highest_game_points?: number | null
           highest_round_points?: number | null
@@ -241,13 +248,75 @@ export type Database = {
           over_under_predictions_correct?: number | null
           over_under_predictions_total?: number | null
           points_per_game?: number | null
+          risk_taking_index?: number | null
           total_points?: number | null
           total_predictions?: number | null
+          underdog_prediction_rate?: number | null
           updated_at?: string
           winner_predictions_correct?: number | null
           winner_predictions_total?: number | null
         }
         Relationships: []
+      }
+      round_user_stats: {
+        Row: {
+          created_at: string
+          efficiency_rating: number | null
+          finished_games: number | null
+          id: string
+          round_id: string | null
+          total_points: number | null
+          total_predictions: number | null
+          underdog_prediction_rate: number | null
+          updated_at: string
+          user_id: string | null
+          winner_predictions_correct: number | null
+          winner_predictions_total: number | null
+        }
+        Insert: {
+          created_at?: string
+          efficiency_rating?: number | null
+          finished_games?: number | null
+          id?: string
+          round_id?: string | null
+          total_points?: number | null
+          total_predictions?: number | null
+          underdog_prediction_rate?: number | null
+          updated_at?: string
+          user_id?: string | null
+          winner_predictions_correct?: number | null
+          winner_predictions_total?: number | null
+        }
+        Update: {
+          created_at?: string
+          efficiency_rating?: number | null
+          finished_games?: number | null
+          id?: string
+          round_id?: string | null
+          total_points?: number | null
+          total_predictions?: number | null
+          underdog_prediction_rate?: number | null
+          updated_at?: string
+          user_id?: string | null
+          winner_predictions_correct?: number | null
+          winner_predictions_total?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "round_user_stats_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "rounds"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "round_user_stats_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       rounds: {
         Row: {
@@ -473,6 +542,7 @@ export type Database = {
           game_result: Json
           avg_home_win_margin: number
           avg_away_win_margin: number
+          total_underdog_picks: number
         }[]
       }
       get_round_rankings: {
@@ -537,7 +607,19 @@ export type Database = {
           avatar_url: string
         }[]
       }
+      get_user_all_time_underdog_picks: {
+        Args: {
+          user_id_param: string
+        }
+        Returns: {
+          total_underdog_picks: number
+        }[]
+      }
       recalculate_all_prediction_points: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      recalculate_all_round_stats: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
@@ -546,6 +628,10 @@ export type Database = {
         Returns: undefined
       }
       recalculate_over_under_predictions: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      update_advanced_prediction_stats: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }

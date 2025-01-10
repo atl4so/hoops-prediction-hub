@@ -4,10 +4,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { GameResultForm } from "./GameResultForm";
 import { GameResultsList } from "./GameResultsList";
 import { toast } from "sonner";
+import { useSession } from "@supabase/auth-helpers-react";
+import { useNavigate } from "react-router-dom";
 
 export function GameResults() {
+  const session = useSession();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isPending, setIsPending] = useState(false);
+
+  // Check if user is admin
+  if (!session?.user?.email || session.user.email !== 'likasvy@gmail.com') {
+    navigate('/login');
+    return null;
+  }
 
   const { mutate: submitGameResult } = useMutation({
     mutationFn: async ({ gameId, homeScore, awayScore }: { 
@@ -20,6 +30,7 @@ export function GameResults() {
         throw new Error('Unauthorized');
       }
 
+      // Insert new result directly
       const { data, error } = await supabase
         .from('game_results')
         .insert([
@@ -29,9 +40,15 @@ export function GameResults() {
             away_score: parseInt(awayScore),
             is_final: true
           }
-        ]);
+        ])
+        .select('*')
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error submitting game result:', error);
+        throw error;
+      }
+
       return data;
     },
     onMutate: () => {
@@ -42,9 +59,9 @@ export function GameResults() {
       queryClient.invalidateQueries({ queryKey: ['game-results'] });
       toast.success('Game result saved successfully');
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error('Error saving game result:', error);
-      toast.error('Failed to save game result. Please make sure you are logged in as admin.');
+      toast.error('Failed to save game result. Please try again.');
     },
     onSettled: () => {
       setIsPending(false);

@@ -6,16 +6,25 @@ import { EditGameResultDialog } from "./EditGameResultDialog";
 import { Accordion } from "@/components/ui/accordion";
 import { useGameResults } from "@/hooks/useGameResults";
 import { RoundResultsSection } from "./games/RoundResultsSection";
-import type { Game } from "@/types/supabase";
+import { useSession } from "@supabase/auth-helpers-react";
+import { useNavigate } from "react-router-dom";
 
 export function GameResultsList() {
   const { toast } = useToast();
+  const session = useSession();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [editingResult, setEditingResult] = useState<any>(null);
   const [homeScore, setHomeScore] = useState("");
   const [awayScore, setAwayScore] = useState("");
   
   const { data: existingResults, isError, error } = useGameResults();
+
+  // Check if user is admin
+  if (!session?.user?.email || session.user.email !== 'likasvy@gmail.com') {
+    navigate('/login');
+    return null;
+  }
 
   const updateResult = useMutation({
     mutationFn: async () => {
@@ -36,7 +45,9 @@ export function GameResultsList() {
           updated_at: new Date().toISOString(),
           is_final: true
         })
-        .eq('id', editingResult.id);
+        .eq('id', editingResult.id)
+        .select('*')
+        .single();
 
       if (error) {
         console.error('Error updating game result:', error);
