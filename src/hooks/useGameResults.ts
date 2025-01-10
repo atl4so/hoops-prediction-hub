@@ -35,39 +35,32 @@ export function useGameResults() {
   return useQuery({
     queryKey: ['game-results'],
     queryFn: async () => {
-      console.log('Fetching game results...');
+      console.log('Fetching games without final results...');
       const { data, error } = await supabase
-        .from('game_results')
+        .from('games')
         .select(`
           id,
-          home_score,
-          away_score,
-          is_final,
-          created_at,
-          updated_at,
-          game:games (
+          game_date,
+          round:rounds (
             id,
-            game_date,
-            round:rounds (
-              id,
-              name
-            ),
-            home_team:teams!games_home_team_id_fkey (
-              name
-            ),
-            away_team:teams!games_away_team_id_fkey (
-              name
-            )
+            name
+          ),
+          home_team:teams!games_home_team_id_fkey (
+            name
+          ),
+          away_team:teams!games_away_team_id_fkey (
+            name
           )
         `)
-        .order('created_at', { ascending: false });
+        .not('game_results', 'is', null)
+        .order('game_date', { ascending: false });
       
       if (error) {
-        console.error('Error fetching game results:', error);
+        console.error('Error fetching games without results:', error);
         throw error;
       }
 
-      console.log('Fetched game results:', data);
+      console.log('Fetched games without results:', data);
       return data;
     },
   });
