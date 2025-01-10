@@ -30,7 +30,7 @@ export function GameResults() {
         throw new Error('Unauthorized');
       }
 
-      // Insert new result directly
+      // Insert new result
       const { data, error } = await supabase
         .from('game_results')
         .insert([
@@ -41,8 +41,7 @@ export function GameResults() {
             is_final: true
           }
         ])
-        .select('*')
-        .maybeSingle();
+        .select();
 
       if (error) {
         console.error('Error submitting game result:', error);
