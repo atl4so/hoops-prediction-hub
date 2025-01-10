@@ -35,7 +35,8 @@ export function GameResultsList() {
         throw new Error('Unauthorized');
       }
 
-      if (!editingResult || !homeScore || !awayScore) {
+      if (!editingResult?.id || !homeScore || !awayScore) {
+        console.error('Missing required data:', { resultId: editingResult?.id, homeScore, awayScore });
         throw new Error("Please fill in all fields");
       }
 
@@ -48,10 +49,15 @@ export function GameResultsList() {
           is_final: true
         })
         .eq('id', editingResult.id)
-        .select('*')
+        .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Update error:', error);
+        throw error;
+      }
+
+      console.log('Update successful:', data);
       return data;
     },
     onSuccess: () => {
