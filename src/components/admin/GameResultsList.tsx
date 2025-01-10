@@ -28,22 +28,22 @@ export function GameResultsList() {
 
   const setFinalResult = useMutation({
     mutationFn: async () => {
-      console.log('Setting final result for game:', editingResult?.game?.id);
+      console.log('Setting final result for game:', editingResult?.id);
       
       const { data: session } = await supabase.auth.getSession();
       if (!session?.session?.user || session.session.user.email !== 'likasvy@gmail.com') {
         throw new Error('Unauthorized');
       }
 
-      if (!editingResult?.game?.id || !homeScore || !awayScore) {
-        console.error('Missing required data:', { gameId: editingResult?.game?.id, homeScore, awayScore });
+      if (!editingResult?.id || !homeScore || !awayScore) {
+        console.error('Missing required data:', { gameId: editingResult?.id, homeScore, awayScore });
         throw new Error("Please fill in all fields");
       }
 
       const { data, error } = await supabase
         .from('game_results')
         .insert({
-          game_id: editingResult.game.id,
+          game_id: editingResult.id,
           home_score: parseInt(homeScore),
           away_score: parseInt(awayScore),
           is_final: true
@@ -95,8 +95,8 @@ export function GameResultsList() {
 
   // Group results by round
   const resultsByRound = existingResults?.reduce((acc, result) => {
-    const roundId = result.game.round.id;
-    const roundName = result.game.round.name;
+    const roundId = result.round.id;
+    const roundName = result.round.name;
     
     if (!acc[roundId]) {
       acc[roundId] = {

@@ -52,7 +52,7 @@ export function useGameResults() {
             name
           )
         `)
-        .not('game_results', 'is', null)
+        .not('game_results.id', 'is', null)
         .order('game_date', { ascending: false });
       
       if (error) {

@@ -37,16 +37,16 @@ export function EditGameResultDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Game Result</DialogTitle>
+          <DialogTitle>Set Final Result</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4">
           <div>
             <p className="text-sm text-muted-foreground mb-2">
-              {format(new Date(result.game.game_date), "PPP")}
+              {format(new Date(result.game_date), "PPP")}
             </p>
             <p className="font-medium">
-              {result.game.home_team.name} vs {result.game.away_team.name}
+              {result.home_team.name} vs {result.away_team.name}
             </p>
           </div>
 
@@ -70,7 +70,7 @@ export function EditGameResultDialog({
             onClick={onUpdate}
             disabled={isPending}
           >
-            {isPending ? "Updating..." : "Update Result"}
+            {isPending ? "Setting Result..." : "Set Final Result"}
           </Button>
         </div>
       </DialogContent>
