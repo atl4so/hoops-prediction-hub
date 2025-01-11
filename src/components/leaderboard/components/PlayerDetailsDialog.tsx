@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
 
 interface PlayerDetailsDialogProps {
   open: boolean;
@@ -16,8 +17,6 @@ interface PlayerDetailsDialogProps {
     total_predictions: number;
     winner_predictions_correct?: number;
     winner_predictions_total?: number;
-    efficiency_rating?: number;
-    underdog_prediction_rate?: number;
   };
   rank: number;
   isRoundLeaderboard?: boolean;
@@ -32,40 +31,33 @@ export function PlayerDetailsDialog({
   isRoundLeaderboard = false,
   roundId
 }: PlayerDetailsDialogProps) {
-  const { data: roundDetails } = useQuery({
-    queryKey: ["roundDetails", roundId, player.user_id],
+  const { data: roundGames } = useQuery({
+    queryKey: ["round-games", roundId, player.user_id],
     queryFn: async () => {
       if (!roundId || !player.user_id) return null;
       
       const { data } = await supabase
-        .from('round_user_stats')
+        .from('predictions')
         .select(`
-          total_points,
-          total_predictions,
-          finished_games,
-          winner_predictions_correct,
-          winner_predictions_total,
-          efficiency_rating,
-          underdog_prediction_rate,
-          round:rounds!round_user_stats_round_id_fkey (
-            name
+          prediction_home_score,
+          prediction_away_score,
+          game:games!inner (
+            id,
+            home_team:teams!games_home_team_id_fkey (name),
+            away_team:teams!games_away_team_id_fkey (name),
+            game_results!inner (
+              home_score,
+              away_score
+            )
           )
         `)
-        .eq('round_id', roundId)
         .eq('user_id', player.user_id)
-        .single();
+        .eq('game.round_id', roundId);
       
       return data;
     },
     enabled: isRoundLeaderboard && !!roundId && !!player.user_id
   });
-
-  const calculatePercentage = (correct?: number, total?: number) => {
-    if (!correct || !total) return 0;
-    return Math.round((correct / total) * 100);
-  };
-
-  const winnerPercentage = calculatePercentage(player.winner_predictions_correct, player.winner_predictions_total);
 
   const StatCard = ({ title, value, subtitle }: { title: string; value: string | number; subtitle?: string }) => (
     <Card className="p-4 space-y-1">
@@ -80,60 +72,56 @@ export function PlayerDetailsDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {isRoundLeaderboard && roundDetails 
-              ? `${player.display_name}'s Performance - ${roundDetails.round.name}`
-              : 'Player Details'
-            }
+            <div className="flex items-center gap-4">
+              <Avatar className="h-16 w-16">
+                <AvatarImage src={player.avatar_url} />
+                <AvatarFallback>
+                  <User className="h-8 w-8" />
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h3 className="text-lg font-bold">{player.display_name}</h3>
+                <p className="text-sm text-muted-foreground">Rank {rank}</p>
+              </div>
+            </div>
           </DialogTitle>
         </DialogHeader>
+        
         <div className="space-y-6">
-          <div className="flex items-center gap-4">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src={player.avatar_url} />
-              <AvatarFallback>
-                <User className="h-8 w-8" />
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h3 className="text-lg font-bold">{player.display_name}</h3>
-              <p className="text-sm text-muted-foreground">Rank {rank}</p>
-            </div>
-          </div>
           <div className="grid grid-cols-2 gap-4">
             <StatCard 
               title="Total Points" 
               value={player.total_points}
             />
-            {isRoundLeaderboard && roundDetails ? (
-              <>
-                <StatCard 
-                  title="Efficiency Rating" 
-                  value={`${Math.round(roundDetails.efficiency_rating)}%`}
-                />
-                <StatCard 
-                  title="Underdog Rate" 
-                  value={`${Math.round(roundDetails.underdog_prediction_rate)}%`}
-                />
-                <StatCard 
-                  title="Winner Accuracy" 
-                  value={`${calculatePercentage(roundDetails.winner_predictions_correct, roundDetails.winner_predictions_total)}%`}
-                  subtitle={`${roundDetails.winner_predictions_correct} of ${roundDetails.winner_predictions_total}`}
-                />
-              </>
-            ) : (
-              <>
-                <StatCard 
-                  title="Winner %" 
-                  value={`${winnerPercentage}%`}
-                  subtitle={`${player.winner_predictions_correct || 0} of ${player.winner_predictions_total || 0}`}
-                />
-              </>
-            )}
             <StatCard 
-              title="Predictions" 
-              value={player.total_predictions}
+              title="Winner" 
+              value={`${Math.round((player.winner_predictions_correct || 0) / (player.winner_predictions_total || 1) * 100)}%`}
+              subtitle={`${player.winner_predictions_correct || 0} of ${player.winner_predictions_total || 0}`}
             />
           </div>
+
+          {isRoundLeaderboard && roundGames && (
+            <div className="space-y-2">
+              <h4 className="font-semibold">Round Predictions</h4>
+              {roundGames.map((game: any) => {
+                const predictedHomeWin = game.prediction_home_score > game.prediction_away_score;
+                const actualHomeWin = game.game.game_results[0].home_score > game.game.game_results[0].away_score;
+                const isCorrect = predictedHomeWin === actualHomeWin;
+
+                return (
+                  <div 
+                    key={game.game.id} 
+                    className={cn(
+                      "text-sm py-1",
+                      isCorrect ? "text-green-600" : "text-red-600"
+                    )}
+                  >
+                    {game.game.home_team.name} vs {game.game.away_team.name}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

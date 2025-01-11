@@ -144,7 +144,7 @@ export function AllTimeLeaderboard() {
                 <SortHeader field="points">Points</SortHeader>
               </TableHead>
               <TableHead className="w-[120px] text-right font-bold text-base">
-                <SortHeader field="winner">Winner %</SortHeader>
+                <SortHeader field="winner">Winner</SortHeader>
               </TableHead>
               <TableHead className="w-[100px] text-right font-bold text-base">
                 <SortHeader field="games">Games</SortHeader>
