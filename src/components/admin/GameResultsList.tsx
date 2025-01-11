@@ -40,9 +40,10 @@ export function GameResultsList() {
       }
 
       const hasExistingResult = editingResult.game_results?.length > 0;
-      let result;
 
       try {
+        let result;
+        
         if (hasExistingResult) {
           // Update existing result
           const { data, error } = await supabase
@@ -53,7 +54,7 @@ export function GameResultsList() {
               updated_at: new Date().toISOString()
             })
             .eq('game_id', editingResult.id)
-            .eq('id', editingResult.game_results[0].id) // Add this line to specify which record to update
+            .eq('id', editingResult.game_results[0].id)
             .select()
             .single();
 
