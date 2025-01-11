@@ -60,7 +60,7 @@ export function PlayerDetailsDialog({
   });
 
   const StatCard = ({ title, value, subtitle }: { title: string; value: string | number; subtitle?: string }) => (
-    <Card className="p-4 space-y-1">
+    <Card className="p-4 space-y-1 bg-muted/50">
       <p className="text-sm text-muted-foreground">{title}</p>
       <p className="text-2xl font-bold">{value}</p>
       {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
@@ -69,8 +69,8 @@ export function PlayerDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-md h-[90vh] flex flex-col">
+        <DialogHeader className="pb-4 border-b">
           <DialogTitle>
             <div className="flex items-center gap-4">
               <Avatar className="h-16 w-16">
@@ -87,7 +87,7 @@ export function PlayerDetailsDialog({
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-6 py-4">
+        <div className="flex-1 overflow-y-auto py-4 space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <StatCard 
               title="Total Points" 
@@ -100,30 +100,32 @@ export function PlayerDetailsDialog({
             />
           </div>
 
-          {isRoundLeaderboard && roundGames && (
-            <div className="space-y-2">
-              <h4 className="font-semibold">Round Predictions</h4>
-              {roundGames.map((game: any) => {
-                // Ensure game_results exists and has at least one entry
-                const gameResult = game.game.game_results?.[0];
-                if (!gameResult) return null;
+          {isRoundLeaderboard && roundGames && roundGames.length > 0 && (
+            <div className="space-y-3">
+              <h4 className="font-semibold text-lg">Round Predictions</h4>
+              <div className="space-y-2">
+                {roundGames.map((game: any) => {
+                  // Ensure game_results exists and has at least one entry
+                  const gameResult = game.game.game_results?.[0];
+                  if (!gameResult) return null;
 
-                const predictedHomeWin = game.prediction_home_score > game.prediction_away_score;
-                const actualHomeWin = gameResult.home_score > gameResult.away_score;
-                const isCorrect = predictedHomeWin === actualHomeWin;
+                  const predictedHomeWin = game.prediction_home_score > game.prediction_away_score;
+                  const actualHomeWin = gameResult.home_score > gameResult.away_score;
+                  const isCorrect = predictedHomeWin === actualHomeWin;
 
-                return (
-                  <div 
-                    key={game.game.id} 
-                    className={cn(
-                      "text-sm py-2 px-3 rounded-md",
-                      isCorrect ? "text-green-600 bg-green-50" : "text-red-600 bg-red-50"
-                    )}
-                  >
-                    {game.game.home_team.name} vs {game.game.away_team.name}
-                  </div>
-                );
-              })}
+                  return (
+                    <div 
+                      key={game.game.id} 
+                      className={cn(
+                        "text-sm py-2 px-3 rounded-md",
+                        isCorrect ? "text-green-600 bg-green-50" : "text-red-600 bg-red-50"
+                      )}
+                    >
+                      {game.game.home_team.name} vs {game.game.away_team.name}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
