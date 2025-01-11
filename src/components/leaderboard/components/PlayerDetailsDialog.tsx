@@ -31,12 +31,12 @@ export function PlayerDetailsDialog({
   isRoundLeaderboard = false,
   roundId
 }: PlayerDetailsDialogProps) {
-  const { data: roundGames } = useQuery({
+  const { data: roundGames, isLoading } = useQuery({
     queryKey: ["round-games", roundId, player.user_id],
     queryFn: async () => {
       if (!roundId || !player.user_id) return null;
       
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('predictions')
         .select(`
           prediction_home_score,
@@ -45,7 +45,7 @@ export function PlayerDetailsDialog({
             id,
             home_team:teams!games_home_team_id_fkey (name),
             away_team:teams!games_away_team_id_fkey (name),
-            game_results!inner (
+            game_results (
               home_score,
               away_score
             )
@@ -53,11 +53,18 @@ export function PlayerDetailsDialog({
         `)
         .eq('user_id', player.user_id)
         .eq('game.round_id', roundId);
+
+      if (error) {
+        console.error('Error fetching round games:', error);
+        return null;
+      }
       
       return data;
     },
     enabled: isRoundLeaderboard && !!roundId && !!player.user_id
   });
+
+  console.log('Round games data:', roundGames);
 
   const StatCard = ({ title, value, subtitle }: { title: string; value: string | number; subtitle?: string }) => (
     <Card className="p-4 space-y-1 bg-muted/50">
@@ -105,7 +112,6 @@ export function PlayerDetailsDialog({
               <h4 className="font-semibold text-lg">Round Predictions</h4>
               <div className="space-y-2">
                 {roundGames.map((game: any) => {
-                  // Ensure game_results exists and has at least one entry
                   const gameResult = game.game.game_results?.[0];
                   if (!gameResult) return null;
 
@@ -126,6 +132,18 @@ export function PlayerDetailsDialog({
                   );
                 })}
               </div>
+            </div>
+          )}
+
+          {isRoundLeaderboard && isLoading && (
+            <div className="text-center py-4 text-muted-foreground">
+              Loading predictions...
+            </div>
+          )}
+
+          {isRoundLeaderboard && !isLoading && (!roundGames || roundGames.length === 0) && (
+            <div className="text-center py-4 text-muted-foreground">
+              No predictions found for this round
             </div>
           )}
         </div>
