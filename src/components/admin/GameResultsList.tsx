@@ -41,51 +41,46 @@ export function GameResultsList() {
 
       const hasExistingResult = editingResult.game_results?.length > 0;
 
-      try {
-        if (hasExistingResult) {
-          // Update existing result
-          console.log('Updating existing result...');
-          const { data, error } = await supabase
-            .from('game_results')
-            .update({
-              home_score: parseInt(homeScore),
-              away_score: parseInt(awayScore),
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', editingResult.game_results[0].id)
-            .select()
-            .single();
+      if (hasExistingResult) {
+        // Update existing result
+        console.log('Updating existing result...');
+        const { data, error } = await supabase
+          .from('game_results')
+          .update({
+            home_score: parseInt(homeScore),
+            away_score: parseInt(awayScore),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', editingResult.game_results[0].id)
+          .select()
+          .single();
 
-          if (error) {
-            console.error('Error updating game result:', error);
-            throw error;
-          }
-          console.log('Successfully updated result:', data);
-          return data;
-        } else {
-          // Set new final result
-          console.log('Setting new final result...');
-          const { data, error } = await supabase
-            .from('game_results')
-            .insert({
-              game_id: editingResult.id,
-              home_score: parseInt(homeScore),
-              away_score: parseInt(awayScore),
-              is_final: true
-            })
-            .select()
-            .single();
-
-          if (error) {
-            console.error('Error setting final result:', error);
-            throw error;
-          }
-          console.log('Successfully set final result:', data);
-          return data;
+        if (error) {
+          console.error('Error updating game result:', error);
+          throw error;
         }
-      } catch (error) {
-        console.error('Database operation error:', error);
-        throw error;
+        console.log('Successfully updated result:', data);
+        return data;
+      } else {
+        // Set new final result
+        console.log('Setting new final result...');
+        const { data, error } = await supabase
+          .from('game_results')
+          .insert([{
+            game_id: editingResult.id,
+            home_score: parseInt(homeScore),
+            away_score: parseInt(awayScore),
+            is_final: true
+          }])
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Error setting final result:', error);
+          throw error;
+        }
+        console.log('Successfully set final result:', data);
+        return data;
       }
     },
     onSuccess: () => {
