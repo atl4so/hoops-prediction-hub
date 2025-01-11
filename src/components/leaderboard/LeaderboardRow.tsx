@@ -49,9 +49,7 @@ export function LeaderboardRow({
   const winnerPercentage = calculatePercentage(player.winner_predictions_correct, player.winner_predictions_total);
 
   const handleUserClick = () => {
-    if (isMobile) {
-      setShowDetails(true);
-    }
+    setShowDetails(true);
   };
 
   const rowVariants = {
