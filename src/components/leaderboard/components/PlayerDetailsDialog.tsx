@@ -14,10 +14,6 @@ interface PlayerDetailsDialogProps {
     avatar_url?: string;
     total_points: number;
     total_predictions: number;
-    home_winner_predictions_correct?: number;
-    home_winner_predictions_total?: number;
-    away_winner_predictions_correct?: number;
-    away_winner_predictions_total?: number;
     winner_predictions_correct?: number;
     winner_predictions_total?: number;
     efficiency_rating?: number;
@@ -69,8 +65,6 @@ export function PlayerDetailsDialog({
     return Math.round((correct / total) * 100);
   };
 
-  const homeWinPercentage = calculatePercentage(player.home_winner_predictions_correct, player.home_winner_predictions_total);
-  const awayWinPercentage = calculatePercentage(player.away_winner_predictions_correct, player.away_winner_predictions_total);
   const winnerPercentage = calculatePercentage(player.winner_predictions_correct, player.winner_predictions_total);
 
   const StatCard = ({ title, value, subtitle }: { title: string; value: string | number; subtitle?: string }) => (
@@ -132,16 +126,6 @@ export function PlayerDetailsDialog({
                   title="Winner %" 
                   value={`${winnerPercentage}%`}
                   subtitle={`${player.winner_predictions_correct || 0} of ${player.winner_predictions_total || 0}`}
-                />
-                <StatCard 
-                  title="Home Win %" 
-                  value={`${homeWinPercentage}%`}
-                  subtitle={`${player.home_winner_predictions_correct || 0} of ${player.home_winner_predictions_total || 0}`}
-                />
-                <StatCard 
-                  title="Away Win %" 
-                  value={`${awayWinPercentage}%`}
-                  subtitle={`${player.away_winner_predictions_correct || 0} of ${player.away_winner_predictions_total || 0}`}
                 />
               </>
             )}

@@ -16,17 +16,16 @@ interface LeaderboardRowProps {
     points_per_game?: number;
     total_predictions: number;
     avatar_url?: string;
-    home_winner_predictions_correct?: number;
-    home_winner_predictions_total?: number;
-    away_winner_predictions_correct?: number;
-    away_winner_predictions_total?: number;
     winner_predictions_correct?: number;
     winner_predictions_total?: number;
+    efficiency_rating?: number;
+    underdog_prediction_rate?: number;
   };
   rank: number;
   isRoundLeaderboard?: boolean;
   showFollowButton?: boolean;
   index: number;
+  roundId?: string;
 }
 
 export function LeaderboardRow({ 
@@ -34,7 +33,8 @@ export function LeaderboardRow({
   rank, 
   isRoundLeaderboard = false,
   showFollowButton = true,
-  index
+  index,
+  roundId
 }: LeaderboardRowProps) {
   const [showDetails, setShowDetails] = useState(false);
   const isMobile = useIsMobile();
@@ -44,8 +44,6 @@ export function LeaderboardRow({
     return Math.round((correct / total) * 100);
   };
 
-  const homeWinPercentage = calculatePercentage(player.home_winner_predictions_correct, player.home_winner_predictions_total);
-  const awayWinPercentage = calculatePercentage(player.away_winner_predictions_correct, player.away_winner_predictions_total);
   const winnerPercentage = calculatePercentage(player.winner_predictions_correct, player.winner_predictions_total);
 
   const handleUserClick = () => {
@@ -106,12 +104,9 @@ export function LeaderboardRow({
 
         <StatsDisplay
           winnerPercentage={winnerPercentage}
-          homeWinPercentage={homeWinPercentage}
-          awayWinPercentage={awayWinPercentage}
-          homeTotalStats={`Home: ${player.home_winner_predictions_correct} of ${player.home_winner_predictions_total}`}
-          awayTotalStats={`Away: ${player.away_winner_predictions_correct} of ${player.away_winner_predictions_total}`}
-          winnerStats={`${player.winner_predictions_correct} correct out of ${player.winner_predictions_total}`}
           isRoundLeaderboard={isRoundLeaderboard}
+          efficiencyRating={player.efficiency_rating}
+          underdogRate={player.underdog_prediction_rate}
         />
 
         <TableCell className="text-right py-4 px-4">
@@ -125,6 +120,7 @@ export function LeaderboardRow({
         player={player}
         rank={rank}
         isRoundLeaderboard={isRoundLeaderboard}
+        roundId={roundId}
       />
     </>
   );
