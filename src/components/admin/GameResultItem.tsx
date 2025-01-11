@@ -25,16 +25,15 @@ export function GameResultItem({ result, onEdit }: GameResultItemProps) {
           </p>
         )}
       </div>
-      <Button 
-        variant="outline"
-        onClick={() => onEdit(result)}
-        className={hasResult 
-          ? "text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50"
-          : "text-green-600 hover:text-green-700 hover:bg-green-50"
-        }
-      >
-        {hasResult ? 'Update Result' : 'Set Final Result'}
-      </Button>
+      {!hasResult && (
+        <Button 
+          variant="outline"
+          onClick={() => onEdit(result)}
+          className="text-green-600 hover:text-green-700 hover:bg-green-50"
+        >
+          Set Final Result
+        </Button>
+      )}
     </div>
   );
 }

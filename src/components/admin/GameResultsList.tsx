@@ -28,7 +28,7 @@ export function GameResultsList() {
 
   const setFinalResult = useMutation({
     mutationFn: async () => {
-      console.log('Setting/updating final result for game:', editingResult?.id);
+      console.log('Setting final result for game:', editingResult?.id);
       
       const { data: session } = await supabase.auth.getSession();
       if (!session?.session?.user || session.session.user.email !== 'likasvy@gmail.com') {
@@ -39,56 +39,36 @@ export function GameResultsList() {
         throw new Error("Please fill in all fields");
       }
 
-      const hasExistingResult = editingResult.game_results?.length > 0;
-
-      if (hasExistingResult) {
-        // Update existing result
-        console.log('Updating existing result...');
-        const { data, error } = await supabase
-          .from('game_results')
-          .update({
-            home_score: parseInt(homeScore),
-            away_score: parseInt(awayScore),
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', editingResult.game_results[0].id)
-          .select()
-          .single();
-
-        if (error) {
-          console.error('Error updating game result:', error);
-          throw error;
-        }
-        console.log('Successfully updated result:', data);
-        return data;
-      } else {
-        // Set new final result
-        console.log('Setting new final result...');
-        const { data, error } = await supabase
-          .from('game_results')
-          .insert([{
-            game_id: editingResult.id,
-            home_score: parseInt(homeScore),
-            away_score: parseInt(awayScore),
-            is_final: true
-          }])
-          .select()
-          .single();
-
-        if (error) {
-          console.error('Error setting final result:', error);
-          throw error;
-        }
-        console.log('Successfully set final result:', data);
-        return data;
+      // Check if game already has a result
+      if (editingResult.game_results?.length > 0) {
+        throw new Error("This game already has a final result");
       }
+
+      // Set new final result
+      console.log('Setting new final result...');
+      const { data, error } = await supabase
+        .from('game_results')
+        .insert([{
+          game_id: editingResult.id,
+          home_score: parseInt(homeScore),
+          away_score: parseInt(awayScore),
+          is_final: true
+        }])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error setting final result:', error);
+        throw error;
+      }
+      
+      console.log('Successfully set final result:', data);
+      return data;
     },
     onSuccess: () => {
       toast({ 
         title: "Success", 
-        description: editingResult.game_results?.length > 0 
-          ? "Game result updated successfully"
-          : "Final result set successfully",
+        description: "Final result set successfully"
       });
       queryClient.invalidateQueries({ queryKey: ['game-results'] });
       setEditingResult(null);
@@ -106,14 +86,19 @@ export function GameResultsList() {
   });
 
   const handleSetResult = (result: any) => {
-    setEditingResult(result);
+    // Only allow setting results for games without existing results
     if (result.game_results?.length > 0) {
-      setHomeScore(result.game_results[0].home_score.toString());
-      setAwayScore(result.game_results[0].away_score.toString());
-    } else {
-      setHomeScore("");
-      setAwayScore("");
+      toast({
+        title: "Error",
+        description: "This game already has a final result",
+        variant: "destructive",
+      });
+      return;
     }
+    
+    setEditingResult(result);
+    setHomeScore("");
+    setAwayScore("");
   };
 
   if (isError) {
@@ -142,7 +127,7 @@ export function GameResultsList() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium mb-4">Manage Game Results</h3>
+      <h3 className="text-lg font-medium mb-4">Set Game Results</h3>
       
       <Accordion type="single" collapsible className="space-y-4">
         {Object.entries(resultsByRound).map(([roundId, { roundName, results }]) => (
