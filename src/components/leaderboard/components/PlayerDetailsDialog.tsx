@@ -124,7 +124,7 @@ export function PlayerDetailsDialog({
                       key={game.game.id} 
                       className={cn(
                         "text-sm py-2 px-3 rounded-md",
-                        isCorrect ? "text-green-600 bg-green-50" : "text-red-600 bg-red-50"
+                        isCorrect ? "text-green-600 bg-green-50 dark:bg-green-950/30" : "text-red-600 bg-red-50 dark:bg-red-950/30"
                       )}
                     >
                       {game.game.home_team.name} vs {game.game.away_team.name}
