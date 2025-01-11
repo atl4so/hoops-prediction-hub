@@ -5,7 +5,7 @@ export function useGameResults() {
   return useQuery({
     queryKey: ['game-results'],
     queryFn: async () => {
-      console.log('Fetching games without final results...');
+      console.log('Fetching all games for admin...');
       const { data, error } = await supabase
         .from('games')
         .select(`
@@ -28,15 +28,14 @@ export function useGameResults() {
             is_final
           )
         `)
-        .is('game_results', null)
         .order('game_date', { ascending: false });
       
       if (error) {
-        console.error('Error fetching games without results:', error);
+        console.error('Error fetching games:', error);
         throw error;
       }
 
-      console.log('Fetched games without results:', data);
+      console.log('Fetched games:', data);
       return data;
     },
   });

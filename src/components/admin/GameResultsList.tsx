@@ -28,7 +28,7 @@ export function GameResultsList() {
 
   const setFinalResult = useMutation({
     mutationFn: async () => {
-      console.log('Setting final result for game:', editingResult?.id);
+      console.log('Setting/updating final result for game:', editingResult?.id);
       
       const { data: session } = await supabase.auth.getSession();
       if (!session?.session?.user || session.session.user.email !== 'likasvy@gmail.com') {
@@ -40,29 +40,56 @@ export function GameResultsList() {
         throw new Error("Please fill in all fields");
       }
 
-      const { data, error } = await supabase
-        .from('game_results')
-        .insert({
-          game_id: editingResult.id,
-          home_score: parseInt(homeScore),
-          away_score: parseInt(awayScore),
-          is_final: true
-        })
-        .select()
-        .single();
+      const hasExistingResult = editingResult.game_results?.length > 0;
+      let result;
 
-      if (error) {
-        console.error('Insert error:', error);
-        throw error;
+      if (hasExistingResult) {
+        // Update existing result
+        const { data, error } = await supabase
+          .from('game_results')
+          .update({
+            home_score: parseInt(homeScore),
+            away_score: parseInt(awayScore),
+            updated_at: new Date().toISOString()
+          })
+          .eq('game_id', editingResult.id)
+          .select()
+          .maybeSingle();
+
+        if (error) {
+          console.error('Update error:', error);
+          throw error;
+        }
+        result = data;
+      } else {
+        // Insert new result
+        const { data, error } = await supabase
+          .from('game_results')
+          .insert({
+            game_id: editingResult.id,
+            home_score: parseInt(homeScore),
+            away_score: parseInt(awayScore),
+            is_final: true
+          })
+          .select()
+          .maybeSingle();
+
+        if (error) {
+          console.error('Insert error:', error);
+          throw error;
+        }
+        result = data;
       }
 
-      console.log('Final result set successfully:', data);
-      return data;
+      console.log('Final result set/updated successfully:', result);
+      return result;
     },
     onSuccess: () => {
       toast({ 
         title: "Success", 
-        description: "Game result set successfully",
+        description: editingResult.game_results?.length > 0 
+          ? "Game result updated successfully"
+          : "Game result set successfully",
       });
       queryClient.invalidateQueries({ queryKey: ['game-results'] });
       setEditingResult(null);
@@ -81,8 +108,13 @@ export function GameResultsList() {
 
   const handleSetResult = (result: any) => {
     setEditingResult(result);
-    setHomeScore("");
-    setAwayScore("");
+    if (result.game_results?.length > 0) {
+      setHomeScore(result.game_results[0].home_score.toString());
+      setAwayScore(result.game_results[0].away_score.toString());
+    } else {
+      setHomeScore("");
+      setAwayScore("");
+    }
   };
 
   if (isError) {
@@ -111,7 +143,7 @@ export function GameResultsList() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium mb-4">Set Final Results</h3>
+      <h3 className="text-lg font-medium mb-4">Manage Game Results</h3>
       
       <Accordion type="single" collapsible className="space-y-4">
         {Object.entries(resultsByRound).map(([roundId, { roundName, results }]) => (
@@ -127,7 +159,7 @@ export function GameResultsList() {
 
       {(!existingResults || existingResults.length === 0) && (
         <p className="text-muted-foreground text-center py-4">
-          No games without final results found
+          No games found
         </p>
       )}
 

@@ -33,11 +33,16 @@ export function EditGameResultDialog({
 }: EditGameResultDialogProps) {
   if (!result) return null;
 
+  const hasResult = result.game_results?.length > 0;
+  const finalResult = hasResult ? result.game_results[0] : null;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Set Final Result</DialogTitle>
+          <DialogTitle>
+            {finalResult ? 'Update Final Result' : 'Set Final Result'}
+          </DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4">
@@ -48,6 +53,11 @@ export function EditGameResultDialog({
             <p className="font-medium">
               {result.home_team.name} vs {result.away_team.name}
             </p>
+            {finalResult && (
+              <p className="text-sm text-muted-foreground mt-1">
+                Current result: {finalResult.home_score} - {finalResult.away_score}
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -70,7 +80,7 @@ export function EditGameResultDialog({
             onClick={onUpdate}
             disabled={isPending}
           >
-            {isPending ? "Setting Result..." : "Set Final Result"}
+            {isPending ? "Saving..." : (finalResult ? "Update Result" : "Set Final Result")}
           </Button>
         </div>
       </DialogContent>
