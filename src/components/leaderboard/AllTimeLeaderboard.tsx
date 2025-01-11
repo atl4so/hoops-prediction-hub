@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
-type SortField = 'points' | 'winner' | 'home' | 'away' | 'games' | 'ppg';
+type SortField = 'points' | 'winner' | 'games' | 'ppg';
 type SortDirection = 'asc' | 'desc';
 
 export function AllTimeLeaderboard() {
@@ -30,10 +30,6 @@ export function AllTimeLeaderboard() {
             avatar_url,
             winner_predictions_correct,
             winner_predictions_total,
-            home_winner_predictions_correct,
-            home_winner_predictions_total,
-            away_winner_predictions_correct,
-            away_winner_predictions_total,
             points_per_game
           ),
           game:games!inner (
@@ -56,11 +52,7 @@ export function AllTimeLeaderboard() {
             total_predictions: 0,
             points_per_game: pred.user.points_per_game,
             winner_predictions_correct: pred.user.winner_predictions_correct,
-            winner_predictions_total: pred.user.winner_predictions_total,
-            home_winner_predictions_correct: pred.user.home_winner_predictions_correct,
-            home_winner_predictions_total: pred.user.home_winner_predictions_total,
-            away_winner_predictions_correct: pred.user.away_winner_predictions_correct,
-            away_winner_predictions_total: pred.user.away_winner_predictions_total
+            winner_predictions_total: pred.user.winner_predictions_total
           };
         }
         acc[userId].total_predictions += 1;
@@ -84,16 +76,6 @@ export function AllTimeLeaderboard() {
           const aWinnerPercent = (a.winner_predictions_correct / a.winner_predictions_total) || 0;
           const bWinnerPercent = (b.winner_predictions_correct / b.winner_predictions_total) || 0;
           comparison = aWinnerPercent - bWinnerPercent;
-          break;
-        case 'home':
-          const aHomePercent = (a.home_winner_predictions_correct / a.home_winner_predictions_total) || 0;
-          const bHomePercent = (b.home_winner_predictions_correct / b.home_winner_predictions_total) || 0;
-          comparison = aHomePercent - bHomePercent;
-          break;
-        case 'away':
-          const aAwayPercent = (a.away_winner_predictions_correct / a.away_winner_predictions_total) || 0;
-          const bAwayPercent = (b.away_winner_predictions_correct / b.away_winner_predictions_total) || 0;
-          comparison = aAwayPercent - bAwayPercent;
           break;
         case 'games':
           comparison = a.total_predictions - b.total_predictions;
@@ -179,23 +161,6 @@ export function AllTimeLeaderboard() {
               </TableHead>
               <TableHead className="text-right hidden lg:table-cell font-bold text-base">
                 <SortHeader field="winner">Winner %</SortHeader>
-              </TableHead>
-              <TableHead className="text-right hidden xl:table-cell font-bold text-base">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-full justify-start">
-                      Home/Away
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleSort('home')}>
-                      Home Win %
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleSort('away')}>
-                      Away Win %
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
               </TableHead>
               <TableHead className="text-right font-bold text-base">
                 <SortHeader field="games">Games</SortHeader>

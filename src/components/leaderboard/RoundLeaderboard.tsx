@@ -1,13 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { LeaderboardRow } from "./LeaderboardRow";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
@@ -17,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
-type SortField = 'points' | 'efficiency' | 'underdog' | 'games';
+type SortField = 'points' | 'winner' | 'games';
 type SortDirection = 'asc' | 'desc';
 
 interface RoundLeaderboardProps {
@@ -37,17 +30,11 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
           user_id,
           total_points,
           total_predictions,
-          efficiency_rating,
-          underdog_prediction_rate,
+          winner_predictions_correct,
+          winner_predictions_total,
           user:profiles!round_user_stats_user_id_fkey (
             display_name,
-            avatar_url,
-            winner_predictions_correct,
-            winner_predictions_total,
-            home_winner_predictions_correct,
-            home_winner_predictions_total,
-            away_winner_predictions_correct,
-            away_winner_predictions_total
+            avatar_url
           )
         `)
         .eq('round_id', selectedRound);
@@ -60,14 +47,8 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
         avatar_url: stat.user.avatar_url,
         total_points: stat.total_points,
         total_predictions: stat.total_predictions,
-        efficiency_rating: stat.efficiency_rating,
-        underdog_prediction_rate: stat.underdog_prediction_rate,
-        winner_predictions_correct: stat.user.winner_predictions_correct,
-        winner_predictions_total: stat.user.winner_predictions_total,
-        home_winner_predictions_correct: stat.user.home_winner_predictions_correct,
-        home_winner_predictions_total: stat.user.home_winner_predictions_total,
-        away_winner_predictions_correct: stat.user.away_winner_predictions_correct,
-        away_winner_predictions_total: stat.user.away_winner_predictions_total
+        winner_predictions_correct: stat.winner_predictions_correct,
+        winner_predictions_total: stat.winner_predictions_total
       }));
     },
     enabled: !!selectedRound
@@ -81,11 +62,10 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
         case 'points':
           comparison = a.total_points - b.total_points;
           break;
-        case 'efficiency':
-          comparison = a.efficiency_rating - b.efficiency_rating;
-          break;
-        case 'underdog':
-          comparison = a.underdog_prediction_rate - b.underdog_prediction_rate;
+        case 'winner':
+          const aWinnerPercent = (a.winner_predictions_correct / a.winner_predictions_total) || 0;
+          const bWinnerPercent = (b.winner_predictions_correct / b.winner_predictions_total) || 0;
+          comparison = aWinnerPercent - bWinnerPercent;
           break;
         case 'games':
           comparison = a.total_predictions - b.total_predictions;
@@ -158,24 +138,10 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
               <TableHead className="w-20 font-bold text-base">Rank</TableHead>
               <TableHead className="font-bold text-base">Player</TableHead>
               <TableHead className="text-right font-bold text-base">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-full justify-start">
-                      <SortHeader field="points">Points</SortHeader>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleSort('points')}>
-                      Total Points
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleSort('efficiency')}>
-                      Efficiency Rating
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleSort('underdog')}>
-                      Underdog Rate
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <SortHeader field="points">Points</SortHeader>
+              </TableHead>
+              <TableHead className="text-right hidden lg:table-cell font-bold text-base">
+                <SortHeader field="winner">Winner %</SortHeader>
               </TableHead>
               <TableHead className="text-right font-bold text-base">
                 <SortHeader field="games">Games</SortHeader>
@@ -186,11 +152,7 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
             {sortedData.map((player: any, index: number) => (
               <LeaderboardRow
                 key={player.user_id}
-                player={{
-                  ...player,
-                  efficiency_rating: player.efficiency_rating,
-                  underdog_prediction_rate: player.underdog_prediction_rate
-                }}
+                player={player}
                 rank={index + 1}
                 index={index}
                 isRoundLeaderboard={true}
