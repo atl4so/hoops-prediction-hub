@@ -11,6 +11,10 @@ All notable changes to the euroleague.bet project will be documented in this fil
 - Following system for users
 - Comprehensive statistics tracking
 
+### Recent Changes
+- Removed game results management system for rebuild
+- Admin game results functionality temporarily disabled
+
 ### Database Structure
 - Teams table with 18 Euroleague teams and their logos
 - Rounds table for managing competition rounds
