@@ -1,4 +1,3 @@
-import { GameResultItem } from "../GameResultItem";
 import {
   AccordionContent,
   AccordionItem,
@@ -25,13 +24,9 @@ export function RoundResultsSection({
       </AccordionTrigger>
       <AccordionContent className="px-4 pb-4">
         <div className="grid gap-4">
-          {results.map((result) => (
-            <GameResultItem
-              key={result.id}
-              result={result}
-              onEdit={onEdit}
-            />
-          ))}
+          <p className="text-muted-foreground">
+            Game results functionality is being rebuilt. Please check back soon.
+          </p>
         </div>
       </AccordionContent>
     </AccordionItem>
