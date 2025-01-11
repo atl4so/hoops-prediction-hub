@@ -11,7 +11,7 @@ export function useGameResults() {
         .select(`
           id,
           game_date,
-          round (
+          round:rounds!games_round_id_fkey (
             id,
             name
           ),
