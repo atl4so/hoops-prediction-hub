@@ -33,11 +33,16 @@ export function GameResults() {
       }
 
       // Check if result already exists
-      const { data: existingResult } = await supabase
+      const { data: existingResult, error: checkError } = await supabase
         .from('game_results')
         .select('id')
         .eq('game_id', gameId)
         .maybeSingle();
+
+      if (checkError) {
+        console.error('Error checking existing result:', checkError);
+        throw checkError;
+      }
 
       let result;
       if (existingResult) {
@@ -52,9 +57,12 @@ export function GameResults() {
           })
           .eq('id', existingResult.id)
           .select()
-          .single();
+          .maybeSingle();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error updating game result:', error);
+          throw error;
+        }
         result = data;
       } else {
         // Insert new result
@@ -69,9 +77,12 @@ export function GameResults() {
             }
           ])
           .select()
-          .single();
+          .maybeSingle();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error inserting game result:', error);
+          throw error;
+        }
         result = data;
       }
 
