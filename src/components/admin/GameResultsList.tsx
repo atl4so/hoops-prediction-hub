@@ -53,6 +53,7 @@ export function GameResultsList() {
               updated_at: new Date().toISOString()
             })
             .eq('game_id', editingResult.id)
+            .eq('id', editingResult.game_results[0].id) // Add this line to specify which record to update
             .select()
             .single();
 
