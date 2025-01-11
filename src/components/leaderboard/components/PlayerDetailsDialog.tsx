@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card } from "@/components/ui/card";
 
 interface PlayerDetailsDialogProps {
   open: boolean;
@@ -37,6 +38,14 @@ export function PlayerDetailsDialog({
   const awayWinPercentage = calculatePercentage(player.away_winner_predictions_correct, player.away_winner_predictions_total);
   const winnerPercentage = calculatePercentage(player.winner_predictions_correct, player.winner_predictions_total);
 
+  const StatCard = ({ title, value, subtitle }: { title: string; value: string | number; subtitle?: string }) => (
+    <Card className="p-4 space-y-1">
+      <p className="text-sm text-muted-foreground">{title}</p>
+      <p className="text-2xl font-bold">{value}</p>
+      {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
+    </Card>
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -56,31 +65,34 @@ export function PlayerDetailsDialog({
               <p className="text-sm text-muted-foreground">Rank {rank}</p>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">Total Points</p>
-              <p className="text-2xl font-bold">{player.total_points}</p>
-            </div>
+          <div className="grid grid-cols-2 gap-4">
+            <StatCard 
+              title="Total Points" 
+              value={player.total_points}
+            />
             {!isRoundLeaderboard && (
               <>
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">Winner %</p>
-                  <p className="text-2xl font-bold">{winnerPercentage}%</p>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">Home Win %</p>
-                  <p className="text-2xl font-bold">{homeWinPercentage}%</p>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">Away Win %</p>
-                  <p className="text-2xl font-bold">{awayWinPercentage}%</p>
-                </div>
+                <StatCard 
+                  title="Winner %" 
+                  value={`${winnerPercentage}%`}
+                  subtitle={`${player.winner_predictions_correct || 0} of ${player.winner_predictions_total || 0}`}
+                />
+                <StatCard 
+                  title="Home Win %" 
+                  value={`${homeWinPercentage}%`}
+                  subtitle={`${player.home_winner_predictions_correct || 0} of ${player.home_winner_predictions_total || 0}`}
+                />
+                <StatCard 
+                  title="Away Win %" 
+                  value={`${awayWinPercentage}%`}
+                  subtitle={`${player.away_winner_predictions_correct || 0} of ${player.away_winner_predictions_total || 0}`}
+                />
               </>
             )}
-            <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">Predictions</p>
-              <p className="text-2xl font-bold">{player.total_predictions}</p>
-            </div>
+            <StatCard 
+              title="Predictions" 
+              value={player.total_predictions}
+            />
           </div>
         </div>
       </DialogContent>

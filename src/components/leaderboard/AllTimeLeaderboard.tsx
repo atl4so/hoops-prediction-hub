@@ -4,8 +4,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { LeaderboardRow } from "./LeaderboardRow";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
+import { useState } from "react";
+import { ArrowDown, ArrowUp } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+type SortField = 'points' | 'winner' | 'home' | 'away' | 'games';
+type SortDirection = 'asc' | 'desc';
 
 export function AllTimeLeaderboard() {
+  const [sortField, setSortField] = useState<SortField>('points');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+
   const { data: leaderboardData, isLoading } = useQuery({
     queryKey: ["allTimeLeaderboard"],
     queryFn: async () => {
@@ -64,10 +73,72 @@ export function AllTimeLeaderboard() {
           : 0
       }));
 
-      // Sort by total points
-      return leaderboard.sort((a: any, b: any) => b.total_points - a.total_points);
+      return leaderboard;
     }
   });
+
+  const sortData = (data: any[]) => {
+    return [...data].sort((a, b) => {
+      let comparison = 0;
+      
+      switch (sortField) {
+        case 'points':
+          comparison = a.total_points - b.total_points;
+          break;
+        case 'winner':
+          const aWinnerPercent = (a.winner_predictions_correct / a.winner_predictions_total) || 0;
+          const bWinnerPercent = (b.winner_predictions_correct / b.winner_predictions_total) || 0;
+          comparison = aWinnerPercent - bWinnerPercent;
+          break;
+        case 'home':
+          const aHomePercent = (a.home_winner_predictions_correct / a.home_winner_predictions_total) || 0;
+          const bHomePercent = (b.home_winner_predictions_correct / b.home_winner_predictions_total) || 0;
+          comparison = aHomePercent - bHomePercent;
+          break;
+        case 'away':
+          const aAwayPercent = (a.away_winner_predictions_correct / a.away_winner_predictions_total) || 0;
+          const bAwayPercent = (b.away_winner_predictions_correct / b.away_winner_predictions_total) || 0;
+          comparison = aAwayPercent - bAwayPercent;
+          break;
+        case 'games':
+          comparison = a.total_predictions - b.total_predictions;
+          break;
+      }
+      
+      return sortDirection === 'desc' ? -comparison : comparison;
+    });
+  };
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'desc' ? 'asc' : 'desc');
+    } else {
+      setSortField(field);
+      setSortDirection('desc');
+    }
+  };
+
+  const SortHeader = ({ field, children }: { field: SortField; children: React.ReactNode }) => {
+    const isActive = sortField === field;
+    return (
+      <div 
+        className="flex items-center gap-1 cursor-pointer group"
+        onClick={() => handleSort(field)}
+      >
+        {children}
+        <span className={cn(
+          "transition-opacity",
+          isActive ? "opacity-100" : "opacity-0 group-hover:opacity-50"
+        )}>
+          {isActive && sortDirection === 'desc' ? (
+            <ArrowDown className="h-4 w-4" />
+          ) : (
+            <ArrowUp className="h-4 w-4" />
+          )}
+        </span>
+      </div>
+    );
+  };
 
   if (isLoading) {
     return (
@@ -81,6 +152,8 @@ export function AllTimeLeaderboard() {
     );
   }
 
+  const sortedData = sortData(leaderboardData || []);
+
   return (
     <Card className="w-full overflow-hidden border-2 bg-card/50 backdrop-blur-sm">
       <div className="w-full overflow-x-auto">
@@ -89,14 +162,22 @@ export function AllTimeLeaderboard() {
             <TableRow className="hover:bg-transparent border-b-2">
               <TableHead className="w-20 font-bold text-base">Rank</TableHead>
               <TableHead className="font-bold text-base">Player</TableHead>
-              <TableHead className="text-right font-bold text-base">Points</TableHead>
-              <TableHead className="text-right hidden lg:table-cell font-bold text-base">Winner %</TableHead>
-              <TableHead className="text-right hidden xl:table-cell font-bold text-base">Home/Away %</TableHead>
-              <TableHead className="text-right font-bold text-base">Games</TableHead>
+              <TableHead className="text-right font-bold text-base">
+                <SortHeader field="points">Points</SortHeader>
+              </TableHead>
+              <TableHead className="text-right hidden lg:table-cell font-bold text-base">
+                <SortHeader field="winner">Winner %</SortHeader>
+              </TableHead>
+              <TableHead className="text-right hidden xl:table-cell font-bold text-base">
+                <SortHeader field="home">Home/Away %</SortHeader>
+              </TableHead>
+              <TableHead className="text-right font-bold text-base">
+                <SortHeader field="games">Games</SortHeader>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {leaderboardData?.map((player: any, index: number) => (
+            {sortedData.map((player: any, index: number) => (
               <LeaderboardRow
                 key={player.user_id}
                 player={player}
