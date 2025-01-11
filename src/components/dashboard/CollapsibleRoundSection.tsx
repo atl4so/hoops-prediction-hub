@@ -78,8 +78,8 @@ export function CollapsibleRoundSection({
   // Sort predictions within each round
   Object.values(predictionsByRound).forEach(round => {
     round.predictions.sort((a, b) => {
-      const aResults = Array.isArray(a.game.game_results) ? a.game.game_results : [];
-      const bResults = Array.isArray(b.game.game_results) ? b.game.game_results : [];
+      const aResults = a.game.game_results || [];
+      const bResults = b.game.game_results || [];
       
       const aFinished = aResults.some(result => result.is_final) ?? false;
       const bFinished = bResults.some(result => result.is_final) ?? false;
