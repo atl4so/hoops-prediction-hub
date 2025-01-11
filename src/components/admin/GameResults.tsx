@@ -51,7 +51,8 @@ export function GameResults() {
             updated_at: new Date().toISOString()
           })
           .eq('id', existingResult.id)
-          .select();
+          .select()
+          .single();
 
         if (error) throw error;
         result = data;
@@ -67,7 +68,8 @@ export function GameResults() {
               is_final: true
             }
           ])
-          .select();
+          .select()
+          .single();
 
         if (error) throw error;
         result = data;
