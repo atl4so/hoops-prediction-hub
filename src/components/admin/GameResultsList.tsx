@@ -36,53 +36,50 @@ export function GameResultsList() {
       }
 
       if (!editingResult?.id || !homeScore || !awayScore) {
-        console.error('Missing required data:', { gameId: editingResult?.id, homeScore, awayScore });
         throw new Error("Please fill in all fields");
       }
 
       const hasExistingResult = editingResult.game_results?.length > 0;
       let result;
 
-      if (hasExistingResult) {
-        // Update existing result
-        const { data, error } = await supabase
-          .from('game_results')
-          .update({
-            home_score: parseInt(homeScore),
-            away_score: parseInt(awayScore),
-            updated_at: new Date().toISOString()
-          })
-          .eq('game_id', editingResult.id)
-          .select()
-          .maybeSingle();
+      try {
+        if (hasExistingResult) {
+          // Update existing result
+          const { data, error } = await supabase
+            .from('game_results')
+            .update({
+              home_score: parseInt(homeScore),
+              away_score: parseInt(awayScore),
+              updated_at: new Date().toISOString()
+            })
+            .eq('game_id', editingResult.id)
+            .select()
+            .single();
 
-        if (error) {
-          console.error('Update error:', error);
-          throw error;
-        }
-        result = data;
-      } else {
-        // Insert new result
-        const { data, error } = await supabase
-          .from('game_results')
-          .insert({
-            game_id: editingResult.id,
-            home_score: parseInt(homeScore),
-            away_score: parseInt(awayScore),
-            is_final: true
-          })
-          .select()
-          .maybeSingle();
+          if (error) throw error;
+          result = data;
+        } else {
+          // Insert new result
+          const { data, error } = await supabase
+            .from('game_results')
+            .insert({
+              game_id: editingResult.id,
+              home_score: parseInt(homeScore),
+              away_score: parseInt(awayScore),
+              is_final: true
+            })
+            .select()
+            .single();
 
-        if (error) {
-          console.error('Insert error:', error);
-          throw error;
+          if (error) throw error;
+          result = data;
         }
-        result = data;
+
+        return result;
+      } catch (error) {
+        console.error('Database operation error:', error);
+        throw error;
       }
-
-      console.log('Final result set/updated successfully:', result);
-      return result;
     },
     onSuccess: () => {
       toast({ 
