@@ -42,8 +42,6 @@ export function GameResultsList() {
       const hasExistingResult = editingResult.game_results?.length > 0;
 
       try {
-        let result;
-        
         if (hasExistingResult) {
           // Update existing result
           const { data, error } = await supabase
@@ -53,13 +51,15 @@ export function GameResultsList() {
               away_score: parseInt(awayScore),
               updated_at: new Date().toISOString()
             })
-            .eq('game_id', editingResult.id)
             .eq('id', editingResult.game_results[0].id)
             .select()
             .single();
 
-          if (error) throw error;
-          result = data;
+          if (error) {
+            console.error('Error updating game result:', error);
+            throw error;
+          }
+          return data;
         } else {
           // Insert new result
           const { data, error } = await supabase
@@ -73,11 +73,12 @@ export function GameResultsList() {
             .select()
             .single();
 
-          if (error) throw error;
-          result = data;
+          if (error) {
+            console.error('Error inserting game result:', error);
+            throw error;
+          }
+          return data;
         }
-
-        return result;
       } catch (error) {
         console.error('Database operation error:', error);
         throw error;
