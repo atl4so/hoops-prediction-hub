@@ -55,6 +55,7 @@ export function GameResults() {
 
   const updateResult = useMutation({
     mutationFn: async ({ gameId, homeScore, awayScore }: { gameId: string, homeScore: number, awayScore: number }) => {
+      // First check if a result exists
       const { data: existingResult } = await supabase
         .from('game_results')
         .select('id')
@@ -62,6 +63,7 @@ export function GameResults() {
         .maybeSingle();
 
       if (existingResult) {
+        // Update existing result
         const { error } = await supabase
           .from('game_results')
           .update({ 
@@ -69,9 +71,10 @@ export function GameResults() {
             away_score: awayScore,
             is_final: true
           })
-          .eq('game_id', gameId);
+          .eq('game_id', gameId); // Add WHERE clause here
         if (error) throw error;
       } else {
+        // Insert new result
         const { error } = await supabase
           .from('game_results')
           .insert({
