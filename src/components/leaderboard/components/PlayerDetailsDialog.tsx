@@ -104,8 +104,12 @@ export function PlayerDetailsDialog({
             <div className="space-y-2">
               <h4 className="font-semibold">Round Predictions</h4>
               {roundGames.map((game: any) => {
+                // Ensure game_results exists and has at least one entry
+                const gameResult = game.game.game_results?.[0];
+                if (!gameResult) return null;
+
                 const predictedHomeWin = game.prediction_home_score > game.prediction_away_score;
-                const actualHomeWin = game.game.game_results[0].home_score > game.game.game_results[0].away_score;
+                const actualHomeWin = gameResult.home_score > gameResult.away_score;
                 const isCorrect = predictedHomeWin === actualHomeWin;
 
                 return (
