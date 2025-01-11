@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { RankDisplay } from "./components/RankDisplay";
 import { PlayerInfo } from "./components/PlayerInfo";
-import { StatsDisplay } from "./components/StatsDisplay";
 import { PlayerDetailsDialog } from "./components/PlayerDetailsDialog";
 
 interface LeaderboardRowProps {
@@ -18,8 +17,6 @@ interface LeaderboardRowProps {
     avatar_url?: string;
     winner_predictions_correct?: number;
     winner_predictions_total?: number;
-    efficiency_rating?: number;
-    underdog_prediction_rate?: number;
   };
   rank: number;
   isRoundLeaderboard?: boolean;
@@ -80,36 +77,26 @@ export function LeaderboardRow({
         )}
         onClick={handleUserClick}
       >
-        <TableCell className="font-medium py-4 px-4">
+        <TableCell className="font-medium py-4 px-4 w-[80px]">
           <RankDisplay rank={rank} />
         </TableCell>
 
-        <TableCell className="py-4">
+        <TableCell className="py-4 w-[200px]">
           <PlayerInfo 
             displayName={player.display_name}
             avatarUrl={player.avatar_url}
           />
         </TableCell>
 
-        <TableCell className="text-right py-4 px-4">
-          <div className="space-y-1">
-            <span className="font-bold text-base">{player.total_points}</span>
-            {isMobile && winnerPercentage > 0 && (
-              <p className="text-xs text-muted-foreground">
-                Winner: {winnerPercentage}%
-              </p>
-            )}
-          </div>
+        <TableCell className="text-right py-4 px-4 w-[120px]">
+          <span className="font-bold text-base">{player.total_points}</span>
         </TableCell>
 
-        <StatsDisplay
-          winnerPercentage={winnerPercentage}
-          isRoundLeaderboard={isRoundLeaderboard}
-          efficiencyRating={player.efficiency_rating}
-          underdogRate={player.underdog_prediction_rate}
-        />
+        <TableCell className="text-right py-4 px-4 w-[120px]">
+          <span className="font-semibold text-base">{winnerPercentage}%</span>
+        </TableCell>
 
-        <TableCell className="text-right py-4 px-4">
+        <TableCell className="text-right py-4 px-4 w-[100px]">
           <span className="font-semibold text-base">{player.total_predictions}</span>
         </TableCell>
       </motion.tr>

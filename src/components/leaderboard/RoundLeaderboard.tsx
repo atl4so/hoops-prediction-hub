@@ -7,8 +7,6 @@ import { Card } from "@/components/ui/card";
 import { useState } from "react";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 type SortField = 'points' | 'winner' | 'games';
 type SortDirection = 'asc' | 'desc';
@@ -89,7 +87,7 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
     const isActive = sortField === field;
     return (
       <div 
-        className="flex items-center gap-1 cursor-pointer group"
+        className="flex items-center gap-1 cursor-pointer group justify-end"
         onClick={() => handleSort(field)}
       >
         {children}
@@ -135,15 +133,15 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent border-b-2">
-              <TableHead className="w-20 font-bold text-base">Rank</TableHead>
-              <TableHead className="font-bold text-base">Player</TableHead>
-              <TableHead className="text-right font-bold text-base">
+              <TableHead className="w-[80px] font-bold text-base">Rank</TableHead>
+              <TableHead className="w-[200px] font-bold text-base">Player</TableHead>
+              <TableHead className="w-[120px] text-right font-bold text-base">
                 <SortHeader field="points">Points</SortHeader>
               </TableHead>
-              <TableHead className="text-right hidden lg:table-cell font-bold text-base">
+              <TableHead className="w-[120px] text-right font-bold text-base">
                 <SortHeader field="winner">Winner %</SortHeader>
               </TableHead>
-              <TableHead className="text-right font-bold text-base">
+              <TableHead className="w-[100px] text-right font-bold text-base">
                 <SortHeader field="games">Games</SortHeader>
               </TableHead>
             </TableRow>
@@ -161,7 +159,7 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
             ))}
             {!sortedData?.length && (
               <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center">
+                <TableCell colSpan={5} className="h-24 text-center">
                   No predictions found for this round
                 </TableCell>
               </TableRow>
