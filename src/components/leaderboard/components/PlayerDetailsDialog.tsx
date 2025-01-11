@@ -69,7 +69,7 @@ export function PlayerDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
@@ -87,7 +87,7 @@ export function PlayerDetailsDialog({
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-6">
+        <div className="space-y-6 py-4">
           <div className="grid grid-cols-2 gap-4">
             <StatCard 
               title="Total Points" 
@@ -116,8 +116,8 @@ export function PlayerDetailsDialog({
                   <div 
                     key={game.game.id} 
                     className={cn(
-                      "text-sm py-1",
-                      isCorrect ? "text-green-600" : "text-red-600"
+                      "text-sm py-2 px-3 rounded-md",
+                      isCorrect ? "text-green-600 bg-green-50" : "text-red-600 bg-red-50"
                     )}
                   >
                     {game.game.home_team.name} vs {game.game.away_team.name}
