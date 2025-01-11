@@ -21,16 +21,19 @@ export function GameResultItem({ result, onEdit }: GameResultItemProps) {
         </h4>
         {finalResult && (
           <p className="text-sm text-muted-foreground">
-            Current result: {finalResult.home_score} - {finalResult.away_score}
+            Final Score: {finalResult.home_score} - {finalResult.away_score}
           </p>
         )}
       </div>
       <Button 
         variant="outline"
         onClick={() => onEdit(result)}
-        className="text-[#8B5CF6] hover:text-[#7C3AED] hover:bg-[#8B5CF6]/10"
+        className={hasResult 
+          ? "text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50"
+          : "text-green-600 hover:text-green-700 hover:bg-green-50"
+        }
       >
-        {finalResult ? 'Update Result' : 'Set Final Result'}
+        {hasResult ? 'Update Result' : 'Set Final Result'}
       </Button>
     </div>
   );

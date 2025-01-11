@@ -44,6 +44,7 @@ export function GameResultsList() {
       try {
         if (hasExistingResult) {
           // Update existing result
+          console.log('Updating existing result...');
           const { data, error } = await supabase
             .from('game_results')
             .update({
@@ -59,9 +60,11 @@ export function GameResultsList() {
             console.error('Error updating game result:', error);
             throw error;
           }
+          console.log('Successfully updated result:', data);
           return data;
         } else {
-          // Insert new result
+          // Set new final result
+          console.log('Setting new final result...');
           const { data, error } = await supabase
             .from('game_results')
             .insert({
@@ -74,9 +77,10 @@ export function GameResultsList() {
             .single();
 
           if (error) {
-            console.error('Error inserting game result:', error);
+            console.error('Error setting final result:', error);
             throw error;
           }
+          console.log('Successfully set final result:', data);
           return data;
         }
       } catch (error) {
@@ -89,7 +93,7 @@ export function GameResultsList() {
         title: "Success", 
         description: editingResult.game_results?.length > 0 
           ? "Game result updated successfully"
-          : "Game result set successfully",
+          : "Final result set successfully",
       });
       queryClient.invalidateQueries({ queryKey: ['game-results'] });
       setEditingResult(null);

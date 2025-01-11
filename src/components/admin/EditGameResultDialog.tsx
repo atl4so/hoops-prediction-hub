@@ -35,13 +35,14 @@ export function EditGameResultDialog({
 
   const hasResult = result.game_results?.length > 0;
   const finalResult = hasResult ? result.game_results[0] : null;
+  const isSettingFinalResult = !hasResult;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {finalResult ? 'Update Final Result' : 'Set Final Result'}
+            {isSettingFinalResult ? 'Set Final Result' : 'Update Game Result'}
           </DialogTitle>
         </DialogHeader>
         
@@ -61,18 +62,30 @@ export function EditGameResultDialog({
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <Input
-              type="number"
-              placeholder="Home Score"
-              value={homeScore}
-              onChange={(e) => onHomeScoreChange(e.target.value)}
-            />
-            <Input
-              type="number"
-              placeholder="Away Score"
-              value={awayScore}
-              onChange={(e) => onAwayScoreChange(e.target.value)}
-            />
+            <div>
+              <label htmlFor="homeScore" className="text-sm text-muted-foreground block mb-2">
+                {result.home_team.name} Score
+              </label>
+              <Input
+                id="homeScore"
+                type="number"
+                value={homeScore}
+                onChange={(e) => onHomeScoreChange(e.target.value)}
+                placeholder="Home Score"
+              />
+            </div>
+            <div>
+              <label htmlFor="awayScore" className="text-sm text-muted-foreground block mb-2">
+                {result.away_team.name} Score
+              </label>
+              <Input
+                id="awayScore"
+                type="number"
+                value={awayScore}
+                onChange={(e) => onAwayScoreChange(e.target.value)}
+                placeholder="Away Score"
+              />
+            </div>
           </div>
 
           <Button 
@@ -80,7 +93,10 @@ export function EditGameResultDialog({
             onClick={onUpdate}
             disabled={isPending}
           >
-            {isPending ? "Saving..." : (finalResult ? "Update Result" : "Set Final Result")}
+            {isPending 
+              ? "Saving..." 
+              : (isSettingFinalResult ? "Set Final Result" : "Update Result")
+            }
           </Button>
         </div>
       </DialogContent>
