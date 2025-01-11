@@ -181,7 +181,6 @@ export type Database = {
           away_winner_predictions_total: number | null
           created_at: string
           display_name: string
-          efficiency_rating: number | null
           email: string
           highest_game_points: number | null
           highest_round_points: number | null
@@ -194,10 +193,8 @@ export type Database = {
           over_under_predictions_correct: number | null
           over_under_predictions_total: number | null
           points_per_game: number | null
-          risk_taking_index: number | null
           total_points: number | null
           total_predictions: number | null
-          underdog_prediction_rate: number | null
           updated_at: string
           winner_predictions_correct: number | null
           winner_predictions_total: number | null
@@ -208,7 +205,6 @@ export type Database = {
           away_winner_predictions_total?: number | null
           created_at?: string
           display_name: string
-          efficiency_rating?: number | null
           email: string
           highest_game_points?: number | null
           highest_round_points?: number | null
@@ -221,10 +217,8 @@ export type Database = {
           over_under_predictions_correct?: number | null
           over_under_predictions_total?: number | null
           points_per_game?: number | null
-          risk_taking_index?: number | null
           total_points?: number | null
           total_predictions?: number | null
-          underdog_prediction_rate?: number | null
           updated_at?: string
           winner_predictions_correct?: number | null
           winner_predictions_total?: number | null
@@ -235,7 +229,6 @@ export type Database = {
           away_winner_predictions_total?: number | null
           created_at?: string
           display_name?: string
-          efficiency_rating?: number | null
           email?: string
           highest_game_points?: number | null
           highest_round_points?: number | null
@@ -248,10 +241,8 @@ export type Database = {
           over_under_predictions_correct?: number | null
           over_under_predictions_total?: number | null
           points_per_game?: number | null
-          risk_taking_index?: number | null
           total_points?: number | null
           total_predictions?: number | null
-          underdog_prediction_rate?: number | null
           updated_at?: string
           winner_predictions_correct?: number | null
           winner_predictions_total?: number | null
