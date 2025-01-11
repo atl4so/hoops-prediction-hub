@@ -2,11 +2,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PlayerDetailsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   player: {
+    user_id?: string;
     display_name: string;
     avatar_url?: string;
     total_points: number;
@@ -17,9 +20,12 @@ interface PlayerDetailsDialogProps {
     away_winner_predictions_total?: number;
     winner_predictions_correct?: number;
     winner_predictions_total?: number;
+    efficiency_rating?: number;
+    underdog_prediction_rate?: number;
   };
   rank: number;
   isRoundLeaderboard?: boolean;
+  roundId?: string;
 }
 
 export function PlayerDetailsDialog({
@@ -27,8 +33,37 @@ export function PlayerDetailsDialog({
   onOpenChange,
   player,
   rank,
-  isRoundLeaderboard = false
+  isRoundLeaderboard = false,
+  roundId
 }: PlayerDetailsDialogProps) {
+  const { data: roundDetails } = useQuery({
+    queryKey: ["roundDetails", roundId, player.user_id],
+    queryFn: async () => {
+      if (!roundId || !player.user_id) return null;
+      
+      const { data } = await supabase
+        .from('round_user_stats')
+        .select(`
+          total_points,
+          total_predictions,
+          finished_games,
+          winner_predictions_correct,
+          winner_predictions_total,
+          efficiency_rating,
+          underdog_prediction_rate,
+          round:rounds!round_user_stats_round_id_fkey (
+            name
+          )
+        `)
+        .eq('round_id', roundId)
+        .eq('user_id', player.user_id)
+        .single();
+      
+      return data;
+    },
+    enabled: isRoundLeaderboard && !!roundId && !!player.user_id
+  });
+
   const calculatePercentage = (correct?: number, total?: number) => {
     if (!correct || !total) return 0;
     return Math.round((correct / total) * 100);
@@ -50,7 +85,12 @@ export function PlayerDetailsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Player Details</DialogTitle>
+          <DialogTitle>
+            {isRoundLeaderboard && roundDetails 
+              ? `${player.display_name}'s Performance - ${roundDetails.round.name}`
+              : 'Player Details'
+            }
+          </DialogTitle>
         </DialogHeader>
         <div className="space-y-6">
           <div className="flex items-center gap-4">
@@ -70,7 +110,23 @@ export function PlayerDetailsDialog({
               title="Total Points" 
               value={player.total_points}
             />
-            {!isRoundLeaderboard && (
+            {isRoundLeaderboard && roundDetails ? (
+              <>
+                <StatCard 
+                  title="Efficiency Rating" 
+                  value={`${Math.round(roundDetails.efficiency_rating)}%`}
+                />
+                <StatCard 
+                  title="Underdog Rate" 
+                  value={`${Math.round(roundDetails.underdog_prediction_rate)}%`}
+                />
+                <StatCard 
+                  title="Winner Accuracy" 
+                  value={`${calculatePercentage(roundDetails.winner_predictions_correct, roundDetails.winner_predictions_total)}%`}
+                  subtitle={`${roundDetails.winner_predictions_correct} of ${roundDetails.winner_predictions_total}`}
+                />
+              </>
+            ) : (
               <>
                 <StatCard 
                   title="Winner %" 

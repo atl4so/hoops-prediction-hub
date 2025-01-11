@@ -7,8 +7,10 @@ import { Card } from "@/components/ui/card";
 import { useState } from "react";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
-type SortField = 'points' | 'winner' | 'home' | 'away' | 'games';
+type SortField = 'points' | 'winner' | 'home' | 'away' | 'games' | 'ppg';
 type SortDirection = 'asc' | 'desc';
 
 export function AllTimeLeaderboard() {
@@ -31,7 +33,8 @@ export function AllTimeLeaderboard() {
             home_winner_predictions_correct,
             home_winner_predictions_total,
             away_winner_predictions_correct,
-            away_winner_predictions_total
+            away_winner_predictions_total,
+            points_per_game
           ),
           game:games!inner (
             id
@@ -51,7 +54,7 @@ export function AllTimeLeaderboard() {
             avatar_url: pred.user.avatar_url,
             total_points: 0,
             total_predictions: 0,
-            points_per_game: 0,
+            points_per_game: pred.user.points_per_game,
             winner_predictions_correct: pred.user.winner_predictions_correct,
             winner_predictions_total: pred.user.winner_predictions_total,
             home_winner_predictions_correct: pred.user.home_winner_predictions_correct,
@@ -65,15 +68,7 @@ export function AllTimeLeaderboard() {
         return acc;
       }, {});
 
-      // Calculate points per game and convert to array
-      const leaderboard = Object.values(userStats).map((user: any) => ({
-        ...user,
-        points_per_game: user.total_predictions > 0 
-          ? user.total_points / user.total_predictions 
-          : 0
-      }));
-
-      return leaderboard;
+      return Object.values(userStats);
     }
   });
 
@@ -102,6 +97,9 @@ export function AllTimeLeaderboard() {
           break;
         case 'games':
           comparison = a.total_predictions - b.total_predictions;
+          break;
+        case 'ppg':
+          comparison = a.points_per_game - b.points_per_game;
           break;
       }
       
@@ -163,13 +161,41 @@ export function AllTimeLeaderboard() {
               <TableHead className="w-20 font-bold text-base">Rank</TableHead>
               <TableHead className="font-bold text-base">Player</TableHead>
               <TableHead className="text-right font-bold text-base">
-                <SortHeader field="points">Points</SortHeader>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-full justify-start">
+                      <SortHeader field="points">Points</SortHeader>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => handleSort('points')}>
+                      Total Points
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleSort('ppg')}>
+                      Points per Game
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TableHead>
               <TableHead className="text-right hidden lg:table-cell font-bold text-base">
                 <SortHeader field="winner">Winner %</SortHeader>
               </TableHead>
               <TableHead className="text-right hidden xl:table-cell font-bold text-base">
-                <SortHeader field="home">Home/Away %</SortHeader>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-full justify-start">
+                      Home/Away
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => handleSort('home')}>
+                      Home Win %
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleSort('away')}>
+                      Away Win %
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TableHead>
               <TableHead className="text-right font-bold text-base">
                 <SortHeader field="games">Games</SortHeader>
