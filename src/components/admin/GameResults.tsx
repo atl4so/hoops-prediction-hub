@@ -25,69 +25,32 @@ export function GameResults() {
       homeScore: string; 
       awayScore: string; 
     }) => {
-      console.log('Submitting game result:', { gameId, homeScore, awayScore });
+      console.log('Setting final result for game:', { gameId, homeScore, awayScore });
       
       const { data: session } = await supabase.auth.getSession();
       if (!session?.session?.user || session.session.user.email !== 'likasvy@gmail.com') {
         throw new Error('Unauthorized');
       }
 
-      // Check if result already exists
-      const { data: existingResult, error: checkError } = await supabase
+      // Insert new result
+      const { data, error } = await supabase
         .from('game_results')
-        .select('id')
-        .eq('game_id', gameId)
-        .maybeSingle();
+        .insert([{
+          game_id: gameId,
+          home_score: parseInt(homeScore),
+          away_score: parseInt(awayScore),
+          is_final: true
+        }])
+        .select()
+        .single();
 
-      if (checkError) {
-        console.error('Error checking existing result:', checkError);
-        throw checkError;
+      if (error) {
+        console.error('Error setting game result:', error);
+        throw error;
       }
 
-      let result;
-      if (existingResult) {
-        // Update existing result
-        const { data, error } = await supabase
-          .from('game_results')
-          .update({
-            home_score: parseInt(homeScore),
-            away_score: parseInt(awayScore),
-            is_final: true,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', existingResult.id)
-          .select()
-          .maybeSingle();
-
-        if (error) {
-          console.error('Error updating game result:', error);
-          throw error;
-        }
-        result = data;
-      } else {
-        // Insert new result
-        const { data, error } = await supabase
-          .from('game_results')
-          .insert([
-            {
-              game_id: gameId,
-              home_score: parseInt(homeScore),
-              away_score: parseInt(awayScore),
-              is_final: true
-            }
-          ])
-          .select()
-          .maybeSingle();
-
-        if (error) {
-          console.error('Error inserting game result:', error);
-          throw error;
-        }
-        result = data;
-      }
-
-      console.log('Game result submitted successfully:', result);
-      return result;
+      console.log('Game result set successfully:', data);
+      return data;
     },
     onMutate: () => {
       setIsPending(true);

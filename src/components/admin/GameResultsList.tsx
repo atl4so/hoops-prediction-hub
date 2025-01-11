@@ -40,7 +40,13 @@ export function GameResultsList() {
       }
 
       // Check if game already has a result
-      if (editingResult.game_results?.length > 0) {
+      const { data: existingResult } = await supabase
+        .from('game_results')
+        .select('id')
+        .eq('game_id', editingResult.id)
+        .maybeSingle();
+
+      if (existingResult) {
         throw new Error("This game already has a final result");
       }
 
