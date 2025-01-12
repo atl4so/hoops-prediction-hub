@@ -55,7 +55,9 @@ export function GameResults() {
 
   const updateResult = useMutation({
     mutationFn: async ({ gameId, homeScore, awayScore }: { gameId: string, homeScore: number, awayScore: number }) => {
-      const { error } = await supabase
+      console.log('Updating game result:', { gameId, homeScore, awayScore });
+      
+      const { data, error } = await supabase
         .rpc('update_game_result', {
           game_id_param: gameId,
           home_score_param: homeScore,
@@ -66,6 +68,8 @@ export function GameResults() {
         console.error('Error in update_game_result:', error);
         throw error;
       }
+
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['games-with-results'] });
