@@ -55,25 +55,17 @@ export function GameResults() {
 
   const updateResult = useMutation({
     mutationFn: async ({ gameId, homeScore, awayScore }: { gameId: string, homeScore: number, awayScore: number }) => {
-      // First delete any existing result
-      const { error: deleteError } = await supabase
-        .from('game_results')
-        .delete()
-        .eq('game_id', gameId);
-
-      if (deleteError) throw deleteError;
-
-      // Then insert new result
-      const { error: insertError } = await supabase
-        .from('game_results')
-        .insert({
-          game_id: gameId,
-          home_score: homeScore,
-          away_score: awayScore,
-          is_final: true
+      const { error } = await supabase
+        .rpc('update_game_result', {
+          game_id_param: gameId,
+          home_score_param: homeScore,
+          away_score_param: awayScore
         });
 
-      if (insertError) throw insertError;
+      if (error) {
+        console.error('Error in update_game_result:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['games-with-results'] });
