@@ -15,6 +15,7 @@ interface UserStats {
   user_id: string;
   efficiency_rating: number;
   underdog_prediction_rate: number;
+  underdog_picks: number;
 }
 
 interface UserPrediction {
@@ -76,6 +77,18 @@ export function AllTimeLeaderboard() {
         return acc;
       }, {});
 
+      // Get underdog picks for each user
+      const { data: underdogStats, error: underdogError } = await supabase
+        .rpc('get_user_all_time_underdog_picks');
+
+      if (underdogError) throw underdogError;
+
+      // Create a map of underdog picks
+      const underdogMap = underdogStats.reduce((acc: Record<string, number>, stat: any) => {
+        acc[stat.user_id] = stat.total_underdog_picks;
+        return acc;
+      }, {});
+
       // Aggregate user data
       const aggregatedStats = (predictions as UserPrediction[]).reduce((acc: Record<string, any>, pred) => {
         const userId = pred.user.id;
@@ -88,7 +101,7 @@ export function AllTimeLeaderboard() {
             total_predictions: 0,
             points_per_game: pred.user.points_per_game,
             efficiency_rating: statsMap[userId]?.efficiency_rating || 0,
-            underdog_prediction_rate: statsMap[userId]?.underdog_prediction_rate || 0,
+            underdog_picks: underdogMap[userId] || 0,
             winner_predictions_correct: pred.user.winner_predictions_correct,
             winner_predictions_total: pred.user.winner_predictions_total
           };
@@ -196,7 +209,7 @@ export function AllTimeLeaderboard() {
                 <SortHeader field="efficiency">Efficiency</SortHeader>
               </TableHead>
               <TableHead className="w-[120px] text-right font-bold text-base">
-                <SortHeader field="underdog">Underdog %</SortHeader>
+                <SortHeader field="underdog">Underdog Picks</SortHeader>
               </TableHead>
               <TableHead className="w-[120px] text-right font-bold text-base">
                 <SortHeader field="winner">Winner %</SortHeader>
@@ -214,7 +227,7 @@ export function AllTimeLeaderboard() {
                   ...player,
                   ppg: player.points_per_game,
                   efficiency: player.efficiency_rating,
-                  underdog_rate: player.underdog_prediction_rate
+                  underdog_picks: player.underdog_picks
                 }}
                 rank={index + 1}
                 index={index}

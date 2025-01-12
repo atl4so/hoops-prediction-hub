@@ -19,7 +19,7 @@ interface LeaderboardRowProps {
     winner_predictions_total?: number;
     ppg?: number;
     efficiency?: number;
-    underdog_rate?: number;
+    underdog_picks?: number;
   };
   rank: number;
   isRoundLeaderboard?: boolean;
@@ -104,7 +104,7 @@ export function LeaderboardRow({
         </TableCell>
 
         <TableCell className="text-right py-4 px-4 w-[120px]">
-          <span className="font-semibold text-base">{player.underdog_rate?.toFixed(1) || '0.0'}%</span>
+          <span className="font-semibold text-base">{player.underdog_picks || 0}</span>
         </TableCell>
 
         <TableCell className="text-right py-4 px-4 w-[120px]">
