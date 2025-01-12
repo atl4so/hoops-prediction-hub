@@ -55,7 +55,6 @@ export function GameResults() {
 
   const updateResult = useMutation({
     mutationFn: async ({ gameId, homeScore, awayScore }: { gameId: string, homeScore: number, awayScore: number }) => {
-      console.log('Updating game result:', { gameId, homeScore, awayScore });
       const { error } = await supabase
         .rpc('update_game_result', {
           game_id_param: gameId,
