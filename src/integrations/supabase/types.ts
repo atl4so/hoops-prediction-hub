@@ -626,6 +626,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      update_game_result: {
+        Args: {
+          game_id_param: string
+          home_score_param: number
+          away_score_param: number
+        }
+        Returns: undefined
+      }
       update_profile_stats: {
         Args: {
           user_id_arg: string
@@ -643,6 +651,15 @@ export type Database = {
           user_id_arg: string
         }
         Returns: undefined
+      }
+      upsert_game_result: {
+        Args: {
+          p_game_id: string
+          p_home_score: number
+          p_away_score: number
+          p_is_final: boolean
+        }
+        Returns: Json
       }
     }
     Enums: {

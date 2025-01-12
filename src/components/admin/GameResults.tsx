@@ -55,36 +55,25 @@ export function GameResults() {
 
   const updateResult = useMutation({
     mutationFn: async ({ gameId, homeScore, awayScore }: { gameId: string, homeScore: number, awayScore: number }) => {
-      // First check if a result exists
-      const { data: existingResult } = await supabase
+      // First delete any existing result
+      const { error: deleteError } = await supabase
         .from('game_results')
-        .select('id')
-        .eq('game_id', gameId)
-        .maybeSingle();
+        .delete()
+        .eq('game_id', gameId);
 
-      if (existingResult) {
-        // Update existing result
-        const { error } = await supabase
-          .from('game_results')
-          .update({ 
-            home_score: homeScore,
-            away_score: awayScore,
-            is_final: true
-          })
-          .eq('game_id', gameId); // Add WHERE clause here
-        if (error) throw error;
-      } else {
-        // Insert new result
-        const { error } = await supabase
-          .from('game_results')
-          .insert({
-            game_id: gameId,
-            home_score: homeScore,
-            away_score: awayScore,
-            is_final: true
-          });
-        if (error) throw error;
-      }
+      if (deleteError) throw deleteError;
+
+      // Then insert new result
+      const { error: insertError } = await supabase
+        .from('game_results')
+        .insert({
+          game_id: gameId,
+          home_score: homeScore,
+          away_score: awayScore,
+          is_final: true
+        });
+
+      if (insertError) throw insertError;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['games-with-results'] });
