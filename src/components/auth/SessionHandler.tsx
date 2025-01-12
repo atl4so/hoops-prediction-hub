@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { QueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { clearAuthSession, verifySession } from '@/utils/auth';
+import { clearAuthSession } from '@/utils/auth';
 import { toast } from "sonner";
 
 interface SessionHandlerProps {
@@ -12,6 +13,7 @@ interface SessionHandlerProps {
 export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     let mounted = true;
@@ -28,6 +30,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
             setIsAuthenticated(false);
             setIsLoading(false);
             await clearAuthSession();
+            navigate('/login');
             toast.error("Session error. Please try logging in again.");
           }
           return;
@@ -38,6 +41,21 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
           if (mounted) {
             setIsAuthenticated(false);
             setIsLoading(false);
+            navigate('/login');
+          }
+          return;
+        }
+
+        // Verify the session is still valid
+        const { error: refreshError } = await supabase.auth.refreshSession();
+        if (refreshError) {
+          console.error('Session refresh error:', refreshError);
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+            await clearAuthSession();
+            navigate('/login');
+            toast.error("Session expired. Please log in again.");
           }
           return;
         }
@@ -53,6 +71,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
           setIsAuthenticated(false);
           setIsLoading(false);
           await clearAuthSession();
+          navigate('/login');
           toast.error("Session verification failed. Please try logging in again.");
         }
       }
@@ -68,11 +87,12 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
         
         console.log('Auth state changed:', event, session?.user?.id);
         
-        if (event === 'SIGNED_OUT') {
+        if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
           setIsAuthenticated(false);
           setIsLoading(false);
           queryClient.clear();
-        } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          navigate('/login');
+        } else if (event === 'SIGNED_IN') {
           if (session) {
             setIsAuthenticated(true);
             setIsLoading(false);
@@ -81,6 +101,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
             setIsAuthenticated(false);
             setIsLoading(false);
             await clearAuthSession();
+            navigate('/login');
           }
         }
       });
@@ -97,7 +118,7 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
         authListener.subscription.unsubscribe();
       }
     };
-  }, [queryClient]);
+  }, [queryClient, navigate]);
 
   if (isLoading) {
     return (

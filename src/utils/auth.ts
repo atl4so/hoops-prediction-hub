@@ -10,6 +10,8 @@ export const clearAuthSession = async () => {
     
     // Clear any local storage items
     localStorage.removeItem('supabase.auth.token');
+    localStorage.removeItem('supabase.auth.expires_at');
+    localStorage.removeItem('supabase.auth.refresh_token');
     sessionStorage.clear();
   } catch (error) {
     console.error('Session cleanup error:', error);
@@ -28,6 +30,13 @@ export const verifySession = async () => {
     
     if (!session) {
       console.log('No active session found');
+      return null;
+    }
+
+    // Try to refresh the session
+    const { error: refreshError } = await supabase.auth.refreshSession();
+    if (refreshError) {
+      console.error('Session refresh error:', refreshError);
       return null;
     }
 
