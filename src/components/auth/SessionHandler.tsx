@@ -28,7 +28,10 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
             setIsAuthenticated(false);
             setIsLoading(false);
             await clearAuthSession();
-            toast.error("Session error. Please try logging in again.");
+            // Only show error toast for non-refresh token errors
+            if (error.message !== "Invalid Refresh Token: Refresh Token Not Found") {
+              toast.error("Session error. Please try logging in again.");
+            }
           }
           return;
         }
@@ -68,20 +71,18 @@ export const SessionHandler = ({ children, queryClient }: SessionHandlerProps) =
         
         console.log('Auth state changed:', event, session?.user?.id);
         
-        if (event === 'SIGNED_OUT') {
-          setIsAuthenticated(false);
+        if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+          setIsAuthenticated(!!session);
           setIsLoading(false);
-          queryClient.clear();
-        } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          if (session) {
-            setIsAuthenticated(true);
-            setIsLoading(false);
-            queryClient.invalidateQueries();
+          if (!session) {
+            queryClient.clear();
           } else {
-            setIsAuthenticated(false);
-            setIsLoading(false);
-            await clearAuthSession();
+            queryClient.invalidateQueries();
           }
+        } else if (event === 'SIGNED_IN') {
+          setIsAuthenticated(true);
+          setIsLoading(false);
+          queryClient.invalidateQueries();
         }
       });
       

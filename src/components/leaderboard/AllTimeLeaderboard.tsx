@@ -18,6 +18,7 @@ export function AllTimeLeaderboard() {
   const { data: leaderboardData, isLoading } = useQuery({
     queryKey: ["allTimeLeaderboard"],
     queryFn: async () => {
+      // First get all predictions with user info
       const { data: predictions, error } = await supabase
         .from("predictions")
         .select(`
@@ -28,9 +29,7 @@ export function AllTimeLeaderboard() {
             avatar_url,
             winner_predictions_correct,
             winner_predictions_total,
-            points_per_game,
-            efficiency_rating,
-            underdog_prediction_rate
+            points_per_game
           ),
           game:games!inner (
             id
@@ -39,6 +38,25 @@ export function AllTimeLeaderboard() {
         .not('points_earned', 'is', null);
 
       if (error) throw error;
+
+      // Get efficiency and underdog rates from round_user_stats
+      const { data: userStats, error: statsError } = await supabase
+        .from("round_user_stats")
+        .select('user_id, efficiency_rating, underdog_prediction_rate')
+        .order('efficiency_rating', { ascending: false });
+
+      if (statsError) throw statsError;
+
+      // Create a map of user stats
+      const statsMap = userStats.reduce((acc: any, stat) => {
+        if (!acc[stat.user_id]) {
+          acc[stat.user_id] = {
+            efficiency_rating: stat.efficiency_rating,
+            underdog_prediction_rate: stat.underdog_prediction_rate
+          };
+        }
+        return acc;
+      }, {});
 
       // Aggregate user data
       const userStats = predictions.reduce((acc: any, pred) => {
@@ -51,8 +69,8 @@ export function AllTimeLeaderboard() {
             total_points: 0,
             total_predictions: 0,
             points_per_game: pred.user.points_per_game,
-            efficiency_rating: pred.user.efficiency_rating,
-            underdog_prediction_rate: pred.user.underdog_prediction_rate,
+            efficiency_rating: statsMap[userId]?.efficiency_rating || 0,
+            underdog_prediction_rate: statsMap[userId]?.underdog_prediction_rate || 0,
             winner_predictions_correct: pred.user.winner_predictions_correct,
             winner_predictions_total: pred.user.winner_predictions_total
           };
