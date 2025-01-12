@@ -17,6 +17,9 @@ interface LeaderboardRowProps {
     avatar_url?: string;
     winner_predictions_correct?: number;
     winner_predictions_total?: number;
+    ppg?: number;
+    efficiency?: number;
+    underdog_rate?: number;
   };
   rank: number;
   isRoundLeaderboard?: boolean;
@@ -90,6 +93,18 @@ export function LeaderboardRow({
 
         <TableCell className="text-right py-4 px-4 w-[120px]">
           <span className="font-bold text-base">{player.total_points}</span>
+        </TableCell>
+
+        <TableCell className="text-right py-4 px-4 w-[120px]">
+          <span className="font-semibold text-base">{player.ppg?.toFixed(1) || '0.0'}</span>
+        </TableCell>
+
+        <TableCell className="text-right py-4 px-4 w-[120px]">
+          <span className="font-semibold text-base">{player.efficiency?.toFixed(1) || '0.0'}</span>
+        </TableCell>
+
+        <TableCell className="text-right py-4 px-4 w-[120px]">
+          <span className="font-semibold text-base">{player.underdog_rate?.toFixed(1) || '0.0'}%</span>
         </TableCell>
 
         <TableCell className="text-right py-4 px-4 w-[120px]">

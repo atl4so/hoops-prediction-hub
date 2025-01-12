@@ -8,7 +8,7 @@ import { useState } from "react";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type SortField = 'points' | 'winner' | 'games' | 'ppg';
+type SortField = 'points' | 'winner' | 'games' | 'ppg' | 'efficiency' | 'underdog';
 type SortDirection = 'asc' | 'desc';
 
 export function AllTimeLeaderboard() {
@@ -28,7 +28,9 @@ export function AllTimeLeaderboard() {
             avatar_url,
             winner_predictions_correct,
             winner_predictions_total,
-            points_per_game
+            points_per_game,
+            efficiency_rating,
+            underdog_prediction_rate
           ),
           game:games!inner (
             id
@@ -49,6 +51,8 @@ export function AllTimeLeaderboard() {
             total_points: 0,
             total_predictions: 0,
             points_per_game: pred.user.points_per_game,
+            efficiency_rating: pred.user.efficiency_rating,
+            underdog_prediction_rate: pred.user.underdog_prediction_rate,
             winner_predictions_correct: pred.user.winner_predictions_correct,
             winner_predictions_total: pred.user.winner_predictions_total
           };
@@ -79,7 +83,13 @@ export function AllTimeLeaderboard() {
           comparison = a.total_predictions - b.total_predictions;
           break;
         case 'ppg':
-          comparison = a.points_per_game - b.points_per_game;
+          comparison = (a.points_per_game || 0) - (b.points_per_game || 0);
+          break;
+        case 'efficiency':
+          comparison = (a.efficiency_rating || 0) - (b.efficiency_rating || 0);
+          break;
+        case 'underdog':
+          comparison = (a.underdog_prediction_rate || 0) - (b.underdog_prediction_rate || 0);
           break;
       }
       
@@ -144,7 +154,16 @@ export function AllTimeLeaderboard() {
                 <SortHeader field="points">Points</SortHeader>
               </TableHead>
               <TableHead className="w-[120px] text-right font-bold text-base">
-                <SortHeader field="winner">Winner</SortHeader>
+                <SortHeader field="ppg">PPG</SortHeader>
+              </TableHead>
+              <TableHead className="w-[120px] text-right font-bold text-base">
+                <SortHeader field="efficiency">Efficiency</SortHeader>
+              </TableHead>
+              <TableHead className="w-[120px] text-right font-bold text-base">
+                <SortHeader field="underdog">Underdog %</SortHeader>
+              </TableHead>
+              <TableHead className="w-[120px] text-right font-bold text-base">
+                <SortHeader field="winner">Winner %</SortHeader>
               </TableHead>
               <TableHead className="w-[100px] text-right font-bold text-base">
                 <SortHeader field="games">Games</SortHeader>
@@ -155,7 +174,12 @@ export function AllTimeLeaderboard() {
             {sortedData.map((player: any, index: number) => (
               <LeaderboardRow
                 key={player.user_id}
-                player={player}
+                player={{
+                  ...player,
+                  ppg: player.points_per_game,
+                  efficiency: player.efficiency_rating,
+                  underdog_rate: player.underdog_prediction_rate
+                }}
                 rank={index + 1}
                 index={index}
               />
