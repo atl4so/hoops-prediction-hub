@@ -77,15 +77,22 @@ export function AllTimeLeaderboard() {
         return acc;
       }, {});
 
-      // Get underdog picks for each user
-      const { data: underdogStats, error: underdogError } = await supabase
-        .rpc('get_user_all_time_underdog_picks');
+      // Get unique user IDs from predictions
+      const userIds = [...new Set(predictions.map((p: UserPrediction) => p.user.id))];
 
-      if (underdogError) throw underdogError;
+      // Get underdog picks for each user using Promise.all
+      const underdogResults = await Promise.all(
+        userIds.map(userId =>
+          supabase
+            .rpc('get_user_all_time_underdog_picks', { user_id_param: userId })
+            .single()
+        )
+      );
 
       // Create a map of underdog picks
-      const underdogMap = underdogStats.reduce((acc: Record<string, number>, stat: any) => {
-        acc[stat.user_id] = stat.total_underdog_picks;
+      const underdogMap = userIds.reduce((acc: Record<string, number>, userId, index) => {
+        const result = underdogResults[index].data;
+        acc[userId] = result?.total_underdog_picks || 0;
         return acc;
       }, {});
 
