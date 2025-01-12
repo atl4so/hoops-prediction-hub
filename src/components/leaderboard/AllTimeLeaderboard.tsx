@@ -11,6 +11,27 @@ import { cn } from "@/lib/utils";
 type SortField = 'points' | 'winner' | 'games' | 'ppg' | 'efficiency' | 'underdog';
 type SortDirection = 'asc' | 'desc';
 
+interface UserStats {
+  user_id: string;
+  efficiency_rating: number;
+  underdog_prediction_rate: number;
+}
+
+interface UserPrediction {
+  points_earned: number;
+  user: {
+    id: string;
+    display_name: string;
+    avatar_url: string | null;
+    winner_predictions_correct: number;
+    winner_predictions_total: number;
+    points_per_game: number;
+  };
+  game: {
+    id: string;
+  };
+}
+
 export function AllTimeLeaderboard() {
   const [sortField, setSortField] = useState<SortField>('points');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
@@ -40,7 +61,7 @@ export function AllTimeLeaderboard() {
       if (error) throw error;
 
       // Get efficiency and underdog rates from round_user_stats
-      const { data: userStats, error: statsError } = await supabase
+      const { data: roundStats, error: statsError } = await supabase
         .from("round_user_stats")
         .select('user_id, efficiency_rating, underdog_prediction_rate')
         .order('efficiency_rating', { ascending: false });
@@ -48,18 +69,15 @@ export function AllTimeLeaderboard() {
       if (statsError) throw statsError;
 
       // Create a map of user stats
-      const statsMap = userStats.reduce((acc: any, stat) => {
+      const statsMap = (roundStats as UserStats[]).reduce((acc: Record<string, UserStats>, stat) => {
         if (!acc[stat.user_id]) {
-          acc[stat.user_id] = {
-            efficiency_rating: stat.efficiency_rating,
-            underdog_prediction_rate: stat.underdog_prediction_rate
-          };
+          acc[stat.user_id] = stat;
         }
         return acc;
       }, {});
 
       // Aggregate user data
-      const userStats = predictions.reduce((acc: any, pred) => {
+      const aggregatedStats = (predictions as UserPrediction[]).reduce((acc: Record<string, any>, pred) => {
         const userId = pred.user.id;
         if (!acc[userId]) {
           acc[userId] = {
@@ -80,7 +98,7 @@ export function AllTimeLeaderboard() {
         return acc;
       }, {});
 
-      return Object.values(userStats);
+      return Object.values(aggregatedStats);
     }
   });
 
