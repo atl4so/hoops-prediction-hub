@@ -57,27 +57,19 @@ export function GameResults() {
     mutationFn: async ({ gameId, homeScore, awayScore }: { gameId: string, homeScore: number, awayScore: number }) => {
       console.log('Starting game result update:', { gameId, homeScore, awayScore });
       
-      try {
-        const { error } = await supabase.rpc(
-          'update_game_result',
-          {
-            game_id_param: gameId,
-            home_score_param: homeScore,
-            away_score_param: awayScore
-          }
-        );
+      const { data, error } = await supabase.rpc('update_game_result', {
+        game_id_param: gameId,
+        home_score_param: homeScore,
+        away_score_param: awayScore
+      });
 
-        if (error) {
-          console.error('Supabase RPC error:', error);
-          throw error;
-        }
-
-        console.log('Game result update successful');
-        return true;
-      } catch (error) {
-        console.error('Error in updateResult mutation:', error);
+      if (error) {
+        console.error('RPC Error:', error);
         throw error;
       }
+
+      console.log('Game result update successful');
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['games-with-results'] });
@@ -85,9 +77,9 @@ export function GameResults() {
       setScores({ home: "", away: "" });
       toast.success("Game result updated successfully");
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Error updating game result:', error);
-      toast.error("Failed to update game result");
+      toast.error(error.message || "Failed to update game result");
     },
   });
 
