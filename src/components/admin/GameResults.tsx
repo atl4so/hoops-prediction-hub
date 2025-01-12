@@ -55,21 +55,29 @@ export function GameResults() {
 
   const updateResult = useMutation({
     mutationFn: async ({ gameId, homeScore, awayScore }: { gameId: string, homeScore: number, awayScore: number }) => {
-      console.log('Updating game result:', { gameId, homeScore, awayScore });
+      console.log('Starting game result update:', { gameId, homeScore, awayScore });
       
-      const { data, error } = await supabase
-        .rpc('update_game_result', {
-          game_id_param: gameId,
-          home_score_param: homeScore,
-          away_score_param: awayScore
-        });
+      try {
+        const { error } = await supabase.rpc(
+          'update_game_result',
+          {
+            game_id_param: gameId,
+            home_score_param: homeScore,
+            away_score_param: awayScore
+          }
+        );
 
-      if (error) {
-        console.error('Error in update_game_result:', error);
+        if (error) {
+          console.error('Supabase RPC error:', error);
+          throw error;
+        }
+
+        console.log('Game result update successful');
+        return true;
+      } catch (error) {
+        console.error('Error in updateResult mutation:', error);
         throw error;
       }
-
-      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['games-with-results'] });
@@ -91,7 +99,7 @@ export function GameResults() {
     });
   };
 
-  const handleSave = (gameId: string) => {
+  const handleSave = async (gameId: string) => {
     const homeScore = parseInt(scores.home);
     const awayScore = parseInt(scores.away);
 
@@ -100,7 +108,11 @@ export function GameResults() {
       return;
     }
 
-    updateResult.mutate({ gameId, homeScore, awayScore });
+    try {
+      await updateResult.mutateAsync({ gameId, homeScore, awayScore });
+    } catch (error) {
+      console.error('Error in handleSave:', error);
+    }
   };
 
   if (isLoading) {
