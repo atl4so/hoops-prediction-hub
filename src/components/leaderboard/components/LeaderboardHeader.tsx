@@ -57,7 +57,7 @@ export function LeaderboardHeader({
           direction={sortDirection} 
           onSort={onSort}
         >
-          Upsets
+          Underdogs
         </SortHeader>
       </TableHead>
       <TableHead className="w-32 text-right font-bold text-base">
