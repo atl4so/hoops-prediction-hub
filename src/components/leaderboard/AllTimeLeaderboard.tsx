@@ -1,21 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody } from "@/components/ui/table";
 import { LeaderboardRow } from "./LeaderboardRow";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
-import { useState } from "react";
-import { ArrowDown, ArrowUp } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-type SortField = 'points' | 'winner' | 'games' | 'ppg' | 'efficiency' | 'underdog';
-type SortDirection = 'asc' | 'desc';
+import { LeaderboardHeader } from "./components/LeaderboardHeader";
+import { useLeaderboardSort } from "./hooks/useLeaderboardSort";
 
 interface UserStats {
   user_id: string;
   efficiency_rating: number;
   underdog_prediction_rate: number;
-  underdog_picks: number;
 }
 
 interface UserPrediction {
@@ -34,13 +29,11 @@ interface UserPrediction {
 }
 
 export function AllTimeLeaderboard() {
-  const [sortField, setSortField] = useState<SortField>('points');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const { sortField, sortDirection, handleSort, sortData } = useLeaderboardSort();
 
   const { data: leaderboardData, isLoading } = useQuery({
     queryKey: ["allTimeLeaderboard"],
     queryFn: async () => {
-      // First get all predictions with user info
       const { data: predictions, error } = await supabase
         .from("predictions")
         .select(`
@@ -61,7 +54,6 @@ export function AllTimeLeaderboard() {
 
       if (error) throw error;
 
-      // Get efficiency and underdog rates from round_user_stats
       const { data: roundStats, error: statsError } = await supabase
         .from("round_user_stats")
         .select('user_id, efficiency_rating, underdog_prediction_rate')
@@ -69,7 +61,6 @@ export function AllTimeLeaderboard() {
 
       if (statsError) throw statsError;
 
-      // Create a map of user stats
       const statsMap = (roundStats as UserStats[]).reduce((acc: Record<string, UserStats>, stat) => {
         if (!acc[stat.user_id]) {
           acc[stat.user_id] = stat;
@@ -77,10 +68,8 @@ export function AllTimeLeaderboard() {
         return acc;
       }, {});
 
-      // Get unique user IDs from predictions
       const userIds = [...new Set(predictions.map((p: UserPrediction) => p.user.id))];
 
-      // Get underdog picks for each user using Promise.all
       const underdogResults = await Promise.all(
         userIds.map(userId =>
           supabase
@@ -89,14 +78,12 @@ export function AllTimeLeaderboard() {
         )
       );
 
-      // Create a map of underdog picks
       const underdogMap = userIds.reduce((acc: Record<string, number>, userId, index) => {
         const result = underdogResults[index].data;
         acc[userId] = result?.total_underdog_picks || 0;
         return acc;
       }, {});
 
-      // Aggregate user data
       const aggregatedStats = (predictions as UserPrediction[]).reduce((acc: Record<string, any>, pred) => {
         const userId = pred.user.id;
         if (!acc[userId]) {
@@ -122,68 +109,6 @@ export function AllTimeLeaderboard() {
     }
   });
 
-  const sortData = (data: any[]) => {
-    return [...data].sort((a, b) => {
-      let comparison = 0;
-      
-      switch (sortField) {
-        case 'points':
-          comparison = a.total_points - b.total_points;
-          break;
-        case 'winner':
-          const aWinnerPercent = (a.winner_predictions_correct / a.winner_predictions_total) || 0;
-          const bWinnerPercent = (b.winner_predictions_correct / b.winner_predictions_total) || 0;
-          comparison = aWinnerPercent - bWinnerPercent;
-          break;
-        case 'games':
-          comparison = a.total_predictions - b.total_predictions;
-          break;
-        case 'ppg':
-          comparison = (a.points_per_game || 0) - (b.points_per_game || 0);
-          break;
-        case 'efficiency':
-          comparison = (a.efficiency_rating || 0) - (b.efficiency_rating || 0);
-          break;
-        case 'underdog':
-          comparison = (a.underdog_prediction_rate || 0) - (b.underdog_prediction_rate || 0);
-          break;
-      }
-      
-      return sortDirection === 'desc' ? -comparison : comparison;
-    });
-  };
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'desc' ? 'asc' : 'desc');
-    } else {
-      setSortField(field);
-      setSortDirection('desc');
-    }
-  };
-
-  const SortHeader = ({ field, children }: { field: SortField; children: React.ReactNode }) => {
-    const isActive = sortField === field;
-    return (
-      <div 
-        className="flex items-center gap-1 cursor-pointer group justify-end"
-        onClick={() => handleSort(field)}
-      >
-        {children}
-        <span className={cn(
-          "transition-opacity",
-          isActive ? "opacity-100" : "opacity-0 group-hover:opacity-50"
-        )}>
-          {isActive && sortDirection === 'desc' ? (
-            <ArrowDown className="h-4 w-4" />
-          ) : (
-            <ArrowUp className="h-4 w-4" />
-          )}
-        </span>
-      </div>
-    );
-  };
-
   if (isLoading) {
     return (
       <Card className="w-full p-4 md:p-6">
@@ -202,30 +127,11 @@ export function AllTimeLeaderboard() {
     <Card className="w-full overflow-hidden border-2 bg-card/50 backdrop-blur-sm">
       <div className="w-full overflow-x-auto">
         <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent border-b-2">
-              <TableHead className="w-[80px] font-bold text-base">Rank</TableHead>
-              <TableHead className="w-[200px] font-bold text-base">Player</TableHead>
-              <TableHead className="w-[120px] text-right font-bold text-base">
-                <SortHeader field="points">Points</SortHeader>
-              </TableHead>
-              <TableHead className="w-[120px] text-right font-bold text-base">
-                <SortHeader field="ppg">PPG</SortHeader>
-              </TableHead>
-              <TableHead className="w-[120px] text-right font-bold text-base">
-                <SortHeader field="efficiency">Efficiency</SortHeader>
-              </TableHead>
-              <TableHead className="w-[120px] text-right font-bold text-base">
-                <SortHeader field="underdog">Underdog Picks</SortHeader>
-              </TableHead>
-              <TableHead className="w-[120px] text-right font-bold text-base">
-                <SortHeader field="winner">Winner %</SortHeader>
-              </TableHead>
-              <TableHead className="w-[100px] text-right font-bold text-base">
-                <SortHeader field="games">Games</SortHeader>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
+          <LeaderboardHeader 
+            sortField={sortField}
+            sortDirection={sortDirection}
+            onSort={handleSort}
+          />
           <TableBody>
             {sortedData.map((player: any, index: number) => (
               <LeaderboardRow
