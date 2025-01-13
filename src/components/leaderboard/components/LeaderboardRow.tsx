@@ -79,11 +79,11 @@ export function LeaderboardRow({
         )}
         onClick={handleUserClick}
       >
-        <TableCell className="w-20 font-medium">
+        <TableCell className="w-24">
           <RankDisplay rank={rank} />
         </TableCell>
 
-        <TableCell className="w-48">
+        <TableCell className="w-56">
           <PlayerInfo 
             displayName={player.display_name}
             avatarUrl={player.avatar_url}
