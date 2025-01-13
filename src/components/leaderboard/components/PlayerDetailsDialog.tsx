@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -17,6 +18,9 @@ interface PlayerDetailsDialogProps {
     total_predictions: number;
     winner_predictions_correct?: number;
     winner_predictions_total?: number;
+    ppg?: number;
+    efficiency?: number;
+    underdog_picks?: number;
   };
   rank: number;
   isRoundLeaderboard?: boolean;
@@ -64,19 +68,24 @@ export function PlayerDetailsDialog({
     enabled: isRoundLeaderboard && !!roundId && !!player.user_id
   });
 
-  console.log('Round games data:', roundGames);
-
-  const StatCard = ({ title, value, subtitle }: { title: string; value: string | number; subtitle?: string }) => (
-    <Card className="p-4 space-y-1 bg-muted/50">
-      <p className="text-sm text-muted-foreground">{title}</p>
-      <p className="text-2xl font-bold">{value}</p>
-      {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
+  const StatCard = ({ title, value, description }: { title: string; value: string | number; description: string }) => (
+    <Card className="p-4 space-y-2 bg-muted/50">
+      <div className="space-y-1">
+        <p className="text-sm font-medium text-muted-foreground">{title}</p>
+        <p className="text-2xl font-bold">{value}</p>
+      </div>
+      <p className="text-xs text-muted-foreground">{description}</p>
     </Card>
   );
 
+  const calculateWinnerPercentage = () => {
+    if (!player.winner_predictions_correct || !player.winner_predictions_total) return 0;
+    return Math.round((player.winner_predictions_correct / player.winner_predictions_total) * 100);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-xl h-[90vh] flex flex-col">
         <DialogHeader className="pb-4 border-b">
           <DialogTitle>
             <div className="flex items-center gap-4">
@@ -94,59 +103,92 @@ export function PlayerDetailsDialog({
           </DialogTitle>
         </DialogHeader>
         
-        <div className="flex-1 overflow-y-auto py-4 space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <StatCard 
-              title="Total Points" 
-              value={player.total_points}
-            />
-            <StatCard 
-              title="Winner" 
-              value={`${Math.round((player.winner_predictions_correct || 0) / (player.winner_predictions_total || 1) * 100)}%`}
-              subtitle={`${player.winner_predictions_correct || 0} of ${player.winner_predictions_total || 0}`}
-            />
-          </div>
+        <ScrollArea className="flex-1 px-1">
+          <div className="py-6 space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <StatCard 
+                title="Total Points" 
+                value={player.total_points}
+                description="Total points earned from all predictions"
+              />
+              <StatCard 
+                title="Points per Game" 
+                value={player.ppg?.toFixed(1) || '0.0'}
+                description="Average points earned per prediction"
+              />
+              <StatCard 
+                title="Correct Winners" 
+                value={`${player.winner_predictions_correct || 0} / ${player.winner_predictions_total || 0}`}
+                description="Number of times correctly predicted the winning team"
+              />
+              <StatCard 
+                title="Winner %" 
+                value={`${calculateWinnerPercentage()}%`}
+                description="Percentage of correct winner predictions"
+              />
+              <StatCard 
+                title="Efficiency" 
+                value={player.efficiency?.toFixed(1) || '0.0'}
+                description="Points weighted by prediction accuracy"
+              />
+              <StatCard 
+                title="Underdogs" 
+                value={player.underdog_picks || 0}
+                description="Successful predictions against majority picks"
+              />
+              <StatCard 
+                title="Total Predictions" 
+                value={player.total_predictions}
+                description="Total number of predictions made"
+              />
+            </div>
 
-          {isRoundLeaderboard && roundGames && roundGames.length > 0 && (
-            <div className="space-y-3">
-              <h4 className="font-semibold text-lg">Round Predictions</h4>
-              <div className="space-y-2">
-                {roundGames.map((game: any) => {
-                  const gameResult = game.game.game_results?.[0];
-                  if (!gameResult) return null;
+            {isRoundLeaderboard && roundGames && roundGames.length > 0 && (
+              <div className="space-y-3">
+                <h4 className="font-semibold text-lg">Round Predictions</h4>
+                <div className="space-y-2">
+                  {roundGames.map((game: any) => {
+                    const gameResult = game.game.game_results?.[0];
+                    if (!gameResult) return null;
 
-                  const predictedHomeWin = game.prediction_home_score > game.prediction_away_score;
-                  const actualHomeWin = gameResult.home_score > gameResult.away_score;
-                  const isCorrect = predictedHomeWin === actualHomeWin;
+                    const predictedHomeWin = game.prediction_home_score > game.prediction_away_score;
+                    const actualHomeWin = gameResult.home_score > gameResult.away_score;
+                    const isCorrect = predictedHomeWin === actualHomeWin;
 
-                  return (
-                    <div 
-                      key={game.game.id} 
-                      className={cn(
-                        "text-sm py-2 px-3 rounded-md",
-                        isCorrect ? "text-green-600 bg-green-50 dark:bg-green-950/30" : "text-red-600 bg-red-50 dark:bg-red-950/30"
-                      )}
-                    >
-                      {game.game.home_team.name} vs {game.game.away_team.name}
-                    </div>
-                  );
-                })}
+                    return (
+                      <div 
+                        key={game.game.id} 
+                        className={cn(
+                          "text-sm p-3 rounded-md",
+                          isCorrect ? "text-green-600 bg-green-50 dark:bg-green-950/30" : "text-red-600 bg-red-50 dark:bg-red-950/30"
+                        )}
+                      >
+                        <div className="flex justify-between items-center">
+                          <span>{game.game.home_team.name} vs {game.game.away_team.name}</span>
+                          <span className="font-medium">
+                            {game.prediction_home_score} - {game.prediction_away_score}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {isRoundLeaderboard && isLoading && (
-            <div className="text-center py-4 text-muted-foreground">
-              Loading predictions...
-            </div>
-          )}
+            {isRoundLeaderboard && isLoading && (
+              <div className="text-center py-4 text-muted-foreground">
+                Loading predictions...
+              </div>
+            )}
 
-          {isRoundLeaderboard && !isLoading && (!roundGames || roundGames.length === 0) && (
-            <div className="text-center py-4 text-muted-foreground">
-              No predictions found for this round
-            </div>
-          )}
-        </div>
+            {isRoundLeaderboard && !isLoading && (!roundGames || roundGames.length === 0) && (
+              <div className="text-center py-4 text-muted-foreground">
+                No predictions found for this round
+              </div>
+            )}
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
