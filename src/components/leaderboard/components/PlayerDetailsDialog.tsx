@@ -105,6 +105,11 @@ export function PlayerDetailsDialog({
                   description="Percentage of correct winner predictions"
                 />
                 <StatCard 
+                  title="Efficiency Rating" 
+                  value={player.efficiency?.toFixed(1) || '0.0'}
+                  description="Points per prediction × Winner accuracy (PPG × Winner %)"
+                />
+                <StatCard 
                   title="Total Predictions" 
                   value={player.total_predictions}
                   description="Total number of predictions made"
