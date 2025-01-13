@@ -49,8 +49,9 @@ export function PlayerDetailsDialog({
   );
 
   const calculateWinnerPercentage = () => {
-    if (!player.winner_predictions_correct || !player.winner_predictions_total) return 0;
-    return Math.round((player.winner_predictions_correct / player.winner_predictions_total) * 100);
+    if (!player.winner_predictions_correct || !player.winner_predictions_total) return "0%";
+    const percentage = Math.round((player.winner_predictions_correct / player.winner_predictions_total) * 100);
+    return `${percentage}% (${player.winner_predictions_correct}/${player.winner_predictions_total})`;
   };
 
   return (
@@ -100,7 +101,7 @@ export function PlayerDetailsDialog({
                 />
                 <StatCard 
                   title="Winner %" 
-                  value={`${calculateWinnerPercentage()}%`}
+                  value={calculateWinnerPercentage()}
                   description="Percentage of correct winner predictions"
                 />
                 <StatCard 
