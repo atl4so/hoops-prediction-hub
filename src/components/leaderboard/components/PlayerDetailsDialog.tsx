@@ -3,9 +3,6 @@ import { User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { cn } from "@/lib/utils";
 
 interface PlayerDetailsDialogProps {
   open: boolean;
@@ -32,42 +29,7 @@ export function PlayerDetailsDialog({
   onOpenChange,
   player,
   rank,
-  isRoundLeaderboard = false,
-  roundId
 }: PlayerDetailsDialogProps) {
-  const { data: roundGames, isLoading } = useQuery({
-    queryKey: ["round-games", roundId, player.user_id],
-    queryFn: async () => {
-      if (!roundId || !player.user_id) return null;
-      
-      const { data, error } = await supabase
-        .from('predictions')
-        .select(`
-          prediction_home_score,
-          prediction_away_score,
-          game:games!inner (
-            id,
-            home_team:teams!games_home_team_id_fkey (name),
-            away_team:teams!games_away_team_id_fkey (name),
-            game_results (
-              home_score,
-              away_score
-            )
-          )
-        `)
-        .eq('user_id', player.user_id)
-        .eq('game.round_id', roundId);
-
-      if (error) {
-        console.error('Error fetching round games:', error);
-        return null;
-      }
-      
-      return data;
-    },
-    enabled: isRoundLeaderboard && !!roundId && !!player.user_id
-  });
-
   const StatCard = ({ title, value, description }: { title: string; value: string | number; description: string }) => (
     <Card className="p-4 space-y-2 bg-muted/50">
       <div className="space-y-1">
@@ -142,51 +104,6 @@ export function PlayerDetailsDialog({
                 description="Total number of predictions made"
               />
             </div>
-
-            {isRoundLeaderboard && roundGames && roundGames.length > 0 && (
-              <div className="space-y-3">
-                <h4 className="font-semibold text-lg">Round Predictions</h4>
-                <div className="space-y-2">
-                  {roundGames.map((game: any) => {
-                    const gameResult = game.game.game_results?.[0];
-                    if (!gameResult) return null;
-
-                    const predictedHomeWin = game.prediction_home_score > game.prediction_away_score;
-                    const actualHomeWin = gameResult.home_score > gameResult.away_score;
-                    const isCorrect = predictedHomeWin === actualHomeWin;
-
-                    return (
-                      <div 
-                        key={game.game.id} 
-                        className={cn(
-                          "text-sm p-3 rounded-md",
-                          isCorrect ? "text-green-600 bg-green-50 dark:bg-green-950/30" : "text-red-600 bg-red-50 dark:bg-red-950/30"
-                        )}
-                      >
-                        <div className="flex justify-between items-center">
-                          <span>{game.game.home_team.name} vs {game.game.away_team.name}</span>
-                          <span className="font-medium">
-                            {game.prediction_home_score} - {game.prediction_away_score}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {isRoundLeaderboard && isLoading && (
-              <div className="text-center py-4 text-muted-foreground">
-                Loading predictions...
-              </div>
-            )}
-
-            {isRoundLeaderboard && !isLoading && (!roundGames || roundGames.length === 0) && (
-              <div className="text-center py-4 text-muted-foreground">
-                No predictions found for this round
-              </div>
-            )}
           </div>
         </ScrollArea>
       </DialogContent>
