@@ -23,11 +23,21 @@ export function TeamDisplay({ team, align, className, imageClassName }: TeamDisp
       align === "right" && "items-end",
       className
     )}>
-      <img 
-        src={team.logo_url} 
-        alt={`${team.name} logo`}
-        className={cn("w-16 h-16 object-contain", imageClassName)}
-      />
+      <div className={cn(
+        "relative flex items-center justify-center",
+        "dark:bg-white dark:rounded-full dark:p-2",
+        "transition-colors duration-200"
+      )}>
+        <img 
+          src={team.logo_url} 
+          alt={`${team.name} logo`}
+          className={cn(
+            "w-16 h-16 object-contain",
+            "dark:w-14 dark:h-14", // Slightly smaller in dark mode to account for padding
+            imageClassName
+          )}
+        />
+      </div>
       <span className="font-display text-xs sm:text-sm font-semibold text-center leading-tight w-full">
         {team.name}
       </span>
