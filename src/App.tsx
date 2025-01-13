@@ -7,6 +7,7 @@ import { SessionContextProvider } from '@supabase/auth-helpers-react';
 import { supabase } from "./integrations/supabase/client";
 import { SessionHandler } from "./components/auth/SessionHandler";
 import { AppRoutes } from "./components/routing/AppRoutes";
+import { ThemeProvider } from "./components/theme/ThemeProvider";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,22 +24,24 @@ const App = () => {
   console.log('App component rendering'); // Debug log
 
   return (
-    <SessionContextProvider 
-      supabaseClient={supabase}
-      initialSession={null}
-    >
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <BrowserRouter>
-            <SessionHandler queryClient={queryClient}>
-              <AppRoutes />
-              <Toaster />
-              <Sonner />
-            </SessionHandler>
-          </BrowserRouter>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </SessionContextProvider>
+    <ThemeProvider defaultTheme="system" storageKey="euroleague-theme">
+      <SessionContextProvider 
+        supabaseClient={supabase}
+        initialSession={null}
+      >
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <BrowserRouter>
+              <SessionHandler queryClient={queryClient}>
+                <AppRoutes />
+                <Toaster />
+                <Sonner />
+              </SessionHandler>
+            </BrowserRouter>
+          </TooltipProvider>
+        </QueryClientProvider>
+      </SessionContextProvider>
+    </ThemeProvider>
   );
 };
 
