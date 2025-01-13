@@ -7,39 +7,77 @@ interface LeaderboardHeaderProps {
   onSort: (field: SortField) => void;
 }
 
-export function LeaderboardHeader({ sortField, sortDirection, onSort }: LeaderboardHeaderProps) {
+export function LeaderboardHeader({ 
+  sortField, 
+  sortDirection, 
+  onSort 
+}: LeaderboardHeaderProps) {
   return (
     <TableHeader>
       <TableRow className="hover:bg-transparent border-b-2">
-        <TableHead className="w-20 font-bold text-base">Rank</TableHead>
-        <TableHead className="w-48 font-bold text-base">Player</TableHead>
+        <TableHead className="w-20 font-bold text-base">
+          Rank
+        </TableHead>
+        <TableHead className="w-48 font-bold text-base">
+          Player
+        </TableHead>
         <TableHead className="w-28 text-right pr-8 font-bold text-base">
-          <SortHeader field="points" currentSort={sortField} direction={sortDirection} onSort={onSort}>
+          <SortHeader 
+            field="points" 
+            currentSort={sortField} 
+            direction={sortDirection} 
+            onSort={onSort}
+          >
             Points
           </SortHeader>
         </TableHead>
         <TableHead className="w-28 text-right pr-8 font-bold text-base">
-          <SortHeader field="ppg" currentSort={sortField} direction={sortDirection} onSort={onSort}>
+          <SortHeader 
+            field="ppg" 
+            currentSort={sortField} 
+            direction={sortDirection} 
+            onSort={onSort}
+          >
             PPG
           </SortHeader>
         </TableHead>
         <TableHead className="w-28 text-right pr-8 font-bold text-base">
-          <SortHeader field="efficiency" currentSort={sortField} direction={sortDirection} onSort={onSort}>
+          <SortHeader 
+            field="efficiency" 
+            currentSort={sortField} 
+            direction={sortDirection} 
+            onSort={onSort}
+          >
             Efficiency
           </SortHeader>
         </TableHead>
         <TableHead className="w-28 text-right pr-8 font-bold text-base">
-          <SortHeader field="underdog" currentSort={sortField} direction={sortDirection} onSort={onSort}>
+          <SortHeader 
+            field="underdog" 
+            currentSort={sortField} 
+            direction={sortDirection} 
+            onSort={onSort}
+          >
             Underdog Picks
           </SortHeader>
         </TableHead>
         <TableHead className="w-28 text-right pr-8 font-bold text-base">
-          <SortHeader field="winner" currentSort={sortField} direction={sortDirection} onSort={onSort}>
+          <SortHeader 
+            field="winner" 
+            currentSort={sortField} 
+            direction={sortDirection} 
+            onSort={onSort}
+          >
             Winner %
           </SortHeader>
         </TableHead>
         <TableHead className="w-24 text-right pr-8 font-bold text-base">
-          <SortHeader field="games" currentSort={sortField} direction={sortDirection} onSort={onSort}>
+          <SortHeader 
+            field="games" 
+            currentSort={sortField} 
+            direction={sortDirection} 
+            onSort={onSort}
+          >
             Games
           </SortHeader>
         </TableHead>
