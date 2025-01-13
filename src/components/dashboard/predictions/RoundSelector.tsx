@@ -22,9 +22,11 @@ interface RoundWithStats {
   total_points: number;
 }
 
-interface GameResult {
+interface GameResultResponse {
   round_id: string;
-  is_final: boolean;
+  game_results: {
+    is_final: boolean;
+  };
 }
 
 export function RoundSelector({ selectedRound, onRoundChange, className }: RoundSelectorProps) {
@@ -86,7 +88,7 @@ export function RoundSelector({ selectedRound, onRoundChange, className }: Round
         // Process the data safely
         const roundsWithData = (roundsWithStats as RoundWithStats[] || []).map(r => r.round_id);
         const roundsWithFinishedGames = roundsWithResults 
-          ? Array.from(new Set((roundsWithResults as GameResult[]).map(r => r.round_id)))
+          ? Array.from(new Set((roundsWithResults as GameResultResponse[]).map(r => r.round_id)))
           : [];
 
         // Find valid rounds that have both stats and finished games
