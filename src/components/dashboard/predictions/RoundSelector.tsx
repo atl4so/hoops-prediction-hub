@@ -48,35 +48,35 @@ export function RoundSelector({ selectedRound, onRoundChange, className }: Round
     }
   }, [error]);
 
-  // Find the latest round with finished games and points
+  // Find the latest round with finished games and calculated points
   useEffect(() => {
     async function findLatestRoundWithFinishedGames() {
       if (!rounds?.length || selectedRound) return;
 
-      for (const round of rounds) {
-        try {
-          // Check for games with final results and calculated points
-          const { data: gamesWithPoints } = await supabase
-            .from('games')
-            .select(`
-              id,
-              game_results!inner(is_final),
-              predictions!inner(points_earned)
-            `)
-            .eq('round_id', round.id)
-            .eq('game_results.is_final', true)
-            .not('predictions.points_earned', 'is', null)
-            .limit(1);
+      try {
+        // First get all rounds with calculated points
+        const { data: roundsWithPoints } = await supabase
+          .from('round_user_stats')
+          .select(`
+            round_id,
+            total_points
+          `)
+          .gt('total_points', 0)
+          .order('round_id', { ascending: false });
 
-          if (gamesWithPoints?.length) {
-            console.log('Found round with finished games and points:', round.id);
-            onRoundChange(round.id);
-            break;
-          }
-        } catch (error) {
-          console.error('Error finding latest round with finished games:', error);
-          continue;
+        if (roundsWithPoints?.length) {
+          const latestRoundWithPoints = roundsWithPoints[0].round_id;
+          console.log('Found latest round with points:', latestRoundWithPoints);
+          onRoundChange(latestRoundWithPoints);
+        } else {
+          console.log('No rounds with calculated points found');
+          // If no rounds with points, select the latest round
+          onRoundChange(rounds[0].id);
         }
+      } catch (error) {
+        console.error('Error finding latest round with points:', error);
+        // Fallback to latest round
+        onRoundChange(rounds[0].id);
       }
     }
 
