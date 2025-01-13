@@ -126,7 +126,14 @@ export function PlayerDetailsDialog({
 
               {player.user_id && (
                 <div className="space-y-6">
-                  <StatsOverview userId={player.user_id} />
+                  <StatsOverview 
+                    userId={player.user_id}
+                    totalPoints={player.total_points}
+                    pointsPerGame={player.ppg || 0}
+                    totalPredictions={player.total_predictions}
+                    winnerPredictionsCorrect={player.winner_predictions_correct}
+                    winnerPredictionsTotal={player.winner_predictions_total}
+                  />
                 </div>
               )}
             </div>
