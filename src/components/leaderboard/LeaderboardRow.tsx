@@ -78,38 +78,38 @@ export function LeaderboardRow({
         )}
         onClick={handleUserClick}
       >
-        <TableCell className="w-20 font-medium py-4">
+        <TableCell className="w-20 font-medium">
           <RankDisplay rank={rank} />
         </TableCell>
 
-        <TableCell className="w-48 py-4">
+        <TableCell className="w-48">
           <PlayerInfo 
             displayName={player.display_name}
             avatarUrl={player.avatar_url}
           />
         </TableCell>
 
-        <TableCell className="w-28 text-right py-4">
+        <TableCell className="w-28 text-right">
           <span className="font-bold text-base">{player.total_points}</span>
         </TableCell>
 
-        <TableCell className="w-28 text-right py-4">
+        <TableCell className="w-28 text-right">
           <span className="font-semibold text-base">{player.ppg?.toFixed(1) || '0.0'}</span>
         </TableCell>
 
-        <TableCell className="w-28 text-right py-4">
+        <TableCell className="w-28 text-right">
           <span className="font-semibold text-base">{player.efficiency?.toFixed(1) || '0.0'}</span>
         </TableCell>
 
-        <TableCell className="w-28 text-right py-4">
+        <TableCell className="w-28 text-right">
           <span className="font-semibold text-base">{player.underdog_picks || 0}</span>
         </TableCell>
 
-        <TableCell className="w-28 text-right py-4">
+        <TableCell className="w-28 text-right">
           <span className="font-semibold text-base">{winnerPercentage}%</span>
         </TableCell>
 
-        <TableCell className="w-24 text-right py-4">
+        <TableCell className="w-24 text-right">
           <span className="font-semibold text-base">{player.total_predictions}</span>
         </TableCell>
       </motion.tr>
