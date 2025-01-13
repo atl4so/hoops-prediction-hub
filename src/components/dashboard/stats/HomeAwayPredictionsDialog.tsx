@@ -99,7 +99,7 @@ export function HomeAwayPredictionsDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] max-h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-[425px] max-h-[90vh] flex flex-col dark:bg-background">
         <DialogHeader className="space-y-2">
           <DialogTitle>Home/Away Winner Predictions</DialogTitle>
           <DialogDescription>
@@ -120,7 +120,7 @@ export function HomeAwayPredictionsDialog({
             </div>
           ) : predictions && predictions.length > 0 ? (
             <Tabs defaultValue="home" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-2 dark:bg-muted/20">
                 <TabsTrigger value="home" className="px-2 py-1">
                   <span className="flex items-center gap-1.5">
                     <Home className="h-3 w-3" />
@@ -141,7 +141,7 @@ export function HomeAwayPredictionsDialog({
                 
                 return (
                   <TabsContent key={type} value={type} className="space-y-3 mt-3">
-                    <div className="text-center space-y-1 p-3 bg-muted/10 rounded-lg">
+                    <div className="text-center space-y-1 p-3 dark:bg-muted/10 rounded-lg">
                       <div className="flex items-center justify-center gap-2">
                         <Icon className="h-4 w-4" />
                         <p className="text-xl font-bold">{stats.percentage}%</p>
@@ -163,18 +163,20 @@ export function HomeAwayPredictionsDialog({
                           <div 
                             key={prediction.id} 
                             className={`flex items-center justify-between p-2 rounded-lg border ${
-                              result.isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                              result.isCorrect 
+                                ? 'dark:bg-green-950/50 dark:border-green-800/50 bg-green-50 border-green-200' 
+                                : 'dark:bg-red-950/50 dark:border-red-800/50 bg-red-50 border-red-200'
                             }`}
                           >
                             <div className="flex-1">
                               <div className="flex items-center gap-2">
-                                <span className="text-xs font-medium">
+                                <span className="text-xs font-medium dark:text-foreground">
                                   {prediction.game.home_team.name} vs {prediction.game.away_team.name}
                                 </span>
                                 {result.isCorrect ? (
-                                  <Check className="h-3 w-3 text-green-600" />
+                                  <Check className="h-3 w-3 text-green-600 dark:text-green-400" />
                                 ) : (
-                                  <X className="h-3 w-3 text-red-600" />
+                                  <X className="h-3 w-3 text-red-600 dark:text-red-400" />
                                 )}
                               </div>
                               <div className="text-[10px] text-muted-foreground mt-0.5">
