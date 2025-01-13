@@ -93,8 +93,8 @@ export function AllTimeLeaderboard() {
             avatar_url: pred.user.avatar_url,
             total_points: 0,
             total_predictions: 0,
-            points_per_game: pred.user.points_per_game,
-            efficiency_rating: statsMap[userId]?.efficiency_rating || 0,
+            ppg: pred.user.points_per_game,
+            efficiency: statsMap[userId]?.efficiency_rating || 0,
             underdog_picks: underdogMap[userId] || 0,
             winner_predictions_correct: pred.user.winner_predictions_correct,
             winner_predictions_total: pred.user.winner_predictions_total
@@ -138,8 +138,8 @@ export function AllTimeLeaderboard() {
                 key={player.user_id}
                 player={{
                   ...player,
-                  ppg: player.points_per_game,
-                  efficiency: player.efficiency_rating,
+                  ppg: player.ppg,
+                  efficiency: player.efficiency,
                   underdog_picks: player.underdog_picks
                 }}
                 rank={index + 1}
