@@ -120,19 +120,21 @@ export function WinnerPredictionsDialog({
                 return (
                   <div 
                     key={prediction.id} 
-                    className={`flex items-center justify-between p-3 rounded-lg border ${
-                      result.isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                    className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${
+                      result.isCorrect 
+                        ? 'dark:bg-green-950/50 dark:border-green-800/50 bg-green-50 border-green-200' 
+                        : 'dark:bg-red-950/50 dark:border-red-800/50 bg-red-50 border-red-200'
                     }`}
                   >
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium">
+                        <span className="text-sm font-medium dark:text-foreground">
                           {prediction.game.home_team.name} vs {prediction.game.away_team.name}
                         </span>
                         {result.isCorrect ? (
-                          <Check className="h-4 w-4 text-green-600" />
+                          <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
                         ) : (
-                          <X className="h-4 w-4 text-red-600" />
+                          <X className="h-4 w-4 text-red-600 dark:text-red-400" />
                         )}
                       </div>
                       <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
