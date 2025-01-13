@@ -4,10 +4,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { Eye, Trophy, ThumbsDown } from "lucide-react";
+import { Eye } from "lucide-react";
 import { useState } from "react";
 import { UserPredictionsDialog } from "@/components/dashboard/UserPredictionsDialog";
-import { StatsOverview } from "@/components/dashboard/StatsOverview";
+import { BestTeamsPredictions } from "@/components/dashboard/stats/BestTeamsPredictions";
+import { WorstTeamsPredictions } from "@/components/dashboard/stats/WorstTeamsPredictions";
 
 interface PlayerDetailsDialogProps {
   open: boolean;
@@ -98,24 +99,9 @@ export function PlayerDetailsDialog({
                   description="Average points earned per prediction"
                 />
                 <StatCard 
-                  title="Correct Winners" 
-                  value={`${player.winner_predictions_correct || 0} / ${player.winner_predictions_total || 0}`}
-                  description="Number of times correctly predicted the winning team"
-                />
-                <StatCard 
                   title="Winner %" 
                   value={`${calculateWinnerPercentage()}%`}
                   description="Percentage of correct winner predictions"
-                />
-                <StatCard 
-                  title="Efficiency" 
-                  value={player.efficiency?.toFixed(1) || '0.0'}
-                  description="Points weighted by prediction accuracy"
-                />
-                <StatCard 
-                  title="Underdogs" 
-                  value={player.underdog_picks || 0}
-                  description="Successful predictions against majority picks"
                 />
                 <StatCard 
                   title="Total Predictions" 
@@ -126,14 +112,10 @@ export function PlayerDetailsDialog({
 
               {player.user_id && (
                 <div className="space-y-6">
-                  <StatsOverview 
-                    userId={player.user_id}
-                    totalPoints={player.total_points}
-                    pointsPerGame={player.ppg || 0}
-                    totalPredictions={player.total_predictions}
-                    winnerPredictionsCorrect={player.winner_predictions_correct}
-                    winnerPredictionsTotal={player.winner_predictions_total}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <BestTeamsPredictions userId={player.user_id} />
+                    <WorstTeamsPredictions userId={player.user_id} />
+                  </div>
                 </div>
               )}
             </div>
