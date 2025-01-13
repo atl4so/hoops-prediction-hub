@@ -3,6 +3,11 @@ import { User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { Eye, Trophy, ThumbsDown } from "lucide-react";
+import { useState } from "react";
+import { UserPredictionsDialog } from "@/components/dashboard/UserPredictionsDialog";
+import { StatsOverview } from "@/components/dashboard/StatsOverview";
 
 interface PlayerDetailsDialogProps {
   open: boolean;
@@ -30,6 +35,8 @@ export function PlayerDetailsDialog({
   player,
   rank,
 }: PlayerDetailsDialogProps) {
+  const [showPredictions, setShowPredictions] = useState(false);
+
   const StatCard = ({ title, value, description }: { title: string; value: string | number; description: string }) => (
     <Card className="p-4 space-y-2 bg-muted/50">
       <div className="space-y-1">
@@ -46,67 +53,95 @@ export function PlayerDetailsDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl h-[90vh] flex flex-col">
-        <DialogHeader className="pb-4 border-b">
-          <DialogTitle>
-            <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16">
-                <AvatarImage src={player.avatar_url} />
-                <AvatarFallback>
-                  <User className="h-8 w-8" />
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h3 className="text-lg font-bold">{player.display_name}</h3>
-                <p className="text-sm text-muted-foreground">Rank {rank}</p>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-xl h-[90vh] flex flex-col">
+          <DialogHeader className="pb-4 border-b">
+            <DialogTitle>
+              <div className="flex items-center gap-4">
+                <Avatar className="h-16 w-16">
+                  <AvatarImage src={player.avatar_url} />
+                  <AvatarFallback>
+                    <User className="h-8 w-8" />
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h3 className="text-lg font-bold">{player.display_name}</h3>
+                  <p className="text-sm text-muted-foreground">Rank {rank}</p>
+                </div>
               </div>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <ScrollArea className="flex-1 px-1">
+            <div className="py-6 space-y-6">
+              <div className="flex gap-2 justify-between">
+                <Button 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={() => setShowPredictions(true)}
+                >
+                  <Eye className="w-4 h-4 mr-2" />
+                  View Predictions
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <StatCard 
+                  title="Total Points" 
+                  value={player.total_points}
+                  description="Total points earned from all predictions"
+                />
+                <StatCard 
+                  title="Points per Game" 
+                  value={player.ppg?.toFixed(1) || '0.0'}
+                  description="Average points earned per prediction"
+                />
+                <StatCard 
+                  title="Correct Winners" 
+                  value={`${player.winner_predictions_correct || 0} / ${player.winner_predictions_total || 0}`}
+                  description="Number of times correctly predicted the winning team"
+                />
+                <StatCard 
+                  title="Winner %" 
+                  value={`${calculateWinnerPercentage()}%`}
+                  description="Percentage of correct winner predictions"
+                />
+                <StatCard 
+                  title="Efficiency" 
+                  value={player.efficiency?.toFixed(1) || '0.0'}
+                  description="Points weighted by prediction accuracy"
+                />
+                <StatCard 
+                  title="Underdogs" 
+                  value={player.underdog_picks || 0}
+                  description="Successful predictions against majority picks"
+                />
+                <StatCard 
+                  title="Total Predictions" 
+                  value={player.total_predictions}
+                  description="Total number of predictions made"
+                />
+              </div>
+
+              {player.user_id && (
+                <div className="space-y-6">
+                  <StatsOverview userId={player.user_id} />
+                </div>
+              )}
             </div>
-          </DialogTitle>
-        </DialogHeader>
-        
-        <ScrollArea className="flex-1 px-1">
-          <div className="py-6 space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <StatCard 
-                title="Total Points" 
-                value={player.total_points}
-                description="Total points earned from all predictions"
-              />
-              <StatCard 
-                title="Points per Game" 
-                value={player.ppg?.toFixed(1) || '0.0'}
-                description="Average points earned per prediction"
-              />
-              <StatCard 
-                title="Correct Winners" 
-                value={`${player.winner_predictions_correct || 0} / ${player.winner_predictions_total || 0}`}
-                description="Number of times correctly predicted the winning team"
-              />
-              <StatCard 
-                title="Winner %" 
-                value={`${calculateWinnerPercentage()}%`}
-                description="Percentage of correct winner predictions"
-              />
-              <StatCard 
-                title="Efficiency" 
-                value={player.efficiency?.toFixed(1) || '0.0'}
-                description="Points weighted by prediction accuracy"
-              />
-              <StatCard 
-                title="Underdogs" 
-                value={player.underdog_picks || 0}
-                description="Successful predictions against majority picks"
-              />
-              <StatCard 
-                title="Total Predictions" 
-                value={player.total_predictions}
-                description="Total number of predictions made"
-              />
-            </div>
-          </div>
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      {player.user_id && (
+        <UserPredictionsDialog
+          isOpen={showPredictions}
+          onOpenChange={setShowPredictions}
+          userId={player.user_id}
+          userName={player.display_name}
+        />
+      )}
+    </>
   );
 }
