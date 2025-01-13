@@ -89,27 +89,27 @@ export function LeaderboardRow({
           />
         </TableCell>
 
-        <TableCell className="w-28 text-right">
+        <TableCell className="w-28 text-right pr-8">
           <span className="font-bold text-base">{player.total_points}</span>
         </TableCell>
 
-        <TableCell className="w-28 text-right">
+        <TableCell className="w-28 text-right pr-8">
           <span className="font-semibold text-base">{player.ppg?.toFixed(1) || '0.0'}</span>
         </TableCell>
 
-        <TableCell className="w-28 text-right">
+        <TableCell className="w-28 text-right pr-8">
           <span className="font-semibold text-base">{player.efficiency?.toFixed(1) || '0.0'}</span>
         </TableCell>
 
-        <TableCell className="w-28 text-right">
+        <TableCell className="w-28 text-right pr-8">
           <span className="font-semibold text-base">{player.underdog_picks || 0}</span>
         </TableCell>
 
-        <TableCell className="w-28 text-right">
+        <TableCell className="w-28 text-right pr-8">
           <span className="font-semibold text-base">{winnerPercentage}%</span>
         </TableCell>
 
-        <TableCell className="w-24 text-right">
+        <TableCell className="w-24 text-right pr-8">
           <span className="font-semibold text-base">{player.total_predictions}</span>
         </TableCell>
       </motion.tr>
