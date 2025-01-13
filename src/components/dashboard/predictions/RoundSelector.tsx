@@ -76,10 +76,11 @@ export function RoundSelector({ selectedRound, onRoundChange, className }: Round
 
         // Find the latest round that has both stats and results
         const roundsWithData = roundsWithStats?.map(r => r.round_id) || [];
-        const roundsWithFinishedGames = [...new Set(roundsWithResults?.map(r => r.round_id))] || [];
+        const roundsWithFinishedGames = roundsWithResults ? Array.from(new Set(roundsWithResults.map(r => r.round_id))) : [];
         
         const validRounds = rounds.filter(round => 
           roundsWithData.includes(round.id) && 
+          roundsWithFinishedGames.length > 0 && 
           roundsWithFinishedGames.includes(round.id)
         );
 
