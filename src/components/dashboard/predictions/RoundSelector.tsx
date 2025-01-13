@@ -54,28 +54,44 @@ export function RoundSelector({ selectedRound, onRoundChange, className }: Round
       if (!rounds?.length || selectedRound) return;
 
       try {
-        // First get all rounds with calculated points
-        const { data: roundsWithPoints } = await supabase
+        // Get rounds that have user stats with points
+        const { data: roundsWithStats, error: statsError } = await supabase
           .from('round_user_stats')
-          .select(`
-            round_id,
-            total_points
-          `)
+          .select('round_id, total_points')
           .gt('total_points', 0)
           .order('round_id', { ascending: false });
 
-        if (roundsWithPoints?.length) {
-          const latestRoundWithPoints = roundsWithPoints[0].round_id;
-          console.log('Found latest round with points:', latestRoundWithPoints);
-          onRoundChange(latestRoundWithPoints);
+        if (statsError) throw statsError;
+
+        // Get rounds that have finished games with results
+        const { data: roundsWithResults, error: resultsError } = await supabase
+          .from('games')
+          .select(`
+            round_id,
+            game_results!inner(is_final)
+          `)
+          .eq('game_results.is_final', true);
+
+        if (resultsError) throw resultsError;
+
+        // Find the latest round that has both stats and results
+        const roundsWithData = roundsWithStats?.map(r => r.round_id) || [];
+        const roundsWithFinishedGames = [...new Set(roundsWithResults?.map(r => r.round_id))] || [];
+        
+        const validRounds = rounds.filter(round => 
+          roundsWithData.includes(round.id) && 
+          roundsWithFinishedGames.includes(round.id)
+        );
+
+        if (validRounds.length > 0) {
+          console.log('Found latest round with data:', validRounds[0].id);
+          onRoundChange(validRounds[0].id);
         } else {
-          console.log('No rounds with calculated points found');
-          // If no rounds with points, select the latest round
+          console.log('No rounds with complete data found, defaulting to latest round');
           onRoundChange(rounds[0].id);
         }
       } catch (error) {
-        console.error('Error finding latest round with points:', error);
-        // Fallback to latest round
+        console.error('Error finding latest round with data:', error);
         onRoundChange(rounds[0].id);
       }
     }
