@@ -17,6 +17,16 @@ interface RoundSelectorProps {
   className?: string;
 }
 
+interface RoundWithStats {
+  round_id: string;
+  total_points: number;
+}
+
+interface GameResult {
+  round_id: string;
+  is_final: boolean;
+}
+
 export function RoundSelector({ selectedRound, onRoundChange, className }: RoundSelectorProps) {
   const { data: rounds, error } = useQuery({
     queryKey: ["rounds"],
@@ -58,8 +68,7 @@ export function RoundSelector({ selectedRound, onRoundChange, className }: Round
         const { data: roundsWithStats, error: statsError } = await supabase
           .from('round_user_stats')
           .select('round_id, total_points')
-          .gt('total_points', 0)
-          .order('round_id', { ascending: false });
+          .gt('total_points', 0);
 
         if (statsError) throw statsError;
 
@@ -74,13 +83,15 @@ export function RoundSelector({ selectedRound, onRoundChange, className }: Round
 
         if (resultsError) throw resultsError;
 
-        // Find the latest round that has both stats and results
-        const roundsWithData = roundsWithStats?.map(r => r.round_id) || [];
-        const roundsWithFinishedGames = roundsWithResults ? Array.from(new Set(roundsWithResults.map(r => r.round_id))) : [];
-        
+        // Process the data safely
+        const roundsWithData = (roundsWithStats as RoundWithStats[] || []).map(r => r.round_id);
+        const roundsWithFinishedGames = roundsWithResults 
+          ? Array.from(new Set((roundsWithResults as GameResult[]).map(r => r.round_id)))
+          : [];
+
+        // Find valid rounds that have both stats and finished games
         const validRounds = rounds.filter(round => 
           roundsWithData.includes(round.id) && 
-          roundsWithFinishedGames.length > 0 && 
           roundsWithFinishedGames.includes(round.id)
         );
 
@@ -93,7 +104,9 @@ export function RoundSelector({ selectedRound, onRoundChange, className }: Round
         }
       } catch (error) {
         console.error('Error finding latest round with data:', error);
-        onRoundChange(rounds[0].id);
+        if (rounds.length > 0) {
+          onRoundChange(rounds[0].id);
+        }
       }
     }
 
