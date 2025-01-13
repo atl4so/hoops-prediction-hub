@@ -3,7 +3,7 @@ import { AllTimeLeaderboard } from "./AllTimeLeaderboard";
 import { RoundLeaderboard } from "./RoundLeaderboard";
 import { Trophy, Calendar } from "lucide-react";
 import { useState, useEffect } from "react";
-import { RoundSelector } from "@/components/ui/round-selector";
+import { RoundSelector } from "@/components/dashboard/predictions/RoundSelector";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -14,7 +14,9 @@ export function LeaderboardTabs() {
   const { data: latestRoundWithData } = useQuery({
     queryKey: ["latest-round-with-data"],
     queryFn: async () => {
-      // Get all rounds first
+      console.log('Finding latest round with data...');
+      
+      // Get all rounds ordered by start date (most recent first)
       const { data: rounds, error: roundsError } = await supabase
         .from('rounds')
         .select('id')
@@ -22,20 +24,36 @@ export function LeaderboardTabs() {
 
       if (roundsError) throw roundsError;
 
-      // For each round, check if it has predictions with points
+      // For each round, check if it has both stats and finished games
       for (const round of rounds || []) {
-        const { data: predictions } = await supabase
-          .from('predictions')
-          .select('id')
-          .not('points_earned', 'is', null)
+        // Check for round stats
+        const { data: stats } = await supabase
+          .from('round_user_stats')
+          .select('total_points')
+          .eq('round_id', round.id)
+          .gt('total_points', 0)
           .limit(1);
 
-        if (predictions?.length) {
+        // Check for finished games
+        const { data: games } = await supabase
+          .from('games')
+          .select(`
+            id,
+            game_results!inner(is_final)
+          `)
+          .eq('round_id', round.id)
+          .eq('game_results.is_final', true)
+          .limit(1);
+
+        // If both conditions are met, this is our latest valid round
+        if (stats?.length && games?.length) {
+          console.log('Found latest round with data:', round.id);
           return round.id;
         }
       }
       
       // If no round with data is found, return the latest round
+      console.log('No rounds with complete data found, defaulting to latest round');
       return rounds?.[0]?.id || "";
     },
   });
