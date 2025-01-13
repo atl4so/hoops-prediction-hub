@@ -38,16 +38,6 @@ export function LeaderboardRow({
 }: LeaderboardRowProps) {
   const [showDetails, setShowDetails] = useState(false);
 
-  const calculatePercentage = (correct?: number, total?: number) => {
-    if (!correct || !total) return 0;
-    return Math.round((correct / total) * 100);
-  };
-
-  const winnerPercentage = calculatePercentage(
-    player.winner_predictions_correct, 
-    player.winner_predictions_total
-  );
-
   const handleUserClick = () => {
     setShowDetails(true);
   };
@@ -94,7 +84,7 @@ export function LeaderboardRow({
         <StatCell value={player.ppg?.toFixed(1) || '0.0'} />
         <StatCell value={player.efficiency?.toFixed(1) || '0.0'} />
         <StatCell value={player.underdog_picks || 0} />
-        <StatCell value={winnerPercentage} suffix="%" />
+        <StatCell value={player.winner_predictions_correct || 0} />
         <StatCell value={player.total_predictions} />
       </motion.tr>
 

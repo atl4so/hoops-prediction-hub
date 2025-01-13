@@ -47,7 +47,7 @@ export function LeaderboardHeader({
           direction={sortDirection} 
           onSort={onSort}
         >
-          Efficiency
+          Eff.
         </SortHeader>
       </TableHead>
       <TableHead className="w-32 text-right font-bold text-base">
@@ -57,7 +57,7 @@ export function LeaderboardHeader({
           direction={sortDirection} 
           onSort={onSort}
         >
-          Underdog
+          Upsets
         </SortHeader>
       </TableHead>
       <TableHead className="w-32 text-right font-bold text-base">
@@ -67,7 +67,7 @@ export function LeaderboardHeader({
           direction={sortDirection} 
           onSort={onSort}
         >
-          Winner %
+          Correct
         </SortHeader>
       </TableHead>
       <TableHead className="w-32 text-right font-bold text-base">
