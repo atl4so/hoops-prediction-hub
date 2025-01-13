@@ -48,54 +48,39 @@ export function RoundSelector({ selectedRound, onRoundChange, className }: Round
     }
   }, [error]);
 
-  // Find the latest round with data and set it as default
+  // Find the latest round with finished games and points
   useEffect(() => {
-    async function findLatestRoundWithData() {
+    async function findLatestRoundWithFinishedGames() {
       if (!rounds?.length || selectedRound) return;
 
       for (const round of rounds) {
         try {
-          // First, get games for this round
-          const { data: games, error: gamesError } = await supabase
+          // Check for games with final results and calculated points
+          const { data: gamesWithPoints } = await supabase
             .from('games')
-            .select('id')
-            .eq('round_id', round.id);
-
-          if (gamesError || !games?.length) continue;
-
-          const gameIds = games.map(g => g.id);
-
-          // Then, check if any of these games have results
-          const { data: gameResults, error: resultsError } = await supabase
-            .from('game_results')
-            .select('game_id')
-            .in('game_id', gameIds);
-
-          if (resultsError || !gameResults?.length) continue;
-
-          const gameResultIds = gameResults.map(gr => gr.game_id);
-
-          // Finally, check if there are any predictions for these games
-          const { data: predictions, error: predictionsError } = await supabase
-            .from('predictions')
-            .select('id')
-            .in('game_id', gameResultIds)
+            .select(`
+              id,
+              game_results!inner(is_final),
+              predictions!inner(points_earned)
+            `)
+            .eq('round_id', round.id)
+            .eq('game_results.is_final', true)
+            .not('predictions.points_earned', 'is', null)
             .limit(1);
 
-          if (predictionsError) continue;
-
-          if (predictions?.length) {
+          if (gamesWithPoints?.length) {
+            console.log('Found round with finished games and points:', round.id);
             onRoundChange(round.id);
             break;
           }
         } catch (error) {
-          console.error('Error finding latest round with data:', error);
+          console.error('Error finding latest round with finished games:', error);
           continue;
         }
       }
     }
 
-    findLatestRoundWithData();
+    findLatestRoundWithFinishedGames();
   }, [rounds, selectedRound, onRoundChange]);
 
   if (!rounds?.length) return null;
