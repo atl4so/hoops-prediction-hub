@@ -31,7 +31,7 @@ export function useLeaderboardSort() {
           comparison = (a.total_predictions || 0) - (b.total_predictions || 0);
           break;
         case 'ppg':
-          comparison = (a.points_per_game || 0) - (b.points_per_game || 0);
+          comparison = (a.ppg || 0) - (b.ppg || 0);
           break;
         case 'efficiency':
           comparison = (a.efficiency || 0) - (b.efficiency || 0);
