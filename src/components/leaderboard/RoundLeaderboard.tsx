@@ -4,20 +4,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { LeaderboardRow } from "./LeaderboardRow";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
-import { useState } from "react";
-import { ArrowDown, ArrowUp } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-type SortField = 'points' | 'winner' | 'games';
-type SortDirection = 'asc' | 'desc';
+import { LeaderboardHeader } from "./components/LeaderboardHeader";
+import { useLeaderboardSort } from "./hooks/useLeaderboardSort";
 
 interface RoundLeaderboardProps {
   selectedRound: string;
 }
 
 export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
-  const [sortField, setSortField] = useState<SortField>('points');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const { sortField, sortDirection, handleSort, sortData } = useLeaderboardSort();
 
   const { data: rankings, isLoading } = useQuery({
     queryKey: ["roundRankings", selectedRound],
@@ -30,9 +25,12 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
           total_predictions,
           winner_predictions_correct,
           winner_predictions_total,
+          efficiency_rating,
+          underdog_prediction_rate,
           user:profiles!round_user_stats_user_id_fkey (
             display_name,
-            avatar_url
+            avatar_url,
+            points_per_game
           )
         `)
         .eq('round_id', selectedRound);
@@ -45,65 +43,15 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
         avatar_url: stat.user.avatar_url,
         total_points: stat.total_points,
         total_predictions: stat.total_predictions,
+        ppg: stat.user.points_per_game,
+        efficiency: stat.efficiency_rating,
+        underdog_picks: Math.round(stat.underdog_prediction_rate * stat.total_predictions / 100),
         winner_predictions_correct: stat.winner_predictions_correct,
         winner_predictions_total: stat.winner_predictions_total
       }));
     },
     enabled: !!selectedRound
   });
-
-  const sortData = (data: any[]) => {
-    return [...data].sort((a, b) => {
-      let comparison = 0;
-      
-      switch (sortField) {
-        case 'points':
-          comparison = a.total_points - b.total_points;
-          break;
-        case 'winner':
-          const aWinnerPercent = (a.winner_predictions_correct / a.winner_predictions_total) || 0;
-          const bWinnerPercent = (b.winner_predictions_correct / b.winner_predictions_total) || 0;
-          comparison = aWinnerPercent - bWinnerPercent;
-          break;
-        case 'games':
-          comparison = a.total_predictions - b.total_predictions;
-          break;
-      }
-      
-      return sortDirection === 'desc' ? -comparison : comparison;
-    });
-  };
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'desc' ? 'asc' : 'desc');
-    } else {
-      setSortField(field);
-      setSortDirection('desc');
-    }
-  };
-
-  const SortHeader = ({ field, children }: { field: SortField; children: React.ReactNode }) => {
-    const isActive = sortField === field;
-    return (
-      <div 
-        className="flex items-center gap-1 cursor-pointer group justify-end"
-        onClick={() => handleSort(field)}
-      >
-        {children}
-        <span className={cn(
-          "transition-opacity",
-          isActive ? "opacity-100" : "opacity-0 group-hover:opacity-50"
-        )}>
-          {isActive && sortDirection === 'desc' ? (
-            <ArrowDown className="h-4 w-4" />
-          ) : (
-            <ArrowUp className="h-4 w-4" />
-          )}
-        </span>
-      </div>
-    );
-  };
 
   if (!selectedRound) {
     return (
@@ -132,19 +80,11 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
       <div className="w-full overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow className="hover:bg-transparent border-b-2">
-              <TableHead className="w-[80px] font-bold text-base">Rank</TableHead>
-              <TableHead className="w-[200px] font-bold text-base">Player</TableHead>
-              <TableHead className="w-[120px] text-right font-bold text-base">
-                <SortHeader field="points">Points</SortHeader>
-              </TableHead>
-              <TableHead className="w-[120px] text-right font-bold text-base">
-                <SortHeader field="winner">Winner %</SortHeader>
-              </TableHead>
-              <TableHead className="w-[100px] text-right font-bold text-base">
-                <SortHeader field="games">Games</SortHeader>
-              </TableHead>
-            </TableRow>
+            <LeaderboardHeader 
+              sortField={sortField}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+            />
           </TableHeader>
           <TableBody>
             {sortedData.map((player: any, index: number) => (
@@ -159,7 +99,7 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
             ))}
             {!sortedData?.length && (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
+                <TableCell colSpan={8} className="h-24 text-center">
                   No predictions found for this round
                 </TableCell>
               </TableRow>
