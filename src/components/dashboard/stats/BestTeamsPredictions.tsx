@@ -71,7 +71,7 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
       <CardHeader className="py-3">
         <CardTitle className="flex items-center gap-2 text-base">
           <Trophy className="h-4 w-4 text-primary" />
-          Your Best Teams
+          Best Teams
         </CardTitle>
       </CardHeader>
       <CardContent className="py-2">

@@ -71,7 +71,7 @@ export function WorstTeamsPredictions({ userId }: { userId: string }) {
       <CardHeader className="py-3">
         <CardTitle className="flex items-center gap-2 text-base">
           <Skull className="h-4 w-4 text-destructive" />
-          Your Worst Teams
+          Worst Teams
         </CardTitle>
       </CardHeader>
       <CardContent className="py-2">
