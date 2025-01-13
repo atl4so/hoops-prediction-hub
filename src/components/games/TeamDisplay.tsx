@@ -25,7 +25,7 @@ export function TeamDisplay({ team, align, className, imageClassName }: TeamDisp
     )}>
       <div className={cn(
         "relative flex items-center justify-center",
-        "dark:bg-white dark:rounded-full dark:p-2",
+        "dark:bg-card dark:rounded-full dark:p-2",
         "transition-colors duration-200"
       )}>
         <img 
