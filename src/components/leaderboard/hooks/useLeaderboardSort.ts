@@ -20,21 +20,21 @@ export function useLeaderboardSort() {
       
       switch (sortField) {
         case 'points':
-          comparison = a.total_points - b.total_points;
+          comparison = (a.total_points || 0) - (b.total_points || 0);
           break;
         case 'winner':
-          const aWinnerPercent = (a.winner_predictions_correct / a.winner_predictions_total) || 0;
-          const bWinnerPercent = (b.winner_predictions_correct / b.winner_predictions_total) || 0;
+          const aWinnerPercent = a.winner_predictions_correct / a.winner_predictions_total || 0;
+          const bWinnerPercent = b.winner_predictions_correct / b.winner_predictions_total || 0;
           comparison = aWinnerPercent - bWinnerPercent;
           break;
         case 'games':
-          comparison = a.total_predictions - b.total_predictions;
+          comparison = (a.total_predictions || 0) - (b.total_predictions || 0);
           break;
         case 'ppg':
           comparison = (a.points_per_game || 0) - (b.points_per_game || 0);
           break;
         case 'efficiency':
-          comparison = (a.efficiency_rating || 0) - (b.efficiency_rating || 0);
+          comparison = (a.efficiency || 0) - (b.efficiency || 0);
           break;
         case 'underdog':
           comparison = (a.underdog_picks || 0) - (b.underdog_picks || 0);
