@@ -1,8 +1,7 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useState } from "react";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 import { RankDisplay } from "./components/RankDisplay";
 import { PlayerInfo } from "./components/PlayerInfo";
 import { PlayerDetailsDialog } from "./components/PlayerDetailsDialog";
@@ -37,7 +36,6 @@ export function LeaderboardRow({
   roundId
 }: LeaderboardRowProps) {
   const [showDetails, setShowDetails] = useState(false);
-  const isMobile = useIsMobile();
 
   const calculatePercentage = (correct?: number, total?: number) => {
     if (!correct || !total) return 0;
@@ -80,38 +78,38 @@ export function LeaderboardRow({
         )}
         onClick={handleUserClick}
       >
-        <TableCell className="font-medium py-4 px-4 w-[80px]">
+        <TableCell className="w-20 font-medium py-4">
           <RankDisplay rank={rank} />
         </TableCell>
 
-        <TableCell className="py-4 w-[200px]">
+        <TableCell className="w-48 py-4">
           <PlayerInfo 
             displayName={player.display_name}
             avatarUrl={player.avatar_url}
           />
         </TableCell>
 
-        <TableCell className="text-right py-4 px-4 w-[120px]">
+        <TableCell className="w-28 text-right py-4">
           <span className="font-bold text-base">{player.total_points}</span>
         </TableCell>
 
-        <TableCell className="text-right py-4 px-4 w-[120px]">
+        <TableCell className="w-28 text-right py-4">
           <span className="font-semibold text-base">{player.ppg?.toFixed(1) || '0.0'}</span>
         </TableCell>
 
-        <TableCell className="text-right py-4 px-4 w-[120px]">
+        <TableCell className="w-28 text-right py-4">
           <span className="font-semibold text-base">{player.efficiency?.toFixed(1) || '0.0'}</span>
         </TableCell>
 
-        <TableCell className="text-right py-4 px-4 w-[120px]">
+        <TableCell className="w-28 text-right py-4">
           <span className="font-semibold text-base">{player.underdog_picks || 0}</span>
         </TableCell>
 
-        <TableCell className="text-right py-4 px-4 w-[120px]">
+        <TableCell className="w-28 text-right py-4">
           <span className="font-semibold text-base">{winnerPercentage}%</span>
         </TableCell>
 
-        <TableCell className="text-right py-4 px-4 w-[100px]">
+        <TableCell className="w-24 text-right py-4">
           <span className="font-semibold text-base">{player.total_predictions}</span>
         </TableCell>
       </motion.tr>
