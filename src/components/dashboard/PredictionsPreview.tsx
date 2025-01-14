@@ -32,39 +32,49 @@ interface PredictionsPreviewProps {
   predictions: PredictionData[];
 }
 
-const truncateTeamName = (name: string) => {
-  return name.length > 8 ? name.substring(0, 8) + '.' : name;
-};
-
-const GameCard = ({ prediction }: { prediction: PredictionData }) => {
-  const homeTeamName = truncateTeamName(prediction.game.home_team.name);
-  const awayTeamName = truncateTeamName(prediction.game.away_team.name);
+const GameRow = ({ prediction }: { prediction: PredictionData }) => {
   const finalResult = prediction.game.game_results?.[0];
+  const gameDate = new Date(prediction.game.game_date);
   
   return (
-    <div className="bg-gray-50/80 rounded-lg p-1.5 relative min-h-[60px]">
-      <div className="text-[10px] leading-[14px] font-medium mb-1.5 text-gray-700 truncate pr-8">
-        {homeTeamName} vs {awayTeamName}
+    <div className="flex items-center gap-2 mb-3">
+      <div className="w-32 text-xs text-gray-600">
+        {format(gameDate, 'MM-dd • HH:mm')}
       </div>
-      <div className="flex flex-col gap-1">
-        {finalResult && (
-          <div className="flex items-center gap-1">
-            <span className="text-emerald-600 font-medium text-[10px] leading-[14px]">F</span>
-            <span className="font-medium text-gray-900 text-[10px] leading-[14px]">
-              {finalResult.home_score}-{finalResult.away_score}
-            </span>
-          </div>
-        )}
-        <div className="flex items-center gap-1">
-          <span className="text-blue-600 font-medium text-[10px] leading-[14px]">P</span>
-          <span className="text-gray-600 text-[10px] leading-[14px]">
-            {prediction.prediction.prediction_home_score}-{prediction.prediction.prediction_away_score}
-          </span>
-        </div>
+      
+      <div className="flex items-center gap-1">
+        <img 
+          src={prediction.game.home_team.logo_url} 
+          alt={prediction.game.home_team.name}
+          className="w-6 h-6 object-contain"
+        />
+        
+        <span className={cn(
+          "text-sm font-medium",
+          finalResult && finalResult.home_score > finalResult.away_score ? "text-emerald-600" : "text-gray-900"
+        )}>
+          {finalResult ? finalResult.home_score : prediction.prediction.prediction_home_score}
+        </span>
+        
+        <span className="text-sm text-gray-600">-</span>
+        
+        <span className={cn(
+          "text-sm font-medium",
+          finalResult && finalResult.away_score > finalResult.home_score ? "text-emerald-600" : "text-gray-900"
+        )}>
+          {finalResult ? finalResult.away_score : prediction.prediction.prediction_away_score}
+        </span>
+        
+        <img 
+          src={prediction.game.away_team.logo_url} 
+          alt={prediction.game.away_team.name}
+          className="w-6 h-6 object-contain"
+        />
       </div>
+      
       {prediction.prediction.points_earned !== undefined && (
-        <div className="absolute top-1.5 right-1.5">
-          <span className="text-orange-500 font-bold text-[10px] leading-[14px]">
+        <div className="ml-auto">
+          <span className="text-orange-500 font-bold text-sm">
             {prediction.prediction.points_earned}p
           </span>
         </div>
@@ -79,50 +89,39 @@ export const PredictionsPreview: React.FC<PredictionsPreviewProps> = ({
   predictions,
 }) => {
   const totalPoints = predictions.reduce((sum, pred) => sum + (pred.prediction.points_earned || 0), 0);
-  const firstGame = predictions[0]?.game;
-  const lastGame = predictions[predictions.length - 1]?.game;
-  const dateRange = firstGame && lastGame 
-    ? `${format(new Date(firstGame.game_date), 'MMM d')}-${format(new Date(lastGame.game_date), 'MMM d, yyyy')}`
-    : '';
 
   return (
     <div className="bg-white w-full">
-      <div className="p-2">
+      <div className="p-4">
         {/* Header */}
-        <div className="mb-1.5">
-          <h1 className="text-xs font-bold mb-0.5">
-            euroleague.bet
+        <div className="mb-4">
+          <h1 className="text-lg font-bold mb-1">
+            Round {roundName}
           </h1>
-          <div className="flex items-baseline gap-2 mb-0.5">
-            <span className="text-xs font-bold">Round {roundName}</span>
-            <span className="text-blue-600 text-[10px]">by @{userName}</span>
+          <div className="flex items-center justify-between">
+            <span className="text-blue-600 text-sm">@{userName}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Total Score:</span>
+              <span className="text-lg font-bold text-orange-500">{totalPoints}</span>
+            </div>
           </div>
-          <p className="text-[10px] text-gray-500">{dateRange}</p>
         </div>
 
-        {/* Total Score */}
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[10px] text-gray-600">Total Score:</span>
-          <span className="text-base font-bold text-orange-500">{totalPoints}</span>
-        </div>
-        
-        {/* Game Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1">
+        {/* Games List */}
+        <div className="space-y-1">
           {predictions.map((prediction, index) => (
-            <div key={index}>
-              <GameCard prediction={prediction} />
-            </div>
+            <GameRow key={index} prediction={prediction} />
           ))}
         </div>
       </div>
 
       {/* Footer */}
-      <div className="border-t border-gray-100 p-1 bg-gray-50">
-        <div className="flex items-center justify-between text-[10px]">
-          <span className="text-gray-500">euroleague.bet</span>
+      <div className="border-t border-gray-100 p-2 bg-gray-50">
+        <div className="flex items-center justify-between text-xs text-gray-500">
+          <span>euroleague.bet</span>
           <div className="flex gap-2">
-            <span className="text-gray-500">F = Final</span>
-            <span className="text-gray-500">P = Prediction</span>
+            <span>F = Final</span>
+            <span>P = Prediction</span>
           </div>
         </div>
       </div>
