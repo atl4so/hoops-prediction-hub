@@ -6,7 +6,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Share2, X } from "lucide-react";
+import { Share2 } from "lucide-react";
 import { PredictionsPreview } from "../PredictionsPreview";
 import html2canvas from "html2canvas";
 import { toast } from "sonner";
@@ -125,22 +125,22 @@ export function RoundSummaryDialog({
           Share Round
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-full p-2 sm:p-4 max-w-[95vw] sm:max-w-3xl">
+      <DialogContent className="w-full p-2 sm:p-4 max-w-[95vw] sm:max-w-3xl dark:bg-gray-900">
         <DialogHeader className="mb-2 sm:mb-4">
           <div className="flex items-center justify-between gap-4 pr-8">
-            <DialogTitle className="text-base sm:text-lg">Round {roundName} Summary</DialogTitle>
+            <DialogTitle className="text-base sm:text-lg dark:text-white">Round {roundName} Summary</DialogTitle>
             <Button 
               variant="outline" 
               size="sm"
               onClick={captureAndShare}
               disabled={isCapturing}
-              className="shrink-0"
+              className="shrink-0 dark:text-white dark:hover:text-white"
             >
               <Share2 className="h-4 w-4" />
             </Button>
           </div>
         </DialogHeader>
-        <div id="predictions-preview" className="bg-white rounded-lg overflow-hidden w-full">
+        <div id="predictions-preview" className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden w-full">
           <PredictionsPreview
             userName={userName}
             roundName={roundName}
