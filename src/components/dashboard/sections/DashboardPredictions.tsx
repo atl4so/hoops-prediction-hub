@@ -76,13 +76,6 @@ export const DashboardPredictions = ({ predictionsByRound, userName }: Dashboard
           roundName={round.roundName}
           predictions={round.predictions}
           userName={userName}
-          extraContent={
-            <RoundSummaryDialog
-              roundName={round.roundName}
-              userName={userName}
-              predictions={round.predictions}
-            />
-          }
         />
       ))}
     </div>

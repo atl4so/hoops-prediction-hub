@@ -1,7 +1,6 @@
 import { UserPredictionCard } from "./UserPredictionCard";
 import { DownloadPredictionsButton } from "./DownloadPredictionsButton";
 import { GameCard } from "../games/GameCard";
-import { ReactNode } from "react";
 import { RoundSummaryDialog } from "./predictions/RoundSummaryDialog";
 
 interface Game {
@@ -99,8 +98,12 @@ export function CollapsibleRoundSection({
   });
 
   // Check if all games in the round are finished
-  const isRoundFinished = (predictions: typeof predictions) => {
-    return predictions.every(prediction => 
+  const isRoundFinished = (roundPredictions: Array<{
+    id: string;
+    game: Game;
+    prediction: Prediction | null;
+  }>) => {
+    return roundPredictions.every(prediction => 
       prediction.game.game_results?.some(result => result.is_final)
     );
   };
