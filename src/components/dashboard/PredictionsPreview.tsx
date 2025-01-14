@@ -32,19 +32,23 @@ interface PredictionsPreviewProps {
   predictions: PredictionData[];
 }
 
-const truncateTeamName = (name: string) => {
-  return name.length > 8 ? name.substring(0, 8) + '.' : name;
-};
-
 const GameCard = ({ prediction }: { prediction: PredictionData }) => {
-  const homeTeamName = truncateTeamName(prediction.game.home_team.name);
-  const awayTeamName = truncateTeamName(prediction.game.away_team.name);
   const finalResult = prediction.game.game_results?.[0];
   
   return (
     <div className="bg-gray-50/80 rounded-lg p-1.5 relative min-h-[60px]">
-      <div className="text-[10px] leading-[14px] font-medium mb-1.5 text-gray-700 truncate pr-8">
-        {homeTeamName} vs {awayTeamName}
+      <div className="flex items-center justify-center gap-1 mb-1.5">
+        <img 
+          src={prediction.game.home_team.logo_url} 
+          alt={prediction.game.home_team.name}
+          className="w-4 h-4 object-contain"
+        />
+        <span className="text-[10px] leading-[14px] font-medium text-gray-700">vs</span>
+        <img 
+          src={prediction.game.away_team.logo_url} 
+          alt={prediction.game.away_team.name}
+          className="w-4 h-4 object-contain"
+        />
       </div>
       <div className="flex flex-col gap-1">
         {finalResult && (
