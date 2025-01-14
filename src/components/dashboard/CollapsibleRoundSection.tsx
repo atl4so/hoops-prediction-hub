@@ -100,11 +100,7 @@ export function CollapsibleRoundSection({
   });
 
   // Check if all games in the round are finished
-  const isRoundFinished = (roundPredictions: Array<{
-    id: string;
-    game: Game;
-    prediction: Prediction | null;
-  }>) => {
+  const isRoundFinished = (roundPredictions: typeof predictions) => {
     return roundPredictions.every(prediction => 
       prediction.game.game_results?.some(result => result.is_final)
     );
