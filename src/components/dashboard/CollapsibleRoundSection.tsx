@@ -2,6 +2,7 @@ import { UserPredictionCard } from "./UserPredictionCard";
 import { DownloadPredictionsButton } from "./DownloadPredictionsButton";
 import { GameCard } from "../games/GameCard";
 import { ReactNode } from "react";
+import { RoundSummaryDialog } from "./predictions/RoundSummaryDialog";
 
 interface Game {
   id: string;
@@ -43,7 +44,6 @@ interface CollapsibleRoundSectionProps {
   }>;
   userName: string;
   showGames?: boolean;
-  extraContent?: ReactNode;
 }
 
 export function CollapsibleRoundSection({
@@ -51,7 +51,6 @@ export function CollapsibleRoundSection({
   roundName,
   userName,
   showGames = false,
-  extraContent
 }: CollapsibleRoundSectionProps) {
   if (!predictions?.length) {
     return null;
@@ -99,6 +98,13 @@ export function CollapsibleRoundSection({
     });
   });
 
+  // Check if all games in the round are finished
+  const isRoundFinished = (predictions: typeof predictions) => {
+    return predictions.every(prediction => 
+      prediction.game.game_results?.some(result => result.is_final)
+    );
+  };
+
   return (
     <div className="min-h-[calc(100vh-12rem)] space-y-8">
       {Object.entries(predictionsByRound).map(([roundId, { roundName, predictions: roundPredictions }]) => (
@@ -107,8 +113,14 @@ export function CollapsibleRoundSection({
             <h3 className="text-2xl font-semibold tracking-tight">Round {roundName}</h3>
             
             {!showGames && (
-              <div className="flex justify-end">
-                {extraContent}
+              <div className="flex items-center gap-2">
+                {isRoundFinished(roundPredictions) && (
+                  <RoundSummaryDialog
+                    roundName={roundName}
+                    userName={userName}
+                    predictions={roundPredictions}
+                  />
+                )}
               </div>
             )}
           </div>
