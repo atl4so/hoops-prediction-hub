@@ -6,7 +6,7 @@ import type { StatsListProps } from "@/types/supabase";
 
 export function StatsOverview(props: StatsListProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 rounded-lg bg-accent/30 p-6 backdrop-blur-sm">
       <StatsList {...props} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <BestTeamsPredictions userId={props.userId} />
