@@ -2,6 +2,8 @@ import { UserPredictionCard } from "./UserPredictionCard";
 import { DownloadPredictionsButton } from "./DownloadPredictionsButton";
 import { GameCard } from "../games/GameCard";
 import { RoundSummaryDialog } from "./predictions/RoundSummaryDialog";
+import { Button } from "../ui/button";
+import { Share2 } from "lucide-react";
 
 interface Game {
   id: string;
