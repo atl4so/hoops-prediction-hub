@@ -1,6 +1,8 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Link } from "react-router-dom";
+import { User } from "lucide-react";
 
 interface PlayerStats {
   PlayerName: string;
@@ -22,6 +24,7 @@ interface PlayerStats {
   Turnovers: number;
   FoulsCommited: number;
   Valuation: number;
+  PlayerCode?: string;
 }
 
 interface PlayerStatsTableProps {
@@ -67,14 +70,31 @@ export function PlayerStatsTable({ players, teamName, teamScore }: PlayerStatsTa
                 player.PlayerName !== "Team" && (
                   <TableRow key={index} className="hover:bg-muted/50 border-border/50">
                     <TableCell className="font-medium">
-                      <div className="flex flex-col gap-1.5">
-                        <span>{player.PlayerName}</span>
-                        {player.StartFive && (
-                          <Badge variant="secondary" className="w-fit text-xs">
-                            Starter
-                          </Badge>
-                        )}
-                      </div>
+                      {player.PlayerCode ? (
+                        <Link 
+                          to={`/player/${player.PlayerCode}`}
+                          className="flex flex-col gap-1.5 hover:text-primary transition-colors"
+                        >
+                          <div className="flex items-center gap-2">
+                            <User className="h-4 w-4" />
+                            <span>{player.PlayerName}</span>
+                          </div>
+                          {player.StartFive && (
+                            <Badge variant="secondary" className="w-fit text-xs">
+                              Starter
+                            </Badge>
+                          )}
+                        </Link>
+                      ) : (
+                        <div className="flex flex-col gap-1.5">
+                          <span>{player.PlayerName}</span>
+                          {player.StartFive && (
+                            <Badge variant="secondary" className="w-fit text-xs">
+                              Starter
+                            </Badge>
+                          )}
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell className="text-right font-medium tabular-nums">{player.TimePlayed}</TableCell>
                     <TableCell className="text-right font-bold text-primary tabular-nums">{player.Score}</TableCell>
