@@ -17,7 +17,10 @@ export default function Player() {
       );
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error("Player not found. The player code may be incorrect.");
+          const xmlText = await response.text();
+          const parser = new XMLParser();
+          const errorResult = parser.parse(xmlText);
+          throw new Error(errorResult.NotFoundProblemDetails?.Detail || "Player not found. Please check the player code.");
         }
         throw new Error("Failed to fetch player data");
       }
