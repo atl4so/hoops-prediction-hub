@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface PlayerStats {
   TimePlayed: string;
@@ -144,22 +145,31 @@ export function PlayerEfficiencyMetrics({ stats, teamTotals }: PlayerEfficiencyM
 }
 
 function StatItem({ label, value, tooltip }: { label: string; value: string; tooltip: string }) {
+  const isMobile = useIsMobile();
+
   return (
     <TooltipProvider delayDuration={0}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="flex justify-between items-center cursor-help">
+          <button 
+            className="w-full flex justify-between items-center gap-1 px-1 py-0.5 rounded hover:bg-accent/50 transition-colors"
+            type="button"
+          >
             <span className="text-muted-foreground flex items-center gap-1">
               {label}
-              <Info className="h-3 w-3 text-muted-foreground/50" />
+              <Info className={cn(
+                "h-3 w-3 text-muted-foreground/50",
+                isMobile && "active:text-primary transition-colors"
+              )} />
             </span>
             <span className="font-medium tabular-nums">{value}</span>
-          </div>
+          </button>
         </TooltipTrigger>
         <TooltipContent 
-          side="top" 
+          side={isMobile ? "bottom" : "top"} 
           align="start" 
           className="max-w-[250px] text-sm"
+          sideOffset={5}
         >
           {tooltip}
         </TooltipContent>
