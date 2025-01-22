@@ -1,42 +1,21 @@
 import { Button } from "@/components/ui/button";
-import { Eye, Share2, BarChart3 } from "lucide-react";
-import { toast } from "sonner";
+import { Eye, Share2 } from "lucide-react";
 
 interface PredictionActionsProps {
   onShare: () => void;
   onInsightsClick: () => void;
-  onStatsClick: () => void;
   gameResult?: {
     home_score: number;
     away_score: number;
     is_final: boolean;
   };
-  gameCode?: string;
 }
 
 export function PredictionActions({
   onShare,
   onInsightsClick,
-  onStatsClick,
   gameResult,
-  gameCode
 }: PredictionActionsProps) {
-  console.log('PredictionActions - gameCode:', gameCode, 'gameResult:', gameResult); 
-
-  const handleStatsClick = () => {
-    if (!gameResult?.is_final) {
-      toast.error("Stats are only available for finished games");
-      return;
-    }
-    if (!gameCode) {
-      toast.error("Stats are not available for this game");
-      return;
-    }
-    onStatsClick();
-  };
-
-  const showStats = gameResult?.is_final;
-
   return (
     <div className="mt-6 space-y-3">
       <Button
@@ -58,19 +37,6 @@ export function PredictionActions({
         >
           <Eye className="w-4 h-4 mr-2" />
           How Others Predicted
-        </Button>
-      )}
-      
-      {showStats && (
-        <Button 
-          variant="outline" 
-          className="w-full" 
-          onClick={handleStatsClick}
-          disabled={!gameCode}
-          data-game-code={gameCode}
-        >
-          <BarChart3 className="w-4 h-4 mr-2" />
-          View Game Stats {!gameCode && "(No Stats Available)"}
         </Button>
       )}
     </div>

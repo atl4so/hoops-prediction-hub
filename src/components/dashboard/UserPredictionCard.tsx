@@ -5,14 +5,12 @@ import { PredictionDisplay } from "@/components/games/PredictionDisplay";
 import { PointsBreakdownDialog } from "@/components/games/PointsBreakdownDialog";
 import { PredictionInsightsDialog } from "@/components/games/prediction/PredictionInsightsDialog";
 import { FinishedGameInsightsDialog } from "@/components/games/prediction/insights/FinishedGameInsightsDialog";
-import { GameStatsModal } from "@/components/games/stats/GameStatsModal";
 import { PredictionActions } from "./predictions/card/PredictionActions";
 import { sharePrediction } from "./predictions/card/SharePrediction";
 
 interface UserPredictionCardProps {
   game: {
     id: string;
-    game_code?: string;
     game_date: string;
     home_team: {
       name: string;
@@ -45,13 +43,11 @@ export function UserPredictionCard({
 }: UserPredictionCardProps) {
   const [showPointsBreakdown, setShowPointsBreakdown] = useState(false);
   const [showInsights, setShowInsights] = useState(false);
-  const [showStats, setShowStats] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const gameResult = game.game_results?.[0];
 
   console.log('Game data in UserPredictionCard:', {
     id: game.id,
-    gameCode: game.game_code,
     hasGameResults: !!gameResult,
     isFinal: gameResult?.is_final
   });
@@ -92,9 +88,7 @@ export function UserPredictionCard({
             <PredictionActions
               onShare={handleShare}
               onInsightsClick={() => setShowInsights(true)}
-              onStatsClick={() => setShowStats(true)}
               gameResult={gameResult}
-              gameCode={game.game_code}
             />
           </div>
         </CardContent>
@@ -125,14 +119,6 @@ export function UserPredictionCard({
             home: gameResult.home_score,
             away: gameResult.away_score
           }}
-        />
-      )}
-
-      {game.game_code && (
-        <GameStatsModal
-          isOpen={showStats}
-          onOpenChange={setShowStats}
-          gameId={game.game_code}
         />
       )}
     </>
