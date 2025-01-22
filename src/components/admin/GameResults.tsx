@@ -22,6 +22,7 @@ export function GameResults() {
   const queryClient = useQueryClient();
   const [editingGame, setEditingGame] = useState<string | null>(null);
   const [scores, setScores] = useState({ home: "", away: "" });
+  const [gameCode, setGameCode] = useState("");
 
   // Check if user is admin
   if (!session?.user?.email || session.user.email !== 'likasvy@gmail.com') {
@@ -37,6 +38,7 @@ export function GameResults() {
         .select(`
           id,
           game_date,
+          game_code,
           home_team:teams!games_home_team_id_fkey(id, name, logo_url),
           away_team:teams!games_away_team_id_fkey(id, name, logo_url),
           game_results (
@@ -54,27 +56,42 @@ export function GameResults() {
   });
 
   const updateResult = useMutation({
-    mutationFn: async ({ gameId, homeScore, awayScore }: { gameId: string, homeScore: number, awayScore: number }) => {
-      console.log('Starting game result update:', { gameId, homeScore, awayScore });
+    mutationFn: async ({ gameId, homeScore, awayScore, gameCode }: { gameId: string, homeScore: number, awayScore: number, gameCode?: string }) => {
+      console.log('Starting game result update:', { gameId, homeScore, awayScore, gameCode });
       
-      const { data, error } = await supabase.rpc('update_game_result', {
+      // First update the game result
+      const { data: resultData, error: resultError } = await supabase.rpc('update_game_result', {
         game_id_param: gameId,
         home_score_param: homeScore,
         away_score_param: awayScore
       });
 
-      if (error) {
-        console.error('RPC Error:', error);
-        throw error;
+      if (resultError) {
+        console.error('RPC Error:', resultError);
+        throw resultError;
+      }
+
+      // If game code is provided, update it
+      if (gameCode) {
+        const { error: codeError } = await supabase.rpc('update_game_code', {
+          p_game_id: gameId,
+          p_game_code: gameCode
+        });
+
+        if (codeError) {
+          console.error('Game code update error:', codeError);
+          throw codeError;
+        }
       }
 
       console.log('Game result update successful');
-      return data;
+      return resultData;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['games-with-results'] });
       setEditingGame(null);
       setScores({ home: "", away: "" });
+      setGameCode("");
       toast.success("Game result updated successfully");
     },
     onError: (error: any) => {
@@ -89,6 +106,7 @@ export function GameResults() {
       home: game.game_results?.[0]?.home_score?.toString() || "",
       away: game.game_results?.[0]?.away_score?.toString() || ""
     });
+    setGameCode(game.game_code || "");
   };
 
   const handleSave = async (gameId: string) => {
@@ -101,7 +119,12 @@ export function GameResults() {
     }
 
     try {
-      await updateResult.mutateAsync({ gameId, homeScore, awayScore });
+      await updateResult.mutateAsync({ 
+        gameId, 
+        homeScore, 
+        awayScore,
+        gameCode: gameCode.trim() || undefined
+      });
     } catch (error) {
       console.error('Error in handleSave:', error);
     }
@@ -147,6 +170,15 @@ export function GameResults() {
                       className="w-20"
                       placeholder="Away"
                     />
+                    {game.game_results?.[0]?.is_final && (
+                      <Input
+                        type="text"
+                        value={gameCode}
+                        onChange={(e) => setGameCode(e.target.value)}
+                        className="w-32"
+                        placeholder="Game Code"
+                      />
+                    )}
                     <div className="flex gap-2">
                       <Button
                         size="icon"
@@ -161,6 +193,7 @@ export function GameResults() {
                         onClick={() => {
                           setEditingGame(null);
                           setScores({ home: "", away: "" });
+                          setGameCode("");
                         }}
                       >
                         <X className="h-4 w-4" />
@@ -171,9 +204,16 @@ export function GameResults() {
                   <>
                     <div className="flex-1">
                       {game.game_results?.[0] ? (
-                        <span className="text-lg">
-                          {game.game_results[0].home_score} - {game.game_results[0].away_score}
-                        </span>
+                        <div className="space-y-2">
+                          <span className="text-lg block">
+                            {game.game_results[0].home_score} - {game.game_results[0].away_score}
+                          </span>
+                          {game.game_results[0].is_final && (
+                            <span className="text-sm text-muted-foreground block">
+                              Game Code: {game.game_code || "Not set"}
+                            </span>
+                          )}
+                        </div>
                       ) : (
                         <span className="text-muted-foreground">No result</span>
                       )}
