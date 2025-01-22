@@ -71,6 +71,7 @@ export function useUserPredictions(userId: string | null) {
             game:games (
               id,
               game_date,
+              game_code,
               round_id,
               round:rounds (
                 id,
