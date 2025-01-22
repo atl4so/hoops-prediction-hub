@@ -8,6 +8,7 @@ import type { ScheduleItem, GameResult } from "@/types/euroleague-api";
 import { XMLParser } from "fast-xml-parser";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import { 
   Pagination, 
   PaginationContent, 
@@ -257,4 +258,3 @@ export default function GameStats() {
     </div>
   );
 }
-
