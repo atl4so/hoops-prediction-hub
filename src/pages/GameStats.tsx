@@ -29,6 +29,35 @@ export default function GameStats() {
   const totalRounds = 34;
 
   useEffect(() => {
+    const findLatestRoundWithResults = async () => {
+      try {
+        // Start from the latest round and work backwards
+        for (let round = totalRounds; round >= 1; round--) {
+          const resultsResponse = await fetch(
+            `https://api-live.euroleague.net/v1/results?seasonCode=E2024&gameNumber=${round}`
+          );
+          
+          if (!resultsResponse.ok) continue;
+          
+          const resultsXml = await resultsResponse.text();
+          const parser = new XMLParser();
+          const resultsData = parser.parse(resultsXml);
+          
+          // Check if there are any results for this round
+          if (resultsData.results?.game) {
+            setCurrentRound(round);
+            break;
+          }
+        }
+      } catch (err) {
+        console.error('Error finding latest round:', err);
+      }
+    };
+
+    findLatestRoundWithResults();
+  }, []);
+
+  useEffect(() => {
     const fetchRoundData = async () => {
       try {
         setLoading(true);
