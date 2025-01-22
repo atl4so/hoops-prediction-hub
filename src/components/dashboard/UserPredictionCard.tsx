@@ -49,10 +49,14 @@ export function UserPredictionCard({
   const contentRef = useRef<HTMLDivElement>(null);
   const gameResult = game.game_results?.[0];
 
+  // Force a game code for finished games if one isn't present
+  const effectiveGameCode = gameResult?.is_final ? (game.game_code || game.id) : game.game_code;
+
   console.log('Game data in UserPredictionCard:', {
     id: game.id,
-    gameCode: game.game_code,
-    hasGameCode: !!game.game_code
+    gameCode: effectiveGameCode,
+    hasGameResults: !!gameResult,
+    isFinal: gameResult?.is_final
   });
 
   const handlePointsClick = () => {
@@ -93,7 +97,7 @@ export function UserPredictionCard({
               onInsightsClick={() => setShowInsights(true)}
               onStatsClick={() => setShowStats(true)}
               gameResult={gameResult}
-              gameCode={game.game_code}
+              gameCode={effectiveGameCode}
             />
           </div>
         </CardContent>
@@ -127,11 +131,11 @@ export function UserPredictionCard({
         />
       )}
 
-      {game.game_code && (
+      {effectiveGameCode && (
         <GameStatsModal
           isOpen={showStats}
           onOpenChange={setShowStats}
-          gameId={game.game_code}
+          gameId={effectiveGameCode}
         />
       )}
     </>
