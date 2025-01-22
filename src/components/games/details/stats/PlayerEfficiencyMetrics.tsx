@@ -155,14 +155,36 @@ function StatItem({ label, value, tooltip }: { label: string; value: string; too
     }
   };
 
+  const handleMouseEnter = () => {
+    if (!isMobile) {
+      setIsOpen(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!isMobile) {
+      setIsOpen(false);
+    }
+  };
+
   return (
     <TooltipProvider delayDuration={0}>
-      <Tooltip open={isMobile ? isOpen : undefined} onOpenChange={setIsOpen}>
+      <Tooltip 
+        open={isMobile ? isOpen : undefined}
+        onOpenChange={setIsOpen}
+      >
         <TooltipTrigger asChild>
           <button 
-            className="w-full flex justify-between items-center gap-1 px-1 py-0.5 rounded hover:bg-accent/50 transition-colors"
+            className={cn(
+              "w-full flex justify-between items-center gap-1 px-1 py-0.5 rounded",
+              "hover:bg-accent/50 active:bg-accent/70 transition-colors",
+              "focus:outline-none focus:ring-2 focus:ring-primary/20",
+              isOpen && "bg-accent/50"
+            )}
             type="button"
             onClick={handleClick}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
           >
             <span className="text-muted-foreground flex items-center gap-1">
               {label}
