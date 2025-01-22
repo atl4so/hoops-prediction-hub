@@ -49,13 +49,12 @@ export function UserPredictionCard({
   const [showInsights, setShowInsights] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const gameResult = game.game_results?.[0];
-  const hasGameCode = game.game_code && game.game_code.length > 0;
+  const hasGameCode = !!game.game_code;
 
   console.log('Game data:', {
     id: game.id,
     gameCode: game.game_code,
-    hasGameCode,
-    gameResults: game.game_results
+    hasGameCode
   });
 
   const handlePointsClick = () => {
