@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Check, X, Home, Plane } from "lucide-react";
 import { RoundSelector } from "../predictions/RoundSelector";
@@ -18,6 +18,7 @@ export function HomeAwayPredictionsDialog({
   userId,
 }: HomeAwayPredictionsDialogProps) {
   const [selectedRound, setSelectedRound] = useState("");
+  const queryClient = useQueryClient();
 
   // Set up real-time subscription for game results
   useEffect(() => {
@@ -42,7 +43,7 @@ export function HomeAwayPredictionsDialog({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [isOpen, selectedRound, userId]);
+  }, [isOpen, selectedRound, userId, queryClient]);
 
   const { data: predictions, isLoading } = useQuery({
     queryKey: ['round-home-away-predictions', userId, selectedRound],
