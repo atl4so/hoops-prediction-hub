@@ -29,8 +29,7 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
           underdog_prediction_rate,
           user:profiles!round_user_stats_user_id_fkey (
             display_name,
-            avatar_url,
-            points_per_game
+            avatar_url
           )
         `)
         .eq('round_id', selectedRound);
@@ -43,7 +42,7 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
         avatar_url: stat.user.avatar_url,
         total_points: stat.total_points,
         total_predictions: stat.total_predictions,
-        ppg: stat.user.points_per_game,
+        ppg: stat.total_predictions > 0 ? (stat.total_points / stat.total_predictions) : 0,
         efficiency: stat.efficiency_rating,
         underdog_picks: Math.round(stat.underdog_prediction_rate * stat.total_predictions / 100),
         winner_predictions_correct: stat.winner_predictions_correct,
