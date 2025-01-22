@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar, Clock } from "lucide-react";
 import type { ScheduleItem } from "@/types/euroleague-api";
-import { fast } from "fast-xml-parser";
+import { XMLParser } from "fast-xml-parser";
 
 export default function GameStats() {
   const [schedules, setSchedules] = useState<ScheduleItem[]>([]);
@@ -24,7 +24,7 @@ export default function GameStats() {
         }
 
         const xmlText = await response.text();
-        const parser = new fast.XMLParser({ ignoreAttributes: false });
+        const parser = new XMLParser({ ignoreAttributes: false });
         const result = parser.parse(xmlText);
         
         if (result.schedule?.item) {
