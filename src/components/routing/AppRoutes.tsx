@@ -13,6 +13,7 @@ import Terms from "@/pages/Terms";
 import MyPredictions from "@/pages/MyPredictions";
 import Teams from "@/pages/Teams";
 import GameStats from "@/pages/GameStats";
+import Game from "@/pages/Game";
 
 export const AppRoutes = () => {
   return (
@@ -31,6 +32,7 @@ export const AppRoutes = () => {
         <Route path="/rules" element={<Rules />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/game-stats" element={<GameStats />} />
+        <Route path="/game/:gameCode" element={<Game />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </MainLayout>
