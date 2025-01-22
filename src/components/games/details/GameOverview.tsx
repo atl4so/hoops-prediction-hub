@@ -1,8 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { MapPin, Users, Calendar, Clock } from "lucide-react";
 import { format, parseISO } from "date-fns";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface GameOverviewProps {
   game: {
@@ -41,18 +41,29 @@ export function GameOverview({ game }: GameOverviewProps) {
       {/* Game Header */}
       <Card className="bg-gradient-to-br from-background to-muted/5 border border-border/50">
         <CardContent className="p-6 sm:p-8">
-          <div className="text-center space-y-6">
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 text-2xl sm:text-3xl font-display">
-              <span className="font-semibold">{game.localclub.name}</span>
-              <span className="text-muted-foreground text-lg sm:text-xl">vs</span>
-              <span className="font-semibold">{game.roadclub.name}</span>
+          <Tabs defaultValue="home" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="home">Home</TabsTrigger>
+              <TabsTrigger value="away">Away</TabsTrigger>
+            </TabsList>
+            <div className="text-center space-y-6">
+              <TabsContent value="home" className="mt-0">
+                <h2 className="text-2xl sm:text-3xl font-display font-semibold">
+                  {game.localclub.name}
+                </h2>
+              </TabsContent>
+              <TabsContent value="away" className="mt-0">
+                <h2 className="text-2xl sm:text-3xl font-display font-semibold">
+                  {game.roadclub.name}
+                </h2>
+              </TabsContent>
+              <div className="flex justify-center items-center gap-6 sm:gap-8">
+                <span className="text-4xl sm:text-6xl font-display font-bold tracking-tight">{game.localclub.score}</span>
+                <span className="text-2xl sm:text-4xl text-muted-foreground">-</span>
+                <span className="text-4xl sm:text-6xl font-display font-bold tracking-tight">{game.roadclub.score}</span>
+              </div>
             </div>
-            <div className="flex justify-center items-center gap-6 sm:gap-8">
-              <span className="text-4xl sm:text-6xl font-display font-bold tracking-tight">{game.localclub.score}</span>
-              <span className="text-2xl sm:text-4xl text-muted-foreground">-</span>
-              <span className="text-4xl sm:text-6xl font-display font-bold tracking-tight">{game.roadclub.score}</span>
-            </div>
-          </div>
+          </Tabs>
         </CardContent>
       </Card>
 
@@ -131,19 +142,19 @@ export function GameOverview({ game }: GameOverviewProps) {
               <TableBody>
                 <TableRow className="hover:bg-transparent border-border/50">
                   <TableCell className="font-medium">{game.localclub.name}</TableCell>
-                  <TableCell className="text-center font-medium">{game.localclub.partials.Partial1}</TableCell>
-                  <TableCell className="text-center font-medium">{game.localclub.partials.Partial2}</TableCell>
-                  <TableCell className="text-center font-medium">{game.localclub.partials.Partial3}</TableCell>
-                  <TableCell className="text-center font-medium">{game.localclub.partials.Partial4}</TableCell>
-                  <TableCell className="text-center font-bold text-lg text-primary">{game.localclub.score}</TableCell>
+                  <TableCell className="text-center font-medium tabular-nums">{game.localclub.partials.Partial1}</TableCell>
+                  <TableCell className="text-center font-medium tabular-nums">{game.localclub.partials.Partial2}</TableCell>
+                  <TableCell className="text-center font-medium tabular-nums">{game.localclub.partials.Partial3}</TableCell>
+                  <TableCell className="text-center font-medium tabular-nums">{game.localclub.partials.Partial4}</TableCell>
+                  <TableCell className="text-center font-bold text-lg text-primary tabular-nums">{game.localclub.score}</TableCell>
                 </TableRow>
                 <TableRow className="hover:bg-transparent border-border/50">
                   <TableCell className="font-medium">{game.roadclub.name}</TableCell>
-                  <TableCell className="text-center font-medium">{game.roadclub.partials.Partial1}</TableCell>
-                  <TableCell className="text-center font-medium">{game.roadclub.partials.Partial2}</TableCell>
-                  <TableCell className="text-center font-medium">{game.roadclub.partials.Partial3}</TableCell>
-                  <TableCell className="text-center font-medium">{game.roadclub.partials.Partial4}</TableCell>
-                  <TableCell className="text-center font-bold text-lg text-primary">{game.roadclub.score}</TableCell>
+                  <TableCell className="text-center font-medium tabular-nums">{game.roadclub.partials.Partial1}</TableCell>
+                  <TableCell className="text-center font-medium tabular-nums">{game.roadclub.partials.Partial2}</TableCell>
+                  <TableCell className="text-center font-medium tabular-nums">{game.roadclub.partials.Partial3}</TableCell>
+                  <TableCell className="text-center font-medium tabular-nums">{game.roadclub.partials.Partial4}</TableCell>
+                  <TableCell className="text-center font-bold text-lg text-primary tabular-nums">{game.roadclub.score}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
