@@ -49,13 +49,12 @@ export function UserPredictionCard({
   const [showInsights, setShowInsights] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const gameResult = game.game_results?.[0];
-  const hasValidGameCode = game.game_code && /^\d+$/.test(game.game_code);
+  const hasGameCode = game.game_code && game.game_code.length > 0;
 
   console.log('Game data:', {
     id: game.id,
     gameCode: game.game_code,
-    hasValidGameCode,
-    isFinished: gameResult?.is_final,
+    hasGameCode,
     gameResults: game.game_results
   });
 
@@ -238,7 +237,7 @@ export function UserPredictionCard({
                 </Button>
               )}
               
-              {gameResult?.is_final && hasValidGameCode && (
+              {hasGameCode && (
                 <Button 
                   variant="outline" 
                   className="w-full" 
@@ -281,7 +280,7 @@ export function UserPredictionCard({
         />
       )}
 
-      {gameResult?.is_final && hasValidGameCode && (
+      {hasGameCode && (
         <GameStatsModal
           isOpen={showStats}
           onOpenChange={setShowStats}
