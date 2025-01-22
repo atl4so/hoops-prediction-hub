@@ -49,12 +49,15 @@ export function UserPredictionCard({
   const contentRef = useRef<HTMLDivElement>(null);
   const gameResult = game.game_results?.[0];
 
-  // Force a game code for finished games if one isn't present
-  const effectiveGameCode = gameResult?.is_final ? (game.game_code || game.id) : game.game_code;
+  // Only use game_code if it exists and is numeric
+  const effectiveGameCode = gameResult?.is_final && game.game_code && /^\d+$/.test(game.game_code) 
+    ? game.game_code 
+    : undefined;
 
   console.log('Game data in UserPredictionCard:', {
     id: game.id,
     gameCode: effectiveGameCode,
+    originalGameCode: game.game_code,
     hasGameResults: !!gameResult,
     isFinal: gameResult?.is_final
   });

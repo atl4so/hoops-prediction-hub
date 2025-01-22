@@ -66,10 +66,11 @@ export function PredictionActions({
           variant="outline" 
           className="w-full" 
           onClick={handleStatsClick}
+          disabled={!gameCode}
           data-game-code={gameCode}
         >
           <BarChart3 className="w-4 h-4 mr-2" />
-          View Game Stats
+          View Game Stats {!gameCode && "(No Stats Available)"}
         </Button>
       )}
     </div>
