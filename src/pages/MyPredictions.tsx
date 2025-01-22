@@ -9,17 +9,68 @@ import { CollapsibleRoundSection } from "@/components/dashboard/CollapsibleRound
 import { Button } from "@/components/ui/button";
 import { LogIn } from "lucide-react";
 import { RoundSelector } from "@/components/dashboard/predictions/RoundSelector";
+import { useQuery } from "@tanstack/react-query";
 
 export default function MyPredictions() {
   const session = useSession();
   const navigate = useNavigate();
+  const [selectedRound, setSelectedRound] = useState("");
+
+  // Query to get the latest round with finished games and predictions
+  const { data: latestRoundWithData } = useQuery({
+    queryKey: ["latest-round-with-data"],
+    queryFn: async () => {
+      console.log('Fetching latest round with data...');
+      
+      // Get all rounds ordered by start date (most recent first)
+      const { data: rounds, error: roundsError } = await supabase
+        .from('rounds')
+        .select('id, name')
+        .order('start_date', { ascending: false });
+
+      if (roundsError) throw roundsError;
+
+      // For each round, check if it has both predictions and finished games
+      for (const round of rounds || []) {
+        // Check for finished games with results
+        const { data: games, error: gamesError } = await supabase
+          .from('games')
+          .select(`
+            id,
+            game_results!inner (is_final)
+          `)
+          .eq('round_id', round.id)
+          .eq('game_results.is_final', true)
+          .limit(1);
+
+        if (gamesError) {
+          console.error('Error checking games:', gamesError);
+          continue;
+        }
+
+        if (games?.length > 0) {
+          console.log('Found latest round with finished games:', round.id, 'Round name:', round.name);
+          return round.id;
+        }
+      }
+      
+      console.log('No rounds with finished games found');
+      return "";
+    },
+  });
+
+  useEffect(() => {
+    if (latestRoundWithData) {
+      setSelectedRound(latestRoundWithData);
+    }
+  }, [latestRoundWithData]);
+
   const [predictions, setPredictions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedRound, setSelectedRound] = useState("");
 
   useEffect(() => {
     const fetchPredictions = async () => {
-      if (!session?.user?.id) {
+      if (!session?.user?.id || !selectedRound) {
         setIsLoading(false);
         return;
       }
@@ -117,19 +168,6 @@ export default function MyPredictions() {
               Log In
             </Button>
           </div>
-        </Card>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="container max-w-5xl mx-auto py-8 animate-fade-in">
-        <PageHeader title="My Predictions">
-          <p className="text-muted-foreground">Track your predictions and their outcomes</p>
-        </PageHeader>
-        <Card className="p-6">
-          <p className="text-muted-foreground">Loading predictions...</p>
         </Card>
       </div>
     );
