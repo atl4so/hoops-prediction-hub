@@ -58,6 +58,7 @@ export function PlayerStatsTable({ players, teamName, teamScore }: PlayerStatsTa
                 <TableHead className="text-right">3FG</TableHead>
                 <TableHead className="text-right">%</TableHead>
                 <TableHead className="text-right">FT</TableHead>
+                <TableHead className="text-right">%</TableHead>
                 <TableHead className="text-right">OREB</TableHead>
                 <TableHead className="text-right">DREB</TableHead>
                 <TableHead className="text-right">REB</TableHead>
@@ -90,6 +91,7 @@ export function PlayerStatsTable({ players, teamName, teamScore }: PlayerStatsTa
                     <TableCell className="text-right tabular-nums">{player.FieldGoalsMade3}-{player.FieldGoalsAttempted3}</TableCell>
                     <TableCell className="text-right tabular-nums">{calculatePercentage(player.FieldGoalsMade3, player.FieldGoalsAttempted3)}%</TableCell>
                     <TableCell className="text-right tabular-nums">{player.FreeThrowsMade}-{player.FreeThrowsAttempted}</TableCell>
+                    <TableCell className="text-right tabular-nums">{calculatePercentage(player.FreeThrowsMade, player.FreeThrowsAttempted)}%</TableCell>
                     <TableCell className="text-right tabular-nums">{player.OffensiveRebounds}</TableCell>
                     <TableCell className="text-right tabular-nums">{player.DefensiveRebounds}</TableCell>
                     <TableCell className="text-right tabular-nums">{player.TotalRebounds}</TableCell>
