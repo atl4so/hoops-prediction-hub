@@ -52,7 +52,7 @@ export function PlayerStatsTable({ players, teamName, teamScore }: PlayerStatsTa
               <TableRow className="hover:bg-transparent border-border/50">
                 <TableHead className="min-w-[180px]">Player</TableHead>
                 <TableHead className="text-right">MIN</TableHead>
-                <TableHead className="text-right">PTS</TableHead>
+                <TableHead className="text-right font-bold text-primary">PTS</TableHead>
                 <TableHead className="text-right">2FG</TableHead>
                 <TableHead className="text-right">%</TableHead>
                 <TableHead className="text-right">3FG</TableHead>
@@ -61,13 +61,13 @@ export function PlayerStatsTable({ players, teamName, teamScore }: PlayerStatsTa
                 <TableHead className="text-right">%</TableHead>
                 <TableHead className="text-right">OREB</TableHead>
                 <TableHead className="text-right">DREB</TableHead>
-                <TableHead className="text-right">REB</TableHead>
-                <TableHead className="text-right">AST</TableHead>
-                <TableHead className="text-right">STL</TableHead>
-                <TableHead className="text-right">BLK</TableHead>
-                <TableHead className="text-right">TO</TableHead>
+                <TableHead className="text-right font-bold text-orange-500">REB</TableHead>
+                <TableHead className="text-right font-bold text-blue-500">AST</TableHead>
+                <TableHead className="text-right text-green-500">STL</TableHead>
+                <TableHead className="text-right text-yellow-500">BLK</TableHead>
+                <TableHead className="text-right text-red-500">TO</TableHead>
                 <TableHead className="text-right">PF</TableHead>
-                <TableHead className="text-right">PIR</TableHead>
+                <TableHead className="text-right font-bold text-secondary-foreground">PIR</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -94,13 +94,13 @@ export function PlayerStatsTable({ players, teamName, teamScore }: PlayerStatsTa
                     <TableCell className="text-right tabular-nums">{calculatePercentage(player.FreeThrowsMade, player.FreeThrowsAttempted)}%</TableCell>
                     <TableCell className="text-right tabular-nums">{player.OffensiveRebounds}</TableCell>
                     <TableCell className="text-right tabular-nums">{player.DefensiveRebounds}</TableCell>
-                    <TableCell className="text-right tabular-nums">{player.TotalRebounds}</TableCell>
-                    <TableCell className="text-right tabular-nums">{player.Assistances}</TableCell>
-                    <TableCell className="text-right tabular-nums">{player.Steals}</TableCell>
-                    <TableCell className="text-right tabular-nums">{player.BlocksFavour}</TableCell>
-                    <TableCell className="text-right tabular-nums">{player.Turnovers}</TableCell>
+                    <TableCell className="text-right font-bold text-orange-500 tabular-nums">{player.TotalRebounds}</TableCell>
+                    <TableCell className="text-right font-bold text-blue-500 tabular-nums">{player.Assistances}</TableCell>
+                    <TableCell className="text-right text-green-500 tabular-nums">{player.Steals}</TableCell>
+                    <TableCell className="text-right text-yellow-500 tabular-nums">{player.BlocksFavour}</TableCell>
+                    <TableCell className="text-right text-red-500 tabular-nums">{player.Turnovers}</TableCell>
                     <TableCell className="text-right tabular-nums">{player.FoulsCommited}</TableCell>
-                    <TableCell className="text-right font-medium tabular-nums">{player.Valuation}</TableCell>
+                    <TableCell className="text-right font-bold text-secondary-foreground tabular-nums">{player.Valuation}</TableCell>
                   </TableRow>
                 )
               ))}
