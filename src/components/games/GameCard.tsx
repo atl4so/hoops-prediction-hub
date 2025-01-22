@@ -87,6 +87,9 @@ export function GameCard({
                   prediction={prediction}
                   isAuthenticated={isAuthenticated}
                   userId={userId}
+                  homeTeam={game.home_team}
+                  awayTeam={game.away_team}
+                  onPrediction={() => {}}
                 />
               )}
               
