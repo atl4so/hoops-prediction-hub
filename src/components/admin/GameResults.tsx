@@ -32,12 +32,13 @@ export function GameResults() {
   const updatePartizanParis = async () => {
     const partizanGame = games?.find(
       game => 
-        (game.home_team.name.includes("Partizan") && game.away_team.name.includes("Paris")) ||
-        (game.away_team.name.includes("Partizan") && game.home_team.name.includes("Paris"))
+        game.round_id === "23" && // Specifically target Round 23
+        ((game.home_team.name.includes("Partizan") && game.away_team.name.includes("Paris")) ||
+        (game.away_team.name.includes("Partizan") && game.home_team.name.includes("Paris")))
     );
 
     if (!partizanGame) {
-      toast.error("Partizan vs Paris game not found");
+      toast.error("Partizan vs Paris game not found in Round 23");
       return;
     }
 
