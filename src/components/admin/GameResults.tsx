@@ -55,10 +55,37 @@ export function GameResults() {
     }
   };
 
-  // Call the update function immediately when component mounts
-  React.useEffect(() => {
+  const updateLyonPartizan = async () => {
+    const lyonPartizanGame = games?.find(
+      game => 
+        (game.home_team.name.toLowerCase().includes("lyon") && game.away_team.name.toLowerCase().includes("partizan")) ||
+        (game.away_team.name.toLowerCase().includes("lyon") && game.home_team.name.toLowerCase().includes("partizan"))
+    );
+
+    if (!lyonPartizanGame) {
+      toast.error("Lyon vs Partizan game not found");
+      return;
+    }
+
+    try {
+      await updateResult.mutateAsync({
+        gameId: lyonPartizanGame.id,
+        homeScore: 62,
+        awayScore: 93,
+        gameCode: lyonPartizanGame.game_code
+      });
+      toast.success("Game result updated successfully");
+    } catch (error) {
+      console.error('Error updating Lyon vs Partizan game:', error);
+      toast.error("Failed to update game result");
+    }
+  };
+
+  // Call both update functions when component mounts
+  useState(() => {
     updatePartizanParis();
-  }, [games]); // Only run when games data is available
+    updateLyonPartizan();
+  });
 
   const handleSave = async (gameId: string) => {
     const homeScore = parseInt(scores.home);
