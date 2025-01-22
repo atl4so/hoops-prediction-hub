@@ -34,22 +34,24 @@ export function useGameResults() {
     mutationFn: async ({ gameId, homeScore, awayScore, gameCode }: { gameId: string, homeScore: number, awayScore: number, gameCode?: string }) => {
       console.log('Starting game result update:', { gameId, homeScore, awayScore, gameCode });
       
-      const { data: resultData, error: resultError } = await supabase.rpc('update_game_result', {
+      // First update the game result
+      const { error: resultError } = await supabase.rpc('update_game_result', {
         game_id_param: gameId,
         home_score_param: homeScore,
         away_score_param: awayScore
       });
 
       if (resultError) {
-        console.error('RPC Error:', resultError);
+        console.error('Game result update error:', resultError);
         throw resultError;
       }
 
-      if (gameCode) {
-        const { error: codeError } = await supabase.rpc('update_game_code', {
-          p_game_id: gameId,
-          p_game_code: gameCode
-        });
+      // Then update the game code if provided
+      if (gameCode !== undefined) {
+        const { error: codeError } = await supabase
+          .from('games')
+          .update({ game_code: gameCode.trim() || null })
+          .eq('id', gameId);
 
         if (codeError) {
           console.error('Game code update error:', codeError);
@@ -57,8 +59,7 @@ export function useGameResults() {
         }
       }
 
-      console.log('Game result update successful');
-      return resultData;
+      console.log('Game result and code update successful');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['games-with-results'] });

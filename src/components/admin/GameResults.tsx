@@ -47,7 +47,7 @@ export function GameResults() {
         gameId, 
         homeScore, 
         awayScore,
-        gameCode: gameCode.trim() || undefined
+        gameCode: gameCode
       });
       setEditingGame(null);
       setScores({ home: "", away: "" });
