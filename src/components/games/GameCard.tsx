@@ -4,10 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
-import { PredictionDialog } from "../predictions/PredictionDialog";
 import { useState } from "react";
 import { Trophy, Clock } from "lucide-react";
 import { PredictionInsightsDialog } from "./prediction/PredictionInsightsDialog";
+import { PredictionForm } from "./prediction/PredictionForm";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface GameCardProps {
   game: {
@@ -47,8 +49,12 @@ interface GameCardProps {
 
 export function GameCard({ game, isAuthenticated, prediction, userId }: GameCardProps) {
   const navigate = useNavigate();
-  const [isPredictionOpen, setIsPredictionOpen] = useState(false);
+  const [showPredictionForm, setShowPredictionForm] = useState(false);
   const [isInsightsOpen, setIsInsightsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [homeScore, setHomeScore] = useState("");
+  const [awayScore, setAwayScore] = useState("");
+  
   const gameDate = new Date(game.game_date);
   const isFuture = gameDate > new Date();
   const finalResult = game.game_results?.find(result => result.is_final);
@@ -58,7 +64,46 @@ export function GameCard({ game, isAuthenticated, prediction, userId }: GameCard
       navigate('/login');
       return;
     }
-    setIsPredictionOpen(true);
+    setShowPredictionForm(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!userId || !game.id) return;
+    
+    const homeScoreNum = parseInt(homeScore);
+    const awayScoreNum = parseInt(awayScore);
+
+    if (isNaN(homeScoreNum) || isNaN(awayScoreNum)) {
+      toast.error("Please enter valid scores");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const { error } = await supabase
+        .from("predictions")
+        .insert({
+          user_id: userId,
+          game_id: game.id,
+          prediction_home_score: homeScoreNum,
+          prediction_away_score: awayScoreNum,
+        });
+
+      if (error) throw error;
+
+      toast.success("Prediction submitted successfully!");
+      setShowPredictionForm(false);
+      setHomeScore("");
+      setAwayScore("");
+    } catch (error) {
+      console.error('Error submitting prediction:', error);
+      toast.error("Failed to submit prediction. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -158,22 +203,26 @@ export function GameCard({ game, isAuthenticated, prediction, userId }: GameCard
                   >
                     How Others Predict
                   </Button>
+                  
+                  {showPredictionForm && (
+                    <PredictionForm
+                      homeTeam={game.home_team}
+                      awayTeam={game.away_team}
+                      homeScore={homeScore}
+                      awayScore={awayScore}
+                      onHomeScoreChange={setHomeScore}
+                      onAwayScoreChange={setAwayScore}
+                      onSubmit={handleSubmit}
+                      onCancel={() => setShowPredictionForm(false)}
+                      isSubmitting={isSubmitting}
+                    />
+                  )}
                 </div>
               )
             )}
           </div>
         </CardContent>
       </Card>
-
-      <PredictionDialog
-        isOpen={isPredictionOpen}
-        onOpenChange={setIsPredictionOpen}
-        gameId={game.id}
-        userId={userId}
-        gameDate={game.game_date}
-        homeTeam={game.home_team}
-        awayTeam={game.away_team}
-      />
 
       <PredictionInsightsDialog
         isOpen={isInsightsOpen}
