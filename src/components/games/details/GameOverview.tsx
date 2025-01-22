@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import { MapPin, Users, Calendar, Clock } from "lucide-react";
 import { format, parseISO } from "date-fns";
 
@@ -38,13 +39,13 @@ export function GameOverview({ game }: GameOverviewProps) {
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Game Header */}
-      <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-2 border-primary/20">
+      <Card className="bg-gradient-to-br from-background to-muted/5 border border-border/50">
         <CardContent className="p-6 sm:p-8">
           <div className="text-center space-y-6">
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 text-2xl sm:text-3xl font-display font-bold">
-              <span className="text-primary/90">{game.localclub.name}</span>
-              <span className="text-muted-foreground">vs</span>
-              <span className="text-primary/90">{game.roadclub.name}</span>
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 text-2xl sm:text-3xl font-display">
+              <span className="font-semibold">{game.localclub.name}</span>
+              <span className="text-muted-foreground text-lg sm:text-xl">vs</span>
+              <span className="font-semibold">{game.roadclub.name}</span>
             </div>
             <div className="flex justify-center items-center gap-6 sm:gap-8">
               <span className="text-4xl sm:text-6xl font-display font-bold tracking-tight">{game.localclub.score}</span>
@@ -56,28 +57,28 @@ export function GameOverview({ game }: GameOverviewProps) {
       </Card>
 
       {/* Game Info */}
-      <Card className="overflow-hidden">
+      <Card className="bg-gradient-to-br from-background to-muted/5 border border-border/50">
         <CardContent className="p-6 sm:p-8">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {game.stadiumname && (
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <MapPin className="h-6 w-6 text-primary" />
+                  <MapPin className="h-5 w-5 text-primary" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground font-medium">Location</p>
-                  <p className="font-semibold mt-1">{game.stadiumname}</p>
+                  <p className="font-medium mt-1">{game.stadiumname}</p>
                 </div>
               </div>
             )}
             {game.audience && (
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Users className="h-6 w-6 text-primary" />
+                  <Users className="h-5 w-5 text-primary" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground font-medium">Attendance</p>
-                  <p className="font-semibold mt-1">{game.audience.toLocaleString()}</p>
+                  <p className="font-medium mt-1">{game.audience.toLocaleString()}</p>
                 </div>
               </div>
             )}
@@ -85,22 +86,22 @@ export function GameOverview({ game }: GameOverviewProps) {
               <>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Calendar className="h-6 w-6 text-primary" />
+                    <Calendar className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground font-medium">Date</p>
-                    <p className="font-semibold mt-1">
+                    <p className="font-medium mt-1">
                       {format(gameDate, 'MMMM d, yyyy')}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Clock className="h-6 w-6 text-primary" />
+                    <Clock className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground font-medium">Time (CET)</p>
-                    <p className="font-semibold mt-1">
+                    <p className="font-medium mt-1">
                       {format(gameDate, 'HH:mm')}
                     </p>
                   </div>
@@ -112,13 +113,13 @@ export function GameOverview({ game }: GameOverviewProps) {
       </Card>
 
       {/* Quarter Scores */}
-      <Card>
+      <Card className="bg-gradient-to-br from-background to-muted/5 border border-border/50">
         <CardContent className="p-6 sm:p-8">
-          <h3 className="text-lg font-display font-semibold mb-6">Quarter Scores</h3>
+          <h3 className="text-lg font-semibold mb-6">Quarter Scores</h3>
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="hover:bg-transparent">
+                <TableRow className="hover:bg-transparent border-border/50">
                   <TableHead className="w-[200px]">Team</TableHead>
                   <TableHead className="text-center">Q1</TableHead>
                   <TableHead className="text-center">Q2</TableHead>
@@ -128,7 +129,7 @@ export function GameOverview({ game }: GameOverviewProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow className="hover:bg-transparent">
+                <TableRow className="hover:bg-transparent border-border/50">
                   <TableCell className="font-medium">{game.localclub.name}</TableCell>
                   <TableCell className="text-center font-medium">{game.localclub.partials.Partial1}</TableCell>
                   <TableCell className="text-center font-medium">{game.localclub.partials.Partial2}</TableCell>
@@ -136,7 +137,7 @@ export function GameOverview({ game }: GameOverviewProps) {
                   <TableCell className="text-center font-medium">{game.localclub.partials.Partial4}</TableCell>
                   <TableCell className="text-center font-bold text-lg text-primary">{game.localclub.score}</TableCell>
                 </TableRow>
-                <TableRow className="hover:bg-transparent">
+                <TableRow className="hover:bg-transparent border-border/50">
                   <TableCell className="font-medium">{game.roadclub.name}</TableCell>
                   <TableCell className="text-center font-medium">{game.roadclub.partials.Partial1}</TableCell>
                   <TableCell className="text-center font-medium">{game.roadclub.partials.Partial2}</TableCell>

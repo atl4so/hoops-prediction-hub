@@ -9,19 +9,16 @@ interface GameStatsProps {
 
 export function GameStats({ game }: GameStatsProps) {
   const renderPlayerStats = (players: any[], teamName: string) => (
-    <Card className="bg-gradient-to-br from-background to-muted/20">
+    <Card className="bg-gradient-to-br from-background to-muted/5 border border-border/50">
       <CardContent className="p-6">
-        <h3 className="text-xl font-display font-semibold tracking-tight mb-6">{teamName} Box Score</h3>
+        <h3 className="text-xl font-semibold tracking-tight mb-6">{teamName} Box Score</h3>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead className="min-w-[160px]">Player</TableHead>
+              <TableRow className="hover:bg-transparent border-border/50">
+                <TableHead className="min-w-[180px]">Player</TableHead>
                 <TableHead className="text-right">MIN</TableHead>
                 <TableHead className="text-right">PTS</TableHead>
-                <TableHead className="text-right">2FG</TableHead>
-                <TableHead className="text-right">3FG</TableHead>
-                <TableHead className="text-right">FT</TableHead>
                 <TableHead className="text-right">REB</TableHead>
                 <TableHead className="text-right">AST</TableHead>
                 <TableHead className="text-right">STL</TableHead>
@@ -33,28 +30,25 @@ export function GameStats({ game }: GameStatsProps) {
             <TableBody>
               {players.map((player: any, index: number) => (
                 player.PlayerName !== "Team" && (
-                  <TableRow key={index} className="hover:bg-muted/50">
+                  <TableRow key={index} className="hover:bg-muted/50 border-border/50">
                     <TableCell className="font-medium">
-                      <div className="flex flex-col">
+                      <div className="flex flex-col gap-1.5">
                         <span>{player.PlayerName}</span>
                         {player.StartFive && (
-                          <Badge variant="secondary" className="w-fit mt-1">
+                          <Badge variant="secondary" className="w-fit text-xs">
                             Starter
                           </Badge>
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-right font-medium">{player.TimePlayed}</TableCell>
-                    <TableCell className="text-right font-bold text-primary">{player.Score}</TableCell>
-                    <TableCell className="text-right">{player.FieldGoals2}</TableCell>
-                    <TableCell className="text-right">{player.FieldGoals3}</TableCell>
-                    <TableCell className="text-right">{player.FreeThrows}</TableCell>
-                    <TableCell className="text-right">{player.TotalRebounds}</TableCell>
-                    <TableCell className="text-right">{player.Assistances}</TableCell>
-                    <TableCell className="text-right">{player.Steals}</TableCell>
-                    <TableCell className="text-right">{player.BlocksFavour}</TableCell>
-                    <TableCell className="text-right">{player.Turnovers}</TableCell>
-                    <TableCell className="text-right font-medium">{player.Valuation}</TableCell>
+                    <TableCell className="text-right font-medium tabular-nums">{player.TimePlayed}</TableCell>
+                    <TableCell className="text-right font-bold text-primary tabular-nums">{player.Score}</TableCell>
+                    <TableCell className="text-right tabular-nums">{player.TotalRebounds}</TableCell>
+                    <TableCell className="text-right tabular-nums">{player.Assistances}</TableCell>
+                    <TableCell className="text-right tabular-nums">{player.Steals}</TableCell>
+                    <TableCell className="text-right tabular-nums">{player.BlocksFavour}</TableCell>
+                    <TableCell className="text-right tabular-nums">{player.Turnovers}</TableCell>
+                    <TableCell className="text-right font-medium tabular-nums">{player.Valuation}</TableCell>
                   </TableRow>
                 )
               ))}
