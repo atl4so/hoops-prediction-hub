@@ -56,13 +56,13 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
 
   return (
     <>
-      <Card className="game-card w-full h-full flex flex-col">
-        <CardContent className="p-6 flex-1 flex flex-col">
+      <Card className="game-card w-full h-full flex flex-col hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-background to-accent/5">
+        <CardContent className="p-4 sm:p-6 flex-1 flex flex-col">
           <div className="flex flex-col h-full">
             <GameScoreDisplay game={game} isUpcoming={isUpcoming} />
 
             {prediction && (
-              <div className="mt-6">
+              <div className="mt-4 sm:mt-6">
                 <PredictionDisplay
                   homeScore={prediction.prediction_home_score}
                   awayScore={prediction.prediction_away_score}
@@ -73,7 +73,7 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
               </div>
             )}
 
-            <div className="mt-6 space-y-3">
+            <div className="mt-4 sm:mt-6 space-y-2 sm:space-y-3">
               <PredictionButton
                 isAuthenticated={isAuthenticated}
                 gameDate={game.game_date}
@@ -85,14 +85,17 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
                 awayTeam={game.away_team}
               />
               
-              <InsightsButton 
-                onClick={() => setShowInsights(true)}
-                gameResult={gameResult}
-              />
+              <div className="flex gap-2">
+                <InsightsButton 
+                  onClick={() => setShowInsights(true)}
+                  gameResult={gameResult}
+                  className="flex-1"
+                />
 
-              {gameResult?.is_final && game.game_code && (
-                <StatsButton onClick={() => setShowStats(true)} />
-              )}
+                {gameResult?.is_final && game.game_code && (
+                  <StatsButton onClick={() => setShowStats(true)} className="flex-1" />
+                )}
+              </div>
             </div>
           </div>
         </CardContent>
