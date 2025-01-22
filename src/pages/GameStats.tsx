@@ -1,14 +1,7 @@
-import { useEffect, useState } from "react";
-import { format, parse } from "date-fns";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Calendar } from "lucide-react";
-import type { ScheduleItem, GameResult } from "@/types/euroleague-api";
-import { XMLParser } from "fast-xml-parser";
-import { useNavigate } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { 
   Pagination, 
   PaginationContent, 
@@ -18,148 +11,53 @@ import {
   PaginationPrevious,
   PaginationEllipsis
 } from "@/components/ui/pagination";
+import { useRoundGames } from "@/hooks/useRoundGames";
+import { RoundGameCard } from "@/components/games/stats/RoundGameCard";
 
 export default function GameStats() {
-  const navigate = useNavigate();
-  const [schedules, setSchedules] = useState<ScheduleItem[]>([]);
-  const [results, setResults] = useState<GameResult[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [currentRound, setCurrentRound] = useState(1);
   const totalRounds = 34;
-
-  // Calculate game numbers for current round
-  const getGameNumbersForRound = (round: number) => {
-    // Each round has 8 games, so:
-    const startGameNumber = (round - 1) * 8 + 1;
-    const endGameNumber = round * 8;
-    return Array.from(
-      { length: 8 }, 
-      (_, i) => startGameNumber + i
-    );
-  };
+  const { schedules, results, loading, error } = useRoundGames(currentRound);
 
   useEffect(() => {
     const findLatestRoundWithResults = async () => {
-      try {
-        // Start from the latest round and work backwards
-        for (let round = totalRounds; round >= 1; round--) {
-          const gameNumbers = getGameNumbersForRound(round);
-          let hasResults = false;
+      // Start from the latest round and work backwards
+      for (let round = totalRounds; round >= 1; round--) {
+        const gameNumbers = Array.from({ length: 8 }, (_, i) => ((round - 1) * 8 + 1) + i);
+        let hasResults = false;
 
-          // Check any game in the round for results
-          for (const gameNumber of gameNumbers) {
-            const resultsResponse = await fetch(
-              `https://api-live.euroleague.net/v1/results?seasonCode=E2024&gameNumber=${gameNumber}`
-            );
-            
-            if (!resultsResponse.ok) continue;
-            
-            const resultsXml = await resultsResponse.text();
-            const parser = new XMLParser();
-            const resultsData = parser.parse(resultsXml);
-            
-            if (resultsData.results?.game) {
-              hasResults = true;
-              break;
-            }
-          }
-
-          if (hasResults) {
-            setCurrentRound(round);
+        // Check any game in the round for results
+        for (const gameNumber of gameNumbers) {
+          const resultsResponse = await fetch(
+            `https://api-live.euroleague.net/v1/results?seasonCode=E2024&gameNumber=${gameNumber}`
+          );
+          
+          if (!resultsResponse.ok) continue;
+          
+          const resultsXml = await resultsResponse.text();
+          const parser = new XMLParser();
+          const resultsData = parser.parse(resultsXml);
+          
+          if (resultsData.results?.game) {
+            hasResults = true;
             break;
           }
         }
-      } catch (err) {
-        console.error('Error finding latest round:', err);
+
+        if (hasResults) {
+          setCurrentRound(round);
+          break;
+        }
       }
     };
 
     findLatestRoundWithResults();
   }, []);
 
-  useEffect(() => {
-    const fetchRoundData = async () => {
-      try {
-        setLoading(true);
-        
-        const gameNumbers = getGameNumbersForRound(currentRound);
-        const schedulePromises = gameNumbers.map(gameNumber =>
-          fetch(`https://api-live.euroleague.net/v1/schedules?seasonCode=E2024&gameNumber=${gameNumber}`)
-        );
-        const resultPromises = gameNumbers.map(gameNumber =>
-          fetch(`https://api-live.euroleague.net/v1/results?seasonCode=E2024&gameNumber=${gameNumber}`)
-        );
-
-        const [scheduleResponses, resultResponses] = await Promise.all([
-          Promise.all(schedulePromises),
-          Promise.all(resultPromises)
-        ]);
-
-        const parser = new XMLParser({ ignoreAttributes: false });
-        
-        // Process schedules
-        let allSchedules: ScheduleItem[] = [];
-        for (const response of scheduleResponses) {
-          if (!response.ok) continue;
-          const scheduleXml = await response.text();
-          const scheduleData = parser.parse(scheduleXml);
-          if (scheduleData.schedule?.item) {
-            const items = Array.isArray(scheduleData.schedule.item) 
-              ? scheduleData.schedule.item 
-              : [scheduleData.schedule.item];
-            allSchedules = [...allSchedules, ...items];
-          }
-        }
-
-        // Process results
-        let allResults: GameResult[] = [];
-        for (const response of resultResponses) {
-          if (!response.ok) continue;
-          const resultsXml = await response.text();
-          const resultsData = parser.parse(resultsXml);
-          if (resultsData.results?.game) {
-            const games = Array.isArray(resultsData.results.game)
-              ? resultsData.results.game
-              : [resultsData.results.game];
-            allResults = [...allResults, ...games];
-          }
-        }
-
-        // Sort games by date
-        const sortedSchedule = allSchedules.sort((a, b) => {
-          const dateTimeA = `${a.date} ${a.startime}`;
-          const dateTimeB = `${b.date} ${b.startime}`;
-          const parsedA = parse(`${dateTimeA}`, 'MMM d, yyyy HH:mm', new Date());
-          const parsedB = parse(`${dateTimeB}`, 'MMM d, yyyy HH:mm', new Date());
-          return parsedB.getTime() - parsedA.getTime();
-        });
-
-        setSchedules(sortedSchedule);
-        setResults(allResults);
-      } catch (err) {
-        console.error('Error fetching data:', err);
-        setError('Failed to load game data. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRoundData();
-  }, [currentRound]);
-
-  const handleGameClick = (gameCode: string) => {
-    navigate(`/game/${gameCode}`);
-  };
-
   const handlePageChange = (round: number) => {
     if (round >= 1 && round <= totalRounds) {
       setCurrentRound(round);
     }
-  };
-
-  const truncateTeamName = (name: string) => {
-    return name.length > 20 ? `${name.substring(0, 20)}...` : name;
   };
 
   if (error) {
@@ -175,122 +73,66 @@ export default function GameStats() {
     <div className="container mx-auto p-4">
       <PageHeader title={`Euroleague Round ${currentRound}`} />
       
-      <div className="space-y-1">
+      <div className="space-y-4">
         {loading ? (
-          Array.from({ length: 6 }).map((_, index) => (
-            <Card key={index} className="animate-pulse">
-              <CardContent className="p-2">
-                <Skeleton className="h-6 w-3/4 mb-2" />
-                <Skeleton className="h-4 w-1/2" />
-              </CardContent>
-            </Card>
-          ))
+          <div className="grid gap-4">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <Skeleton key={index} className="h-[72px]" />
+            ))}
+          </div>
         ) : (
-          schedules.map((game) => {
-            const result = results.find(result => result.gamecode === game.gamecode);
-            return (
-              <Card 
-                key={game.gamecode}
-                className={cn(
-                  "hover:shadow-md transition-shadow duration-200 cursor-pointer bg-card/50 border-border/50",
-                  "overflow-hidden"
-                )}
-                onClick={() => handleGameClick(game.gamecode)}
-              >
-                <CardContent className="p-2">
-                  <div className="space-y-0.5">
-                    <div className="flex items-center justify-between text-xs">
-                      <Badge 
-                        variant="secondary" 
-                        className="bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary text-[10px] px-1.5 py-0"
-                      >
-                        Game {game.game}
-                      </Badge>
-                      <div className="flex items-center gap-1 text-muted-foreground text-[10px]">
-                        <Calendar className="h-3 w-3" />
-                        <span>{format(new Date(game.date + ' ' + game.startime), 'MMM d, HH:mm')}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between gap-2 text-sm">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium truncate text-sm">
-                          {truncateTeamName(game.hometeam)}
-                        </h3>
-                      </div>
-                      
-                      {result && (
-                        <div className="flex items-center gap-2 px-2 flex-shrink-0">
-                          <span className={cn(
-                            "text-base font-bold tabular-nums",
-                            result.homescore > result.awayscore ? "text-primary" : "text-muted-foreground"
-                          )}>
-                            {result.homescore}
-                          </span>
-                          <span className="text-xs font-medium text-muted-foreground">-</span>
-                          <span className={cn(
-                            "text-base font-bold tabular-nums",
-                            result.awayscore > result.homescore ? "text-primary" : "text-muted-foreground"
-                          )}>
-                            {result.awayscore}
-                          </span>
-                        </div>
-                      )}
-                      
-                      <div className="flex-1 min-w-0 text-right">
-                        <h3 className="font-medium truncate text-sm">
-                          {truncateTeamName(game.awayteam)}
-                        </h3>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })
+          <div className="grid gap-4">
+            {schedules.map((game) => (
+              <RoundGameCard
+                key={game.game}
+                game={game}
+                result={results.find(r => r.gamecode === game.game)}
+              />
+            ))}
+          </div>
         )}
-      </div>
 
-      <div className="mt-6">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious 
-                onClick={() => handlePageChange(currentRound - 1)}
-                className={currentRound <= 1 ? "pointer-events-none opacity-50" : ""}
-              />
-            </PaginationItem>
-            
-            {Array.from({ length: totalRounds }, (_, i) => i + 1)
-              .filter(round => {
-                const nearCurrent = Math.abs(round - currentRound) <= 1;
-                const isEndpoint = round === 1 || round === totalRounds;
-                return nearCurrent || isEndpoint;
-              })
-              .map((round, index, array) => {
-                const showEllipsis = index > 0 && array[index - 1] !== round - 1;
-                
-                return (
-                  <PaginationItem key={round}>
-                    {showEllipsis && <PaginationEllipsis />}
-                    <PaginationLink
-                      onClick={() => handlePageChange(round)}
-                      isActive={currentRound === round}
-                    >
-                      {round}
-                    </PaginationLink>
-                  </PaginationItem>
-                );
-              })}
+        <div className="mt-6">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => handlePageChange(currentRound - 1)}
+                  className={currentRound <= 1 ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+              
+              {Array.from({ length: totalRounds }, (_, i) => i + 1)
+                .filter(round => {
+                  const nearCurrent = Math.abs(round - currentRound) <= 1;
+                  const isEndpoint = round === 1 || round === totalRounds;
+                  return nearCurrent || isEndpoint;
+                })
+                .map((round, index, array) => {
+                  const showEllipsis = index > 0 && array[index - 1] !== round - 1;
+                  
+                  return (
+                    <PaginationItem key={round}>
+                      {showEllipsis && <PaginationEllipsis />}
+                      <PaginationLink
+                        onClick={() => handlePageChange(round)}
+                        isActive={currentRound === round}
+                      >
+                        {round}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
 
-            <PaginationItem>
-              <PaginationNext 
-                onClick={() => handlePageChange(currentRound + 1)}
-                className={currentRound >= totalRounds ? "pointer-events-none opacity-50" : ""}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => handlePageChange(currentRound + 1)}
+                  className={currentRound >= totalRounds ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       </div>
     </div>
   );
