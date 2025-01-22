@@ -9,6 +9,14 @@ import { XMLParser } from "fast-xml-parser";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from "@/components/ui/pagination";
 
 export default function GameStats() {
   const navigate = useNavigate();
@@ -16,52 +24,49 @@ export default function GameStats() {
   const [results, setResults] = useState<GameResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentRound, setCurrentRound] = useState(1);
+  const totalRounds = 34;
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchRoundData = async () => {
       try {
-        // Fetch all rounds from 1 to current
-        const roundPromises = Array.from({ length: 34 }, (_, i) => i + 1).map(round =>
-          fetch(`https://api-live.euroleague.net/v1/schedules?seasonCode=E2024&gameNumber=${round}`)
-            .then(res => res.ok ? res.text() : Promise.reject(`Failed to fetch round ${round}`))
-        );
-
-        const resultsPromises = Array.from({ length: 34 }, (_, i) => i + 1).map(round =>
-          fetch(`https://api-live.euroleague.net/v1/results?seasonCode=E2024&gameNumber=${round}`)
-            .then(res => res.ok ? res.text() : Promise.reject(`Failed to fetch results for round ${round}`))
-        );
-
-        const [scheduleResponses, resultsResponses] = await Promise.all([
-          Promise.all(roundPromises),
-          Promise.all(resultsPromises)
+        setLoading(true);
+        
+        // Fetch schedule and results for current round only
+        const [scheduleResponse, resultsResponse] = await Promise.all([
+          fetch(`https://api-live.euroleague.net/v1/schedules?seasonCode=E2024&gameNumber=${currentRound}`),
+          fetch(`https://api-live.euroleague.net/v1/results?seasonCode=E2024&gameNumber=${currentRound}`)
         ]);
 
+        if (!scheduleResponse.ok || !resultsResponse.ok) {
+          throw new Error('Failed to fetch round data');
+        }
+
+        const scheduleXml = await scheduleResponse.text();
+        const resultsXml = await resultsResponse.text();
+
         const parser = new XMLParser({ ignoreAttributes: false });
-        let allSchedules: ScheduleItem[] = [];
-        let allResults: GameResult[] = [];
+        const scheduleData = parser.parse(scheduleXml);
+        const resultsData = parser.parse(resultsXml);
 
-        scheduleResponses.forEach(scheduleXml => {
-          const scheduleData = parser.parse(scheduleXml);
-          if (scheduleData.schedule?.item) {
-            const items = Array.isArray(scheduleData.schedule.item) 
-              ? scheduleData.schedule.item 
-              : [scheduleData.schedule.item];
-            allSchedules = [...allSchedules, ...items];
-          }
-        });
+        // Process schedule data
+        let roundSchedule: ScheduleItem[] = [];
+        if (scheduleData.schedule?.item) {
+          roundSchedule = Array.isArray(scheduleData.schedule.item)
+            ? scheduleData.schedule.item
+            : [scheduleData.schedule.item];
+        }
 
-        resultsResponses.forEach(resultsXml => {
-          const resultsData = parser.parse(resultsXml);
-          if (resultsData.results?.game) {
-            const games = Array.isArray(resultsData.results.game)
-              ? resultsData.results.game
-              : [resultsData.results.game];
-            allResults = [...allResults, ...games];
-          }
-        });
+        // Process results data
+        let roundResults: GameResult[] = [];
+        if (resultsData.results?.game) {
+          roundResults = Array.isArray(resultsData.results.game)
+            ? resultsData.results.game
+            : [resultsData.results.game];
+        }
 
-        // Sort all games by date, most recent first
-        const sortedSchedules = allSchedules.sort((a, b) => {
+        // Sort games by date
+        const sortedSchedule = roundSchedule.sort((a, b) => {
           const dateTimeA = `${a.date} ${a.startime}`;
           const dateTimeB = `${b.date} ${b.startime}`;
           const parsedA = parse(`${dateTimeA}`, 'MMM d, yyyy HH:mm', new Date());
@@ -69,8 +74,8 @@ export default function GameStats() {
           return parsedB.getTime() - parsedA.getTime();
         });
 
-        setSchedules(sortedSchedules);
-        setResults(allResults);
+        setSchedules(sortedSchedule);
+        setResults(roundResults);
       } catch (err) {
         console.error('Error fetching data:', err);
         setError('Failed to load game data. Please try again later.');
@@ -79,15 +84,17 @@ export default function GameStats() {
       }
     };
 
-    fetchData();
-  }, []);
-
-  const getGameResult = (gameCode: string) => {
-    return results.find(result => result.gamecode === gameCode);
-  };
+    fetchRoundData();
+  }, [currentRound]);
 
   const handleGameClick = (gameCode: string) => {
     navigate(`/game/${gameCode}`);
+  };
+
+  const handlePageChange = (round: number) => {
+    if (round >= 1 && round <= totalRounds) {
+      setCurrentRound(round);
+    }
   };
 
   const truncateTeamName = (name: string) => {
@@ -105,7 +112,7 @@ export default function GameStats() {
 
   return (
     <div className="container mx-auto p-4">
-      <PageHeader title="Euroleague Game Stats" />
+      <PageHeader title={`Euroleague Round ${currentRound}`} />
       
       <div className="space-y-1">
         {loading ? (
@@ -119,7 +126,7 @@ export default function GameStats() {
           ))
         ) : (
           schedules.map((game) => {
-            const result = getGameResult(game.gamecode);
+            const result = results.find(result => result.gamecode === game.gamecode);
             return (
               <Card 
                 key={game.gamecode}
@@ -181,6 +188,50 @@ export default function GameStats() {
             );
           })
         )}
+      </div>
+
+      <div className="mt-6">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious 
+                onClick={() => handlePageChange(currentRound - 1)}
+                className={currentRound <= 1 ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+            
+            {Array.from({ length: totalRounds }, (_, i) => i + 1)
+              .filter(round => {
+                // Show current round, first/last rounds, and rounds near current
+                const nearCurrent = Math.abs(round - currentRound) <= 1;
+                const isEndpoint = round === 1 || round === totalRounds;
+                return nearCurrent || isEndpoint;
+              })
+              .map((round, index, array) => {
+                // Add ellipsis between non-consecutive rounds
+                const showEllipsis = index > 0 && array[index - 1] !== round - 1;
+                
+                return (
+                  <PaginationItem key={round}>
+                    {showEllipsis && <PaginationEllipsis />}
+                    <PaginationLink
+                      onClick={() => handlePageChange(round)}
+                      isActive={currentRound === round}
+                    >
+                      {round}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
+
+            <PaginationItem>
+              <PaginationNext 
+                onClick={() => handlePageChange(currentRound + 1)}
+                className={currentRound >= totalRounds ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );
