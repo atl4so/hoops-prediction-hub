@@ -3,7 +3,7 @@ import { format, parse } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Calendar, Clock, Trophy, MapPin, Users } from "lucide-react";
+import { Calendar, Trophy, MapPin, Users } from "lucide-react";
 import type { ScheduleItem, GameResult } from "@/types/euroleague-api";
 import { XMLParser } from "fast-xml-parser";
 import { useNavigate } from "react-router-dom";
@@ -106,7 +106,7 @@ export default function GameStats() {
     <div className="container mx-auto p-4">
       <PageHeader title="Euroleague Game Stats" />
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
           Array.from({ length: 6 }).map((_, index) => (
             <Card key={index} className="animate-pulse">
@@ -125,59 +125,67 @@ export default function GameStats() {
                 key={game.gamecode}
                 className={cn(
                   "hover:shadow-lg transition-shadow duration-200 cursor-pointer",
-                  "bg-gradient-to-br from-background to-accent/5"
+                  "bg-gradient-to-br from-background to-accent/5 border-border/50"
                 )}
                 onClick={() => handleGameClick(game.gamecode)}
               >
                 <CardContent className="p-6">
-                  <div className="flex flex-col space-y-4">
-                    <div className="flex justify-between items-start">
-                      <div className="flex flex-col">
-                        <div className="font-semibold text-lg">{game.hometeam}</div>
-                        <div className="text-sm text-muted-foreground">{game.homecode}</div>
+                  <div className="flex flex-col space-y-6">
+                    {/* Teams and Score Section */}
+                    <div className="grid grid-cols-[1fr,auto,1fr] gap-4 items-center">
+                      <div className="flex flex-col items-start">
+                        <h3 className="font-bold text-xl">{game.hometeam}</h3>
+                        <span className="text-sm text-muted-foreground">{game.homecode}</span>
                         {result && (
-                          <div className="text-2xl font-bold text-primary tabular-nums">
+                          <span className="text-4xl font-bold text-primary tabular-nums mt-2">
                             {result.homescore}
-                          </div>
+                          </span>
                         )}
                       </div>
-                      <div className="text-sm text-muted-foreground">vs</div>
-                      <div className="flex flex-col items-end">
-                        <div className="font-semibold text-lg text-right">{game.awayteam}</div>
-                        <div className="text-sm text-muted-foreground">{game.awaycode}</div>
+                      
+                      <div className="text-sm text-muted-foreground self-start mt-2">
+                        vs
+                      </div>
+
+                      <div className="flex flex-col items-end text-right">
+                        <h3 className="font-bold text-xl">{game.awayteam}</h3>
+                        <span className="text-sm text-muted-foreground">{game.awaycode}</span>
                         {result && (
-                          <div className="text-2xl font-bold text-primary tabular-nums">
+                          <span className="text-4xl font-bold text-primary tabular-nums mt-2">
                             {result.awayscore}
-                          </div>
+                          </span>
                         )}
                       </div>
                     </div>
 
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      <span>{formatGameDate(game.date, game.startime)}</span>
-                    </div>
+                    {/* Game Info Section */}
+                    <div className="space-y-2 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        <span>{formatGameDate(game.date, game.startime)}</span>
+                      </div>
 
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Trophy className="w-4 h-4 mr-2" />
-                      <span>Round {game.gameday} - {game.group}</span>
-                    </div>
+                      <div className="flex items-center gap-2">
+                        <Trophy className="w-4 h-4" />
+                        <span>Round {game.gameday} - {game.group}</span>
+                      </div>
 
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <MapPin className="w-4 h-4 mr-2" />
-                      <span>{game.arenaname}</span>
-                    </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4" />
+                        <span>{game.arenaname}</span>
+                      </div>
 
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Users className="w-4 h-4 mr-2" />
-                      <span>Capacity: {game.arenacapacity}</span>
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4" />
+                        <span>Capacity: {game.arenacapacity}</span>
+                      </div>
                     </div>
 
                     {result && (
-                      <div className="mt-2 p-2 bg-muted rounded-md">
-                        <div className="text-sm font-medium">
+                      <div className="pt-2 border-t border-border/50">
+                        <p className="text-sm font-medium text-muted-foreground">
                           Final Score: {result.homescore} - {result.awayscore}
-                        </div>
+                        </p>
                       </div>
                     )}
                   </div>

@@ -30,21 +30,13 @@ html, body {
   padding-right: 1rem;
 }
 
-@media (min-width: 640px) {
-  .container {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-  }
+/* Game Stats Page Specific Styles */
+.game-score {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
 }
 
-@media (min-width: 1024px) {
-  .container {
-    padding-left: 2rem;
-    padding-right: 2rem;
-  }
-}
-
-/* Ensure text readability on mobile */
+/* Ensure text readability */
 h1 {
   font-size: clamp(1.5rem, 5vw, 2.5rem);
   line-height: 1.2;
@@ -60,25 +52,40 @@ p {
   line-height: 1.5;
 }
 
-/* Improve touch targets on mobile */
+/* Improve touch targets */
 button, 
 a {
   min-height: 44px;
   padding: 0.5rem 1rem;
 }
 
-/* Ensure forms are mobile-friendly */
+/* Mobile-friendly forms */
 input, 
 select, 
 textarea {
-  font-size: 16px; /* Prevents iOS zoom on focus */
+  font-size: 16px;
   max-width: 100%;
   padding: 0.5rem;
 }
 
-/* Improve table responsiveness */
+/* Responsive tables */
 table {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Media Queries */
+@media (min-width: 640px) {
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
 }
