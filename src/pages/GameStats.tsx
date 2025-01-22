@@ -94,6 +94,10 @@ export default function GameStats() {
     navigate(`/game/${gameCode}`);
   };
 
+  const truncateTeamName = (name: string) => {
+    return name.length > 20 ? `${name.substring(0, 20)}...` : name;
+  };
+
   if (error) {
     return (
       <div className="container mx-auto p-4">
@@ -107,11 +111,11 @@ export default function GameStats() {
     <div className="container mx-auto p-4">
       <PageHeader title="Euroleague Game Stats" />
       
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {loading ? (
           Array.from({ length: 6 }).map((_, index) => (
             <Card key={index} className="animate-pulse">
-              <CardContent className="p-4">
+              <CardContent className="p-3">
                 <Skeleton className="h-6 w-3/4 mb-2" />
                 <Skeleton className="h-4 w-1/2" />
               </CardContent>
@@ -124,44 +128,44 @@ export default function GameStats() {
               <Card 
                 key={game.gamecode}
                 className={cn(
-                  "hover:shadow-md transition-shadow duration-200 cursor-pointer bg-card",
-                  "border-border/50"
+                  "hover:shadow-md transition-shadow duration-200 cursor-pointer bg-card/50 border-border/50",
+                  "overflow-hidden"
                 )}
                 onClick={() => handleGameClick(game.gamecode)}
               >
-                <CardContent className="p-4">
-                  <div className="space-y-2">
-                    {/* Status and Date */}
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <CardContent className="p-3">
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-sm">
                       <Badge 
                         variant="secondary" 
-                        className="bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary"
+                        className="bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary text-xs px-2 py-0.5"
                       >
                         FINAL
                       </Badge>
-                      <div className="flex items-center gap-1.5">
-                        <Calendar className="h-4 w-4" />
+                      <div className="flex items-center gap-1 text-muted-foreground text-xs">
+                        <Calendar className="h-3 w-3" />
                         <span>{format(new Date(game.date + ' ' + game.startime), 'MMM d, HH:mm')}</span>
                       </div>
                     </div>
 
-                    {/* Teams and Score */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-bold text-lg truncate">{game.hometeam}</h3>
+                    <div className="flex items-center justify-between gap-2 text-sm">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold truncate text-base">
+                          {truncateTeamName(game.hometeam)}
+                        </h3>
                       </div>
                       
                       {result && (
-                        <div className="flex items-center gap-3 px-3">
+                        <div className="flex items-center gap-2 px-2 flex-shrink-0">
                           <span className={cn(
-                            "text-2xl font-bold tabular-nums",
+                            "text-xl font-bold tabular-nums",
                             result.homescore > result.awayscore ? "text-primary" : "text-muted-foreground"
                           )}>
                             {result.homescore}
                           </span>
-                          <span className="text-sm font-medium text-muted-foreground">vs</span>
+                          <span className="text-xs font-medium text-muted-foreground">vs</span>
                           <span className={cn(
-                            "text-2xl font-bold tabular-nums",
+                            "text-xl font-bold tabular-nums",
                             result.awayscore > result.homescore ? "text-primary" : "text-muted-foreground"
                           )}>
                             {result.awayscore}
@@ -169,8 +173,10 @@ export default function GameStats() {
                         </div>
                       )}
                       
-                      <div className="flex-1 text-right">
-                        <h3 className="font-bold text-lg truncate">{game.awayteam}</h3>
+                      <div className="flex-1 min-w-0 text-right">
+                        <h3 className="font-bold truncate text-base">
+                          {truncateTeamName(game.awayteam)}
+                        </h3>
                       </div>
                     </div>
                   </div>
