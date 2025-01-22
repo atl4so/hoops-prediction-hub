@@ -18,15 +18,18 @@ export default function Game() {
   useEffect(() => {
     const fetchGameData = async () => {
       try {
-        // Extract just the numeric part from the game code
+        // Extract the numeric part from the game code (E2024_198 -> 198)
         const numericGameCode = gameCode?.split('_')[1];
+        const seasonCode = gameCode?.split('_')[0];
         
-        if (!numericGameCode) {
+        if (!numericGameCode || !seasonCode) {
           throw new Error('Invalid game code format');
         }
 
+        console.log('Fetching game data with:', { seasonCode, numericGameCode });
+
         const response = await fetch(
-          `https://api-live.euroleague.net/v1/games?seasonCode=E2024&gameCode=${numericGameCode}`
+          `https://api-live.euroleague.net/v1/games?seasonCode=${seasonCode}&gameCode=${numericGameCode}`
         );
         
         if (!response.ok) {
@@ -34,8 +37,15 @@ export default function Game() {
         }
 
         const xmlText = await response.text();
-        const parser = new XMLParser();
+        console.log('Received XML:', xmlText); // Debug log
+        
+        const parser = new XMLParser({
+          ignoreAttributes: false,
+          attributeNamePrefix: ""
+        });
         const result = parser.parse(xmlText);
+        
+        console.log('Parsed game data:', result); // Debug log
         
         setGameData(result.game);
         setLoading(false);
