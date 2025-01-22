@@ -28,23 +28,44 @@ export default function GameStats() {
   const [currentRound, setCurrentRound] = useState(1);
   const totalRounds = 34;
 
+  // Calculate game numbers for current round
+  const getGameNumbersForRound = (round: number) => {
+    // Each round has 8 games, so:
+    const startGameNumber = (round - 1) * 8 + 1;
+    const endGameNumber = round * 8;
+    return Array.from(
+      { length: 8 }, 
+      (_, i) => startGameNumber + i
+    );
+  };
+
   useEffect(() => {
     const findLatestRoundWithResults = async () => {
       try {
         // Start from the latest round and work backwards
         for (let round = totalRounds; round >= 1; round--) {
-          const resultsResponse = await fetch(
-            `https://api-live.euroleague.net/v1/results?seasonCode=E2024&gameNumber=${round}`
-          );
-          
-          if (!resultsResponse.ok) continue;
-          
-          const resultsXml = await resultsResponse.text();
-          const parser = new XMLParser();
-          const resultsData = parser.parse(resultsXml);
-          
-          // Check if there are any results for this round
-          if (resultsData.results?.game) {
+          const gameNumbers = getGameNumbersForRound(round);
+          let hasResults = false;
+
+          // Check any game in the round for results
+          for (const gameNumber of gameNumbers) {
+            const resultsResponse = await fetch(
+              `https://api-live.euroleague.net/v1/results?seasonCode=E2024&gameNumber=${gameNumber}`
+            );
+            
+            if (!resultsResponse.ok) continue;
+            
+            const resultsXml = await resultsResponse.text();
+            const parser = new XMLParser();
+            const resultsData = parser.parse(resultsXml);
+            
+            if (resultsData.results?.game) {
+              hasResults = true;
+              break;
+            }
+          }
+
+          if (hasResults) {
             setCurrentRound(round);
             break;
           }
@@ -62,41 +83,51 @@ export default function GameStats() {
       try {
         setLoading(true);
         
-        // Fetch schedule and results for current round only
-        const [scheduleResponse, resultsResponse] = await Promise.all([
-          fetch(`https://api-live.euroleague.net/v1/schedules?seasonCode=E2024&gameNumber=${currentRound}`),
-          fetch(`https://api-live.euroleague.net/v1/results?seasonCode=E2024&gameNumber=${currentRound}`)
+        const gameNumbers = getGameNumbersForRound(currentRound);
+        const schedulePromises = gameNumbers.map(gameNumber =>
+          fetch(`https://api-live.euroleague.net/v1/schedules?seasonCode=E2024&gameNumber=${gameNumber}`)
+        );
+        const resultPromises = gameNumbers.map(gameNumber =>
+          fetch(`https://api-live.euroleague.net/v1/results?seasonCode=E2024&gameNumber=${gameNumber}`)
+        );
+
+        const [scheduleResponses, resultResponses] = await Promise.all([
+          Promise.all(schedulePromises),
+          Promise.all(resultPromises)
         ]);
 
-        if (!scheduleResponse.ok || !resultsResponse.ok) {
-          throw new Error('Failed to fetch round data');
-        }
-
-        const scheduleXml = await scheduleResponse.text();
-        const resultsXml = await resultsResponse.text();
-
         const parser = new XMLParser({ ignoreAttributes: false });
-        const scheduleData = parser.parse(scheduleXml);
-        const resultsData = parser.parse(resultsXml);
-
-        // Process schedule data
-        let roundSchedule: ScheduleItem[] = [];
-        if (scheduleData.schedule?.item) {
-          roundSchedule = Array.isArray(scheduleData.schedule.item)
-            ? scheduleData.schedule.item
-            : [scheduleData.schedule.item];
+        
+        // Process schedules
+        let allSchedules: ScheduleItem[] = [];
+        for (const response of scheduleResponses) {
+          if (!response.ok) continue;
+          const scheduleXml = await response.text();
+          const scheduleData = parser.parse(scheduleXml);
+          if (scheduleData.schedule?.item) {
+            const items = Array.isArray(scheduleData.schedule.item) 
+              ? scheduleData.schedule.item 
+              : [scheduleData.schedule.item];
+            allSchedules = [...allSchedules, ...items];
+          }
         }
 
-        // Process results data
-        let roundResults: GameResult[] = [];
-        if (resultsData.results?.game) {
-          roundResults = Array.isArray(resultsData.results.game)
-            ? resultsData.results.game
-            : [resultsData.results.game];
+        // Process results
+        let allResults: GameResult[] = [];
+        for (const response of resultResponses) {
+          if (!response.ok) continue;
+          const resultsXml = await response.text();
+          const resultsData = parser.parse(resultsXml);
+          if (resultsData.results?.game) {
+            const games = Array.isArray(resultsData.results.game)
+              ? resultsData.results.game
+              : [resultsData.results.game];
+            allResults = [...allResults, ...games];
+          }
         }
 
         // Sort games by date
-        const sortedSchedule = roundSchedule.sort((a, b) => {
+        const sortedSchedule = allSchedules.sort((a, b) => {
           const dateTimeA = `${a.date} ${a.startime}`;
           const dateTimeB = `${b.date} ${b.startime}`;
           const parsedA = parse(`${dateTimeA}`, 'MMM d, yyyy HH:mm', new Date());
@@ -105,7 +136,7 @@ export default function GameStats() {
         });
 
         setSchedules(sortedSchedule);
-        setResults(roundResults);
+        setResults(allResults);
       } catch (err) {
         console.error('Error fetching data:', err);
         setError('Failed to load game data. Please try again later.');
@@ -173,7 +204,7 @@ export default function GameStats() {
                         variant="secondary" 
                         className="bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary text-[10px] px-1.5 py-0"
                       >
-                        Round {game.game}
+                        Game {game.game}
                       </Badge>
                       <div className="flex items-center gap-1 text-muted-foreground text-[10px]">
                         <Calendar className="h-3 w-3" />
@@ -232,13 +263,11 @@ export default function GameStats() {
             
             {Array.from({ length: totalRounds }, (_, i) => i + 1)
               .filter(round => {
-                // Show current round, first/last rounds, and rounds near current
                 const nearCurrent = Math.abs(round - currentRound) <= 1;
                 const isEndpoint = round === 1 || round === totalRounds;
                 return nearCurrent || isEndpoint;
               })
               .map((round, index, array) => {
-                // Add ellipsis between non-consecutive rounds
                 const showEllipsis = index > 0 && array[index - 1] !== round - 1;
                 
                 return (
