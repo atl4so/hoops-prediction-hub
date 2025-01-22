@@ -1,7 +1,7 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { GameInfo } from "./predictions/GameInfo";
 import { PredictionDisplay } from "@/components/games/PredictionDisplay";
-import { useState } from "react";
 import { PointsBreakdownDialog } from "@/components/games/PointsBreakdownDialog";
 import { Button } from "@/components/ui/button";
 import { Eye, Share2 } from "lucide-react";
@@ -49,6 +49,7 @@ export function UserPredictionCard({
   const [showInsights, setShowInsights] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const gameResult = game.game_results[0];
+  const hasValidGameCode = game.game_code && /^\d+$/.test(game.game_code);
 
   const handlePointsClick = () => {
     if (gameResult && prediction.points_earned !== undefined) {
@@ -223,7 +224,7 @@ export function UserPredictionCard({
                     How Others Predicted
                   </Button>
                   
-                  {game.game_code && (
+                  {hasValidGameCode && gameResult.is_final && (
                     <StatsButton onClick={() => setShowStats(true)} />
                   )}
                 </div>
@@ -261,7 +262,7 @@ export function UserPredictionCard({
             }}
           />
           
-          {game.game_code && (
+          {hasValidGameCode && (
             <GameStatsModal
               isOpen={showStats}
               onOpenChange={setShowStats}
