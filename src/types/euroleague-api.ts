@@ -1,68 +1,51 @@
 export interface ScheduleItem {
+  gameday: string;
+  round: string;
+  arenacode: string;
+  arenaname: string;
+  arenacapacity: string;
   date: string;
   startime: string;
+  endtime: string;
+  group: string;
+  game: string;
   gamecode: string;
   hometeam: string;
+  homecode: string;
+  hometv: string;
   awayteam: string;
+  awaycode: string;
+  awaytv: string;
+  confirmeddate: string;
+  confirmedtime: string;
+  played: string;
+}
+
+export interface ScheduleResponse {
+  schedule: {
+    item: ScheduleItem[];
+  };
 }
 
 export interface GameResult {
+  round: string;
+  gameday: string;
+  date: string;
+  time: string;
+  gamenumber: string;
   gamecode: string;
-  homescore: number;
-  awayscore: number;
-  is_final?: boolean;
+  group: string;
+  hometeam: string;
+  homecode: string;
+  homescore: string;
+  awayteam: string;
+  awaycode: string;
+  awayscore: string;
+  played: string;
 }
 
-export interface PlayerStats {
-  name: string;
-  height: number;
-  birthdate: string;
-  country: string;
-  clubcode: string;
-  clubname: string;
-  dorsal: string;
-  position: string;
-  score: number;
-  timeplayed: string;
-  valuation: number;
-  totalrebounds: number;
-  offensiverebounds: number;
-  defensiverebounds: number;
-  assistances: number;
-  steals: number;
-  turnovers: number;
-  blocksagainst: number;
-  blocksfavour: number;
-  fieldgoals2percent: string;
-  fieldgoals3percent: string;
-  freethrowspercent: string;
-  foulscommited: number;
-  foulsreceived: number;
-  stats: {
-    accumulated: {
-      season: {
-        code: string;
-        gamesplayed: number;
-        timeplayed: string;
-        score: number;
-        fieldgoalsmade2: number;
-        fieldgoalsmade3: number;
-        freethrowsmade: number;
-        fieldgoalsattempted2: number;
-        fieldgoalsattempted3: number;
-        freethrowsattempted: number;
-        offensiverebounds: number;
-        defensiverebounds: number;
-        totalrebounds: number;
-        assistances: number;
-        steals: number;
-        turnovers: number;
-        blocksagainst: number;
-        blocksfavour: number;
-        foulscommited: number;
-        foulsreceived: number;
-        valuation: number;
-      }[];
-    };
+export interface ResultsResponse {
+  results: {
+    game: GameResult[];
   };
 }
