@@ -63,11 +63,6 @@ export function useGameResults() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['games-with-results'] });
-      toast.success("Game result updated successfully");
-    },
-    onError: (error: any) => {
-      console.error('Error updating game result:', error);
-      toast.error(error.message || "Failed to update game result");
     },
   });
 
