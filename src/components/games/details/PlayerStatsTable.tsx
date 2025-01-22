@@ -78,7 +78,7 @@ export function PlayerStatsTable({ players, teamName, teamScore }: PlayerStatsTa
                       <div className="flex flex-col gap-1.5">
                         <span>{player.PlayerName}</span>
                         {player.StartFive && (
-                          <Badge variant="secondary" className="w-fit text-xs">
+                          <Badge variant="default" className="w-fit text-xs bg-green-500 hover:bg-green-600">
                             Starter
                           </Badge>
                         )}
