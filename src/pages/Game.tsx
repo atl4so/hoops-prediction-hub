@@ -19,8 +19,15 @@ export default function Game() {
   useEffect(() => {
     const fetchGameData = async () => {
       try {
+        // Extract just the numeric part from the game code (e.g., "198" from "E2024_198")
+        const numericGameCode = gameCode?.split('_')[1];
+        
+        if (!numericGameCode) {
+          throw new Error('Invalid game code format');
+        }
+
         const response = await fetch(
-          `https://api-live.euroleague.net/v1/games?seasonCode=E2024&gameCode=${gameCode}`
+          `https://api-live.euroleague.net/v1/games?seasonCode=E2024&gameCode=${numericGameCode}`
         );
         
         if (!response.ok) {
