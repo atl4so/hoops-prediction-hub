@@ -4,7 +4,8 @@ import { GameInfo } from "./predictions/GameInfo";
 import { PredictionDisplay } from "@/components/games/PredictionDisplay";
 import { PointsBreakdownDialog } from "@/components/games/PointsBreakdownDialog";
 import { Button } from "@/components/ui/button";
-import { Eye, Share2 } from "lucide-react";
+import { Eye, Share2, BarChart3 } from "lucide-react";
+import { PredictionInsightsDialog } from "@/components/games/prediction/PredictionInsightsDialog";
 import { FinishedGameInsightsDialog } from "@/components/games/prediction/insights/FinishedGameInsightsDialog";
 import { GameStatsModal } from "@/components/games/stats/GameStatsModal";
 import { StatsButton } from "@/components/games/stats/StatsButton";
@@ -24,7 +25,7 @@ interface UserPredictionCardProps {
       name: string;
       logo_url: string;
     };
-    game_results: Array<{
+    game_results?: Array<{
       home_score: number;
       away_score: number;
       is_final: boolean;
@@ -48,14 +49,15 @@ export function UserPredictionCard({
   const [showPointsBreakdown, setShowPointsBreakdown] = useState(false);
   const [showInsights, setShowInsights] = useState(false);
   const [showStats, setShowStats] = useState(false);
-  const gameResult = game.game_results[0];
+  const gameResult = game.game_results?.[0];
   const hasValidGameCode = game.game_code && /^\d+$/.test(game.game_code);
 
   console.log('Game data:', {
     id: game.id,
     gameCode: game.game_code,
     hasValidGameCode,
-    isFinished: gameResult?.is_final
+    isFinished: gameResult?.is_final,
+    gameResults: game.game_results
   });
 
   const handlePointsClick = () => {
@@ -196,45 +198,56 @@ export function UserPredictionCard({
 
   return (
     <>
-      <Card className="hover:shadow-md transition-all duration-300">
-        <CardContent className="pt-6 relative">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-2 right-2 h-8 w-8"
-            onClick={handleShare}
-            title="Share Prediction"
-          >
-            <Share2 className="h-4 w-4" />
-          </Button>
-          <div className="flex flex-col items-center" data-game-id={game.id}>
+      <Card className="game-card w-full h-full flex flex-col">
+        <CardContent className="p-6 flex-1 flex flex-col">
+          <div className="flex flex-col h-full" data-game-id={game.id}>
             <GameInfo game={game} prediction={prediction} />
-            <div className="mt-4 space-y-3">
-              <PredictionDisplay
-                homeScore={prediction.prediction_home_score}
-                awayScore={prediction.prediction_away_score}
-                pointsEarned={prediction.points_earned}
-                onClick={handlePointsClick}
-                showBreakdownHint={!!gameResult && prediction.points_earned !== undefined}
-                data-points-breakdown
-              />
-              
+            
+            {prediction && (
+              <div className="mt-6">
+                <PredictionDisplay
+                  homeScore={prediction.prediction_home_score}
+                  awayScore={prediction.prediction_away_score}
+                  pointsEarned={prediction.points_earned}
+                  onClick={handlePointsClick}
+                  showBreakdownHint={!!gameResult && prediction.points_earned !== undefined}
+                  data-points-breakdown
+                />
+              </div>
+            )}
+
+            <div className="mt-6 space-y-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-2 h-8 w-8"
+                onClick={handleShare}
+                title="Share Prediction"
+              >
+                <Share2 className="h-4 w-4" />
+              </Button>
+
               {gameResult && (
-                <div className="space-y-3">
-                  <Button 
-                    variant="outline" 
-                    className="w-full" 
-                    onClick={() => setShowInsights(true)}
-                    data-insights-button
-                  >
-                    <Eye className="w-4 h-4 mr-2" />
-                    How Others Predicted
-                  </Button>
-                  
-                  {hasValidGameCode && gameResult.is_final && (
-                    <StatsButton onClick={() => setShowStats(true)} />
-                  )}
-                </div>
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={() => setShowInsights(true)}
+                  data-insights-button
+                >
+                  <Eye className="w-4 h-4 mr-2" />
+                  How Others Predicted
+                </Button>
+              )}
+              
+              {hasValidGameCode && gameResult?.is_final && (
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={() => setShowStats(true)}
+                >
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  View Game Stats
+                </Button>
               )}
             </div>
           </div>
