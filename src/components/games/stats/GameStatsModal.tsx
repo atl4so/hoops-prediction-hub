@@ -1,4 +1,4 @@
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useGameStats } from "@/hooks/useGameStats";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
@@ -23,9 +23,11 @@ export function GameStatsModal({ isOpen, onOpenChange, gameId }: GameStatsModalP
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-xl">
+        <DialogHeader>
+          <DialogTitle>Game Statistics</DialogTitle>
+        </DialogHeader>
+        
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-center">Game Statistics</h2>
-          
           {isLoading && (
             <div className="space-y-4">
               <Skeleton className="h-8 w-full" />
@@ -36,7 +38,7 @@ export function GameStatsModal({ isOpen, onOpenChange, gameId }: GameStatsModalP
 
           {error && (
             <Card className="p-4">
-              <p className="text-center text-red-500">Failed to load game statistics</p>
+              <p className="text-center text-red-500">{error}</p>
             </Card>
           )}
 

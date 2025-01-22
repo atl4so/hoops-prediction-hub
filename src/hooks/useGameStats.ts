@@ -32,20 +32,31 @@ interface GameStats {
   };
 }
 
-export function useGameStats(gameCode: string) {
+export function useGameStats(gameCode: string | undefined) {
   const [stats, setStats] = useState<GameStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchStats = async () => {
+      if (!gameCode) {
+        setIsLoading(false);
+        setError("No game code provided");
+        return;
+      }
+
       try {
+        // Validate that gameCode is numeric
+        if (!/^\d+$/.test(gameCode)) {
+          throw new Error("Invalid game code format - must be numeric");
+        }
+
         const response = await fetch(
           `https://api-live.euroleague.net/v1/games?seasonCode=E2024&gameCode=${gameCode}`
         );
         
         if (!response.ok) {
-          throw new Error("Failed to fetch game stats");
+          throw new Error(`Failed to fetch game stats: ${response.statusText}`);
         }
 
         const xmlText = await response.text();
@@ -93,6 +104,7 @@ export function useGameStats(gameCode: string) {
         
         setIsLoading(false);
       } catch (err) {
+        console.error("Error fetching game stats:", err);
         setError(err instanceof Error ? err.message : "Failed to fetch stats");
         setIsLoading(false);
       }
