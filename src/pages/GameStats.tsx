@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/pagination";
 import { useRoundGames } from "@/hooks/useRoundGames";
 import { RoundGameCard } from "@/components/games/stats/RoundGameCard";
+import { XMLParser } from "fast-xml-parser";
 
 export default function GameStats() {
   const [currentRound, setCurrentRound] = useState(1);
