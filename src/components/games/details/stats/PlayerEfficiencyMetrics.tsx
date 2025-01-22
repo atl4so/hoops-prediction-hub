@@ -33,27 +33,6 @@ interface PlayerEfficiencyMetricsProps {
 }
 
 export function PlayerEfficiencyMetrics({ stats, teamTotals }: PlayerEfficiencyMetricsProps) {
-  const isMobile = useIsMobile();
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleClick = () => {
-    if (isMobile) {
-      setIsOpen(!isOpen);
-    }
-  };
-
-  const handleMouseEnter = () => {
-    if (!isMobile) {
-      setIsOpen(true);
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (!isMobile) {
-      setIsOpen(false);
-    }
-  };
-
   // Time conversion helper
   const getMinutes = (time: string) => {
     const [minutes, seconds] = time.split(':').map(Number);
@@ -106,55 +85,9 @@ export function PlayerEfficiencyMetrics({ stats, teamTotals }: PlayerEfficiencyM
     ? ((stats.Score + stats.TotalRebounds + stats.Assistances) / minutes).toFixed(2)
     : "0.00";
 
-  // Calculate Euroleague.bet Performance Index
-  const calculatePerformanceIndex = () => {
-    if (!hasMinimumTime) return "0.00";
-
-    const shootingEfficiencyWeight = 0.3;
-    const playMakingWeight = 0.25;
-    const defenseWeight = 0.25;
-    const impactWeight = 0.2;
-
-    // Shooting Efficiency Component (30%)
-    const shootingEfficiency = fieldGoalAttempts > 0 
-      ? ((fieldGoalsMade * 100) / fieldGoalAttempts) * (stats.Score / minutes)
-      : 0;
-
-    // Playmaking Component (25%)
-    const playmaking = (stats.Assistances / minutes) * 10 + 
-                      (stats.Turnovers === 0 ? 10 : stats.Assistances / stats.Turnovers);
-
-    // Defense Component (25%)
-    const defense = ((stats.Steals + stats.BlocksFavour) / minutes) * 10 +
-                   (stats.TotalRebounds / minutes) * 5;
-
-    // Team Impact Component (20%)
-    const impact = (
-      (stats.Score / teamTotals.Score) * 100 +
-      (stats.Assistances / teamTotals.Assistances) * 100 +
-      (stats.TotalRebounds / teamTotals.TotalRebounds) * 100
-    ) / 3;
-
-    const performanceIndex = (
-      (shootingEfficiency * shootingEfficiencyWeight) +
-      (playmaking * playMakingWeight) +
-      (defense * defenseWeight) +
-      (impact * impactWeight)
-    );
-
-    return performanceIndex.toFixed(2);
-  };
-
-  const performanceIndex = calculatePerformanceIndex();
-
   return (
     <div className="grid grid-cols-2 gap-2 text-xs">
       <div className="space-y-1">
-        <StatItem 
-          label="EL.bet Index" 
-          value={performanceIndex}
-          tooltip="Euroleague.bet Performance Index - Combines shooting efficiency (30%), playmaking (25%), defense (25%), and team impact (20%) into a single rating"
-        />
         <StatItem 
           label="PIR/m" 
           value={pirPerMinute}
