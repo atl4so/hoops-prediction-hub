@@ -1,49 +1,55 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MapPin, Users, Calendar, Clock } from "lucide-react";
+import { format, parseISO } from "date-fns";
 
 interface GameOverviewProps {
-  game: any; // We'll type this properly later
+  game: {
+    cetdate: string;
+    stadium: string;
+    stadiumname: string;
+    audience: number;
+    localclub: {
+      name: string;
+      score: number;
+      partials: {
+        Partial1: string;
+        Partial2: string;
+        Partial3: string;
+        Partial4: string;
+      };
+    };
+    roadclub: {
+      name: string;
+      score: number;
+      partials: {
+        Partial1: string;
+        Partial2: string;
+        Partial3: string;
+        Partial4: string;
+      };
+    };
+  };
 }
 
 export function GameOverview({ game }: GameOverviewProps) {
-  const isFinal = game.played;
-  const localTeam = game.localclub;
-  const roadTeam = game.roadclub;
-
+  const gameDate = parseISO(game.cetdate);
+  
   return (
     <div className="space-y-6">
       {/* Game Header */}
       <Card className="bg-background/60 backdrop-blur-sm">
         <CardContent className="p-6">
           <div className="text-center space-y-4">
-            <h1 className="text-2xl font-semibold">
-              {localTeam.name} vs {roadTeam.name}
-            </h1>
-            <p className="text-muted-foreground">
-              {new Date(game.cetdate).toLocaleDateString(undefined, {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </p>
-          </div>
-
-          {/* Score Display */}
-          <div className="mt-8 grid grid-cols-3 items-center gap-4">
-            <div className="text-center">
-              <h2 className="text-xl font-semibold">{localTeam.name}</h2>
-              <p className="text-4xl font-bold mt-2">{localTeam.score}</p>
+            <div className="flex justify-center items-center gap-4 text-2xl font-semibold">
+              <span>{game.localclub.name}</span>
+              <span>vs</span>
+              <span>{game.roadclub.name}</span>
             </div>
-            <div className="text-center">
-              <span className="text-sm text-muted-foreground">vs</span>
-              {isFinal && (
-                <p className="text-sm font-medium text-muted-foreground mt-1">FINAL</p>
-              )}
-            </div>
-            <div className="text-center">
-              <h2 className="text-xl font-semibold">{roadTeam.name}</h2>
-              <p className="text-4xl font-bold mt-2">{roadTeam.score}</p>
+            <div className="flex justify-center items-center gap-8 text-4xl font-bold">
+              <span>{game.localclub.score}</span>
+              <span>-</span>
+              <span>{game.roadclub.score}</span>
             </div>
           </div>
         </CardContent>
@@ -72,7 +78,7 @@ export function GameOverview({ game }: GameOverviewProps) {
               <div>
                 <p className="text-sm text-muted-foreground">Date</p>
                 <p className="font-medium">
-                  {new Date(game.cetdate).toLocaleDateString()}
+                  {format(gameDate, 'MMMM d, yyyy')}
                 </p>
               </div>
             </div>
@@ -81,11 +87,7 @@ export function GameOverview({ game }: GameOverviewProps) {
               <div>
                 <p className="text-sm text-muted-foreground">Time (CET)</p>
                 <p className="font-medium">
-                  {new Date(game.cetdate).toLocaleTimeString([], { 
-                    hour: '2-digit', 
-                    minute: '2-digit',
-                    hour12: false 
-                  })}
+                  {format(gameDate, 'HH:mm')}
                 </p>
               </div>
             </div>
@@ -111,40 +113,20 @@ export function GameOverview({ game }: GameOverviewProps) {
               </TableHeader>
               <TableBody>
                 <TableRow>
-                  <TableCell className="font-medium">{localTeam.name}</TableCell>
-                  <TableCell className="text-center font-medium text-orange-500">
-                    {localTeam.partials.Partial1}
-                  </TableCell>
-                  <TableCell className="text-center font-medium text-orange-500">
-                    {localTeam.partials.Partial2}
-                  </TableCell>
-                  <TableCell className="text-center font-medium">
-                    {localTeam.partials.Partial3}
-                  </TableCell>
-                  <TableCell className="text-center font-medium">
-                    {localTeam.partials.Partial4}
-                  </TableCell>
-                  <TableCell className="text-center font-bold">
-                    {localTeam.score}
-                  </TableCell>
+                  <TableCell className="font-medium">{game.localclub.name}</TableCell>
+                  <TableCell className="text-center">{game.localclub.partials.Partial1}</TableCell>
+                  <TableCell className="text-center">{game.localclub.partials.Partial2}</TableCell>
+                  <TableCell className="text-center">{game.localclub.partials.Partial3}</TableCell>
+                  <TableCell className="text-center">{game.localclub.partials.Partial4}</TableCell>
+                  <TableCell className="text-center font-bold">{game.localclub.score}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium">{roadTeam.name}</TableCell>
-                  <TableCell className="text-center font-medium">
-                    {roadTeam.partials.Partial1}
-                  </TableCell>
-                  <TableCell className="text-center font-medium">
-                    {roadTeam.partials.Partial2}
-                  </TableCell>
-                  <TableCell className="text-center font-medium text-orange-500">
-                    {roadTeam.partials.Partial3}
-                  </TableCell>
-                  <TableCell className="text-center font-medium text-orange-500">
-                    {roadTeam.partials.Partial4}
-                  </TableCell>
-                  <TableCell className="text-center font-bold">
-                    {roadTeam.score}
-                  </TableCell>
+                  <TableCell className="font-medium">{game.roadclub.name}</TableCell>
+                  <TableCell className="text-center">{game.roadclub.partials.Partial1}</TableCell>
+                  <TableCell className="text-center">{game.roadclub.partials.Partial2}</TableCell>
+                  <TableCell className="text-center">{game.roadclub.partials.Partial3}</TableCell>
+                  <TableCell className="text-center">{game.roadclub.partials.Partial4}</TableCell>
+                  <TableCell className="text-center font-bold">{game.roadclub.score}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>

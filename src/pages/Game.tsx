@@ -7,7 +7,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GameOverview } from "@/components/games/details/GameOverview";
 import { GameStats } from "@/components/games/details/GameStats";
-import { GameHistory } from "@/components/games/details/GameHistory";
 import { Helmet } from "react-helmet";
 
 export default function Game() {
@@ -19,7 +18,7 @@ export default function Game() {
   useEffect(() => {
     const fetchGameData = async () => {
       try {
-        // Extract just the numeric part from the game code (e.g., "198" from "E2024_198")
+        // Extract just the numeric part from the game code
         const numericGameCode = gameCode?.split('_')[1];
         
         if (!numericGameCode) {
@@ -95,7 +94,6 @@ export default function Game() {
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="stats">Stats</TabsTrigger>
-            <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
@@ -104,10 +102,6 @@ export default function Game() {
 
           <TabsContent value="stats">
             <GameStats game={gameData} />
-          </TabsContent>
-
-          <TabsContent value="history">
-            <GameHistory game={gameData} />
           </TabsContent>
         </Tabs>
       </div>
