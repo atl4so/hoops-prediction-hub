@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Eye, Share2, BarChart3 } from "lucide-react";
+import { toast } from "sonner";
 
 interface PredictionActionsProps {
   onShare: () => void;
@@ -20,6 +21,14 @@ export function PredictionActions({
   gameResult,
   gameCode
 }: PredictionActionsProps) {
+  const handleStatsClick = () => {
+    if (!gameCode) {
+      toast.error("Stats are not available for this game yet");
+      return;
+    }
+    onStatsClick();
+  };
+
   return (
     <div className="mt-6 space-y-3">
       <Button
@@ -44,16 +53,15 @@ export function PredictionActions({
         </Button>
       )}
       
-      {gameCode && (
-        <Button 
-          variant="outline" 
-          className="w-full" 
-          onClick={onStatsClick}
-        >
-          <BarChart3 className="w-4 h-4 mr-2" />
-          View Game Stats
-        </Button>
-      )}
+      <Button 
+        variant="outline" 
+        className="w-full" 
+        onClick={handleStatsClick}
+        disabled={!gameCode}
+      >
+        <BarChart3 className="w-4 h-4 mr-2" />
+        View Game Stats
+      </Button>
     </div>
   );
 }
