@@ -80,36 +80,42 @@ export function GameCard({ game, isAuthenticated, prediction, userId }: GameCard
               </Badge>
             </div>
 
-            {/* Teams */}
-            <div className="flex justify-between items-center gap-4">
-              <div className="flex flex-col items-center text-center flex-1">
+            {/* Teams and Score */}
+            <div className="grid grid-cols-[1fr,auto,1fr] gap-4 items-center">
+              <div className="flex flex-col items-center text-center">
                 <img
                   src={game.home_team.logo_url}
                   alt={game.home_team.name}
-                  className="w-16 h-16 object-contain mb-2"
+                  className="w-16 h-16 sm:w-20 sm:h-20 object-contain mb-2"
                 />
-                <div className="font-semibold">{game.home_team.name}</div>
-                {finalResult && (
-                  <div className="text-2xl font-bold mt-2 tabular-nums">
-                    {finalResult.home_score}
-                  </div>
-                )}
+                <div className="space-y-1">
+                  <h3 className="font-bold text-lg sm:text-xl">{game.home_team.name}</h3>
+                  {finalResult && (
+                    <p className="text-2xl sm:text-3xl font-bold text-primary tabular-nums">
+                      {finalResult.home_score}
+                    </p>
+                  )}
+                </div>
               </div>
 
-              <div className="text-muted-foreground">vs</div>
+              <div className="text-xl sm:text-2xl font-semibold text-muted-foreground">
+                vs
+              </div>
 
-              <div className="flex flex-col items-center text-center flex-1">
+              <div className="flex flex-col items-center text-center">
                 <img
                   src={game.away_team.logo_url}
                   alt={game.away_team.name}
-                  className="w-16 h-16 object-contain mb-2"
+                  className="w-16 h-16 sm:w-20 sm:h-20 object-contain mb-2"
                 />
-                <div className="font-semibold">{game.away_team.name}</div>
-                {finalResult && (
-                  <div className="text-2xl font-bold mt-2 tabular-nums">
-                    {finalResult.away_score}
-                  </div>
-                )}
+                <div className="space-y-1">
+                  <h3 className="font-bold text-lg sm:text-xl">{game.away_team.name}</h3>
+                  {finalResult && (
+                    <p className="text-2xl sm:text-3xl font-bold text-primary tabular-nums">
+                      {finalResult.away_score}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
 
