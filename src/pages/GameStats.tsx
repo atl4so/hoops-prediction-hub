@@ -3,11 +3,11 @@ import { format, parse } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Calendar, Clock, Trophy, MapPin, Tv, Users } from "lucide-react";
+import { Calendar, Clock, Trophy, MapPin, Users } from "lucide-react";
 import type { ScheduleItem, GameResult } from "@/types/euroleague-api";
 import { XMLParser } from "fast-xml-parser";
-import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 export default function GameStats() {
   const navigate = useNavigate();
@@ -19,7 +19,6 @@ export default function GameStats() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch schedules
         const scheduleResponse = await fetch(
           "https://api-live.euroleague.net/v1/schedules?seasonCode=E2024&gameNumber=22"
         );
@@ -28,7 +27,6 @@ export default function GameStats() {
           throw new Error('Failed to fetch schedules');
         }
 
-        // Fetch results
         const resultsResponse = await fetch(
           "https://api-live.euroleague.net/v1/results?seasonCode=E2024&gameNumber=22"
         );
@@ -49,13 +47,12 @@ export default function GameStats() {
             ? scheduleData.schedule.item 
             : [scheduleData.schedule.item];
 
-          // Sort by date and time
           const sortedItems = items.sort((a, b) => {
             const dateTimeA = `${a.date} ${a.startime}`;
             const dateTimeB = `${b.date} ${b.startime}`;
             const parsedA = parse(`${dateTimeA}`, 'MMM d, yyyy HH:mm', new Date());
             const parsedB = parse(`${dateTimeB}`, 'MMM d, yyyy HH:mm', new Date());
-            return parsedB.getTime() - parsedA.getTime(); // Descending order
+            return parsedB.getTime() - parsedA.getTime();
           });
 
           setSchedules(sortedItems);
@@ -126,7 +123,10 @@ export default function GameStats() {
             return (
               <Card 
                 key={game.gamecode}
-                className="hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+                className={cn(
+                  "hover:shadow-lg transition-shadow duration-200 cursor-pointer",
+                  "bg-gradient-to-br from-background to-accent/5"
+                )}
                 onClick={() => handleGameClick(game.gamecode)}
               >
                 <CardContent className="p-6">
@@ -136,7 +136,7 @@ export default function GameStats() {
                         <div className="font-semibold text-lg">{game.hometeam}</div>
                         <div className="text-sm text-muted-foreground">{game.homecode}</div>
                         {result && (
-                          <div className="text-2xl font-bold text-primary">
+                          <div className="text-2xl font-bold text-primary tabular-nums">
                             {result.homescore}
                           </div>
                         )}
@@ -146,7 +146,7 @@ export default function GameStats() {
                         <div className="font-semibold text-lg text-right">{game.awayteam}</div>
                         <div className="text-sm text-muted-foreground">{game.awaycode}</div>
                         {result && (
-                          <div className="text-2xl font-bold text-primary">
+                          <div className="text-2xl font-bold text-primary tabular-nums">
                             {result.awayscore}
                           </div>
                         )}
@@ -156,11 +156,6 @@ export default function GameStats() {
                     <div className="flex items-center text-sm text-muted-foreground">
                       <Calendar className="w-4 h-4 mr-2" />
                       <span>{formatGameDate(game.date, game.startime)}</span>
-                    </div>
-
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Clock className="w-4 h-4 mr-2" />
-                      <span>{game.startime} - {game.endtime}</span>
                     </div>
 
                     <div className="flex items-center text-sm text-muted-foreground">
@@ -178,27 +173,10 @@ export default function GameStats() {
                       <span>Capacity: {game.arenacapacity}</span>
                     </div>
 
-                    {(game.hometv || game.awaytv) && (
-                      <div className="flex items-center text-sm text-muted-foreground">
-                        <Tv className="w-4 h-4 mr-2" />
-                        <div className="flex flex-wrap gap-2">
-                          {game.hometv && (
-                            <Badge variant="secondary">Home TV: {game.hometv}</Badge>
-                          )}
-                          {game.awaytv && (
-                            <Badge variant="secondary">Away TV: {game.awaytv}</Badge>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
                     {result && (
                       <div className="mt-2 p-2 bg-muted rounded-md">
                         <div className="text-sm font-medium">
                           Final Score: {result.homescore} - {result.awayscore}
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-1">
-                          Game #{result.gamenumber} | Code: {result.gamecode}
                         </div>
                       </div>
                     )}
