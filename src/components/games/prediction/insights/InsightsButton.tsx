@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface InsightsButtonProps {
   onClick: () => void;
@@ -8,13 +9,14 @@ interface InsightsButtonProps {
     away_score: number;
     is_final: boolean;
   };
+  className?: string;
 }
 
-export function InsightsButton({ onClick, gameResult }: InsightsButtonProps) {
+export function InsightsButton({ onClick, gameResult, className }: InsightsButtonProps) {
   return (
     <Button 
       variant="outline" 
-      className="w-full" 
+      className={cn("w-full", className)} 
       onClick={onClick}
     >
       <Eye className="w-4 h-4 mr-2" />
