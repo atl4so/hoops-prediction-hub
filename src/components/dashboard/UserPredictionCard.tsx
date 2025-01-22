@@ -285,7 +285,7 @@ export function UserPredictionCard({
         <GameStatsModal
           isOpen={showStats}
           onOpenChange={setShowStats}
-          gameId={game.game_code}
+          gameId={game.game_code!}
         />
       )}
     </>
