@@ -21,7 +21,7 @@ export function useUserPredictions(userId: string | null) {
             prediction_home_score,
             prediction_away_score,
             points_earned,
-            game:games (
+            game:games!inner (
               id,
               game_date,
               game_code,

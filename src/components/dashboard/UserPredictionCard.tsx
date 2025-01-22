@@ -49,15 +49,9 @@ export function UserPredictionCard({
   const contentRef = useRef<HTMLDivElement>(null);
   const gameResult = game.game_results?.[0];
 
-  // Only use game_code if it exists and is numeric
-  const effectiveGameCode = gameResult?.is_final && game.game_code && /^\d+$/.test(game.game_code) 
-    ? game.game_code 
-    : undefined;
-
   console.log('Game data in UserPredictionCard:', {
     id: game.id,
-    gameCode: effectiveGameCode,
-    originalGameCode: game.game_code,
+    gameCode: game.game_code,
     hasGameResults: !!gameResult,
     isFinal: gameResult?.is_final
   });
@@ -100,7 +94,7 @@ export function UserPredictionCard({
               onInsightsClick={() => setShowInsights(true)}
               onStatsClick={() => setShowStats(true)}
               gameResult={gameResult}
-              gameCode={effectiveGameCode}
+              gameCode={game.game_code}
             />
           </div>
         </CardContent>
@@ -134,11 +128,11 @@ export function UserPredictionCard({
         />
       )}
 
-      {effectiveGameCode && (
+      {game.game_code && (
         <GameStatsModal
           isOpen={showStats}
           onOpenChange={setShowStats}
-          gameId={effectiveGameCode}
+          gameId={game.game_code}
         />
       )}
     </>
