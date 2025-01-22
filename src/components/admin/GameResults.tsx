@@ -20,25 +20,16 @@ export function GameResults() {
     return null;
   }
 
-  const handleEdit = (game: any) => {
-    setEditingGame(game.id);
-    setScores({
-      home: game.game_results?.[0]?.home_score?.toString() || "",
-      away: game.game_results?.[0]?.away_score?.toString() || ""
-    });
-    setGameCode(game.game_code || "");
-  };
-
   const updatePartizanParis = async () => {
     const partizanGame = games?.find(
       game => 
-        game.round_id === "23" && // Specifically target Round 23
+        game.game_date.includes("2024-02") && // Games in February 2024
         ((game.home_team.name.includes("Partizan") && game.away_team.name.includes("Paris")) ||
         (game.away_team.name.includes("Partizan") && game.home_team.name.includes("Paris")))
     );
 
     if (!partizanGame) {
-      toast.error("Partizan vs Paris game not found in Round 23");
+      toast.error("Partizan vs Paris game not found");
       return;
     }
 
@@ -60,6 +51,15 @@ export function GameResults() {
   useState(() => {
     updatePartizanParis();
   });
+
+  const handleEdit = (game: any) => {
+    setEditingGame(game.id);
+    setScores({
+      home: game.game_results?.[0]?.home_score?.toString() || "",
+      away: game.game_results?.[0]?.away_score?.toString() || ""
+    });
+    setGameCode(game.game_code || "");
+  };
 
   const handleSave = async (gameId: string) => {
     const homeScore = parseInt(scores.home);
