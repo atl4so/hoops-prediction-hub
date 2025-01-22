@@ -14,6 +14,7 @@ import { toast } from "sonner";
 interface UserPredictionCardProps {
   game: {
     id: string;
+    game_code?: string;
     game_date: string;
     home_team: {
       name: string;
@@ -222,7 +223,9 @@ export function UserPredictionCard({
                     How Others Predicted
                   </Button>
                   
-                  <StatsButton onClick={() => setShowStats(true)} />
+                  {game.game_code && (
+                    <StatsButton onClick={() => setShowStats(true)} />
+                  )}
                 </div>
               )}
             </div>
@@ -258,11 +261,13 @@ export function UserPredictionCard({
             }}
           />
           
-          <GameStatsModal
-            isOpen={showStats}
-            onOpenChange={setShowStats}
-            gameId={game.id}
-          />
+          {game.game_code && (
+            <GameStatsModal
+              isOpen={showStats}
+              onOpenChange={setShowStats}
+              gameId={game.game_code}
+            />
+          )}
         </>
       )}
     </>
