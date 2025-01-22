@@ -22,19 +22,8 @@ interface GameStatsProps {
 }
 
 export function GameStats({ game }: GameStatsProps) {
-  // Combine all players for top performers calculation
-  const allPlayers = [
-    ...(Array.isArray(game.localclub.playerstats.stat) 
-      ? game.localclub.playerstats.stat 
-      : [game.localclub.playerstats.stat]),
-    ...(Array.isArray(game.roadclub.playerstats.stat) 
-      ? game.roadclub.playerstats.stat 
-      : [game.roadclub.playerstats.stat])
-  ];
-
   return (
     <div className="space-y-6 animate-fade-in">
-      <TopPerformers players={allPlayers} />
       <PlayerStatsTable 
         players={game.localclub.playerstats.stat}
         teamName={game.localclub.name}
@@ -45,6 +34,20 @@ export function GameStats({ game }: GameStatsProps) {
         teamName={game.roadclub.name}
         teamScore={game.roadclub.score}
       />
+      <div className="grid gap-6 md:grid-cols-2">
+        <TopPerformers 
+          players={Array.isArray(game.localclub.playerstats.stat) 
+            ? game.localclub.playerstats.stat 
+            : [game.localclub.playerstats.stat]}
+          teamName={game.localclub.name}
+        />
+        <TopPerformers 
+          players={Array.isArray(game.roadclub.playerstats.stat) 
+            ? game.roadclub.playerstats.stat 
+            : [game.roadclub.playerstats.stat]}
+          teamName={game.roadclub.name}
+        />
+      </div>
     </div>
   );
 }
