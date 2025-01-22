@@ -6,6 +6,8 @@ import { PointsBreakdownDialog } from "@/components/games/PointsBreakdownDialog"
 import { Button } from "@/components/ui/button";
 import { Eye, Share2 } from "lucide-react";
 import { FinishedGameInsightsDialog } from "@/components/games/prediction/insights/FinishedGameInsightsDialog";
+import { GameStatsModal } from "@/components/games/stats/GameStatsModal";
+import { StatsButton } from "@/components/games/stats/StatsButton";
 import html2canvas from "html2canvas";
 import { toast } from "sonner";
 
@@ -44,6 +46,7 @@ export function UserPredictionCard({
 }: UserPredictionCardProps) {
   const [showPointsBreakdown, setShowPointsBreakdown] = useState(false);
   const [showInsights, setShowInsights] = useState(false);
+  const [showStats, setShowStats] = useState(false);
   const gameResult = game.game_results[0];
 
   const handlePointsClick = () => {
@@ -210,15 +213,19 @@ export function UserPredictionCard({
               />
               
               {gameResult && (
-                <Button 
-                  variant="outline" 
-                  className="w-full" 
-                  onClick={() => setShowInsights(true)}
-                  data-insights-button
-                >
-                  <Eye className="w-4 h-4 mr-2" />
-                  How Others Predicted
-                </Button>
+                <div className="space-y-3">
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => setShowInsights(true)}
+                    data-insights-button
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    How Others Predicted
+                  </Button>
+                  
+                  <StatsButton onClick={() => setShowStats(true)} />
+                </div>
               )}
             </div>
           </div>
@@ -242,15 +249,23 @@ export function UserPredictionCard({
       )}
 
       {gameResult && (
-        <FinishedGameInsightsDialog
-          isOpen={showInsights}
-          onOpenChange={setShowInsights}
-          gameId={game.id}
-          finalScore={{
-            home: gameResult.home_score,
-            away: gameResult.away_score
-          }}
-        />
+        <>
+          <FinishedGameInsightsDialog
+            isOpen={showInsights}
+            onOpenChange={setShowInsights}
+            gameId={game.id}
+            finalScore={{
+              home: gameResult.home_score,
+              away: gameResult.away_score
+            }}
+          />
+          
+          <GameStatsModal
+            isOpen={showStats}
+            onOpenChange={setShowStats}
+            gameId={game.id}
+          />
+        </>
       )}
     </>
   );
