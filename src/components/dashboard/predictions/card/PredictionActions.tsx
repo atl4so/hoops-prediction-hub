@@ -21,7 +21,10 @@ export function PredictionActions({
   gameResult,
   gameCode
 }: PredictionActionsProps) {
+  console.log('PredictionActions - gameCode:', gameCode); // Debug log
+
   const handleStatsClick = () => {
+    console.log('Stats button clicked, gameCode:', gameCode); // Debug log
     if (!gameCode) {
       toast.error("Stats are not available for this game yet");
       return;
@@ -58,9 +61,10 @@ export function PredictionActions({
         className="w-full" 
         onClick={handleStatsClick}
         disabled={!gameCode}
+        data-game-code={gameCode} // Add data attribute for debugging
       >
         <BarChart3 className="w-4 h-4 mr-2" />
-        View Game Stats
+        View Game Stats {gameCode ? `(${gameCode})` : ''}
       </Button>
     </div>
   );

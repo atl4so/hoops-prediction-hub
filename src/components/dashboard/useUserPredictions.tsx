@@ -56,6 +56,10 @@ export function useUserPredictions(userId: string | null) {
         }
 
         console.log('Raw predictions data:', data);
+        // Log specific game codes for debugging
+        data?.forEach(pred => {
+          console.log(`Game ${pred.game.id} has code:`, pred.game.game_code);
+        });
 
         return data.map(prediction => ({
           ...prediction,
