@@ -51,6 +51,13 @@ export function UserPredictionCard({
   const gameResult = game.game_results[0];
   const hasValidGameCode = game.game_code && /^\d+$/.test(game.game_code);
 
+  console.log('Game data:', {
+    id: game.id,
+    gameCode: game.game_code,
+    hasValidGameCode,
+    isFinished: gameResult?.is_final
+  });
+
   const handlePointsClick = () => {
     if (gameResult && prediction.points_earned !== undefined) {
       setShowPointsBreakdown(true);
@@ -234,7 +241,7 @@ export function UserPredictionCard({
         </CardContent>
       </Card>
 
-      {gameResult && prediction.points_earned !== undefined && (
+      {prediction?.points_earned !== undefined && gameResult && (
         <PointsBreakdownDialog
           isOpen={showPointsBreakdown}
           onOpenChange={setShowPointsBreakdown}
@@ -251,25 +258,23 @@ export function UserPredictionCard({
       )}
 
       {gameResult && (
-        <>
-          <FinishedGameInsightsDialog
-            isOpen={showInsights}
-            onOpenChange={setShowInsights}
-            gameId={game.id}
-            finalScore={{
-              home: gameResult.home_score,
-              away: gameResult.away_score
-            }}
-          />
-          
-          {hasValidGameCode && (
-            <GameStatsModal
-              isOpen={showStats}
-              onOpenChange={setShowStats}
-              gameId={game.game_code}
-            />
-          )}
-        </>
+        <FinishedGameInsightsDialog
+          isOpen={showInsights}
+          onOpenChange={setShowInsights}
+          gameId={game.id}
+          finalScore={{
+            home: gameResult.home_score,
+            away: gameResult.away_score
+          }}
+        />
+      )}
+
+      {hasValidGameCode && gameResult?.is_final && (
+        <GameStatsModal
+          isOpen={showStats}
+          onOpenChange={setShowStats}
+          gameId={game.game_code}
+        />
       )}
     </>
   );
