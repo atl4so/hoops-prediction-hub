@@ -4,6 +4,7 @@ import Login from "@/pages/Login";
 import Admin from "@/pages/Admin";
 import Game from "@/pages/Game";
 import Player from "@/pages/Player";
+import GameStats from "@/pages/GameStats";
 
 export function AppRoutes() {
   return (
@@ -13,6 +14,7 @@ export function AppRoutes() {
       <Route path="/admin" element={<Admin />} />
       <Route path="/game/:gameCode" element={<Game />} />
       <Route path="/player/:playerCode" element={<Player />} />
+      <Route path="/game-stats" element={<GameStats />} />
     </Routes>
   );
 }
