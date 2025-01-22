@@ -19,23 +19,28 @@ export function LeaderboardTabs() {
       // Get all rounds ordered by start date (most recent first)
       const { data: rounds, error: roundsError } = await supabase
         .from('rounds')
-        .select('id')
+        .select('id, name')
         .order('start_date', { ascending: false });
 
       if (roundsError) throw roundsError;
 
       // For each round, check if it has both stats and finished games
       for (const round of rounds || []) {
-        // Check for round stats
-        const { data: stats } = await supabase
+        // Check for round stats with actual points
+        const { data: stats, error: statsError } = await supabase
           .from('round_user_stats')
           .select('total_points')
           .eq('round_id', round.id)
           .gt('total_points', 0)
           .limit(1);
 
-        // Check for finished games
-        const { data: games } = await supabase
+        if (statsError) {
+          console.error('Error checking round stats:', statsError);
+          continue;
+        }
+
+        // Check for finished games with results
+        const { data: games, error: gamesError } = await supabase
           .from('games')
           .select(`
             id,
@@ -45,24 +50,28 @@ export function LeaderboardTabs() {
           .eq('game_results.is_final', true)
           .limit(1);
 
+        if (gamesError) {
+          console.error('Error checking games:', gamesError);
+          continue;
+        }
+
         // If both conditions are met, this is our latest valid round
-        if (stats?.length && games?.length) {
-          console.log('Found latest round with data:', round.id);
+        if (stats?.length > 0 && games?.length > 0) {
+          console.log('Found latest round with data:', round.id, 'Round name:', round.name);
           return round.id;
         }
       }
       
-      // If no round with data is found, return the latest round
-      console.log('No rounds with complete data found, defaulting to latest round');
-      return rounds?.[0]?.id || "";
+      console.log('No rounds with complete data found');
+      return "";
     },
   });
 
   useEffect(() => {
-    if (latestRoundWithData && !selectedRound) {
+    if (latestRoundWithData) {
       setSelectedRound(latestRoundWithData);
     }
-  }, [latestRoundWithData, selectedRound]);
+  }, [latestRoundWithData]);
 
   return (
     <Tabs defaultValue="by-round" className="space-y-8">
