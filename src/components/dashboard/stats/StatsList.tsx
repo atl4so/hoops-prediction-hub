@@ -1,8 +1,7 @@
-import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal, Home, Plane, ArrowLeftRight } from "lucide-react";
+import { Trophy, Target, TrendingUp, ArrowUp, Crown, Medal } from "lucide-react";
 import { StatsGrid } from "./StatsGrid";
 import { useState } from "react";
 import { WinnerPredictionsDialog } from "./WinnerPredictionsDialog";
-import { HomeAwayPredictionsDialog } from "./HomeAwayPredictionsDialog";
 
 interface StatsListProps {
   totalPoints: number;
@@ -14,10 +13,6 @@ interface StatsListProps {
   currentRoundRank?: { rank: number | null; isCurrent: boolean; roundName: string };
   winnerPredictionsCorrect?: number;
   winnerPredictionsTotal?: number;
-  homeWinnerPredictionsCorrect?: number;
-  homeWinnerPredictionsTotal?: number;
-  awayWinnerPredictionsCorrect?: number;
-  awayWinnerPredictionsTotal?: number;
   userId?: string;
 }
 
@@ -43,17 +38,10 @@ export function StatsList({
   currentRoundRank,
   winnerPredictionsCorrect = 0,
   winnerPredictionsTotal = 0,
-  homeWinnerPredictionsCorrect = 0,
-  homeWinnerPredictionsTotal = 0,
-  awayWinnerPredictionsCorrect = 0,
-  awayWinnerPredictionsTotal = 0,
   userId,
 }: StatsListProps) {
   const [showWinnerDialog, setShowWinnerDialog] = useState(false);
-  const [showHomeAwayDialog, setShowHomeAwayDialog] = useState(false);
 
-  const homePercentage = calculatePercentage(homeWinnerPredictionsCorrect, homeWinnerPredictionsTotal);
-  const awayPercentage = calculatePercentage(awayWinnerPredictionsCorrect, awayWinnerPredictionsTotal);
   const winnerPercentage = calculatePercentage(winnerPredictionsCorrect, winnerPredictionsTotal);
 
   const stats = [
@@ -81,17 +69,6 @@ export function StatsList({
       value: `${winnerPercentage}%`,
       description: `Correctly predicted ${winnerPredictionsCorrect} winners out of ${winnerPredictionsTotal} games`,
       onClick: userId ? () => setShowWinnerDialog(true) : undefined
-    },
-    {
-      icon: ArrowLeftRight,
-      label: "Home/Away",
-      value: `${homePercentage}/${awayPercentage}%`,
-      description: `${homeWinnerPredictionsCorrect}/${homeWinnerPredictionsTotal} | ${awayWinnerPredictionsCorrect}/${awayWinnerPredictionsTotal}`,
-      onClick: userId ? () => setShowHomeAwayDialog(true) : undefined,
-      descriptionIcons: {
-        firstIcon: Home,
-        secondIcon: Plane
-      }
     },
     {
       icon: Target,
@@ -123,18 +100,11 @@ export function StatsList({
     <>
       <StatsGrid stats={stats} />
       {userId && (
-        <>
-          <WinnerPredictionsDialog
-            isOpen={showWinnerDialog}
-            onOpenChange={setShowWinnerDialog}
-            userId={userId}
-          />
-          <HomeAwayPredictionsDialog
-            isOpen={showHomeAwayDialog}
-            onOpenChange={setShowHomeAwayDialog}
-            userId={userId}
-          />
-        </>
+        <WinnerPredictionsDialog
+          isOpen={showWinnerDialog}
+          onOpenChange={setShowWinnerDialog}
+          userId={userId}
+        />
       )}
     </>
   );
