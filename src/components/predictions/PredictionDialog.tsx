@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface PredictionDialogProps {
-  isOpen: boolean;
+  isOpen: boolean;  // Changed from 'open' to 'isOpen' to match existing usage
   onOpenChange: (open: boolean) => void;
   gameId: string;
   userId?: string;

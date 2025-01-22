@@ -147,10 +147,13 @@ export function GameCard({ game, isAuthenticated, prediction, userId }: GameCard
       </Card>
 
       <PredictionDialog
-        open={isPredictionOpen}
+        isOpen={isPredictionOpen}
         onOpenChange={setIsPredictionOpen}
-        game={game}
+        gameId={game.id}
         userId={userId}
+        gameDate={game.game_date}
+        homeTeam={game.home_team}
+        awayTeam={game.away_team}
       />
     </>
   );
