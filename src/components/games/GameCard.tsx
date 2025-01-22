@@ -1,147 +1,129 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { PredictionButton } from "./prediction/PredictionButton";
-import { PredictionDisplay } from "./PredictionDisplay";
-import { PointsBreakdownDialog } from "./PointsBreakdownDialog";
-import { useState } from "react";
-import { PredictionInsightsDialog } from "./prediction/PredictionInsightsDialog";
-import { FinishedGameInsightsDialog } from "./prediction/insights/FinishedGameInsightsDialog";
-import { GameScoreDisplay } from "./prediction/GameScoreDisplay";
+import { format } from "date-fns";
+import { Calendar, MapPin, Trophy, Users } from "lucide-react";
+import { Card } from "@/components/ui/card";
 import { InsightsButton } from "./prediction/insights/InsightsButton";
 import { StatsButton } from "./stats/StatsButton";
-import { GameStatsModal } from "./stats/GameStatsModal";
+import { cn } from "@/lib/utils";
 
 interface GameCardProps {
   game: {
     id: string;
     game_date: string;
     home_team: {
-      id: string;
       name: string;
       logo_url: string;
     };
     away_team: {
-      id: string;
       name: string;
       logo_url: string;
+    };
+    round: {
+      name: string;
+    };
+    arena: {
+      name: string;
+      capacity: number;
     };
     game_results?: Array<{
       home_score: number;
       away_score: number;
       is_final: boolean;
     }>;
-    game_code?: string;
   };
-  isAuthenticated: boolean;
-  userId?: string;
-  prediction?: {
-    prediction_home_score: number;
-    prediction_away_score: number;
-    points_earned?: number;
-  };
+  onClick?: () => void;
+  className?: string;
 }
 
-export function GameCard({ game, isAuthenticated, userId, prediction }: GameCardProps) {
-  const [showPointsBreakdown, setShowPointsBreakdown] = useState(false);
-  const [showInsights, setShowInsights] = useState(false);
-  const [showStats, setShowStats] = useState(false);
-
+export function GameCard({ game, onClick, className }: GameCardProps) {
   const gameResult = game.game_results?.[0];
-  const isUpcoming = !gameResult && new Date(game.game_date) > new Date();
-
-  const handlePointsClick = () => {
-    if (gameResult && prediction?.points_earned !== undefined) {
-      setShowPointsBreakdown(true);
-    }
-  };
 
   return (
-    <>
-      <Card className="game-card w-full h-full flex flex-col hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-background to-accent/5">
-        <CardContent className="p-4 sm:p-6 flex-1 flex flex-col">
-          <div className="flex flex-col h-full">
-            <GameScoreDisplay game={game} isUpcoming={isUpcoming} />
-
-            {prediction && (
-              <div className="mt-4 sm:mt-6">
-                <PredictionDisplay
-                  homeScore={prediction.prediction_home_score}
-                  awayScore={prediction.prediction_away_score}
-                  pointsEarned={prediction.points_earned}
-                  onClick={handlePointsClick}
-                  showBreakdownHint={!!gameResult && prediction.points_earned !== undefined}
-                />
-              </div>
+    <Card 
+      className={cn(
+        "overflow-hidden transition-all hover:shadow-lg",
+        "bg-gradient-to-br from-background to-accent/5",
+        className
+      )}
+      onClick={onClick}
+    >
+      <div className="p-6 space-y-6">
+        {/* Teams and Score Section */}
+        <div className="grid grid-cols-3 items-center gap-4">
+          {/* Home Team */}
+          <div className="flex flex-col items-center text-center">
+            <img
+              src={game.home_team.logo_url}
+              alt={game.home_team.name}
+              className="w-16 h-16 object-contain mb-2"
+            />
+            <h3 className="text-sm sm:text-base font-semibold line-clamp-2">
+              {game.home_team.name}
+            </h3>
+            {gameResult && (
+              <span className="text-2xl sm:text-3xl font-bold text-primary tabular-nums mt-1">
+                {gameResult.home_score}
+              </span>
             )}
-
-            <div className="mt-4 sm:mt-6 space-y-2 sm:space-y-3">
-              <PredictionButton
-                isAuthenticated={isAuthenticated}
-                gameDate={game.game_date}
-                gameId={game.id}
-                userId={userId}
-                prediction={prediction}
-                gameResult={gameResult}
-                homeTeam={game.home_team}
-                awayTeam={game.away_team}
-              />
-              
-              <div className="flex gap-2">
-                <InsightsButton 
-                  onClick={() => setShowInsights(true)}
-                  gameResult={gameResult}
-                  className="flex-1"
-                />
-
-                {gameResult?.is_final && game.game_code && (
-                  <StatsButton onClick={() => setShowStats(true)} className="flex-1" />
-                )}
-              </div>
-            </div>
           </div>
-        </CardContent>
-      </Card>
 
-      {prediction?.points_earned !== undefined && gameResult && (
-        <PointsBreakdownDialog
-          isOpen={showPointsBreakdown}
-          onOpenChange={setShowPointsBreakdown}
-          prediction={{
-            prediction_home_score: prediction.prediction_home_score,
-            prediction_away_score: prediction.prediction_away_score
-          }}
-          result={{
-            home_score: gameResult.home_score,
-            away_score: gameResult.away_score
-          }}
-          points={prediction.points_earned}
-        />
-      )}
+          {/* VS */}
+          <div className="flex flex-col items-center justify-center">
+            <span className="text-sm text-muted-foreground">VS</span>
+          </div>
 
-      {isUpcoming ? (
-        <PredictionInsightsDialog
-          isOpen={showInsights}
-          onOpenChange={setShowInsights}
-          gameId={game.id}
-        />
-      ) : gameResult && (
-        <FinishedGameInsightsDialog
-          isOpen={showInsights}
-          onOpenChange={setShowInsights}
-          gameId={game.id}
-          finalScore={{
-            home: gameResult.home_score,
-            away: gameResult.away_score
-          }}
-        />
-      )}
+          {/* Away Team */}
+          <div className="flex flex-col items-center text-center">
+            <img
+              src={game.away_team.logo_url}
+              alt={game.away_team.name}
+              className="w-16 h-16 object-contain mb-2"
+            />
+            <h3 className="text-sm sm:text-base font-semibold line-clamp-2">
+              {game.away_team.name}
+            </h3>
+            {gameResult && (
+              <span className="text-2xl sm:text-3xl font-bold text-primary tabular-nums mt-1">
+                {gameResult.away_score}
+              </span>
+            )}
+          </div>
+        </div>
 
-      {gameResult?.is_final && game.game_code && (
-        <GameStatsModal
-          isOpen={showStats}
-          onOpenChange={setShowStats}
-          gameId={game.game_code}
-        />
-      )}
-    </>
+        {/* Game Details */}
+        <div className="space-y-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4" />
+            <span>{format(new Date(game.game_date), "MMMM d, yyyy 'at' HH:mm")}</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Trophy className="w-4 h-4" />
+            <span>{game.round.name}</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <MapPin className="w-4 h-4" />
+            <span>{game.arena.name}</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Users className="w-4 h-4" />
+            <span>Capacity: {game.arena.capacity.toLocaleString()}</span>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex justify-end gap-2">
+          {gameResult && (
+            <InsightsButton
+              onClick={() => {}}
+              gameResult={gameResult}
+              className="text-xs"
+            />
+          )}
+          <StatsButton onClick={() => {}} className="text-xs" />
+        </div>
+      </div>
+    </Card>
   );
 }
