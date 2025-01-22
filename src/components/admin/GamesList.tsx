@@ -23,6 +23,7 @@ export function GamesList() {
   const [editingGame, setEditingGame] = useState<any>(null);
   const [gameDate, setGameDate] = useState<Date>();
   const [gameTime, setGameTime] = useState("20:00");
+  const [gameCode, setGameCode] = useState("");
 
   const { data: games, isLoading } = useQuery({
     queryKey: ['games'],
@@ -32,6 +33,7 @@ export function GamesList() {
         .select(`
           id,
           game_date,
+          game_code,
           home_team:teams!games_home_team_id_fkey(id, name, logo_url),
           away_team:teams!games_away_team_id_fkey(id, name, logo_url),
           round:rounds(id, name),
@@ -44,7 +46,6 @@ export function GamesList() {
       
       if (error) throw error;
       
-      // Process games and parse dates
       const processedGames = data.map(game => ({
         ...game,
         parsedDate: new Date(game.game_date),
@@ -55,7 +56,6 @@ export function GamesList() {
             : []
       }));
 
-      // Split into finished and unfinished games
       const unfinishedGames = processedGames
         .filter(game => !game.game_results?.some(result => result.is_final))
         .sort((a, b) => a.parsedDate.getTime() - b.parsedDate.getTime());
@@ -64,7 +64,6 @@ export function GamesList() {
         .filter(game => game.game_results?.some(result => result.is_final))
         .sort((a, b) => b.parsedDate.getTime() - a.parsedDate.getTime());
 
-      // Combine with unfinished games first
       return [...unfinishedGames, ...finishedGames];
     },
   });
@@ -82,9 +81,14 @@ export function GamesList() {
       combinedDateTime.setHours(parseInt(hours, 10));
       combinedDateTime.setMinutes(parseInt(minutes, 10));
 
+      const updates = {
+        game_date: combinedDateTime.toISOString(),
+        game_code: gameCode.trim() || null
+      };
+
       const { error } = await supabase
         .from('games')
-        .update({ game_date: combinedDateTime.toISOString() })
+        .update(updates)
         .eq('id', editingGame.id);
 
       if (error) throw error;
@@ -95,6 +99,7 @@ export function GamesList() {
       setEditingGame(null);
       setGameDate(undefined);
       setGameTime("20:00");
+      setGameCode("");
       toast({ title: "Success", description: "Game updated successfully" });
     },
     onError: (error: any) => {
@@ -111,6 +116,7 @@ export function GamesList() {
     const date = new Date(game.game_date);
     setGameDate(date);
     setGameTime(format(date, "HH:mm"));
+    setGameCode(game.game_code || "");
     setIsEditOpen(true);
   };
 
@@ -126,11 +132,10 @@ export function GamesList() {
     if (selectedGames.length === 0) return;
     
     try {
-      // Delete games one by one
       for (const gameId of selectedGames) {
         await deleteGames.mutateAsync(gameId);
       }
-      setSelectedGames([]); // Clear selection after successful deletion
+      setSelectedGames([]);
     } catch (error) {
       console.error('Error in handleDeleteSelected:', error);
     }
@@ -140,7 +145,6 @@ export function GamesList() {
     return <GameListSkeleton />;
   }
 
-  // Group games by round
   const gamesByRound = games?.reduce((acc, game) => {
     const roundId = game.round.id;
     if (!acc[roundId]) {
@@ -174,6 +178,8 @@ export function GamesList() {
         onGameDateChange={setGameDate}
         gameTime={gameTime}
         onGameTimeChange={setGameTime}
+        gameCode={gameCode}
+        onGameCodeChange={setGameCode}
         onUpdate={() => updateGame.mutate()}
       />
 

@@ -1,18 +1,27 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { PopoverContent, PopoverTrigger, Popover } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { CalendarIcon } from "lucide-react";
 
 interface EditGameDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  gameDate: Date | undefined;
+  gameDate?: Date;
   onGameDateChange: (date: Date | undefined) => void;
   gameTime: string;
   onGameTimeChange: (time: string) => void;
+  gameCode: string;
+  onGameCodeChange: (code: string) => void;
   onUpdate: () => void;
 }
 
@@ -23,42 +32,63 @@ export function EditGameDialog({
   onGameDateChange,
   gameTime,
   onGameTimeChange,
-  onUpdate
+  gameCode,
+  onGameCodeChange,
+  onUpdate,
 }: EditGameDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Game Date/Time</DialogTitle>
+          <DialogTitle>Edit Game</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "justify-start text-left font-normal",
-                  !gameDate && "text-muted-foreground"
-                )}
-              >
-                {gameDate ? format(gameDate, "PPP") : "Game Date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={gameDate}
-                onSelect={onGameDateChange}
-              />
-            </PopoverContent>
-          </Popover>
-          <Input
-            type="time"
-            value={gameTime}
-            onChange={(e) => onGameTimeChange(e.target.value)}
-          />
-          <Button onClick={onUpdate}>Update Game</Button>
+        <div className="space-y-4 py-4">
+          <div className="flex flex-col space-y-2">
+            <span className="text-sm font-medium">Date</span>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "justify-start text-left font-normal",
+                    !gameDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {gameDate ? format(gameDate, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={gameDate}
+                  onSelect={onGameDateChange}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div className="flex flex-col space-y-2">
+            <span className="text-sm font-medium">Time</span>
+            <Input
+              type="time"
+              value={gameTime}
+              onChange={(e) => onGameTimeChange(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col space-y-2">
+            <span className="text-sm font-medium">Game Code</span>
+            <Input
+              type="text"
+              value={gameCode}
+              onChange={(e) => onGameCodeChange(e.target.value)}
+              placeholder="Enter game code (e.g. 198)"
+            />
+          </div>
         </div>
+        <DialogFooter>
+          <Button onClick={onUpdate}>Save changes</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
