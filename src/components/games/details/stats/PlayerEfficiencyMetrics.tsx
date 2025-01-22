@@ -108,7 +108,7 @@ export function PlayerEfficiencyMetrics({ stats, teamTotals }: PlayerEfficiencyM
 
   // Calculate Euroleague.bet Performance Index
   const calculatePerformanceIndex = () => {
-    if (!hasMinimumTime) return 0;
+    if (!hasMinimumTime) return "0.00";
 
     const shootingEfficiencyWeight = 0.3;
     const playMakingWeight = 0.25;
