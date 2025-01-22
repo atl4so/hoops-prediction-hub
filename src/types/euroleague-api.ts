@@ -51,3 +51,20 @@ export interface PlayerStats {
     };
   };
 }
+
+export interface ScheduleItem {
+  date: string;
+  startime: string;
+  gamecode: string;
+  hometeam: string;
+  awayteam: string;
+}
+
+export interface GameResult {
+  gamecode: string;
+  home_score: number;
+  away_score: number;
+  is_final?: boolean;
+  homescore: number;
+  awayscore: number;
+}
