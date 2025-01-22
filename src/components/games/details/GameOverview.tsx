@@ -2,7 +2,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MapPin, Users, Calendar, Clock } from "lucide-react";
 import { format, parseISO } from "date-fns";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface GameOverviewProps {
   game: {
@@ -38,35 +37,6 @@ export function GameOverview({ game }: GameOverviewProps) {
   
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* Game Header */}
-      <Card className="bg-gradient-to-br from-background to-muted/5 border border-border/50">
-        <CardContent className="p-6 sm:p-8">
-          <Tabs defaultValue="home" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="home">Home</TabsTrigger>
-              <TabsTrigger value="away">Away</TabsTrigger>
-            </TabsList>
-            <div className="text-center space-y-6">
-              <TabsContent value="home" className="mt-0">
-                <h2 className="text-2xl sm:text-3xl font-display font-semibold">
-                  {game.localclub.name}
-                </h2>
-              </TabsContent>
-              <TabsContent value="away" className="mt-0">
-                <h2 className="text-2xl sm:text-3xl font-display font-semibold">
-                  {game.roadclub.name}
-                </h2>
-              </TabsContent>
-              <div className="flex justify-center items-center gap-6 sm:gap-8">
-                <span className="text-4xl sm:text-6xl font-display font-bold tracking-tight">{game.localclub.score}</span>
-                <span className="text-2xl sm:text-4xl text-muted-foreground">-</span>
-                <span className="text-4xl sm:text-6xl font-display font-bold tracking-tight">{game.roadclub.score}</span>
-              </div>
-            </div>
-          </Tabs>
-        </CardContent>
-      </Card>
-
       {/* Game Info */}
       <Card className="bg-gradient-to-br from-background to-muted/5 border border-border/50">
         <CardContent className="p-6 sm:p-8">

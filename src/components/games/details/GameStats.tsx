@@ -1,16 +1,21 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 
 interface GameStatsProps {
-  game: any; // We'll type this properly later
+  game: any;
 }
 
 export function GameStats({ game }: GameStatsProps) {
   const renderPlayerStats = (players: any[], teamName: string) => (
     <Card className="bg-gradient-to-br from-background to-muted/5 border border-border/50">
       <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">{teamName}</h3>
+          <div className="text-xl font-bold">
+            {teamName === game.localclub.name ? game.localclub.score : game.roadclub.score}
+          </div>
+        </div>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -18,8 +23,17 @@ export function GameStats({ game }: GameStatsProps) {
                 <TableHead className="min-w-[180px]">Player</TableHead>
                 <TableHead className="text-right">MIN</TableHead>
                 <TableHead className="text-right">PTS</TableHead>
+                <TableHead className="text-right">2FG</TableHead>
+                <TableHead className="text-right">3FG</TableHead>
+                <TableHead className="text-right">FT</TableHead>
+                <TableHead className="text-right">OREB</TableHead>
+                <TableHead className="text-right">DREB</TableHead>
                 <TableHead className="text-right">REB</TableHead>
                 <TableHead className="text-right">AST</TableHead>
+                <TableHead className="text-right">STL</TableHead>
+                <TableHead className="text-right">BLK</TableHead>
+                <TableHead className="text-right">TO</TableHead>
+                <TableHead className="text-right">PF</TableHead>
                 <TableHead className="text-right">PIR</TableHead>
               </TableRow>
             </TableHeader>
@@ -39,8 +53,17 @@ export function GameStats({ game }: GameStatsProps) {
                     </TableCell>
                     <TableCell className="text-right font-medium tabular-nums">{player.TimePlayed}</TableCell>
                     <TableCell className="text-right font-bold text-primary tabular-nums">{player.Score}</TableCell>
+                    <TableCell className="text-right tabular-nums">{player.FieldGoalsMade2}-{player.FieldGoalsAttempted2}</TableCell>
+                    <TableCell className="text-right tabular-nums">{player.FieldGoalsMade3}-{player.FieldGoalsAttempted3}</TableCell>
+                    <TableCell className="text-right tabular-nums">{player.FreeThrowsMade}-{player.FreeThrowsAttempted}</TableCell>
+                    <TableCell className="text-right tabular-nums">{player.OffensiveRebounds}</TableCell>
+                    <TableCell className="text-right tabular-nums">{player.DefensiveRebounds}</TableCell>
                     <TableCell className="text-right tabular-nums">{player.TotalRebounds}</TableCell>
                     <TableCell className="text-right tabular-nums">{player.Assistances}</TableCell>
+                    <TableCell className="text-right tabular-nums">{player.Steals}</TableCell>
+                    <TableCell className="text-right tabular-nums">{player.BlocksFavour}</TableCell>
+                    <TableCell className="text-right tabular-nums">{player.Turnovers}</TableCell>
+                    <TableCell className="text-right tabular-nums">{player.FoulsCommited}</TableCell>
                     <TableCell className="text-right font-medium tabular-nums">{player.Valuation}</TableCell>
                   </TableRow>
                 )
@@ -53,17 +76,9 @@ export function GameStats({ game }: GameStatsProps) {
   );
 
   return (
-    <Tabs defaultValue="home" className="space-y-6 animate-fade-in">
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="home">Home</TabsTrigger>
-        <TabsTrigger value="away">Away</TabsTrigger>
-      </TabsList>
-      <TabsContent value="home" className="space-y-4">
-        {renderPlayerStats(game.localclub.playerstats.stat, game.localclub.name)}
-      </TabsContent>
-      <TabsContent value="away" className="space-y-4">
-        {renderPlayerStats(game.roadclub.playerstats.stat, game.roadclub.name)}
-      </TabsContent>
-    </Tabs>
+    <div className="space-y-6 animate-fade-in">
+      {renderPlayerStats(game.localclub.playerstats.stat, game.localclub.name)}
+      {renderPlayerStats(game.roadclub.playerstats.stat, game.roadclub.name)}
+    </div>
   );
 }

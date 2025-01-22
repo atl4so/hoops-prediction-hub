@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { XMLParser } from "fast-xml-parser";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GameOverview } from "@/components/games/details/GameOverview";
@@ -58,9 +58,7 @@ export default function Game() {
       <div className="container mx-auto p-4 space-y-8 animate-fade-in">
         <Skeleton className="h-12 w-3/4 mx-auto" />
         <Card>
-          <CardContent className="p-6">
-            <Skeleton className="h-48" />
-          </CardContent>
+          <Skeleton className="h-48" />
         </Card>
       </div>
     );
@@ -91,24 +89,14 @@ export default function Game() {
 
       <div className="container mx-auto p-4 pb-16">
         <PageHeader 
-          title={gameData.title}
+          title={`${gameData.localclub.name} ${gameData.localclub.score} - ${gameData.roadclub.score} ${gameData.roadclub.name}`}
           className="mb-8"
         />
         
-        <Tabs defaultValue="overview" className="space-y-8">
-          <TabsList className="w-full max-w-md mx-auto">
-            <TabsTrigger value="overview" className="flex-1">Overview</TabsTrigger>
-            <TabsTrigger value="stats" className="flex-1">Stats</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="overview">
-            <GameOverview game={gameData} />
-          </TabsContent>
-
-          <TabsContent value="stats">
-            <GameStats game={gameData} />
-          </TabsContent>
-        </Tabs>
+        <div className="space-y-8">
+          <GameOverview game={gameData} />
+          <GameStats game={gameData} />
+        </div>
       </div>
     </>
   );
