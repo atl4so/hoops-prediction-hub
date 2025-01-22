@@ -1,13 +1,12 @@
-import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { TeamDisplay } from "./TeamDisplay";
-import { GameDateTime } from "./GameDateTime";
+import { PredictionButton } from "./prediction/PredictionButton";
 import { PredictionDisplay } from "./PredictionDisplay";
-import { PredictionButton } from "./PredictionButton";
-import { BarChart2 } from "lucide-react";
+import { PointsBreakdownDialog } from "./PointsBreakdownDialog";
 import { useState } from "react";
-import { GameStatsModal } from "./GameStatsModal";
+import { PredictionInsightsDialog } from "./prediction/PredictionInsightsDialog";
+import { FinishedGameInsightsDialog } from "./prediction/insights/FinishedGameInsightsDialog";
+import { GameScoreDisplay } from "./prediction/GameScoreDisplay";
+import { InsightsButton } from "./prediction/insights/InsightsButton";
 
 interface GameCardProps {
   game: {
@@ -29,93 +28,101 @@ interface GameCardProps {
       is_final: boolean;
     }>;
   };
+  isAuthenticated: boolean;
+  userId?: string;
   prediction?: {
     prediction_home_score: number;
     prediction_away_score: number;
     points_earned?: number;
-  } | null;
-  showPredictionButton?: boolean;
-  isAuthenticated?: boolean;
-  userId?: string;
+  };
 }
 
-export function GameCard({ 
-  game, 
-  prediction, 
-  showPredictionButton = true,
-  isAuthenticated = false,
-  userId 
-}: GameCardProps) {
-  const [showStats, setShowStats] = useState(false);
+export function GameCard({ game, isAuthenticated, userId, prediction }: GameCardProps) {
+  const [showPointsBreakdown, setShowPointsBreakdown] = useState(false);
+  const [showInsights, setShowInsights] = useState(false);
+
   const gameResult = game.game_results?.[0];
-  const isFinished = gameResult?.is_final;
+  const isUpcoming = !gameResult && new Date(game.game_date) > new Date();
+
+  const handlePointsClick = () => {
+    if (gameResult && prediction?.points_earned !== undefined) {
+      setShowPointsBreakdown(true);
+    }
+  };
 
   return (
     <>
-      <Card>
-        <CardContent className="pt-6">
-          <div className="space-y-4">
-            <GameDateTime date={game.game_date} />
-            
-            <div className="grid grid-cols-[1fr,auto,1fr] gap-4 items-center">
-              <TeamDisplay 
-                team={game.home_team}
-                score={gameResult?.home_score}
-                align="right"
-              />
-              <span className="text-xl font-bold">vs</span>
-              <TeamDisplay
-                team={game.away_team}
-                score={gameResult?.away_score}
-                align="left"
-              />
-            </div>
+      <Card className="game-card w-full h-full flex flex-col">
+        <CardContent className="p-6 flex-1 flex flex-col">
+          <div className="flex flex-col h-full">
+            <GameScoreDisplay game={game} isUpcoming={isUpcoming} />
 
             {prediction && (
-              <PredictionDisplay 
-                homeScore={prediction.prediction_home_score}
-                awayScore={prediction.prediction_away_score}
-                pointsEarned={prediction.points_earned}
-              />
+              <div className="mt-6">
+                <PredictionDisplay
+                  homeScore={prediction.prediction_home_score}
+                  awayScore={prediction.prediction_away_score}
+                  pointsEarned={prediction.points_earned}
+                  onClick={handlePointsClick}
+                  showBreakdownHint={!!gameResult && prediction.points_earned !== undefined}
+                />
+              </div>
             )}
 
-            <div className="flex justify-between items-center">
-              {showPredictionButton && (
-                <PredictionButton 
-                  gameId={game.id} 
-                  gameDate={game.game_date}
-                  prediction={prediction}
-                  isAuthenticated={isAuthenticated}
-                  userId={userId}
-                  homeTeam={game.home_team}
-                  awayTeam={game.away_team}
-                  onPrediction={() => {}}
-                />
-              )}
+            <div className="mt-6 space-y-3">
+              <PredictionButton
+                isAuthenticated={isAuthenticated}
+                gameDate={game.game_date}
+                gameId={game.id}
+                userId={userId}
+                prediction={prediction}
+                gameResult={gameResult}
+                homeTeam={game.home_team}
+                awayTeam={game.away_team}
+              />
               
-              {isFinished && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowStats(true)}
-                  className="ml-auto"
-                >
-                  <BarChart2 className="h-4 w-4 mr-2" />
-                  Stats
-                </Button>
-              )}
+              <InsightsButton 
+                onClick={() => setShowInsights(true)}
+                gameResult={gameResult}
+              />
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <GameStatsModal 
-        isOpen={showStats}
-        onOpenChange={setShowStats}
-        gameId={game.id}
-        homeTeam={game.home_team.name}
-        awayTeam={game.away_team.name}
-      />
+      {prediction?.points_earned !== undefined && gameResult && (
+        <PointsBreakdownDialog
+          isOpen={showPointsBreakdown}
+          onOpenChange={setShowPointsBreakdown}
+          prediction={{
+            prediction_home_score: prediction.prediction_home_score,
+            prediction_away_score: prediction.prediction_away_score
+          }}
+          result={{
+            home_score: gameResult.home_score,
+            away_score: gameResult.away_score
+          }}
+          points={prediction.points_earned}
+        />
+      )}
+
+      {isUpcoming ? (
+        <PredictionInsightsDialog
+          isOpen={showInsights}
+          onOpenChange={setShowInsights}
+          gameId={game.id}
+        />
+      ) : gameResult && (
+        <FinishedGameInsightsDialog
+          isOpen={showInsights}
+          onOpenChange={setShowInsights}
+          gameId={game.id}
+          finalScore={{
+            home: gameResult.home_score,
+            away: gameResult.away_score
+          }}
+        />
+      )}
     </>
   );
 }

@@ -27,7 +27,6 @@ export function GamesList({ isAuthenticated, userId }: GamesListProps) {
         <GameCard
           key={game.id}
           game={game}
-          prediction={game.predictions?.find(p => p.user_id === userId)}
           isAuthenticated={isAuthenticated}
           userId={userId}
         />
