@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { PlayerStatsTable } from "./PlayerStatsTable";
 import { TopPerformers } from "./TopPerformers";
+import { StatisticsLegend } from "./stats/StatisticsLegend";
 
 interface GameStatsProps {
   game: {
@@ -64,6 +65,7 @@ export function GameStats({ game }: GameStatsProps) {
           teamTotals={game.roadclub.totals.total}
         />
       </div>
+      <StatisticsLegend />
     </div>
   );
 }

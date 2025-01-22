@@ -1,4 +1,6 @@
 import { cn } from "@/lib/utils";
+import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
 
 interface PlayerStats {
   TimePlayed: string;
@@ -84,28 +86,80 @@ export function PlayerEfficiencyMetrics({ stats, teamTotals }: PlayerEfficiencyM
   return (
     <div className="grid grid-cols-2 gap-2 text-xs">
       <div className="space-y-1">
-        <StatItem label="PIR/m" value={pirPerMinute} />
-        <StatItem label="PTS/m" value={pointsPerMinute} />
-        <StatItem label="REB/m" value={reboundsPerMinute} />
-        <StatItem label="DEF/m" value={defensiveStats} />
-        <StatItem label="Floor Impact" value={floorImpact} />
+        <StatItem 
+          label="PIR/m" 
+          value={pirPerMinute}
+          tooltip="Performance Index Rating per minute - Overall efficiency rating normalized by playing time"
+        />
+        <StatItem 
+          label="PTS/m" 
+          value={pointsPerMinute}
+          tooltip="Points scored per minute of play"
+        />
+        <StatItem 
+          label="REB/m" 
+          value={reboundsPerMinute}
+          tooltip="Total rebounds (offensive + defensive) per minute"
+        />
+        <StatItem 
+          label="DEF/m" 
+          value={defensiveStats}
+          tooltip="Combined defensive actions (steals + blocks) per minute"
+        />
+        <StatItem 
+          label="Floor Impact" 
+          value={floorImpact}
+          tooltip="Combined contribution (points + rebounds + assists) per minute"
+        />
       </div>
       <div className="space-y-1">
-        <StatItem label="FG%" value={`${shootingEfficiency}%`} />
-        <StatItem label="TS%" value={`${trueShootingPercentage}%`} />
-        <StatItem label="PTS%" value={`${scoringImpact}%`} />
-        <StatItem label="AST%" value={`${assistImpact}%`} />
-        <StatItem label="AST/TO" value={assistToTurnover} />
+        <StatItem 
+          label="FG%" 
+          value={`${shootingEfficiency}%`}
+          tooltip="Field Goal Percentage - (Made shots / Attempted shots) × 100"
+        />
+        <StatItem 
+          label="TS%" 
+          value={`${trueShootingPercentage}%`}
+          tooltip="True Shooting Percentage - Points per shooting possession, accounting for 2PT, 3PT, and FT"
+        />
+        <StatItem 
+          label="PTS%" 
+          value={`${scoringImpact}%`}
+          tooltip="Percentage of team's total points scored by the player"
+        />
+        <StatItem 
+          label="AST%" 
+          value={`${assistImpact}%`}
+          tooltip="Percentage of team's total assists by the player"
+        />
+        <StatItem 
+          label="AST/TO" 
+          value={assistToTurnover}
+          tooltip="Assist to Turnover ratio - Higher values indicate better ball security"
+        />
       </div>
     </div>
   );
 }
 
-function StatItem({ label, value }: { label: string; value: string }) {
+function StatItem({ label, value, tooltip }: { label: string; value: string; tooltip: string }) {
   return (
-    <div className="flex justify-between items-center">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium tabular-nums">{value}</span>
-    </div>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="flex justify-between items-center cursor-help">
+            <span className="text-muted-foreground flex items-center gap-1">
+              {label}
+              <Info className="h-3 w-3 text-muted-foreground/50" />
+            </span>
+            <span className="font-medium tabular-nums">{value}</span>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="top" align="start" className="max-w-[250px] text-sm">
+          {tooltip}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
