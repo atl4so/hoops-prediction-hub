@@ -18,11 +18,15 @@ export interface GameResult {
 export interface Game {
   id: string;
   game_date: string;
-  parsedDate: Date;
+  parsedDate?: Date;
   round: Round;
   home_team: Team;
   away_team: Team;
   game_results?: GameResult[];
+  arena?: {
+    name: string;
+    capacity: number;
+  };
 }
 
 export interface UserProfile {
