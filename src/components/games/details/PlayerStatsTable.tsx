@@ -34,6 +34,11 @@ export function PlayerStatsTable({ players, teamName, teamScore }: PlayerStatsTa
   // Ensure players is always an array
   const playersArray = Array.isArray(players) ? players : [players];
 
+  const calculatePercentage = (made: number, attempted: number): string => {
+    if (attempted === 0) return "0.0";
+    return ((made / attempted) * 100).toFixed(1);
+  };
+
   return (
     <Card className="bg-gradient-to-br from-background to-muted/5 border border-border/50">
       <CardContent className="p-6">
@@ -49,7 +54,9 @@ export function PlayerStatsTable({ players, teamName, teamScore }: PlayerStatsTa
                 <TableHead className="text-right">MIN</TableHead>
                 <TableHead className="text-right">PTS</TableHead>
                 <TableHead className="text-right">2FG</TableHead>
+                <TableHead className="text-right">%</TableHead>
                 <TableHead className="text-right">3FG</TableHead>
+                <TableHead className="text-right">%</TableHead>
                 <TableHead className="text-right">FT</TableHead>
                 <TableHead className="text-right">OREB</TableHead>
                 <TableHead className="text-right">DREB</TableHead>
@@ -79,7 +86,9 @@ export function PlayerStatsTable({ players, teamName, teamScore }: PlayerStatsTa
                     <TableCell className="text-right font-medium tabular-nums">{player.TimePlayed}</TableCell>
                     <TableCell className="text-right font-bold text-primary tabular-nums">{player.Score}</TableCell>
                     <TableCell className="text-right tabular-nums">{player.FieldGoalsMade2}-{player.FieldGoalsAttempted2}</TableCell>
+                    <TableCell className="text-right tabular-nums">{calculatePercentage(player.FieldGoalsMade2, player.FieldGoalsAttempted2)}%</TableCell>
                     <TableCell className="text-right tabular-nums">{player.FieldGoalsMade3}-{player.FieldGoalsAttempted3}</TableCell>
+                    <TableCell className="text-right tabular-nums">{calculatePercentage(player.FieldGoalsMade3, player.FieldGoalsAttempted3)}%</TableCell>
                     <TableCell className="text-right tabular-nums">{player.FreeThrowsMade}-{player.FreeThrowsAttempted}</TableCell>
                     <TableCell className="text-right tabular-nums">{player.OffensiveRebounds}</TableCell>
                     <TableCell className="text-right tabular-nums">{player.DefensiveRebounds}</TableCell>
