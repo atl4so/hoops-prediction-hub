@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Check, X, Home, Plane } from "lucide-react";
 import { RoundSelector } from "../predictions/RoundSelector";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface HomeAwayPredictionsDialogProps {
@@ -19,6 +19,31 @@ export function HomeAwayPredictionsDialog({
 }: HomeAwayPredictionsDialogProps) {
   const [selectedRound, setSelectedRound] = useState("");
 
+  // Set up real-time subscription for game results
+  useEffect(() => {
+    if (!isOpen || !selectedRound) return;
+
+    const channel = supabase
+      .channel('game-results-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'game_results'
+        },
+        () => {
+          console.log('Game results changed, invalidating queries...');
+          queryClient.invalidateQueries({ queryKey: ['round-home-away-predictions', userId, selectedRound] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [isOpen, selectedRound, userId]);
+
   const { data: predictions, isLoading } = useQuery({
     queryKey: ['round-home-away-predictions', userId, selectedRound],
     queryFn: async () => {
@@ -30,6 +55,7 @@ export function HomeAwayPredictionsDialog({
           id,
           prediction_home_score,
           prediction_away_score,
+          points_earned,
           game:games!inner (
             id,
             game_date,
