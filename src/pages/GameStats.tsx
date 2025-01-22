@@ -169,12 +169,6 @@ export default function GameStats() {
                 <CardContent className="p-2">
                   <div className="space-y-0.5">
                     <div className="flex items-center justify-between text-xs">
-                      <Badge 
-                        variant="secondary" 
-                        className="bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary text-[10px] px-1.5 py-0"
-                      >
-                        Round {game.game}
-                      </Badge>
                       <div className="flex items-center gap-1 text-muted-foreground text-[10px]">
                         <Calendar className="h-3 w-3" />
                         <span>{format(new Date(game.date + ' ' + game.startime), 'MMM d, HH:mm')}</span>
@@ -232,13 +226,11 @@ export default function GameStats() {
             
             {Array.from({ length: totalRounds }, (_, i) => i + 1)
               .filter(round => {
-                // Show current round, first/last rounds, and rounds near current
                 const nearCurrent = Math.abs(round - currentRound) <= 1;
                 const isEndpoint = round === 1 || round === totalRounds;
                 return nearCurrent || isEndpoint;
               })
               .map((round, index, array) => {
-                // Add ellipsis between non-consecutive rounds
                 const showEllipsis = index > 0 && array[index - 1] !== round - 1;
                 
                 return (
