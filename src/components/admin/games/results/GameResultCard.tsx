@@ -33,6 +33,10 @@ export function GameResultCard({
   onEdit,
   onCancel,
 }: GameResultCardProps) {
+  const isEditing = editingGame === game.id;
+  const hasResult = game.game_results?.[0];
+  const isFinal = hasResult?.is_final;
+
   return (
     <Card key={game.id}>
       <CardHeader>
@@ -45,7 +49,7 @@ export function GameResultCard({
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-4">
-          {editingGame === game.id ? (
+          {isEditing ? (
             <>
               <Input
                 type="number"
@@ -62,15 +66,13 @@ export function GameResultCard({
                 className="w-20"
                 placeholder="Away"
               />
-              {game.game_results?.[0]?.is_final && (
-                <Input
-                  type="text"
-                  value={gameCode}
-                  onChange={(e) => onGameCodeChange(e.target.value)}
-                  className="w-32"
-                  placeholder="Game Code"
-                />
-              )}
+              <Input
+                type="text"
+                value={gameCode}
+                onChange={(e) => onGameCodeChange(e.target.value)}
+                className="w-32"
+                placeholder="Game Code"
+              />
               <div className="flex gap-2">
                 <Button
                   size="icon"
@@ -90,12 +92,12 @@ export function GameResultCard({
           ) : (
             <>
               <div className="flex-1">
-                {game.game_results?.[0] ? (
+                {hasResult ? (
                   <div className="space-y-2">
                     <span className="text-lg block">
-                      {game.game_results[0].home_score} - {game.game_results[0].away_score}
+                      {hasResult.home_score} - {hasResult.away_score}
                     </span>
-                    {game.game_results[0].is_final && (
+                    {isFinal && (
                       <span className="text-sm text-muted-foreground block">
                         Game Code: {game.game_code || "Not set"}
                       </span>
@@ -109,7 +111,7 @@ export function GameResultCard({
                 variant="outline"
                 onClick={() => onEdit(game)}
               >
-                {game.game_results?.[0] ? "Edit Result" : "Set Result"}
+                {hasResult ? "Edit Result" : "Set Result"}
               </Button>
             </>
           )}
