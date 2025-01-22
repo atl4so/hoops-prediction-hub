@@ -1,6 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Link } from "react-router-dom";
 
 interface PlayerStats {
   PlayerName: string;
@@ -22,6 +23,7 @@ interface PlayerStats {
   Turnovers: number;
   FoulsCommited: number;
   Valuation: number;
+  PlayerCode?: string;
 }
 
 interface PlayerStatsTableProps {
@@ -31,7 +33,6 @@ interface PlayerStatsTableProps {
 }
 
 export function PlayerStatsTable({ players, teamName, teamScore }: PlayerStatsTableProps) {
-  // Ensure players is always an array
   const playersArray = Array.isArray(players) ? players : [players];
 
   return (
@@ -68,7 +69,16 @@ export function PlayerStatsTable({ players, teamName, teamScore }: PlayerStatsTa
                   <TableRow key={index} className="hover:bg-muted/50 border-border/50">
                     <TableCell className="font-medium">
                       <div className="flex flex-col gap-1.5">
-                        <span>{player.PlayerName}</span>
+                        {player.PlayerCode ? (
+                          <Link 
+                            to={`/player/${player.PlayerCode}`}
+                            className="hover:text-primary transition-colors"
+                          >
+                            {player.PlayerName}
+                          </Link>
+                        ) : (
+                          <span>{player.PlayerName}</span>
+                        )}
                         {player.StartFive && (
                           <Badge variant="secondary" className="w-fit text-xs">
                             Starter
