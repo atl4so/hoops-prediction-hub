@@ -145,7 +145,7 @@ export function PlayerEfficiencyMetrics({ stats, teamTotals }: PlayerEfficiencyM
 
 function StatItem({ label, value, tooltip }: { label: string; value: string; tooltip: string }) {
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={0}>
       <Tooltip>
         <TooltipTrigger asChild>
           <div className="flex justify-between items-center cursor-help">
@@ -156,7 +156,11 @@ function StatItem({ label, value, tooltip }: { label: string; value: string; too
             <span className="font-medium tabular-nums">{value}</span>
           </div>
         </TooltipTrigger>
-        <TooltipContent side="top" align="start" className="max-w-[250px] text-sm">
+        <TooltipContent 
+          side="top" 
+          align="start" 
+          className="max-w-[250px] text-sm"
+        >
           {tooltip}
         </TooltipContent>
       </Tooltip>
