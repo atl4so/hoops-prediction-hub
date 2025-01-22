@@ -5,10 +5,10 @@ import { format, parseISO } from "date-fns";
 
 interface GameOverviewProps {
   game: {
-    cetdate: string;
-    stadium: string;
-    stadiumname: string;
-    audience: number;
+    cetdate?: string;
+    stadium?: string;
+    stadiumname?: string;
+    audience?: number;
     localclub: {
       name: string;
       score: number;
@@ -33,7 +33,7 @@ interface GameOverviewProps {
 }
 
 export function GameOverview({ game }: GameOverviewProps) {
-  const gameDate = parseISO(game.cetdate);
+  const gameDate = game.cetdate ? parseISO(game.cetdate) : null;
   
   return (
     <div className="space-y-6">
@@ -59,38 +59,46 @@ export function GameOverview({ game }: GameOverviewProps) {
       <Card>
         <CardContent className="p-6">
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="flex items-center gap-3">
-              <MapPin className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">Location</p>
-                <p className="font-medium">{game.stadiumname}</p>
+            {game.stadiumname && (
+              <div className="flex items-center gap-3">
+                <MapPin className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Location</p>
+                  <p className="font-medium">{game.stadiumname}</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Users className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">Attendance</p>
-                <p className="font-medium">{game.audience?.toLocaleString()}</p>
+            )}
+            {game.audience && (
+              <div className="flex items-center gap-3">
+                <Users className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Attendance</p>
+                  <p className="font-medium">{game.audience.toLocaleString()}</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Calendar className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">Date</p>
-                <p className="font-medium">
-                  {format(gameDate, 'MMMM d, yyyy')}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Clock className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">Time (CET)</p>
-                <p className="font-medium">
-                  {format(gameDate, 'HH:mm')}
-                </p>
-              </div>
-            </div>
+            )}
+            {gameDate && (
+              <>
+                <div className="flex items-center gap-3">
+                  <Calendar className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Date</p>
+                    <p className="font-medium">
+                      {format(gameDate, 'MMMM d, yyyy')}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Clock className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Time (CET)</p>
+                    <p className="font-medium">
+                      {format(gameDate, 'HH:mm')}
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </CardContent>
       </Card>
