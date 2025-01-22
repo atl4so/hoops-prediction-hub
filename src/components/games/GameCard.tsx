@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { PredictionDialog } from "../predictions/PredictionDialog";
 import { useState } from "react";
 import { Trophy, Clock } from "lucide-react";
+import { PredictionInsightsDialog } from "./prediction/PredictionInsightsDialog";
 
 interface GameCardProps {
   game: {
@@ -47,6 +48,7 @@ interface GameCardProps {
 export function GameCard({ game, isAuthenticated, prediction, userId }: GameCardProps) {
   const navigate = useNavigate();
   const [isPredictionOpen, setIsPredictionOpen] = useState(false);
+  const [isInsightsOpen, setIsInsightsOpen] = useState(false);
   const gameDate = new Date(game.game_date);
   const isFuture = gameDate > new Date();
   const finalResult = game.game_results?.find(result => result.is_final);
@@ -142,12 +144,21 @@ export function GameCard({ game, isAuthenticated, prediction, userId }: GameCard
               </div>
             ) : (
               isFuture && (
-                <Button 
-                  className="w-full mt-4" 
-                  onClick={handlePredictClick}
-                >
-                  Make Prediction
-                </Button>
+                <div className="space-y-2 mt-4">
+                  <Button 
+                    className="w-full" 
+                    onClick={handlePredictClick}
+                  >
+                    Make Prediction
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => setIsInsightsOpen(true)}
+                  >
+                    How Others Predict
+                  </Button>
+                </div>
               )
             )}
           </div>
@@ -162,6 +173,12 @@ export function GameCard({ game, isAuthenticated, prediction, userId }: GameCard
         gameDate={game.game_date}
         homeTeam={game.home_team}
         awayTeam={game.away_team}
+      />
+
+      <PredictionInsightsDialog
+        isOpen={isInsightsOpen}
+        onOpenChange={setIsInsightsOpen}
+        gameId={game.id}
       />
     </>
   );
