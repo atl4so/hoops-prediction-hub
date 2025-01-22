@@ -1,3 +1,18 @@
+export interface ScheduleItem {
+  date: string;
+  startime: string;
+  gamecode: string;
+  hometeam: string;
+  awayteam: string;
+}
+
+export interface GameResult {
+  gamecode: string;
+  homescore: number;
+  awayscore: number;
+  is_final?: boolean;
+}
+
 export interface PlayerStats {
   name: string;
   height: number;

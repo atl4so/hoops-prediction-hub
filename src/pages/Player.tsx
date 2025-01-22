@@ -4,16 +4,23 @@ import { XMLParser } from "fast-xml-parser";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { PlayerStats } from "@/types/euroleague-api";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function Player() {
   const { playerCode } = useParams();
 
-  const { data: player, isLoading } = useQuery({
+  const { data: player, isLoading, error } = useQuery({
     queryKey: ["player", playerCode],
     queryFn: async () => {
       const response = await fetch(
         `https://api-live.euroleague.net/v1/players?playerCode=${playerCode}&seasonCode=E2024`
       );
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error("Player not found. The player code may be incorrect.");
+        }
+        throw new Error("Failed to fetch player data");
+      }
       const xmlText = await response.text();
       const parser = new XMLParser();
       const result = parser.parse(xmlText);
@@ -24,6 +31,16 @@ export default function Player() {
 
   if (isLoading) {
     return <Skeleton className="h-[400px] w-full" />;
+  }
+
+  if (error) {
+    return (
+      <Alert variant="destructive" className="max-w-2xl mx-auto mt-4">
+        <AlertDescription>
+          {error instanceof Error ? error.message : "An error occurred while loading player data"}
+        </AlertDescription>
+      </Alert>
+    );
   }
 
   if (!player) {
