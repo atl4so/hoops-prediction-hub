@@ -7,6 +7,8 @@ import { PredictionInsightsDialog } from "./prediction/PredictionInsightsDialog"
 import { FinishedGameInsightsDialog } from "./prediction/insights/FinishedGameInsightsDialog";
 import { GameScoreDisplay } from "./prediction/GameScoreDisplay";
 import { InsightsButton } from "./prediction/insights/InsightsButton";
+import { StatsButton } from "./stats/StatsButton";
+import { GameStatsModal } from "./stats/GameStatsModal";
 
 interface GameCardProps {
   game: {
@@ -27,6 +29,7 @@ interface GameCardProps {
       away_score: number;
       is_final: boolean;
     }>;
+    game_code?: string;
   };
   isAuthenticated: boolean;
   userId?: string;
@@ -40,6 +43,7 @@ interface GameCardProps {
 export function GameCard({ game, isAuthenticated, userId, prediction }: GameCardProps) {
   const [showPointsBreakdown, setShowPointsBreakdown] = useState(false);
   const [showInsights, setShowInsights] = useState(false);
+  const [showStats, setShowStats] = useState(false);
 
   const gameResult = game.game_results?.[0];
   const isUpcoming = !gameResult && new Date(game.game_date) > new Date();
@@ -85,6 +89,10 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
                 onClick={() => setShowInsights(true)}
                 gameResult={gameResult}
               />
+
+              {gameResult?.is_final && game.game_code && (
+                <StatsButton onClick={() => setShowStats(true)} />
+              )}
             </div>
           </div>
         </CardContent>
@@ -121,6 +129,14 @@ export function GameCard({ game, isAuthenticated, userId, prediction }: GameCard
             home: gameResult.home_score,
             away: gameResult.away_score
           }}
+        />
+      )}
+
+      {gameResult?.is_final && game.game_code && (
+        <GameStatsModal
+          isOpen={showStats}
+          onOpenChange={setShowStats}
+          gameId={game.game_code}
         />
       )}
     </>
