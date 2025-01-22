@@ -48,8 +48,10 @@ export function GameResults() {
       setEditingGame(null);
       setScores({ home: "", away: "" });
       setGameCode("");
+      toast.success("Game result and code updated successfully");
     } catch (error) {
       console.error('Error in handleSave:', error);
+      toast.error("Failed to update game result");
     }
   };
 

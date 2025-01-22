@@ -38,6 +38,7 @@ export function GameResultCard({
   const [showStats, setShowStats] = useState(false);
   const isEditing = editingGame === game.id;
   const hasResult = game.game_results?.[0];
+  const hasValidGameCode = game.game_code && /^\d+$/.test(game.game_code);
 
   return (
     <Card>
@@ -114,7 +115,7 @@ export function GameResultCard({
                   )}
                 </div>
                 <div className="flex gap-2">
-                  {hasResult && game.game_code && (
+                  {hasResult && hasValidGameCode && (
                     <Button
                       variant="outline"
                       onClick={() => setShowStats(true)}
@@ -135,11 +136,11 @@ export function GameResultCard({
           )}
         </div>
       </CardContent>
-      {game.game_code && (
+      {hasValidGameCode && (
         <GameStatsModal
           isOpen={showStats}
           onOpenChange={setShowStats}
-          gameId={game.id}
+          gameId={game.game_code}
         />
       )}
     </Card>
