@@ -26,3 +26,26 @@ export interface ScheduleResponse {
     item: ScheduleItem[];
   };
 }
+
+export interface GameResult {
+  round: string;
+  gameday: string;
+  date: string;
+  time: string;
+  gamenumber: string;
+  gamecode: string;
+  group: string;
+  hometeam: string;
+  homecode: string;
+  homescore: string;
+  awayteam: string;
+  awaycode: string;
+  awayscore: string;
+  played: string;
+}
+
+export interface ResultsResponse {
+  results: {
+    game: GameResult[];
+  };
+}

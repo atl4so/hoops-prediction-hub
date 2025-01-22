@@ -3,34 +3,48 @@ import { format, parse } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Calendar, Clock } from "lucide-react";
-import type { ScheduleItem } from "@/types/euroleague-api";
+import { Calendar, Clock, Trophy } from "lucide-react";
+import type { ScheduleItem, GameResult } from "@/types/euroleague-api";
 import { XMLParser } from "fast-xml-parser";
 
 export default function GameStats() {
   const [schedules, setSchedules] = useState<ScheduleItem[]>([]);
+  const [results, setResults] = useState<GameResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchSchedules = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(
+        // Fetch schedules
+        const scheduleResponse = await fetch(
           "https://api-live.euroleague.net/v1/schedules?seasonCode=E2024&gameNumber=22"
         );
         
-        if (!response.ok) {
+        if (!scheduleResponse.ok) {
           throw new Error('Failed to fetch schedules');
         }
 
-        const xmlText = await response.text();
+        // Fetch results
+        const resultsResponse = await fetch(
+          "https://api-live.euroleague.net/v1/results?seasonCode=E2024&gameNumber=22"
+        );
+
+        if (!resultsResponse.ok) {
+          throw new Error('Failed to fetch results');
+        }
+
+        const scheduleXml = await scheduleResponse.text();
+        const resultsXml = await resultsResponse.text();
         const parser = new XMLParser({ ignoreAttributes: false });
-        const result = parser.parse(xmlText);
         
-        if (result.schedule?.item) {
-          const items = Array.isArray(result.schedule.item) 
-            ? result.schedule.item 
-            : [result.schedule.item];
+        const scheduleData = parser.parse(scheduleXml);
+        const resultsData = parser.parse(resultsXml);
+        
+        if (scheduleData.schedule?.item) {
+          const items = Array.isArray(scheduleData.schedule.item) 
+            ? scheduleData.schedule.item 
+            : [scheduleData.schedule.item];
 
           // Sort by date and time
           const sortedItems = items.sort((a, b) => {
@@ -43,15 +57,23 @@ export default function GameStats() {
 
           setSchedules(sortedItems);
         }
+
+        if (resultsData.results?.game) {
+          const games = Array.isArray(resultsData.results.game)
+            ? resultsData.results.game
+            : [resultsData.results.game];
+
+          setResults(games);
+        }
       } catch (err) {
-        console.error('Error fetching schedules:', err);
-        setError('Failed to load schedules. Please try again later.');
+        console.error('Error fetching data:', err);
+        setError('Failed to load game data. Please try again later.');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchSchedules();
+    fetchData();
   }, []);
 
   const formatGameDate = (dateStr: string, timeStr: string) => {
@@ -61,6 +83,10 @@ export default function GameStats() {
     } catch (err) {
       return dateStr + ' at ' + timeStr;
     }
+  };
+
+  const getGameResult = (gameCode: string) => {
+    return results.find(result => result.gamecode === gameCode);
   };
 
   if (error) {
@@ -88,36 +114,64 @@ export default function GameStats() {
             </Card>
           ))
         ) : (
-          schedules.map((game) => (
-            <Card 
-              key={game.gamecode}
-              className="hover:shadow-lg transition-shadow duration-200"
-            >
-              <CardContent className="p-6">
-                <div className="flex flex-col space-y-4">
-                  <div className="flex justify-between items-start">
-                    <div className="font-semibold text-lg">{game.hometeam}</div>
-                    <div className="text-sm text-muted-foreground">vs</div>
-                    <div className="font-semibold text-lg text-right">{game.awayteam}</div>
-                  </div>
+          schedules.map((game) => {
+            const result = getGameResult(game.gamecode);
+            return (
+              <Card 
+                key={game.gamecode}
+                className="hover:shadow-lg transition-shadow duration-200"
+              >
+                <CardContent className="p-6">
+                  <div className="flex flex-col space-y-4">
+                    <div className="flex justify-between items-start">
+                      <div className="flex flex-col">
+                        <div className="font-semibold text-lg">{game.hometeam}</div>
+                        {result && (
+                          <div className="text-2xl font-bold text-primary">
+                            {result.homescore}
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-sm text-muted-foreground">vs</div>
+                      <div className="flex flex-col items-end">
+                        <div className="font-semibold text-lg text-right">{game.awayteam}</div>
+                        {result && (
+                          <div className="text-2xl font-bold text-primary">
+                            {result.awayscore}
+                          </div>
+                        )}
+                      </div>
+                    </div>
 
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    <span>{formatGameDate(game.date, game.startime)}</span>
-                  </div>
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Calendar className="w-4 h-4 mr-2" />
+                      <span>{formatGameDate(game.date, game.startime)}</span>
+                    </div>
 
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Clock className="w-4 h-4 mr-2" />
-                    <span>{game.startime} - {game.endtime}</span>
-                  </div>
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Clock className="w-4 h-4 mr-2" />
+                      <span>{game.startime} - {game.endtime}</span>
+                    </div>
 
-                  <div className="text-sm text-muted-foreground mt-2">
-                    {game.arenaname} ({game.arenacapacity} capacity)
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Trophy className="w-4 h-4 mr-2" />
+                      <span>Round {game.gameday}</span>
+                    </div>
+
+                    <div className="text-sm text-muted-foreground mt-2">
+                      {game.arenaname} ({game.arenacapacity} capacity)
+                    </div>
+
+                    {result && (
+                      <div className="mt-2 p-2 bg-muted rounded-md text-sm font-medium">
+                        Final Score: {result.homescore} - {result.awayscore}
+                      </div>
+                    )}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))
+                </CardContent>
+              </Card>
+            );
+          })
         )}
       </div>
     </div>
