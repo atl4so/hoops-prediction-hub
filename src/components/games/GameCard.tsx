@@ -35,9 +35,17 @@ interface GameCardProps {
     points_earned?: number;
   } | null;
   showPredictionButton?: boolean;
+  isAuthenticated?: boolean;
+  userId?: string;
 }
 
-export function GameCard({ game, prediction, showPredictionButton = true }: GameCardProps) {
+export function GameCard({ 
+  game, 
+  prediction, 
+  showPredictionButton = true,
+  isAuthenticated = false,
+  userId 
+}: GameCardProps) {
   const [showStats, setShowStats] = useState(false);
   const gameResult = game.game_results?.[0];
   const isFinished = gameResult?.is_final;
@@ -51,22 +59,24 @@ export function GameCard({ game, prediction, showPredictionButton = true }: Game
             
             <div className="grid grid-cols-[1fr,auto,1fr] gap-4 items-center">
               <TeamDisplay 
-                name={game.home_team.name}
-                logo={game.home_team.logo_url}
+                team={game.home_team}
                 score={gameResult?.home_score}
                 align="right"
               />
               <span className="text-xl font-bold">vs</span>
               <TeamDisplay
-                name={game.away_team.name}
-                logo={game.away_team.logo_url}
+                team={game.away_team}
                 score={gameResult?.away_score}
                 align="left"
               />
             </div>
 
             {prediction && (
-              <PredictionDisplay prediction={prediction} />
+              <PredictionDisplay 
+                homeScore={prediction.prediction_home_score}
+                awayScore={prediction.prediction_away_score}
+                pointsEarned={prediction.points_earned}
+              />
             )}
 
             <div className="flex justify-between items-center">
@@ -74,7 +84,9 @@ export function GameCard({ game, prediction, showPredictionButton = true }: Game
                 <PredictionButton 
                   gameId={game.id} 
                   gameDate={game.game_date}
-                  hasPrediction={!!prediction}
+                  prediction={prediction}
+                  isAuthenticated={isAuthenticated}
+                  userId={userId}
                 />
               )}
               
