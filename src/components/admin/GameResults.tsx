@@ -41,8 +41,8 @@ export function GameResults() {
     try {
       await updateResult.mutateAsync({ 
         gameId, 
-        homeScore: 92, // Setting Partizan's score
-        awayScore: 86, // Setting Paris's score
+        homeScore: homeScore,
+        awayScore: awayScore,
         gameCode: gameCode
       });
       setEditingGame(null);
