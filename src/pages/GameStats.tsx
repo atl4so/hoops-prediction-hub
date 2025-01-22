@@ -28,7 +28,20 @@ export default function GameStats() {
         const result = parser.parse(xmlText);
         
         if (result.schedule?.item) {
-          setSchedules(Array.isArray(result.schedule.item) ? result.schedule.item : [result.schedule.item]);
+          const items = Array.isArray(result.schedule.item) 
+            ? result.schedule.item 
+            : [result.schedule.item];
+
+          // Sort by date and time
+          const sortedItems = items.sort((a, b) => {
+            const dateTimeA = `${a.date} ${a.startime}`;
+            const dateTimeB = `${b.date} ${b.startime}`;
+            const parsedA = parse(`${dateTimeA}`, 'MMM d, yyyy HH:mm', new Date());
+            const parsedB = parse(`${dateTimeB}`, 'MMM d, yyyy HH:mm', new Date());
+            return parsedB.getTime() - parsedA.getTime(); // Descending order
+          });
+
+          setSchedules(sortedItems);
         }
       } catch (err) {
         console.error('Error fetching schedules:', err);
