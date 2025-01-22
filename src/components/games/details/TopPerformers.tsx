@@ -1,19 +1,39 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Trophy } from "lucide-react";
+import { PlayerEfficiencyMetrics } from "./stats/PlayerEfficiencyMetrics";
 
 interface PlayerPerformance {
   PlayerName: string;
   TimePlayed: string;
-  Valuation: number;
   StartFive: boolean;
+  Score: number;
+  FieldGoalsMade2: number;
+  FieldGoalsAttempted2: number;
+  FieldGoalsMade3: number;
+  FieldGoalsAttempted3: number;
+  FreeThrowsMade: number;
+  FreeThrowsAttempted: number;
+  OffensiveRebounds: number;
+  DefensiveRebounds: number;
+  TotalRebounds: number;
+  Assistances: number;
+  Steals: number;
+  BlocksFavour: number;
+  Turnovers: number;
+  Valuation: number;
 }
 
 interface TopPerformersProps {
   players: PlayerPerformance[];
   teamName: string;
+  teamTotals: {
+    Score: number;
+    Assistances: number;
+    TotalRebounds: number;
+  };
 }
 
-export function TopPerformers({ players, teamName }: TopPerformersProps) {
+export function TopPerformers({ players, teamName, teamTotals }: TopPerformersProps) {
   // Sort players by PIR per minute and filter out those with minimal playing time
   const topPerformers = [...players]
     .filter(player => 
@@ -24,15 +44,13 @@ export function TopPerformers({ players, teamName }: TopPerformersProps) {
       // Convert time played to minutes for comparison
       const getMinutes = (time: string) => {
         const [minutes, seconds] = time.split(':').map(Number);
-        // Convert to total minutes including seconds
         return minutes + (seconds / 60);
       };
       
-      // Calculate PIR per minute for each player
       const minutesA = getMinutes(a.TimePlayed);
       const minutesB = getMinutes(b.TimePlayed);
       
-      // Ensure we don't divide by zero and handle very small playing times
+      // Only calculate PIR per minute if player has played at least 30 seconds
       const pirPerMinuteA = minutesA >= 0.5 ? a.Valuation / minutesA : 0;
       const pirPerMinuteB = minutesB >= 0.5 ? b.Valuation / minutesB : 0;
       
@@ -48,7 +66,6 @@ export function TopPerformers({ players, teamName }: TopPerformersProps) {
             <Trophy className="h-4 w-4 text-yellow-500" />
             <h3 className="text-base font-semibold">{teamName} Top Performers</h3>
           </div>
-          <span className="text-xs text-muted-foreground">PIR/m</span>
         </div>
         <div className="grid gap-2">
           {topPerformers.map((player, index) => {
@@ -63,27 +80,25 @@ export function TopPerformers({ players, teamName }: TopPerformersProps) {
             return (
               <div 
                 key={player.PlayerName}
-                className="flex items-center justify-between p-2 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors"
+                className="flex flex-col p-2 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors"
               >
-                <div className="flex items-center gap-2">
-                  <span className="text-base font-bold text-primary">
-                    {index + 1}
-                  </span>
-                  <div>
-                    <p className="font-semibold text-sm">{player.PlayerName}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {player.TimePlayed}
-                    </p>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base font-bold text-primary">
+                      {index + 1}
+                    </span>
+                    <div>
+                      <p className="font-semibold text-sm">{player.PlayerName}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {player.TimePlayed} • PIR/m: {pirPerMinute} ({player.Valuation})
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-base font-bold text-secondary-foreground">
-                    {pirPerMinute}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    ({player.Valuation})
-                  </p>
-                </div>
+                <PlayerEfficiencyMetrics 
+                  stats={player}
+                  teamTotals={teamTotals}
+                />
               </div>
             );
           })}
