@@ -34,11 +34,7 @@ export function GameResults() {
     const awayScore = parseInt(scores.away);
 
     if (isNaN(homeScore) || isNaN(awayScore)) {
-      toast({
-        variant: "destructive",
-        title: "Invalid scores",
-        description: "Please enter valid scores"
-      });
+      toast.error("Please enter valid scores");
       return;
     }
 
