@@ -14,7 +14,7 @@ import { toast } from "sonner";
 interface UserPredictionCardProps {
   game: {
     id: string;
-    game_code?: string;
+    game_code?: string;  // Added this property
     game_date: string;
     home_team: {
       name: string;
