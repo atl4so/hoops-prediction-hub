@@ -629,6 +629,13 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      update_game_code: {
+        Args: {
+          p_game_id: string
+          p_game_code: string
+        }
+        Returns: undefined
+      }
       update_game_result: {
         Args: {
           game_id_param: string
