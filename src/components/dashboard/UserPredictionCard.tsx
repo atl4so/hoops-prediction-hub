@@ -61,7 +61,7 @@ export function UserPredictionCard({
       const tempDiv = document.createElement("div");
       tempDiv.style.position = "absolute";
       tempDiv.style.left = "-9999px";
-      tempDiv.style.backgroundColor = "#ffffff"; // Always white for screenshots
+      tempDiv.style.backgroundColor = "#ffffff";
       tempDiv.style.padding = "32px";
       tempDiv.style.borderRadius = "12px";
       tempDiv.style.width = "400px";
@@ -99,7 +99,7 @@ export function UserPredictionCard({
           (name as HTMLElement).style.lineHeight = "1.4";
           (name as HTMLElement).style.marginTop = "12px";
           (name as HTMLElement).style.fontWeight = "600";
-          (name as HTMLElement).style.color = "#1a1a1a"; // Dark text for contrast
+          (name as HTMLElement).style.color = "#1a1a1a";
           (name as HTMLElement).style.textAlign = "center";
           (name as HTMLElement).style.minHeight = "auto";
           (name as HTMLElement).style.height = "auto";
@@ -111,7 +111,7 @@ export function UserPredictionCard({
         scoreElements.forEach(score => {
           (score as HTMLElement).style.fontSize = "24px";
           (score as HTMLElement).style.fontWeight = "700";
-          (score as HTMLElement).style.color = "#1a1a1a"; // Dark text for contrast
+          (score as HTMLElement).style.color = "#1a1a1a";
           (score as HTMLElement).style.margin = "16px 0";
         });
 
@@ -130,11 +130,9 @@ export function UserPredictionCard({
           const allElements = clonedContent.querySelectorAll('*');
           allElements.forEach(el => {
             if (el instanceof HTMLElement) {
-              // Override dark mode text colors for better contrast in the screenshot
               el.style.color = el.classList.contains('text-muted-foreground') 
                 ? '#666666' 
                 : '#1a1a1a';
-              // Remove dark mode background classes
               el.classList.remove('dark');
               if (el.classList.contains('bg-background')) {
                 el.style.backgroundColor = '#ffffff';
@@ -148,7 +146,7 @@ export function UserPredictionCard({
       
       tempDiv.appendChild(cardContent);
 
-      // Capture the screenshot with improved quality
+      // Capture the screenshot
       const canvas = await html2canvas(tempDiv, {
         scale: 3,
         backgroundColor: "#ffffff",
