@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@supabase/auth-helpers-react";
+import { AppHeader } from "@/components/layout/AppHeader";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start w-full max-w-[100vw] overflow-hidden">
+      <AppHeader />
       <div className="w-full px-4 sm:px-6 flex flex-col items-center justify-center min-h-[80vh] max-w-3xl mx-auto">
         <div className="text-center space-y-6 md:space-y-8 w-full">
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-relaxed font-display text-foreground flex items-center justify-center gap-2">
