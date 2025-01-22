@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Check, X } from "lucide-react";
+import { Check, X, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -9,6 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useState } from "react";
+import { GameStatsModal } from "@/components/games/stats/GameStatsModal";
 
 interface GameResultCardProps {
   game: any;
@@ -33,6 +35,7 @@ export function GameResultCard({
   onEdit,
   onCancel,
 }: GameResultCardProps) {
+  const [showStats, setShowStats] = useState(false);
   const isEditing = editingGame === game.id;
   const hasResult = game.game_results?.[0];
 
@@ -74,7 +77,7 @@ export function GameResultCard({
                   value={gameCode}
                   onChange={(e) => onGameCodeChange(e.target.value)}
                   className="flex-1"
-                  placeholder="Enter game code for stats"
+                  placeholder="Enter game code for stats (e.g. 198)"
                 />
                 <div className="flex gap-2">
                   <Button
@@ -102,27 +105,43 @@ export function GameResultCard({
                       <span className="text-lg block">
                         {hasResult.home_score} - {hasResult.away_score}
                       </span>
-                      {hasResult.is_final && (
-                        <span className="text-sm text-muted-foreground block">
-                          Game Code: {game.game_code || "Not set"}
-                        </span>
-                      )}
+                      <span className="text-sm text-muted-foreground block">
+                        Game Code: {game.game_code || "Not set"}
+                      </span>
                     </>
                   ) : (
                     <span className="text-muted-foreground">No result</span>
                   )}
                 </div>
-                <Button
-                  variant="outline"
-                  onClick={() => onEdit(game)}
-                >
-                  {hasResult ? "Edit Result" : "Set Result"}
-                </Button>
+                <div className="flex gap-2">
+                  {hasResult && game.game_code && (
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowStats(true)}
+                    >
+                      <BarChart3 className="h-4 w-4 mr-2" />
+                      Stats
+                    </Button>
+                  )}
+                  <Button
+                    variant="outline"
+                    onClick={() => onEdit(game)}
+                  >
+                    {hasResult ? "Edit Result" : "Set Result"}
+                  </Button>
+                </div>
               </div>
             </>
           )}
         </div>
       </CardContent>
+      {game.game_code && (
+        <GameStatsModal
+          isOpen={showStats}
+          onOpenChange={setShowStats}
+          gameId={game.id}
+        />
+      )}
     </Card>
   );
 }

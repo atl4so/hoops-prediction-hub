@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { GameResultCard } from "./games/results/GameResultCard";
 import { useGameResults } from "./games/results/useGameResults";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 export function GameResults() {
   const session = useSession();
