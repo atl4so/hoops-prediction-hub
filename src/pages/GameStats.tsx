@@ -7,8 +7,10 @@ import { Calendar, Clock, Trophy, MapPin, Tv, Users } from "lucide-react";
 import type { ScheduleItem, GameResult } from "@/types/euroleague-api";
 import { XMLParser } from "fast-xml-parser";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 
 export default function GameStats() {
+  const navigate = useNavigate();
   const [schedules, setSchedules] = useState<ScheduleItem[]>([]);
   const [results, setResults] = useState<GameResult[]>([]);
   const [loading, setLoading] = useState(true);
@@ -90,6 +92,10 @@ export default function GameStats() {
     return results.find(result => result.gamecode === gameCode);
   };
 
+  const handleGameClick = (gameCode: string) => {
+    navigate(`/game/${gameCode}`);
+  };
+
   if (error) {
     return (
       <div className="container mx-auto p-4">
@@ -120,7 +126,8 @@ export default function GameStats() {
             return (
               <Card 
                 key={game.gamecode}
-                className="hover:shadow-lg transition-shadow duration-200"
+                className="hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+                onClick={() => handleGameClick(game.gamecode)}
               >
                 <CardContent className="p-6">
                   <div className="flex flex-col space-y-4">
