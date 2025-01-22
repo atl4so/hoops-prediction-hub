@@ -18,7 +18,6 @@ export default function Game() {
   useEffect(() => {
     const fetchGameData = async () => {
       try {
-        // Extract the numeric part from the game code (E2024_198 -> 198)
         const numericGameCode = gameCode?.split('_')[1];
         const seasonCode = gameCode?.split('_')[0];
         
@@ -37,7 +36,7 @@ export default function Game() {
         }
 
         const xmlText = await response.text();
-        console.log('Received XML:', xmlText); // Debug log
+        console.log('Received XML:', xmlText);
         
         const parser = new XMLParser({
           ignoreAttributes: false,
@@ -45,7 +44,7 @@ export default function Game() {
         });
         const result = parser.parse(xmlText);
         
-        console.log('Parsed game data:', result); // Debug log
+        console.log('Parsed game data:', result);
         
         setGameData(result.game);
         setLoading(false);
@@ -63,8 +62,8 @@ export default function Game() {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-4">
-        <Skeleton className="h-12 w-3/4 mb-6" />
+      <div className="container mx-auto p-4 space-y-8 animate-fade-in">
+        <Skeleton className="h-12 w-3/4 mx-auto" />
         <Card>
           <CardContent className="p-6">
             <Skeleton className="h-48" />
@@ -76,9 +75,9 @@ export default function Game() {
 
   if (error || !gameData) {
     return (
-      <div className="container mx-auto p-4 text-center">
-        <h1 className="text-2xl font-bold mb-4">Error</h1>
-        <p className="text-red-500">{error || 'Failed to load game data'}</p>
+      <div className="container mx-auto p-4 text-center space-y-4">
+        <h1 className="text-2xl font-bold text-destructive">Error</h1>
+        <p className="text-muted-foreground">{error || 'Failed to load game data'}</p>
       </div>
     );
   }
@@ -97,13 +96,16 @@ export default function Game() {
         <meta name="twitter:description" content={description} />
       </Helmet>
 
-      <div className="container mx-auto p-4">
-        <PageHeader title={title} />
+      <div className="container mx-auto p-4 pb-16">
+        <PageHeader 
+          title={gameData.title}
+          className="mb-8"
+        />
         
-        <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="stats">Stats</TabsTrigger>
+        <Tabs defaultValue="overview" className="space-y-8">
+          <TabsList className="w-full max-w-md mx-auto">
+            <TabsTrigger value="overview" className="flex-1">Overview</TabsTrigger>
+            <TabsTrigger value="stats" className="flex-1">Stats</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
