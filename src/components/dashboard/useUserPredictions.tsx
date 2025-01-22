@@ -1,58 +1,11 @@
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Database } from "@/integrations/supabase/types";
-import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 export function useUserPredictions(userId: string | null) {
   const session = useSession();
   const supabase = useSupabaseClient<Database>();
-  const queryClient = useQueryClient();
-  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
-
-  useEffect(() => {
-    if (!userId) return;
-
-    const setupChannel = () => {
-      if (channelRef.current) {
-        supabase.removeChannel(channelRef.current);
-      }
-
-      console.log('Setting up predictions channel...');
-      const channel = supabase
-        .channel(`predictions-${userId}`)
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'predictions',
-            filter: `user_id=eq.${userId}`
-          },
-          (payload) => {
-            console.log('Predictions changed:', payload);
-            queryClient.invalidateQueries({ queryKey: ['userPredictions', userId] });
-            // Also invalidate the user profile to refresh stats
-            queryClient.invalidateQueries({ queryKey: ['userProfile', userId] });
-          }
-        )
-        .subscribe((status) => {
-          console.log('Predictions subscription status:', status);
-        });
-
-      channelRef.current = channel;
-      return channel;
-    };
-
-    const channel = setupChannel();
-
-    return () => {
-      console.log('Cleaning up predictions channel...');
-      if (channel) {
-        supabase.removeChannel(channel);
-      }
-    };
-  }, [userId, queryClient, supabase]);
 
   return useQuery({
     queryKey: ['userPredictions', userId],
@@ -101,6 +54,8 @@ export function useUserPredictions(userId: string | null) {
           console.error('Error fetching predictions:', error);
           throw error;
         }
+
+        console.log('Raw predictions data:', data);
 
         return data.map(prediction => ({
           ...prediction,

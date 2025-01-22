@@ -14,7 +14,7 @@ import { toast } from "sonner";
 interface UserPredictionCardProps {
   game: {
     id: string;
-    game_code?: string;  // Added this property
+    game_code?: string;
     game_date: string;
     home_team: {
       name: string;
@@ -49,12 +49,11 @@ export function UserPredictionCard({
   const [showInsights, setShowInsights] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const gameResult = game.game_results?.[0];
-  const hasGameCode = !!game.game_code;
 
-  console.log('Game data:', {
+  console.log('Game data in UserPredictionCard:', {
     id: game.id,
     gameCode: game.game_code,
-    hasGameCode
+    hasGameCode: !!game.game_code
   });
 
   const handlePointsClick = () => {
@@ -236,7 +235,7 @@ export function UserPredictionCard({
                 </Button>
               )}
               
-              {hasGameCode && (
+              {game.game_code && (
                 <Button 
                   variant="outline" 
                   className="w-full" 
@@ -279,11 +278,11 @@ export function UserPredictionCard({
         />
       )}
 
-      {hasGameCode && (
+      {game.game_code && (
         <GameStatsModal
           isOpen={showStats}
           onOpenChange={setShowStats}
-          gameId={game.game_code!}
+          gameId={game.game_code}
         />
       )}
     </>
