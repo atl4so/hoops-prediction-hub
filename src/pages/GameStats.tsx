@@ -136,7 +136,7 @@ export default function GameStats() {
                         variant="secondary" 
                         className="bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary text-[10px] px-1.5 py-0"
                       >
-                        Round {game.gamenumber}
+                        Round {game.game}
                       </Badge>
                       <div className="flex items-center gap-1 text-muted-foreground text-[10px]">
                         <Calendar className="h-3 w-3" />
