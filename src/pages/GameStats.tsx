@@ -3,9 +3,10 @@ import { format, parse } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Calendar, Clock, Trophy } from "lucide-react";
+import { Calendar, Clock, Trophy, MapPin, Tv, Users } from "lucide-react";
 import type { ScheduleItem, GameResult } from "@/types/euroleague-api";
 import { XMLParser } from "fast-xml-parser";
+import { Badge } from "@/components/ui/badge";
 
 export default function GameStats() {
   const [schedules, setSchedules] = useState<ScheduleItem[]>([]);
@@ -126,6 +127,7 @@ export default function GameStats() {
                     <div className="flex justify-between items-start">
                       <div className="flex flex-col">
                         <div className="font-semibold text-lg">{game.hometeam}</div>
+                        <div className="text-sm text-muted-foreground">{game.homecode}</div>
                         {result && (
                           <div className="text-2xl font-bold text-primary">
                             {result.homescore}
@@ -135,6 +137,7 @@ export default function GameStats() {
                       <div className="text-sm text-muted-foreground">vs</div>
                       <div className="flex flex-col items-end">
                         <div className="font-semibold text-lg text-right">{game.awayteam}</div>
+                        <div className="text-sm text-muted-foreground">{game.awaycode}</div>
                         {result && (
                           <div className="text-2xl font-bold text-primary">
                             {result.awayscore}
@@ -155,16 +158,41 @@ export default function GameStats() {
 
                     <div className="flex items-center text-sm text-muted-foreground">
                       <Trophy className="w-4 h-4 mr-2" />
-                      <span>Round {game.gameday}</span>
+                      <span>Round {game.gameday} - {game.group}</span>
                     </div>
 
-                    <div className="text-sm text-muted-foreground mt-2">
-                      {game.arenaname} ({game.arenacapacity} capacity)
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <MapPin className="w-4 h-4 mr-2" />
+                      <span>{game.arenaname}</span>
                     </div>
+
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Users className="w-4 h-4 mr-2" />
+                      <span>Capacity: {game.arenacapacity}</span>
+                    </div>
+
+                    {(game.hometv || game.awaytv) && (
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Tv className="w-4 h-4 mr-2" />
+                        <div className="flex flex-wrap gap-2">
+                          {game.hometv && (
+                            <Badge variant="secondary">Home TV: {game.hometv}</Badge>
+                          )}
+                          {game.awaytv && (
+                            <Badge variant="secondary">Away TV: {game.awaytv}</Badge>
+                          )}
+                        </div>
+                      </div>
+                    )}
 
                     {result && (
-                      <div className="mt-2 p-2 bg-muted rounded-md text-sm font-medium">
-                        Final Score: {result.homescore} - {result.awayscore}
+                      <div className="mt-2 p-2 bg-muted rounded-md">
+                        <div className="text-sm font-medium">
+                          Final Score: {result.homescore} - {result.awayscore}
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Game #{result.gamenumber} | Code: {result.gamecode}
+                        </div>
                       </div>
                     )}
                   </div>
