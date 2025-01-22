@@ -13,10 +13,12 @@ interface GameCardProps {
     id: string;
     game_date: string;
     home_team: {
+      id: string;
       name: string;
       logo_url: string;
     };
     away_team: {
+      id: string;
       name: string;
       logo_url: string;
     };
