@@ -8,7 +8,6 @@ import { Eye, Share2, BarChart3 } from "lucide-react";
 import { PredictionInsightsDialog } from "@/components/games/prediction/PredictionInsightsDialog";
 import { FinishedGameInsightsDialog } from "@/components/games/prediction/insights/FinishedGameInsightsDialog";
 import { GameStatsModal } from "@/components/games/stats/GameStatsModal";
-import { StatsButton } from "@/components/games/stats/StatsButton";
 import html2canvas from "html2canvas";
 import { toast } from "sonner";
 
@@ -239,7 +238,7 @@ export function UserPredictionCard({
                 </Button>
               )}
               
-              {hasValidGameCode && gameResult?.is_final && (
+              {gameResult?.is_final && hasValidGameCode && (
                 <Button 
                   variant="outline" 
                   className="w-full" 
@@ -282,7 +281,7 @@ export function UserPredictionCard({
         />
       )}
 
-      {hasValidGameCode && gameResult?.is_final && (
+      {gameResult?.is_final && hasValidGameCode && (
         <GameStatsModal
           isOpen={showStats}
           onOpenChange={setShowStats}
