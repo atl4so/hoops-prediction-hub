@@ -3,11 +3,12 @@ import { format, parse } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Calendar, Trophy, MapPin, Users } from "lucide-react";
+import { Calendar } from "lucide-react";
 import type { ScheduleItem, GameResult } from "@/types/euroleague-api";
 import { XMLParser } from "fast-xml-parser";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 export default function GameStats() {
   const navigate = useNavigate();
@@ -79,7 +80,7 @@ export default function GameStats() {
   const formatGameDate = (dateStr: string, timeStr: string) => {
     try {
       const date = parse(dateStr, 'MMM d, yyyy', new Date());
-      return format(date, 'MMMM d, yyyy') + ' at ' + timeStr;
+      return format(date, 'MMM d, yyyy') + ' at ' + timeStr;
     } catch (err) {
       return dateStr + ' at ' + timeStr;
     }
@@ -106,14 +107,13 @@ export default function GameStats() {
     <div className="container mx-auto p-4">
       <PageHeader title="Euroleague Game Stats" />
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="space-y-2">
         {loading ? (
           Array.from({ length: 6 }).map((_, index) => (
             <Card key={index} className="animate-pulse">
-              <CardContent className="p-6">
-                <Skeleton className="h-6 w-3/4 mb-4" />
-                <Skeleton className="h-4 w-1/2 mb-2" />
-                <Skeleton className="h-4 w-2/3" />
+              <CardContent className="p-4">
+                <Skeleton className="h-6 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-1/2" />
               </CardContent>
             </Card>
           ))
@@ -124,70 +124,55 @@ export default function GameStats() {
               <Card 
                 key={game.gamecode}
                 className={cn(
-                  "hover:shadow-lg transition-shadow duration-200 cursor-pointer",
-                  "bg-gradient-to-br from-background to-accent/5 border-border/50"
+                  "hover:shadow-md transition-shadow duration-200 cursor-pointer bg-card",
+                  "border-border/50"
                 )}
                 onClick={() => handleGameClick(game.gamecode)}
               >
-                <CardContent className="p-6">
-                  <div className="flex flex-col space-y-6">
-                    {/* Teams and Score Section */}
-                    <div className="grid grid-cols-[1fr,auto,1fr] gap-4 items-center">
-                      <div className="flex flex-col items-start">
-                        <h3 className="font-bold text-xl">{game.hometeam}</h3>
-                        <span className="text-sm text-muted-foreground">{game.homecode}</span>
-                        {result && (
-                          <span className="text-4xl font-bold text-primary tabular-nums mt-2">
-                            {result.homescore}
-                          </span>
-                        )}
+                <CardContent className="p-4">
+                  <div className="space-y-2">
+                    {/* Status and Date */}
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <Badge 
+                        variant="secondary" 
+                        className="bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary"
+                      >
+                        FINAL
+                      </Badge>
+                      <div className="flex items-center gap-1.5">
+                        <Calendar className="h-4 w-4" />
+                        <span>{format(new Date(game.date + ' ' + game.startime), 'MMM d, HH:mm')}</span>
+                      </div>
+                    </div>
+
+                    {/* Teams and Score */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <h3 className="font-bold text-lg truncate">{game.hometeam}</h3>
                       </div>
                       
-                      <div className="text-sm text-muted-foreground self-start mt-2">
-                        vs
-                      </div>
-
-                      <div className="flex flex-col items-end text-right">
-                        <h3 className="font-bold text-xl">{game.awayteam}</h3>
-                        <span className="text-sm text-muted-foreground">{game.awaycode}</span>
-                        {result && (
-                          <span className="text-4xl font-bold text-primary tabular-nums mt-2">
+                      {result && (
+                        <div className="flex items-center gap-3 px-3">
+                          <span className={cn(
+                            "text-2xl font-bold tabular-nums",
+                            result.homescore > result.awayscore ? "text-primary" : "text-muted-foreground"
+                          )}>
+                            {result.homescore}
+                          </span>
+                          <span className="text-sm font-medium text-muted-foreground">vs</span>
+                          <span className={cn(
+                            "text-2xl font-bold tabular-nums",
+                            result.awayscore > result.homescore ? "text-primary" : "text-muted-foreground"
+                          )}>
                             {result.awayscore}
                           </span>
-                        )}
+                        </div>
+                      )}
+                      
+                      <div className="flex-1 text-right">
+                        <h3 className="font-bold text-lg truncate">{game.awayteam}</h3>
                       </div>
                     </div>
-
-                    {/* Game Info Section */}
-                    <div className="space-y-2 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        <span>{formatGameDate(game.date, game.startime)}</span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <Trophy className="w-4 h-4" />
-                        <span>Round {game.gameday} - {game.group}</span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
-                        <span>{game.arenaname}</span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4" />
-                        <span>Capacity: {game.arenacapacity}</span>
-                      </div>
-                    </div>
-
-                    {result && (
-                      <div className="pt-2 border-t border-border/50">
-                        <p className="text-sm font-medium text-muted-foreground">
-                          Final Score: {result.homescore} - {result.awayscore}
-                        </p>
-                      </div>
-                    )}
                   </div>
                 </CardContent>
               </Card>
