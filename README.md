@@ -1,69 +1,107 @@
-# Welcome to your Lovable project
+# euroleague.bet 🏀
 
-## Project info
+A full-stack web application for Euroleague basketball predictions, featuring real-time updates, comprehensive statistics tracking, and social interactions.
 
-**URL**: https://lovable.dev/projects/add23c98-3f6d-4542-aceb-c804fa1b1031
+## Overview
 
-## How can I edit this code?
+euroleague.bet enables users to:
+- Make predictions for Euroleague basketball games
+- Track performance with detailed statistics
+- Compete on leaderboards
+- Follow other users and share predictions
+- View comprehensive game analytics
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+### Frontend
+- **React 18** with **TypeScript** for type-safe component development
+- **Vite** for fast development and optimized builds
+- **TanStack Query** for efficient server state management
+- **Tailwind CSS** for responsive styling
+- **shadcn/ui** for accessible UI components
+- **React Router** for client-side routing
+- **date-fns** for date manipulation
+- **Lucide Icons** for consistent iconography
+- **Zod** for runtime type validation
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/add23c98-3f6d-4542-aceb-c804fa1b1031) and start prompting.
+### Backend (Supabase)
+- **PostgreSQL** database with Row Level Security
+- **Supabase Auth** for authentication
+- **Supabase Storage** for file management
+- **Supabase Real-time** for live updates
+- **Edge Functions** for serverless operations
 
-Changes made via Lovable will be committed automatically to this repo.
+## Features
 
-**Use your preferred IDE**
+### Prediction System
+- Real-time game predictions
+- Time-locked submissions (1 hour before game start)
+- Complex points calculation:
+  - Winner prediction (5 points)
+  - Point difference accuracy (up to 25 points)
+  - Score accuracy per team (up to 10 points each)
+- Maximum 50 points possible per game
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Statistics & Analytics
+- Total points and PPG (Points Per Game)
+- Highest/lowest points per round
+- All-time and current round rankings
+- Winner prediction accuracy
+- Home/Away prediction success rates
+- Underdog prediction tracking
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Social Features
+- User following system
+- Prediction sharing
+- Real-time leaderboards
+- Detailed user profiles
 
-Follow these steps:
+### Admin Dashboard
+- Team management with logo support
+- Round creation and management
+- Game scheduling and results
+- Automated points calculation
+- UI customization options
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## Architecture
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+The application follows a modern, component-based architecture with:
+- Type-safe data flow
+- Optimized database queries
+- Real-time updates
+- Secure authentication
+- Responsive design
+- Accessibility considerations
 
-# Step 3: Install the necessary dependencies.
-npm i
+## Security
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+- Row Level Security (RLS) policies
+- Protected API endpoints
+- Secure file uploads
+- Type-safe database operations
+- Role-based access control
 
-**Edit a file directly in GitHub**
+## Performance
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- Efficient data fetching with TanStack Query
+- Optimistic updates
+- Lazy loading
+- Asset optimization
+- Efficient state management
 
-**Use GitHub Codespaces**
+## Requirements
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- Node.js 18+
+- npm or yarn
+- Modern web browser
+- Supabase account for backend services
 
-## What technologies are used for this project?
+## License
 
-This project is built with .
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Acknowledgments
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/add23c98-3f6d-4542-aceb-c804fa1b1031) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+- Euroleague for inspiration
+- shadcn for the UI component system
+- Supabase for backend infrastructure
