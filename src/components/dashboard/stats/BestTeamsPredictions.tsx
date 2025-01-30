@@ -9,7 +9,6 @@ interface TeamPredictionStats {
   team_id: string;
   team_name: string;
   logo_url: string;
-  success_rate: number;
   total_predictions: number;
   correct_predictions: number;
 }
@@ -48,14 +47,11 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
           team_id: stat.team_id,
           team_name: stat.team.name,
           logo_url: stat.team.logo_url,
-          success_rate: stat.wins_predicted > 0 
-            ? (stat.wins_correct / stat.wins_predicted) * 100 
-            : 0,
           total_predictions: stat.wins_predicted,
           correct_predictions: stat.wins_correct
         }))
-        .filter(stat => stat.correct_predictions > 0) // Only include teams with correct predictions
-        .sort((a, b) => b.success_rate - a.success_rate || b.total_predictions - a.total_predictions)
+        .filter(stat => stat.correct_predictions > 0)
+        .sort((a, b) => b.correct_predictions - a.correct_predictions)
         .slice(0, 3);
 
       console.log('Best teams calculated:', processedStats);
@@ -95,10 +91,10 @@ export function BestTeamsPredictions({ userId }: { userId: string }) {
               </div>
               <div className="mt-2 text-center">
                 <p className="text-xs text-muted-foreground">
-                  {Math.round(team.success_rate)}%
+                  {team.correct_predictions} correct
                 </p>
                 <p className="text-[10px] sm:text-xs text-muted-foreground">
-                  {team.correct_predictions} correct
+                  {team.total_predictions - team.correct_predictions} wrong
                 </p>
               </div>
             </div>

@@ -9,7 +9,6 @@ interface TeamPredictionStats {
   team_id: string;
   team_name: string;
   logo_url: string;
-  failure_rate: number;
   total_predictions: number;
   incorrect_predictions: number;
 }
@@ -49,13 +48,12 @@ export function WorstTeamsPredictions({ userId }: { userId: string }) {
             team_id: stat.team_id,
             team_name: stat.team.name,
             logo_url: stat.team.logo_url,
-            failure_rate: incorrect > 0 ? (incorrect / stat.wins_predicted) * 100 : 0,
             total_predictions: stat.wins_predicted,
             incorrect_predictions: incorrect
           };
         })
-        .filter(stat => stat.incorrect_predictions > 0) // Only include teams with incorrect predictions
-        .sort((a, b) => b.failure_rate - a.failure_rate || b.total_predictions - a.total_predictions)
+        .filter(stat => stat.incorrect_predictions > 0)
+        .sort((a, b) => b.incorrect_predictions - a.incorrect_predictions)
         .slice(0, 3);
 
       console.log('Worst teams calculated:', processedStats);
@@ -95,10 +93,10 @@ export function WorstTeamsPredictions({ userId }: { userId: string }) {
               </div>
               <div className="mt-2 text-center">
                 <p className="text-xs text-muted-foreground">
-                  {Math.round(team.failure_rate)}%
+                  {team.incorrect_predictions} wrong
                 </p>
                 <p className="text-[10px] sm:text-xs text-muted-foreground">
-                  {team.incorrect_predictions} wrong
+                  {team.total_predictions - team.incorrect_predictions} correct
                 </p>
               </div>
             </div>
