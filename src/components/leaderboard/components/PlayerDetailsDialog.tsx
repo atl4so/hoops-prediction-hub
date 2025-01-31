@@ -24,11 +24,9 @@ interface PlayerDetailsDialogProps {
     ppg?: number;
     efficiency?: number;
     underdog_picks?: number;
-    kaspa_address?: string;
+    kaspa_address?: string | null;
   };
   rank: number;
-  isRoundLeaderboard?: boolean;
-  roundId?: string;
 }
 
 export function PlayerDetailsDialog({
@@ -68,27 +66,29 @@ export function PlayerDetailsDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-xl h-[90vh] flex flex-col">
+        <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
           <DialogHeader className="pb-4 border-b">
             <DialogTitle>
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <Avatar className="h-16 w-16">
                   <AvatarImage src={player.avatar_url} />
                   <AvatarFallback>
                     <User className="h-8 w-8" />
                   </AvatarFallback>
                 </Avatar>
-                <div>
+                <div className="space-y-2 w-full">
                   <h3 className="text-lg font-bold">{player.display_name}</h3>
                   <p className="text-sm text-muted-foreground">Rank {rank}</p>
                   {player.kaspa_address && (
-                    <div className="flex items-center gap-2 mt-2 bg-muted/50 p-2 rounded-md">
+                    <div className="flex items-center gap-2 bg-muted/50 p-2 rounded-md w-full overflow-hidden">
                       <Wallet className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                      <p className="text-xs text-muted-foreground font-mono truncate">{player.kaspa_address}</p>
+                      <p className="text-xs text-muted-foreground font-mono truncate flex-1">
+                        {player.kaspa_address}
+                      </p>
                       <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="h-6 w-6" 
+                        className="h-6 w-6 flex-shrink-0" 
                         onClick={handleCopyKaspa}
                       >
                         {hasCopied ? (
@@ -117,7 +117,7 @@ export function PlayerDetailsDialog({
                 </Button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <StatCard 
                   title="Total Points" 
                   value={player.total_points}
@@ -147,7 +147,7 @@ export function PlayerDetailsDialog({
 
               {player.user_id && (
                 <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 gap-6">
                     <BestTeamsPredictions userId={player.user_id} />
                     <WorstTeamsPredictions userId={player.user_id} />
                   </div>
