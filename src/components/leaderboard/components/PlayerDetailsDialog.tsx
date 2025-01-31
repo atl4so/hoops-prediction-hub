@@ -70,8 +70,8 @@ export function PlayerDetailsDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
-          <DialogHeader className="pb-4 border-b">
+        <DialogContent className="sm:max-w-xl h-[90vh] flex flex-col overflow-hidden">
+          <DialogHeader className="pb-4 border-b flex-shrink-0">
             <DialogTitle>
               <div className="flex flex-col space-y-4">
                 <div className="flex items-center gap-2">
