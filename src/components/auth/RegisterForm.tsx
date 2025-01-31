@@ -33,11 +33,7 @@ export function RegisterForm() {
 
     try {
       // First, try to sign out any existing session
-      try {
-        await supabase.auth.signOut();
-      } catch (signOutError) {
-        console.log("Sign out error (expected if no session):", signOutError);
-      }
+      await supabase.auth.signOut();
 
       // Run both validations concurrently
       const [displayNameError, emailError] = await Promise.all([
@@ -76,28 +72,44 @@ export function RegisterForm() {
       }
 
       if (signUpData?.user) {
-        // Create profile
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .insert({
-            id: signUpData.user.id,
-            email: normalizeEmail(formData.email),
-            display_name: formData.displayName.trim(),
+        try {
+          // Create profile
+          const { error: profileError } = await supabase
+            .from("profiles")
+            .insert({
+              id: signUpData.user.id,
+              email: normalizeEmail(formData.email),
+              display_name: formData.displayName.trim(),
+            });
+
+          if (profileError) {
+            console.error("Profile creation error:", profileError);
+            
+            // If it's a duplicate display name error
+            if (profileError.code === '23505') {
+              setError("This display name is already taken. Please choose another one.");
+              // Sign out the user since profile creation failed
+              await supabase.auth.signOut();
+              return;
+            }
+            
+            setError("Failed to create user profile. Please try again.");
+            // Sign out the user since profile creation failed
+            await supabase.auth.signOut();
+            return;
+          }
+
+          toast({
+            title: "Registration successful!",
+            description: "Please check your email to confirm your account.",
           });
-
-        if (profileError) {
-          console.error("Profile creation error:", profileError);
-          // If profile creation fails, delete the auth user
-          await supabase.auth.admin.deleteUser(signUpData.user.id);
-          setError("Failed to create user profile. Please try again.");
-          return;
+          navigate("/");
+        } catch (error: any) {
+          console.error("Profile creation error:", error);
+          // Sign out the user since profile creation failed
+          await supabase.auth.signOut();
+          setError("An unexpected error occurred. Please try again.");
         }
-
-        toast({
-          title: "Registration successful!",
-          description: "Please check your email to confirm your account.",
-        });
-        navigate("/");
       }
     } catch (error: any) {
       console.error("Unexpected error:", error);
@@ -188,4 +200,4 @@ export function RegisterForm() {
       </Card>
     </div>
   );
-};
+}
