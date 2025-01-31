@@ -15,11 +15,11 @@ export const useRegistrationValidation = () => {
         return "Display name must be at least 3 characters long";
       }
 
-      // Check for any existing display name that matches
+      // Check for any existing display name that matches (case insensitive)
       const { data: existingProfiles, error } = await supabase
         .from('profiles')
         .select('display_name')
-        .eq('display_name', trimmedName);
+        .eq('display_name_lower', trimmedName.toLowerCase());
 
       if (error) {
         console.error('Error checking display name:', error);

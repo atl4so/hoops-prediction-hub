@@ -21,10 +21,7 @@ export function RegisterForm() {
     displayName: "",
   });
 
-  const { 
-    validateRegistrationEmail, 
-    validateDisplayName 
-  } = useRegistrationValidation();
+  const { validateDisplayName, validateRegistrationEmail } = useRegistrationValidation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,13 +70,14 @@ export function RegisterForm() {
 
       if (signUpData?.user) {
         try {
-          // Create profile
+          // Create profile with lowercase display name
           const { error: profileError } = await supabase
             .from("profiles")
             .insert({
               id: signUpData.user.id,
               email: normalizeEmail(formData.email),
               display_name: formData.displayName.trim(),
+              display_name_lower: formData.displayName.trim().toLowerCase(),
             });
 
           if (profileError) {
