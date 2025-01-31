@@ -184,6 +184,7 @@ export type Database = {
           away_winner_predictions_total: number | null
           created_at: string
           display_name: string
+          display_name_lower: string | null
           email: string
           highest_game_points: number | null
           highest_round_points: number | null
@@ -209,6 +210,7 @@ export type Database = {
           away_winner_predictions_total?: number | null
           created_at?: string
           display_name: string
+          display_name_lower?: string | null
           email: string
           highest_game_points?: number | null
           highest_round_points?: number | null
@@ -234,6 +236,7 @@ export type Database = {
           away_winner_predictions_total?: number | null
           created_at?: string
           display_name?: string
+          display_name_lower?: string | null
           email?: string
           highest_game_points?: number | null
           highest_round_points?: number | null
