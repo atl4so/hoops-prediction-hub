@@ -27,6 +27,8 @@ interface PlayerDetailsDialogProps {
     kaspa_address?: string | null;
   };
   rank: number;
+  isRoundLeaderboard?: boolean;
+  roundId?: string;
 }
 
 export function PlayerDetailsDialog({
@@ -34,6 +36,8 @@ export function PlayerDetailsDialog({
   onOpenChange,
   player,
   rank,
+  isRoundLeaderboard = false,
+  roundId
 }: PlayerDetailsDialogProps) {
   const [showPredictions, setShowPredictions] = useState(false);
   const [hasCopied, setHasCopied] = useState(false);
