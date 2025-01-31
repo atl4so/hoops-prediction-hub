@@ -20,6 +20,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { supabase, createClient } from "@/integrations/supabase/client";
 import { AvatarUpload } from "./AvatarUpload";
 import { Loader2 } from "lucide-react";
@@ -34,6 +36,7 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
   const [isUploading, setIsUploading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [kaspaAddress, setKaspaAddress] = useState(profile?.kaspa_address || '');
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -206,6 +209,28 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
     }
   };
 
+  const handleKaspaAddressUpdate = async () => {
+    if (!profile?.id) {
+      toast.error('Profile not found');
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ kaspa_address: kaspaAddress })
+        .eq('id', profile.id);
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      toast.success('Kaspa address updated successfully');
+    } catch (error) {
+      console.error('Error updating Kaspa address:', error);
+      toast.error('Failed to update Kaspa address');
+    }
+  };
+
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -213,7 +238,7 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
           <DialogHeader>
             <DialogTitle>Profile Settings</DialogTitle>
             <DialogDescription>
-              Update your profile picture or manage your account
+              Update your profile picture, Kaspa address, or manage your account
             </DialogDescription>
           </DialogHeader>
 
@@ -224,6 +249,23 @@ export function ProfileSettings({ open, onOpenChange, profile }: ProfileSettings
               isUploading={isUploading}
               displayName={profile?.display_name}
             />
+
+            <div className="grid gap-2">
+              <Label htmlFor="kaspa">Kaspa Wallet Address</Label>
+              <Input
+                id="kaspa"
+                placeholder="kaspa:..."
+                value={kaspaAddress}
+                onChange={(e) => setKaspaAddress(e.target.value)}
+              />
+              <Button 
+                variant="secondary" 
+                onClick={handleKaspaAddressUpdate}
+                className="w-full"
+              >
+                Update Kaspa Address
+              </Button>
+            </div>
 
             <div className="flex flex-col gap-2 mt-4">
               <Button

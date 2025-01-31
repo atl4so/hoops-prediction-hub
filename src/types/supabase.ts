@@ -44,6 +44,7 @@ export interface UserProfile {
   winner_predictions_total?: number;
   over_under_predictions_correct?: number;
   over_under_predictions_total?: number;
+  kaspa_address?: string;
 }
 
 export interface RoundRank {
@@ -97,3 +98,4 @@ export interface BackgroundSetting {
   created_at: string;
   updated_at: string;
 }
+

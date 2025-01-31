@@ -191,6 +191,7 @@ export type Database = {
           home_winner_predictions_total: number | null
           id: string
           is_admin: boolean | null
+          kaspa_address: string | null
           lowest_game_points: number | null
           lowest_round_points: number | null
           over_under_predictions_correct: number | null
@@ -215,6 +216,7 @@ export type Database = {
           home_winner_predictions_total?: number | null
           id: string
           is_admin?: boolean | null
+          kaspa_address?: string | null
           lowest_game_points?: number | null
           lowest_round_points?: number | null
           over_under_predictions_correct?: number | null
@@ -239,6 +241,7 @@ export type Database = {
           home_winner_predictions_total?: number | null
           id?: string
           is_admin?: boolean | null
+          kaspa_address?: string | null
           lowest_game_points?: number | null
           lowest_round_points?: number | null
           over_under_predictions_correct?: number | null

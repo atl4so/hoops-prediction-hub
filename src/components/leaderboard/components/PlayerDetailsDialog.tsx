@@ -1,10 +1,9 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
+import { Eye, User, Wallet } from "lucide-react";
 import { useState } from "react";
 import { UserPredictionsDialog } from "@/components/dashboard/UserPredictionsDialog";
 import { BestTeamsPredictions } from "@/components/dashboard/stats/BestTeamsPredictions";
@@ -24,6 +23,7 @@ interface PlayerDetailsDialogProps {
     ppg?: number;
     efficiency?: number;
     underdog_picks?: number;
+    kaspa_address?: string;
   };
   rank: number;
   isRoundLeaderboard?: boolean;
@@ -70,6 +70,12 @@ export function PlayerDetailsDialog({
                 <div>
                   <h3 className="text-lg font-bold">{player.display_name}</h3>
                   <p className="text-sm text-muted-foreground">Rank {rank}</p>
+                  {player.kaspa_address && (
+                    <div className="flex items-center gap-2 mt-1">
+                      <Wallet className="h-4 w-4 text-muted-foreground" />
+                      <p className="text-xs text-muted-foreground font-mono">{player.kaspa_address}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </DialogTitle>
