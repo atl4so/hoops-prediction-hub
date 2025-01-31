@@ -39,16 +39,19 @@ export function RegisterForm() {
         console.log("Sign out error (expected if no session):", signOutError);
       }
 
-      // Validate display name first since it's mandatory
-      const displayNameError = await validateDisplayName(formData.displayName);
+      // Run both validations concurrently
+      const [displayNameError, emailError] = await Promise.all([
+        validateDisplayName(formData.displayName),
+        validateRegistrationEmail(formData.email)
+      ]);
+
+      // Check for validation errors
       if (displayNameError) {
         setError(displayNameError);
         setIsLoading(false);
         return;
       }
 
-      // Then validate email
-      const emailError = await validateRegistrationEmail(formData.email);
       if (emailError) {
         setError(emailError);
         setIsLoading(false);
@@ -185,4 +188,4 @@ export function RegisterForm() {
       </Card>
     </div>
   );
-}
+};
