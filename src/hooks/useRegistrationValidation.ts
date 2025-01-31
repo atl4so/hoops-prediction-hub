@@ -26,12 +26,10 @@ export const useRegistrationValidation = () => {
         throw new Error("Error checking display name availability");
       }
 
-      // Check if any profile exists with this name
       if (existingProfiles && existingProfiles.length > 0) {
         return "This display name is already taken";
       }
 
-      // No match found, name is available
       return null;
     } catch (error) {
       console.error('Error in validateDisplayName:', error);

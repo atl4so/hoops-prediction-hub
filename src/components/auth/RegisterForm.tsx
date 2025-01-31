@@ -71,7 +71,8 @@ export function RegisterForm() {
       if (signUpData?.user) {
         try {
           const normalizedDisplayName = formData.displayName.trim();
-          // Create profile with display name and its lowercase version
+          
+          // Try to create the profile
           const { error: profileError } = await supabase
             .from("profiles")
             .insert({
@@ -86,7 +87,7 @@ export function RegisterForm() {
             
             // If it's a duplicate display name error
             if (profileError.code === '23505') {
-              setError("This display name is already taken. Please choose another one.");
+              setError("This display name was just taken. Please choose another one.");
               // Sign out the user since profile creation failed
               await supabase.auth.signOut();
               return;
