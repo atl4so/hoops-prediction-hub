@@ -18,7 +18,7 @@ export function TeamTopPredictors({ teamId }: TeamTopPredictorsProps) {
       const { data, error } = await supabase
         .rpc('get_team_top_predictors', { 
           team_id_param: teamId,
-          min_games: 1
+          min_games: 5 // Changed from 1 to 5
         });
       
       if (error) {
@@ -58,7 +58,7 @@ export function TeamTopPredictors({ teamId }: TeamTopPredictorsProps) {
         <Card>
           <CardContent className="p-6">
             <p className="text-center text-muted-foreground">
-              No predictions data available yet
+              No users have made at least 5 predictions for this team yet
             </p>
           </CardContent>
         </Card>
