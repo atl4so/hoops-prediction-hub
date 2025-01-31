@@ -22,6 +22,7 @@ interface UserPrediction {
     winner_predictions_correct: number;
     winner_predictions_total: number;
     points_per_game: number;
+    kaspa_address: string | null;
   };
   game: {
     id: string;
@@ -44,7 +45,8 @@ export function AllTimeLeaderboard() {
             avatar_url,
             winner_predictions_correct,
             winner_predictions_total,
-            points_per_game
+            points_per_game,
+            kaspa_address
           ),
           game:games!inner (
             id
@@ -91,6 +93,7 @@ export function AllTimeLeaderboard() {
             user_id: userId,
             display_name: pred.user.display_name,
             avatar_url: pred.user.avatar_url,
+            kaspa_address: pred.user.kaspa_address,
             total_points: 0,
             total_predictions: 0,
             ppg: pred.user.points_per_game,
@@ -140,7 +143,8 @@ export function AllTimeLeaderboard() {
                   ...player,
                   ppg: player.ppg,
                   efficiency: player.efficiency,
-                  underdog_picks: player.underdog_picks
+                  underdog_picks: player.underdog_picks,
+                  kaspa_address: player.kaspa_address
                 }}
                 rank={index + 1}
                 index={index}

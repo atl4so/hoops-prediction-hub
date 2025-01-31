@@ -29,7 +29,8 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
           underdog_prediction_rate,
           user:profiles!round_user_stats_user_id_fkey (
             display_name,
-            avatar_url
+            avatar_url,
+            kaspa_address
           )
         `)
         .eq('round_id', selectedRound);
@@ -40,6 +41,7 @@ export function RoundLeaderboard({ selectedRound }: RoundLeaderboardProps) {
         user_id: stat.user_id,
         display_name: stat.user.display_name,
         avatar_url: stat.user.avatar_url,
+        kaspa_address: stat.user.kaspa_address,
         total_points: stat.total_points,
         total_predictions: stat.total_predictions,
         ppg: stat.total_predictions > 0 ? (stat.total_points / stat.total_predictions) : 0,
