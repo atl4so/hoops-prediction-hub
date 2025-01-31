@@ -74,16 +74,16 @@ export function PlayerDetailsDialog({
           <DialogHeader className="pb-4 border-b">
             <DialogTitle>
               <div className="flex flex-col space-y-4">
-                <div className="flex items-start gap-3">
+                <div className="flex items-center gap-2">
                   <Avatar className="h-16 w-16 flex-shrink-0">
                     <AvatarImage src={player.avatar_url} />
                     <AvatarFallback>
                       <User className="h-8 w-8" />
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex-1 -mt-1">
-                    <h3 className="text-lg font-bold leading-tight">{player.display_name}</h3>
-                    <p className="text-sm text-muted-foreground mt-0.5">Rank {rank}</p>
+                  <div className="flex flex-col">
+                    <h3 className="text-lg font-bold leading-none">{player.display_name}</h3>
+                    <p className="text-sm text-muted-foreground mt-1">Rank {rank}</p>
                   </div>
                 </div>
                 {player.kaspa_address && (
