@@ -69,40 +69,40 @@ export function PlayerDetailsDialog({
         <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
           <DialogHeader className="pb-4 border-b">
             <DialogTitle>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                <div className="flex items-center gap-4 w-full">
-                  <Avatar className="h-16 w-16">
+              <div className="flex flex-col space-y-4">
+                <div className="flex items-start gap-3">
+                  <Avatar className="h-16 w-16 flex-shrink-0">
                     <AvatarImage src={player.avatar_url} />
                     <AvatarFallback>
                       <User className="h-8 w-8" />
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold leading-none mb-1">{player.display_name}</h3>
-                    <p className="text-sm text-muted-foreground">Rank {rank}</p>
+                  <div className="flex-1 -mt-1">
+                    <h3 className="text-lg font-bold leading-tight">{player.display_name}</h3>
+                    <p className="text-sm text-muted-foreground mt-0.5">Rank {rank}</p>
                   </div>
                 </div>
+                {player.kaspa_address && (
+                  <div className="flex items-center gap-2 bg-muted/50 p-2 rounded-md w-full overflow-hidden">
+                    <Wallet className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <p className="text-xs text-muted-foreground font-mono truncate flex-1">
+                      {player.kaspa_address}
+                    </p>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-6 w-6 flex-shrink-0" 
+                      onClick={handleCopyKaspa}
+                    >
+                      {hasCopied ? (
+                        <Check className="h-3 w-3 text-green-500" />
+                      ) : (
+                        <Copy className="h-3 w-3" />
+                      )}
+                    </Button>
+                  </div>
+                )}
               </div>
-              {player.kaspa_address && (
-                <div className="flex items-center gap-2 bg-muted/50 p-2 rounded-md w-full mt-3 overflow-hidden">
-                  <Wallet className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                  <p className="text-xs text-muted-foreground font-mono truncate flex-1">
-                    {player.kaspa_address}
-                  </p>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-6 w-6 flex-shrink-0" 
-                    onClick={handleCopyKaspa}
-                  >
-                    {hasCopied ? (
-                      <Check className="h-3 w-3 text-green-500" />
-                    ) : (
-                      <Copy className="h-3 w-3" />
-                    )}
-                  </Button>
-                </div>
-              )}
             </DialogTitle>
           </DialogHeader>
           
