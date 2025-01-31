@@ -1,6 +1,6 @@
 import { useSession } from "@supabase/auth-helpers-react";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { GameResultCard } from "./games/results/GameResultCard";
 import { useGameResults } from "./games/results/useGameResults";
 import { toast } from "sonner";
@@ -20,65 +20,37 @@ export function GameResults() {
     return null;
   }
 
-  const updateFenerVirtus = async () => {
-    const fenerGame = games?.find(
+  const updatePartizanParis = async () => {
+    const partizanGame = games?.find(
       game => 
         game.game_date.includes("2024-02") && // Games in February 2024
-        ((game.home_team.name.includes("Fenerbahce") && game.away_team.name.includes("Virtus")) ||
-        (game.away_team.name.includes("Fenerbahce") && game.home_team.name.includes("Virtus")))
+        ((game.home_team.name.includes("Partizan") && game.away_team.name.includes("Paris")) ||
+        (game.away_team.name.includes("Partizan") && game.home_team.name.includes("Paris")))
     );
 
-    if (!fenerGame) {
-      toast.error("Fenerbahce vs Virtus game not found");
+    if (!partizanGame) {
+      toast.error("Partizan vs Paris game not found");
       return;
     }
 
     try {
       await updateResult.mutateAsync({
-        gameId: fenerGame.id,
-        homeScore: 95,
-        awayScore: 81,
-        gameCode: fenerGame.game_code
+        gameId: partizanGame.id,
+        homeScore: 92,
+        awayScore: 86,
+        gameCode: partizanGame.game_code
       });
-      toast.success("Fenerbahce vs Virtus result updated successfully");
+      toast.success("Game result updated successfully");
     } catch (error) {
-      console.error('Error updating Fenerbahce vs Virtus game:', error);
+      console.error('Error updating Partizan vs Paris game:', error);
       toast.error("Failed to update game result");
     }
   };
 
-  const updateMonacoReal = async () => {
-    const monacoGame = games?.find(
-      game => 
-        game.game_date.includes("2024-02") && // Games in February 2024
-        ((game.home_team.name.includes("Monaco") && game.away_team.name.includes("Real Madrid")) ||
-        (game.away_team.name.includes("Monaco") && game.home_team.name.includes("Real Madrid")))
-    );
-
-    if (!monacoGame) {
-      toast.error("Monaco vs Real Madrid game not found");
-      return;
-    }
-
-    try {
-      await updateResult.mutateAsync({
-        gameId: monacoGame.id,
-        homeScore: 77,
-        awayScore: 73,
-        gameCode: monacoGame.game_code
-      });
-      toast.success("Monaco vs Real Madrid result updated successfully");
-    } catch (error) {
-      console.error('Error updating Monaco vs Real Madrid game:', error);
-      toast.error("Failed to update game result");
-    }
-  };
-
-  // Call the update functions when component mounts
-  useEffect(() => {
-    updateFenerVirtus();
-    updateMonacoReal();
-  }, []);
+  // Call the update function when component mounts
+  useState(() => {
+    updatePartizanParis();
+  });
 
   const handleEdit = (game: any) => {
     setEditingGame(game.id);
