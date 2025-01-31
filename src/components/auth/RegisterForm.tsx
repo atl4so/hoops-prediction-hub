@@ -70,14 +70,15 @@ export function RegisterForm() {
 
       if (signUpData?.user) {
         try {
-          // Create profile with lowercase display name
+          const normalizedDisplayName = formData.displayName.trim();
+          // Create profile with display name and its lowercase version
           const { error: profileError } = await supabase
             .from("profiles")
             .insert({
               id: signUpData.user.id,
               email: normalizeEmail(formData.email),
-              display_name: formData.displayName.trim(),
-              display_name_lower: formData.displayName.trim().toLowerCase(),
+              display_name: normalizedDisplayName,
+              display_name_lower: normalizedDisplayName.toLowerCase(),
             });
 
           if (profileError) {

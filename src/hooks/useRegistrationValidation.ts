@@ -19,16 +19,15 @@ export const useRegistrationValidation = () => {
       const { data: existingProfiles, error } = await supabase
         .from('profiles')
         .select('display_name')
-        .eq('display_name_lower', trimmedName.toLowerCase())
-        .single();
+        .eq('display_name_lower', trimmedName.toLowerCase());
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 means no rows returned
+      if (error) {
         console.error('Error checking display name:', error);
         throw new Error("Error checking display name availability");
       }
 
       // Check if any profile exists with this name
-      if (existingProfiles) {
+      if (existingProfiles && existingProfiles.length > 0) {
         return "This display name is already taken";
       }
 
@@ -55,15 +54,14 @@ export const useRegistrationValidation = () => {
       const { data: existingProfiles, error } = await supabase
         .from('profiles')
         .select('email')
-        .eq('email', normalizedEmail)
-        .single();
+        .eq('email', normalizedEmail);
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 means no rows returned
+      if (error) {
         console.error('Error checking email:', error);
         throw new Error("Error checking email availability");
       }
 
-      if (existingProfiles) {
+      if (existingProfiles && existingProfiles.length > 0) {
         return "This email is already registered";
       }
 
