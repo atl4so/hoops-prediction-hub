@@ -11,9 +11,9 @@ export const useRegistrationValidation = () => {
 
     try {
       setIsValidating(true);
-      const { data, error } = await supabase
+      const { count, error } = await supabase
         .from("profiles")
-        .select("display_name")
+        .select("*", { count: 'exact', head: true })
         .ilike("display_name_lower", displayName.toLowerCase());
 
       if (error) {
@@ -21,7 +21,7 @@ export const useRegistrationValidation = () => {
         return false;
       }
 
-      return data.length === 0;
+      return count === 0;
     } catch (error) {
       console.error("Error in validateDisplayName:", error);
       return false;
@@ -35,9 +35,9 @@ export const useRegistrationValidation = () => {
 
     try {
       setIsValidating(true);
-      const { data, error } = await supabase
+      const { count, error } = await supabase
         .from("profiles")
-        .select("email")
+        .select("*", { count: 'exact', head: true })
         .eq("email", email.toLowerCase());
 
       if (error) {
@@ -45,7 +45,7 @@ export const useRegistrationValidation = () => {
         return false;
       }
 
-      return data.length === 0;
+      return count === 0;
     } catch (error) {
       console.error("Error in validateEmail:", error);
       return false;

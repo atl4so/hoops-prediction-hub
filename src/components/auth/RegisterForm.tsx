@@ -60,7 +60,7 @@ export const RegisterForm = () => {
         throw new Error("No user data returned after registration");
       }
 
-      // Create profile
+      // Create profile with lowercase display name
       const { error: profileError } = await supabase.from("profiles").insert([
         {
           id: authData.user.id,
@@ -73,7 +73,17 @@ export const RegisterForm = () => {
       if (profileError) {
         // If profile creation fails, sign out the user
         await supabase.auth.signOut();
-        throw profileError;
+        
+        if (profileError.code === "23505") {
+          toast({
+            title: "Error",
+            description: "This display name is already taken. Please choose another one.",
+            variant: "destructive",
+          });
+        } else {
+          throw profileError;
+        }
+        return;
       }
 
       toast({
@@ -85,20 +95,11 @@ export const RegisterForm = () => {
     } catch (error: any) {
       console.error("Registration error:", error);
       
-      // Handle specific error cases
-      if (error.code === "23505") {
-        toast({
-          title: "Error",
-          description: "This display name is already taken. Please choose another one.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: error.message || "Failed to register. Please try again.",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Error",
+        description: error.message || "Failed to register. Please try again.",
+        variant: "destructive",
+      });
 
       // Clean up if needed
       await supabase.auth.signOut();
