@@ -20,60 +20,36 @@ export function GameResults() {
     return null;
   }
 
-  const updateSpecificGames = async () => {
-    const gamesToUpdate = [
-      {
-        teams: {
-          home: "Fenerbahce",
-          away: "Virtus"
-        },
-        scores: {
-          home: 95,
-          away: 81
-        }
-      },
-      {
-        teams: {
-          home: "Monaco",
-          away: "Real Madrid"
-        },
-        scores: {
-          home: 77,
-          away: 73
-        }
-      }
-    ];
+  const updatePartizanParis = async () => {
+    const partizanGame = games?.find(
+      game => 
+        game.game_date.includes("2024-02") && // Games in February 2024
+        ((game.home_team.name.includes("Partizan") && game.away_team.name.includes("Paris")) ||
+        (game.away_team.name.includes("Partizan") && game.home_team.name.includes("Paris")))
+    );
 
-    for (const gameData of gamesToUpdate) {
-      const game = games?.find(
-        g => 
-          g.home_team.name.includes(gameData.teams.home) && 
-          g.away_team.name.includes(gameData.teams.away)
-      );
+    if (!partizanGame) {
+      toast.error("Partizan vs Paris game not found");
+      return;
+    }
 
-      if (!game) {
-        toast.error(`Game not found: ${gameData.teams.home} vs ${gameData.teams.away}`);
-        continue;
-      }
-
-      try {
-        await updateResult.mutateAsync({
-          gameId: game.id,
-          homeScore: gameData.scores.home,
-          awayScore: gameData.scores.away,
-          gameCode: game.game_code
-        });
-        toast.success(`Updated ${gameData.teams.home} vs ${gameData.teams.away}`);
-      } catch (error) {
-        console.error('Error updating game:', error);
-        toast.error(`Failed to update ${gameData.teams.home} vs ${gameData.teams.away}`);
-      }
+    try {
+      await updateResult.mutateAsync({
+        gameId: partizanGame.id,
+        homeScore: 92,
+        awayScore: 86,
+        gameCode: partizanGame.game_code
+      });
+      toast.success("Game result updated successfully");
+    } catch (error) {
+      console.error('Error updating Partizan vs Paris game:', error);
+      toast.error("Failed to update game result");
     }
   };
 
   // Call the update function when component mounts
   useState(() => {
-    updateSpecificGames();
+    updatePartizanParis();
   });
 
   const handleEdit = (game: any) => {
